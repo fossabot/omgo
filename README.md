@@ -1,0 +1,2 @@
+# omgo
+personal golang library
