@@ -7,8 +7,8 @@ package main
 import (
 	"fmt"
 	log "github.com/Sirupsen/logrus"
-	"github.com/master-g/golandlord/snowflake/etcdclient"
-	pb "github.com/master-g/golandlord/snowflake/proto"
+	"github.com/master-g/omgo/snowflake/etcdclient"
+	pb "github.com/master-g/omgo/snowflake/proto"
 	"google.golang.org/grpc"
 	"gopkg.in/urfave/cli.v2"
 	"net"
