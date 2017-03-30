@@ -24,7 +24,10 @@ SOFTWARE.
 
 package mt19937
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 const (
 	MT_N = 624
@@ -43,24 +46,17 @@ const (
 type (
 	Context struct {
 		// State vector
-		mt [MT_N]uint32
+		mt []uint32
 		// mti == N + 1 -> mt[N] not initialized
 		mti uint32
 	}
 )
 
 var (
-	defaultMT [MT_N]uint32
-	mag01     [2]uint32
+	mag01 [2]uint32
 )
 
 func init() {
-	var i uint32
-	for i = 1; i < MT_N; i++ {
-		// See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier.
-		defaultMT[i] = 1812433253*(defaultMT[i-1]^(defaultMT[i-1]>>30)) + i
-		defaultMT[i] &= FULL_MASK
-	}
 	mag01[0] = 0
 	mag01[1] = MATRIX_A
 }
@@ -68,14 +64,18 @@ func init() {
 // NewContext create a new MT19937 RNG context with a given uint32 seed
 func NewContext(seed uint32) *Context {
 	ctx := new(Context)
+	ctx.mt = make([]uint32, MT_N)
 	ctx.init(seed)
 	return ctx
 }
 
-// init MT19937 context with a given uint32 seed
 func (ctx *Context) init(seed uint32) {
-	copy(ctx.mt, defaultMT)
 	ctx.mt[0] = seed & FULL_MASK
+	for ctx.mti = 1; ctx.mti < MT_N; ctx.mti++ {
+		// See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier.
+		ctx.mt[ctx.mti] = 1812433253*(ctx.mt[ctx.mti-1]^(ctx.mt[ctx.mti-1]>>30)) + ctx.mti
+		ctx.mt[ctx.mti] &= FULL_MASK
+	}
 }
 
 // NewContextWithArray create a new MT19937 RNG context with a given uint32 array seed
@@ -155,7 +155,9 @@ func (ctx *Context) NextUInt32() uint32 {
 
 // NextInt32 generates the next pseudorandom int32 number
 func (ctx *Context) NextInt32() int32 {
-	return int32(ctx.NextUInt32())
+	a := ctx.NextUInt32()
+	fmt.Println(a, int32(a))
+	return int32(a)
 }
 
 // NextInt generates the next pseudorandom 32bit int number
