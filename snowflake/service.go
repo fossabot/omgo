@@ -1,17 +1,17 @@
 package main
 
 import (
-    "errors"
-    "fmt"
-    log "github.com/Sirupsen/logrus"
-    etcd "github.com/coreos/etcd/client"
-    "github.com/master-g/golandlord/snowflake/etcdclient"
-    pb "github.com/master-g/golandlord/snowflake/proto"
-    "golang.org/x/net/context"
-    "math/rand"
-    "os"
-    "strconv"
-    "time"
+	"errors"
+	"fmt"
+	log "github.com/Sirupsen/logrus"
+	etcd "github.com/coreos/etcd/client"
+	"github.com/master-g/omgo/snowflake/etcdclient"
+	pb "github.com/master-g/omgo/snowflake/proto"
+	"golang.org/x/net/context"
+	"math/rand"
+	"os"
+	"strconv"
+	"time"
 )
 
 const (

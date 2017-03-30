@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	pb "github.com/master-g/golandlord/snowflake/proto"
+	pb "github.com/master-g/omgo/snowflake/proto"
 	"google.golang.org/grpc"
 	"testing"
 )
