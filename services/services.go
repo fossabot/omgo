@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"sync/atomic"
 )
 
 // single connection
@@ -37,9 +38,11 @@ type servicePool struct {
 var (
 	defaultPool servicePool
 	once        sync.Once
+	PATH_SEP    string
 )
 
 func Init(root string, hosts, services []string) {
+	PATH_SEP = string(os.PathSeparator)
 	once.Do(func() {
 		defaultPool.init(root, hosts, services)
 	})
@@ -71,7 +74,7 @@ func (p *servicePool) init(root string, hosts, services []string) {
 
 	log.Println("all service names:", names)
 	for _, v := range names {
-		p.names[p.root+"/"+strings.TrimSpace(v)] = true
+		p.names[p.root+PATH_SEP+strings.TrimSpace(v)] = true
 	}
 
 	// start connection
@@ -187,4 +190,84 @@ func (p *servicePool) removeService(key string) {
 			return
 		}
 	}
+}
+
+// getServiceWithId returns a specific key for a service
+// eg:
+// path:/backends/snowflake, id:s1
+//
+// the full canonical path for this service is :
+// /backends/snowflake/s1
+func (p *servicePool) getServiceWithId(path, id string) *grpc.ClientConn {
+	p.RLock()
+	defer p.RUnlock()
+	// check
+	service := p.services[path]
+	if service == nil {
+		return nil
+	}
+	if len(service.clients) == 0 {
+		return nil
+	}
+
+	fullpath := string(path) + PATH_SEP + id
+	for k := range service.clients {
+		if service.clients[k].key == fullpath {
+			return service.clients[k].conn
+		}
+	}
+
+	return nil
+}
+
+// getService get a service in round-robin style
+func (p *servicePool) getService(path string) (conn *grpc.ClientConn, key string) {
+	p.RLock()
+	defer p.RUnlock()
+	// check
+	service := p.services[path]
+	if service == nil {
+		return nil, ""
+	}
+
+	if len(service.clients) == 0 {
+		return nil, ""
+	}
+
+	idx := int(atomic.AddUint32(&service.idx, 1)) % len(service.clients)
+	return service.clients[idx].conn, service.clients[idx].key
+}
+
+func (p *servicePool) registerCallback(path string, callback chan string) {
+	p.Lock()
+	defer p.Unlock()
+	if p.callbacks == nil {
+		p.callbacks = make(map[string][]chan string)
+	}
+
+	p.callbacks[path] = append(p.callbacks[path], callback)
+	if s, ok := p.services[path]; ok {
+		for k := range s.clients {
+			callback <- s.clients[k].key
+		}
+	}
+	log.Println("register callback on:", path)
+}
+
+func GetService(path string) *grpc.ClientConn {
+	conn, _ := defaultPool.getService(defaultPool.root + PATH_SEP + path)
+	return conn
+}
+
+func GetServiceAndKey(path string) (*grpc.ClientConn, string) {
+	conn, key := defaultPool.getService(defaultPool.root + PATH_SEP + path)
+	return conn, key
+}
+
+func GetServiceWithId(path, id string) *grpc.ClientConn {
+	return defaultPool.getServiceWithId(defaultPool.root+PATH_SEP+path, id)
+}
+
+func RegisterCallback(path string, callback chan string) {
+	defaultPool.registerCallback(defaultPool.root+PATH_SEP+path, callback)
 }
