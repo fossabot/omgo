@@ -45,6 +45,12 @@
 			"revisionTime": "2016-11-17T03:31:26Z"
 		},
 		{
+			"checksumSHA1": "lUU0tCk51wJpsdOMIW+30DVu7SY=",
+			"path": "github.com/master-g/omgo/etcdclient",
+			"revision": "e4d64d74c39e98bb047bca9ee099b49ca17d3fdd",
+			"revisionTime": "2017-04-01T12:06:26Z"
+		},
+		{
 			"checksumSHA1": "Z7RQY+vlVQZepyGvfS01Q4nH4m0=",
 			"path": "github.com/peterbourgon/g2s",
 			"revision": "d4e7ad98afea530d947adb4490aa062353856767",
@@ -177,5 +183,5 @@
 			"revisionTime": "2017-02-15T05:18:00Z"
 		}
 	],
-	"rootPath": "github.com/master-g/golandlord/snowflake"
+	"rootPath": "github.com/master-g/omgo/snowflake"
 }

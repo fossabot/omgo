@@ -5,7 +5,7 @@ import (
 	"fmt"
 	log "github.com/Sirupsen/logrus"
 	etcd "github.com/coreos/etcd/client"
-	"github.com/master-g/omgo/snowflake/etcdclient"
+	"github.com/master-g/omgo/etcdclient"
 	pb "github.com/master-g/omgo/snowflake/proto"
 	"golang.org/x/net/context"
 	"math/rand"
