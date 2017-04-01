@@ -25,7 +25,6 @@ SOFTWARE.
 package mt19937
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -155,9 +154,7 @@ func (ctx *Context) NextUInt32() uint32 {
 
 // NextInt32 generates the next pseudorandom int32 number
 func (ctx *Context) NextInt32() int32 {
-	a := ctx.NextUInt32()
-	fmt.Println(a, int32(a))
-	return int32(a)
+	return int32(ctx.NextUInt32())
 }
 
 // NextInt generates the next pseudorandom 32bit int number
