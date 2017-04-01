@@ -51,12 +51,6 @@
 			"revisionTime": "2017-04-01T12:06:26Z"
 		},
 		{
-			"checksumSHA1": "Z7RQY+vlVQZepyGvfS01Q4nH4m0=",
-			"path": "github.com/peterbourgon/g2s",
-			"revision": "d4e7ad98afea530d947adb4490aa062353856767",
-			"revisionTime": "2017-02-23T12:23:36Z"
-		},
-		{
 			"checksumSHA1": "Y/JfHdFBJJxsRAEor6fh1iGPn9g=",
 			"path": "github.com/ugorji/go/codec",
 			"revision": "d23841a297e5489e787e72fceffabf9d2994b52a",
