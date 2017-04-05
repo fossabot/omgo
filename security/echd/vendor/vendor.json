@@ -1,0 +1,11 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"path": "golang.org/x/crypto/curve25519",
+			"revision": ""
+		}
+	],
+	"rootPath": "github.com/master-g/omgo/security/echd"
+}
