@@ -7,7 +7,6 @@ import (
 )
 
 type curve25519ECDH struct {
-	ECDH
 }
 
 func NewCurve25519ECDH() ECDH {
@@ -25,9 +24,11 @@ func (e *curve25519ECDH) GenerateECKey(rand io.Reader) (crypto.PrivateKey, crypt
 		return nil, nil, err
 	}
 
-	priv[0] &= 248
-	priv[31] &= 127
-	priv[31] |= 64
+	// the most significant bit (bit 254) is set
+	priv[31] &= 0x7F
+	priv[31] |= 0x40
+	// and the three least significant bits are cleared
+	priv[0] &= 0xF8
 
 	curve25519.ScalarBaseMult(&pub, &priv)
 
