@@ -54,4 +54,24 @@ func testECDH(e ECDH, t testing.TB) {
 	if !bytes.Equal(secret1, secret2) {
 		t.Fatalf("The two shared keys: %d, %d do not match", secret1, secret2)
 	}
+
+	//fmt.Println(hex.EncodeToString(privKey1.(*[32]uint8)[:]))
+	//fmt.Println(hex.EncodeToString(privKey2.(*[32]uint8)[:]))
+	//fmt.Println(hex.EncodeToString(pubKey1.(*[32]uint8)[:]))
+	//fmt.Println(hex.EncodeToString(pubKey2.(*[32]uint8)[:]))
+	//fmt.Println(hex.EncodeToString(secret1))
+
+	//p(privKey1.(*[32]uint8)[:])
+	//p(privKey2.(*[32]uint8)[:])
+	//p(pubKey1.(*[32]uint8)[:])
+	//p(pubKey2.(*[32]uint8)[:])
+	//p(secret1)
 }
+
+//func p(s []uint8) {
+//	fmt.Printf("{")
+//	for _, v := range s {
+//		fmt.Printf("0x%02x, ", v)
+//	}
+//	fmt.Printf("}\n")
+//}
