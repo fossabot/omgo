@@ -10,6 +10,16 @@ type RawPacket struct {
 	pos int
 }
 
+// NewRawPacket creates a empty RawPacket for writing
+func NewRawPacket() *RawPacket {
+	return &RawPacket{make([]byte, 0), 0}
+}
+
+// NewRawPacketReader creates a new RawPacket from bytes for reading
+func NewRawPacketReader(buf []byte) *RawPacket {
+	return &RawPacket{buf, 0}
+}
+
 // Data returns packet's internal buffer
 func (p *RawPacket) Data() []byte {
 	return p.buf
@@ -18,6 +28,10 @@ func (p *RawPacket) Data() []byte {
 // Len returns length of the packet's internal buffer
 func (p *RawPacket) Len() int {
 	return len(p.buf)
+}
+
+func (p *RawPacket) Pos() int {
+	return p.pos
 }
 
 // ----------------------------------------------------------------------------
