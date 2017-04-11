@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package proto;
+
+message Game {
+    enum FrameType {
+        Message  = 0;
+    	Kick     = 1;
+    	Ping     = 2;
+    }
+    message Frame {
+        FrameType Type = 1;
+        bytes Message = 2;
+    }
+}
+
+message Empty {
+
+}
+
+service GameServiceClient {
+    rpc Stream(Empty) returns (stream Game.Frame);
+}
+
+service GameService_StreamClient {
+    rpc Send(Game.Frame) returns(Empty);
+    rpc Recv(Empty) returns (Game.Frame);
+}
