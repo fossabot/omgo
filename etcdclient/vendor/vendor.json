@@ -11,26 +11,26 @@
 		{
 			"checksumSHA1": "Zgqp9pp3G4cSZbepa6tzhNeHZOI=",
 			"path": "github.com/coreos/etcd/client",
-			"revision": "512bac0ee9e764085fec59700f696e54c395fefe",
-			"revisionTime": "2017-03-31T16:52:17Z"
+			"revision": "2533c2a50c4b6114ad6fd4c0000175fac3b6ee06",
+			"revisionTime": "2017-02-17T23:51:47Z"
 		},
 		{
 			"checksumSHA1": "mKIXx1kDwmVmdIpZ3pJtRBuUKso=",
 			"path": "github.com/coreos/etcd/pkg/pathutil",
-			"revision": "512bac0ee9e764085fec59700f696e54c395fefe",
-			"revisionTime": "2017-03-31T16:52:17Z"
+			"revision": "2533c2a50c4b6114ad6fd4c0000175fac3b6ee06",
+			"revisionTime": "2017-02-17T23:51:47Z"
 		},
 		{
 			"checksumSHA1": "gx1gJIMU6T0UNQ0bPZ/drQ8cpCI=",
 			"path": "github.com/coreos/etcd/pkg/types",
-			"revision": "512bac0ee9e764085fec59700f696e54c395fefe",
-			"revisionTime": "2017-03-31T16:52:17Z"
+			"revision": "2533c2a50c4b6114ad6fd4c0000175fac3b6ee06",
+			"revisionTime": "2017-02-17T23:51:47Z"
 		},
 		{
 			"checksumSHA1": "sp2FkEyaIGiQFOEZCTDkBZgyHOs=",
 			"path": "github.com/coreos/etcd/version",
-			"revision": "512bac0ee9e764085fec59700f696e54c395fefe",
-			"revisionTime": "2017-03-31T16:52:17Z"
+			"revision": "2533c2a50c4b6114ad6fd4c0000175fac3b6ee06",
+			"revisionTime": "2017-02-17T23:51:47Z"
 		},
 		{
 			"checksumSHA1": "nux9tCYmTA5bOCVODF3Rqzcu60U=",
@@ -39,16 +39,16 @@
 			"revisionTime": "2017-02-09T20:17:57Z"
 		},
 		{
-			"checksumSHA1": "MxLnUmfrP+r5HfCZM29+WPKebn8=",
+			"checksumSHA1": "CoxdaTYdPZNJXr8mJfLxye428N0=",
 			"path": "github.com/ugorji/go/codec",
-			"revision": "708a42d246822952f38190a8d8c4e6b16a0e600c",
-			"revisionTime": "2017-03-12T11:21:14Z"
+			"revision": "c88ee250d0221a57af388746f5cf03768c21d6e2",
+			"revisionTime": "2017-02-15T20:11:44Z"
 		},
 		{
 			"checksumSHA1": "Y+HGqEkYM15ir+J93MEaHdyFy0c=",
 			"path": "golang.org/x/net/context",
-			"revision": "ffcf1bedda3b04ebb15a168a59800a73d6dc0f4d",
-			"revisionTime": "2017-03-29T01:43:45Z"
+			"revision": "41bba8d80bbfab43231ffdf4c210037baae5f6a3",
+			"revisionTime": "2017-01-27T14:21:26Z"
 		},
 		{
 			"checksumSHA1": "mIZhS4hXW3qVQxsJ6tqztjJoJ8A=",

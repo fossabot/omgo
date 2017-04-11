@@ -31,6 +31,7 @@ import (
 
 var client etcdclient.Client
 
+// Init etcd client wrapper with etcd endpoints
 func Init(endpoints []string) {
 	// config
 	cfg := etcdclient.Config{
