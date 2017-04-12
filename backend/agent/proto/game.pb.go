@@ -17,6 +17,11 @@ import proto1 "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 
+import (
+	context "golang.org/x/net/context"
+	grpc "google.golang.org/grpc"
+)
+
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto1.Marshal
 var _ = fmt.Errorf
@@ -90,10 +95,114 @@ func init() {
 	proto1.RegisterEnum("proto.Game_FrameType", Game_FrameType_name, Game_FrameType_value)
 }
 
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// Client API for GameService service
+
+type GameServiceClient interface {
+	Stream(ctx context.Context, opts ...grpc.CallOption) (GameService_StreamClient, error)
+}
+
+type gameServiceClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewGameServiceClient(cc *grpc.ClientConn) GameServiceClient {
+	return &gameServiceClient{cc}
+}
+
+func (c *gameServiceClient) Stream(ctx context.Context, opts ...grpc.CallOption) (GameService_StreamClient, error) {
+	stream, err := grpc.NewClientStream(ctx, &_GameService_serviceDesc.Streams[0], c.cc, "/proto.GameService/Stream", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &gameServiceStreamClient{stream}
+	return x, nil
+}
+
+type GameService_StreamClient interface {
+	Send(*Game_Frame) error
+	Recv() (*Game_Frame, error)
+	grpc.ClientStream
+}
+
+type gameServiceStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *gameServiceStreamClient) Send(m *Game_Frame) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *gameServiceStreamClient) Recv() (*Game_Frame, error) {
+	m := new(Game_Frame)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+// Server API for GameService service
+
+type GameServiceServer interface {
+	Stream(GameService_StreamServer) error
+}
+
+func RegisterGameServiceServer(s *grpc.Server, srv GameServiceServer) {
+	s.RegisterService(&_GameService_serviceDesc, srv)
+}
+
+func _GameService_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(GameServiceServer).Stream(&gameServiceStreamServer{stream})
+}
+
+type GameService_StreamServer interface {
+	Send(*Game_Frame) error
+	Recv() (*Game_Frame, error)
+	grpc.ServerStream
+}
+
+type gameServiceStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *gameServiceStreamServer) Send(m *Game_Frame) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *gameServiceStreamServer) Recv() (*Game_Frame, error) {
+	m := new(Game_Frame)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+var _GameService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "proto.GameService",
+	HandlerType: (*GameServiceServer)(nil),
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Stream",
+			Handler:       _GameService_Stream_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
+	Metadata: "proto/game.proto",
+}
+
 func init() { proto1.RegisterFile("proto/game.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 144 bytes of a gzipped FileDescriptorProto
+	// 178 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xe2, 0x12, 0x28, 0x28, 0xca, 0x2f,
 	0xc9, 0xd7, 0x4f, 0x4f, 0xcc, 0x4d, 0xd5, 0x03, 0x33, 0x85, 0x58, 0xc1, 0x94, 0x52, 0x13, 0x23,
 	0x17, 0x8b, 0x7b, 0x62, 0x6e, 0xaa, 0x94, 0x0f, 0x17, 0xab, 0x5b, 0x51, 0x62, 0x6e, 0xaa, 0x90,
@@ -101,6 +210,9 @@ var fileDescriptor0 = []byte{
 	0xb9, 0x1e, 0x48, 0x8d, 0x1e, 0x58, 0x01, 0x48, 0x32, 0x08, 0xac, 0x44, 0x48, 0x82, 0x8b, 0xdd,
 	0x37, 0xb5, 0xb8, 0x38, 0x31, 0x3d, 0x55, 0x82, 0x49, 0x81, 0x51, 0x83, 0x27, 0x08, 0xc6, 0x55,
 	0xd2, 0xe1, 0xe2, 0x84, 0x2b, 0x16, 0xe2, 0x86, 0x2b, 0x13, 0x60, 0x10, 0xe2, 0xe0, 0x62, 0xf1,
-	0xce, 0x4c, 0xce, 0x16, 0x60, 0x04, 0xb1, 0x02, 0x32, 0xf3, 0xd2, 0x05, 0x98, 0x92, 0xd8, 0xc0,
-	0x76, 0x18, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0xd5, 0x4e, 0x56, 0xb1, 0xa6, 0x00, 0x00, 0x00,
+	0xce, 0x4c, 0xce, 0x16, 0x60, 0x04, 0xb1, 0x02, 0x32, 0xf3, 0xd2, 0x05, 0x98, 0x8c, 0x1c, 0xb9,
+	0xb8, 0x41, 0xe6, 0x07, 0xa7, 0x16, 0x95, 0x65, 0x26, 0xa7, 0x0a, 0x19, 0x71, 0xb1, 0x05, 0x97,
+	0x14, 0xa5, 0x26, 0xe6, 0x0a, 0x09, 0x62, 0xd8, 0x2e, 0x85, 0x29, 0xa4, 0xc1, 0x68, 0xc0, 0x98,
+	0xc4, 0x06, 0x16, 0x35, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0xf1, 0xda, 0x36, 0x0a, 0xe9, 0x00,
+	0x00, 0x00,
 }

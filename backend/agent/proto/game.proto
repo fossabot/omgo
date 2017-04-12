@@ -14,15 +14,6 @@ message Game {
     }
 }
 
-message Empty {
-
-}
-
-service GameServiceClient {
-    rpc Stream(Empty) returns (stream Game.Frame);
-}
-
-service GameService_StreamClient {
-    rpc Send(Game.Frame) returns(Empty);
-    rpc Recv(Empty) returns (Game.Frame);
+service GameService {
+    rpc Stream(stream Game.Frame) returns (stream Game.Frame);
 }
