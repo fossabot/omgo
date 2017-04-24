@@ -77,6 +77,6 @@ func (buf *Buffer) rawSend(data []byte) bool {
 func newBuffer(conn net.Conn, ctrl chan struct{}, txqueuelen int) *Buffer {
 	buf := Buffer{conn: conn, ctrl: ctrl}
 	buf.pending = make(chan []byte, txqueuelen)
-	buf.cache = make([]byte, )
+	buf.cache = make([]byte, packet.MaximumPacketSize)
 	return &buf
 }

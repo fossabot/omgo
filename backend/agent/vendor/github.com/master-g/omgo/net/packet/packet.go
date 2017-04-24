@@ -1,5 +1,9 @@
 package packet
 
+const (
+	MaximumPacketSize = 64*1024 - 1
+)
+
 // Reader is the interface implemented by an object that can read data from a packet
 type Reader interface {
 	ReadBool() (bool, error)

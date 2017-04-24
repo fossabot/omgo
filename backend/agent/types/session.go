@@ -1,4 +1,4 @@
-package main
+package types
 
 import (
 	"crypto/rc4"

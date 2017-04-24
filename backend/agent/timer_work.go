@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	log "github.com/Sirupsen/logrus"
 )
 
@@ -13,7 +12,7 @@ func initTimer(limit int) {
 	rpmLimit = limit
 }
 
-func timerWork(session *Session, out *bytes.Buffer) {
+func timerWork(session *Session, out *Buffer) {
 	defer func() {
 		session.PacketCountPerMin = 0
 	}()

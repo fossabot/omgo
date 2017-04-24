@@ -21,10 +21,14 @@
 			"revisionTime": "2017-03-28T20:03:51Z"
 		},
 		{
-			"checksumSHA1": "qv2cKmDzucdFOOJ3VwAvZjHxCwQ=",
+			"checksumSHA1": "FPfUfOVHglv1DZxCki3bcZGKiGs=",
 			"path": "github.com/master-g/omgo/net/packet",
-			"revision": "372d5c8a1791cb13a961a1fac3718b2c066e1374",
-			"revisionTime": "2017-04-24T07:57:13Z"
+			"revision": "7a20ab4c889586f89c59ada406d257af43456d68",
+			"revisionTime": "2017-04-24T09:36:01Z"
+		},
+		{
+			"path": "github.com/master-g/omgo/security/ecdh",
+			"revision": ""
 		},
 		{
 			"checksumSHA1": "3L9CsAsJ6OfzNDmCTglxbs/At4A=",
