@@ -1,4 +1,4 @@
-package echd
+package ecdh
 
 import (
 	"crypto"
