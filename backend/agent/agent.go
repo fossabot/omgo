@@ -2,6 +2,7 @@ package main
 
 import (
 	pb "github.com/master-g/omgo/backend/agent/proto"
+	"github.com/master-g/omgo/backend/agent/types"
 	"github.com/master-g/omgo/utils"
 	"time"
 )
@@ -12,7 +13,7 @@ const (
 
 // PIPELINE #2: agent
 // all the packets from handleClient() will be handled here
-func agent(session *Session, in chan []byte, out *Buffer) {
+func agent(session *types.Session, in chan []byte, out *Buffer) {
 	defer wg.Done() // will decrease waitgroup by one, useful for manual server shutdown
 	defer utils.PrintPanicStack()
 
@@ -57,17 +58,17 @@ func agent(session *Session, in chan []byte, out *Buffer) {
 			case pb.Game_Message:
 				out.send(session, frame.Message)
 			case pb.Game_Kick:
-				session.Flag |= SESS_KICKED
+				session.Flag |= types.SESS_KICKED
 			}
 		case <-minTimer: // minutes timer
 			timerWork(session, out)
 			minTimer = time.After(time.Minute)
 		case <-die: // server is shutting down
-			session.Flag |= SESS_KICKED
+			session.Flag |= types.SESS_KICKED
 		}
 
 		// see if user should be kicked out
-		if session.Flag&SESS_KICKED != 0 {
+		if session.Flag&types.SESS_KICKED != 0 {
 			return
 		}
 	}

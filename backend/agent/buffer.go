@@ -3,9 +3,10 @@ package main
 import (
 	"encoding/binary"
 	log "github.com/Sirupsen/logrus"
+	"github.com/master-g/omgo/backend/agent/types"
+	"github.com/master-g/omgo/net/packet"
 	"github.com/master-g/omgo/utils"
 	"net"
-    "github.com/master-g/omgo/net/packet"
 )
 
 // PIPELINE #3: buffer
@@ -18,7 +19,7 @@ type Buffer struct {
 }
 
 // packet sending procedure
-func (buf *Buffer) send(session *Session, data []byte) {
+func (buf *Buffer) send(session *types.Session, data []byte) {
 	// in case of empty packet
 	if data == nil {
 		return
@@ -26,13 +27,13 @@ func (buf *Buffer) send(session *Session, data []byte) {
 
 	// encryption
 	// (NOT_ENCRYPTED) -> KEYEXCG -> ENCRYPTED
-	if session.Flag&SESS_ENCRYPT != 0 {
+	if session.Flag&types.SESS_ENCRYPT != 0 {
 		// encryption is enabled
 		session.Encoder.XORKeyStream(data, data)
-	} else if session.Flag&SESS_KEYEXCG != 0 {
+	} else if session.Flag&types.SESS_KEYEXCG != 0 {
 		// key is exchanged, encryption is not yet enabled
-		session.Flag &^= SESS_KEYEXCG
-		session.Flag |= SESS_ENCRYPT
+		session.Flag &^= types.SESS_KEYEXCG
+		session.Flag |= types.SESS_ENCRYPT
 	}
 
 	// queue the data for sending

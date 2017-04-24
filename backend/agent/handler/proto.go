@@ -3,11 +3,11 @@ package handler
 import "github.com/master-g/omgo/net/packet"
 
 type PkgAutoID struct {
-	ID int32
+	ID uint32
 }
 
 func (p PkgAutoID) Pack(w *packet.RawPacket) {
-	w.WriteS32(p.ID)
+	w.WriteU32(p.ID)
 }
 
 type PkgErrorInfo struct {
@@ -47,7 +47,7 @@ func (p PkgUserSnapshot) Pack(w *packet.RawPacket) {
 }
 
 func PacketReadAutoID(reader *packet.RawPacket) (tbl PkgAutoID, err error) {
-	tbl.ID, err = reader.ReadS32()
+	tbl.ID, err = reader.ReadU32()
 	checkErr(err)
 
 	return

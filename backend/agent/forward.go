@@ -4,6 +4,7 @@ import (
 	"errors"
 	log "github.com/Sirupsen/logrus"
 	pb "github.com/master-g/omgo/backend/agent/proto"
+	"github.com/master-g/omgo/backend/agent/types"
 )
 
 var (
@@ -11,7 +12,7 @@ var (
 )
 
 // forward messages to game server
-func forward(session *Session, p []byte) error {
+func forward(session *types.Session, p []byte) error {
 	frame := &pb.Game_Frame{
 		Type:    pb.Game_Message,
 		Message: p,

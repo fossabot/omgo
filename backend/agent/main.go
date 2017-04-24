@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/binary"
 	log "github.com/Sirupsen/logrus"
+	"github.com/master-g/omgo/backend/agent/types"
 	"github.com/master-g/omgo/utils"
 	"gopkg.in/urfave/cli.v2"
 	"io"
@@ -170,7 +171,7 @@ func handleClient(conn net.Conn, config *Config) {
 
 	// create a new session object for this connection
 	// and record its IP address
-	var session Session
+	var session types.Session
 	host, port, err := net.SplitHostPort(conn.RemoteAddr().String())
 	if err != nil {
 		log.Error("cannot get remote address:", err)

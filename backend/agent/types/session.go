@@ -19,7 +19,7 @@ type Session struct {
 	MQ      chan pb.Game_Frame          // channel of async messages send back to client
 	Encoder *rc4.Cipher                 // encrypt
 	Decoder *rc4.Cipher                 // decrypt
-	UserID  int32                       // user ID
+	UserID  uint32                      // user ID
 	GSID    string                      // game server ID
 	Stream  pb.GameService_StreamClient // data stream send to game server
 	Die     chan struct{}               // session close signal
