@@ -15,6 +15,12 @@
 			"revisionTime": "2016-10-29T20:57:26Z"
 		},
 		{
+			"checksumSHA1": "kBeNcaKk56FguvPSUCEaH6AxpRc=",
+			"path": "github.com/golang/protobuf/proto",
+			"revision": "2bba0603135d7d7f5cb73b2125beeda19c09f4ef",
+			"revisionTime": "2017-03-31T03:19:02Z"
+		},
+		{
 			"checksumSHA1": "7hln62oZPZmyqEmgXaybf9WxQ7A=",
 			"path": "github.com/maruel/panicparse/stack",
 			"revision": "ae43f192cef2add653fe1481a3070ed00a4a6981",
@@ -39,8 +45,10 @@
 			"revisionTime": "2017-04-11T07:07:26Z"
 		},
 		{
+			"checksumSHA1": "nAu0XmCeC6WnUySyI8R7w4cxAqU=",
 			"path": "golang.org/x/crypto/curve25519",
-			"revision": ""
+			"revision": "96846453c37f0876340a66a47f3f75b1f3a6cd2d",
+			"revisionTime": "2017-04-21T04:26:53Z"
 		},
 		{
 			"checksumSHA1": "mIZhS4hXW3qVQxsJ6tqztjJoJ8A=",
