@@ -43,6 +43,7 @@ const (
 )
 
 type (
+	// Context holds mt19937's current state
 	Context struct {
 		// State vector
 		mt []uint32
@@ -162,12 +163,12 @@ func (ctx *Context) NextInt() int {
 	return int(ctx.NextUInt32())
 }
 
-// NextInt generates the next pseudorandom float32 number, between [0.0 ~ 1.0)
+// NextFloat32 generates the next pseudorandom float32 number, between [0.0 ~ 1.0)
 func (ctx *Context) NextFloat32() float32 {
 	return float32(ctx.NextUInt32()) / float32(math.MaxUint32+1)
 }
 
-// NextInt generates the next pseudorandom float64 number, between [0.0 ~ 1.0)
+// NextFloat64 generates the next pseudorandom float64 number, between [0.0 ~ 1.0)
 func (ctx *Context) NextFloat64() float64 {
 	return float64(ctx.NextUInt32()) / float64(math.MaxUint32+1)
 }

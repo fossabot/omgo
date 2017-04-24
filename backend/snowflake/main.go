@@ -14,7 +14,6 @@ import (
 	"net"
 	"os"
 	"sort"
-	"strings"
 )
 
 const (
@@ -31,11 +30,11 @@ func main() {
 				Usage:       "local port to listen",
 				DefaultText: "random",
 			},
-			&cli.StringFlag{
+			&cli.StringSliceFlag{
 				Name:    "etcd",
-				Value:   "",
+				Value:   cli.NewStringSlice(DEFAULT_ETCD),
 				Aliases: []string{"e"},
-				Usage:   "etcd server address, if there are multiple servers, use ';' to separate",
+				Usage:   "etcd server address, if multiple hosts, -e host1 -e host2 ...",
 				EnvVars: []string{"ETCD_HOST"},
 			},
 		},
@@ -44,10 +43,10 @@ func main() {
 		Version: "v1.0.0",
 		Action: func(c *cli.Context) error {
 			port := c.Int("port")
-			etcdHosts := c.String("etcd")
+			etcdHosts := c.StringSlice("etcd")
 			endpoints := []string{DEFAULT_ETCD}
-			if etcdHosts != "" {
-				endpoints = strings.Split(etcdHosts, ";")
+			if etcdHosts == nil {
+				endpoints = etcdHosts
 			}
 			startSnowflake(endpoints, port)
 			return nil

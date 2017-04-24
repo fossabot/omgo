@@ -5,6 +5,7 @@ import (
 	"io"
 )
 
+// ECDH interface implement key exchange via Diffie-Hellman algorithm
 type ECDH interface {
 	GenerateECKey(io.Reader) (crypto.PrivateKey, crypto.PublicKey, error)
 	Marshal(crypto.PublicKey) []byte

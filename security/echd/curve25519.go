@@ -9,6 +9,7 @@ import (
 type curve25519ECDH struct {
 }
 
+// NewCurve25519ECDH creates a new curve25519ECDH instance
 func NewCurve25519ECDH() ECDH {
 	return &curve25519ECDH{}
 }

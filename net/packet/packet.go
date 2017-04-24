@@ -1,5 +1,6 @@
 package packet
 
+// Reader is the interface implemented by an object that can read data from a packet
 type Reader interface {
 	ReadBool() (bool, error)
 	ReadByte() (byte, error)
@@ -14,6 +15,7 @@ type Reader interface {
 	ReadS64() (int64, error)
 }
 
+// Writer is the interface implemented by an object that can write data to a packet
 type Writer interface {
 	WriteZeros(n int)
 	WriteBool(v bool)
@@ -30,6 +32,7 @@ type Writer interface {
 	WriteS64(v int64)
 }
 
+// Packet is the interface implemented by an object that can behave as a packet
 type Packet interface {
 	Data() []byte
 	Len() int
