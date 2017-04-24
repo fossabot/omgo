@@ -62,25 +62,3 @@ func (e *curve25519ECDH) GenerateSharedSecret(privateKey crypto.PrivateKey, publ
 
 	return secret[:], nil
 }
-
-func (e *curve25519ECDH) GenerateECKeyBuf(reader io.Reader) (privateKey, publicKey []byte) {
-	privateRaw, publicRaw, err := e.GenerateECKey(reader)
-	if err != nil {
-		return nil, nil
-	}
-
-	privateKey = e.Marshal(privateRaw)
-	publicKey = e.Marshal(publicRaw)
-	return
-}
-
-func (e *curve25519ECDH) GenerateSharedSecretBuf(privateBuf, publicBuf []byte) []byte {
-	privateKey, _ := e.Unmarshal(privateBuf)
-	publicKey, _ := e.Unmarshal(publicBuf)
-	secret, err := e.GenerateSharedSecret(privateKey, publicKey)
-	if err != nil {
-		return nil
-	}
-
-	return secret
-}

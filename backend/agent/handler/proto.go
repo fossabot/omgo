@@ -29,13 +29,13 @@ func (p PkgUserLoginInfo) Pack(w *packet.RawPacket) {
 }
 
 type PkgSeedInfo struct {
-	ClientSendSeed int32
-	ClientRecvSeed int32
+	ClientSendSeed []byte
+	ClientRecvSeed []byte
 }
 
 func (p PkgSeedInfo) Pack(w *packet.RawPacket) {
-	w.WriteS32(p.ClientSendSeed)
-	w.WriteS32(p.ClientRecvSeed)
+	w.WriteBytes(p.ClientSendSeed)
+	w.WriteBytes(p.ClientRecvSeed)
 }
 
 type PkgUserSnapshot struct {
@@ -71,10 +71,10 @@ func PacketReadUserLoginInfo(reader *packet.RawPacket) (tbl PkgUserLoginInfo, er
 }
 
 func PacketReadSeedInfo(reader *packet.RawPacket) (tbl PkgSeedInfo, err error) {
-	tbl.ClientSendSeed, err = reader.ReadS32()
+	tbl.ClientSendSeed, err = reader.ReadBytes()
 	checkErr(err)
 
-	tbl.ClientRecvSeed, err = reader.ReadS32()
+	tbl.ClientRecvSeed, err = reader.ReadBytes()
 	checkErr(err)
 
 	return

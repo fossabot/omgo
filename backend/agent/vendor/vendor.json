@@ -27,14 +27,20 @@
 			"revisionTime": "2017-04-24T09:36:01Z"
 		},
 		{
+			"checksumSHA1": "lleY/MBjnddCgC6n0K7eZWfSBPY=",
 			"path": "github.com/master-g/omgo/security/ecdh",
-			"revision": ""
+			"revision": "cba7df752fddd58639e14a6a5e45fd6ad3e154e7",
+			"revisionTime": "2017-04-24T11:16:03Z"
 		},
 		{
 			"checksumSHA1": "3L9CsAsJ6OfzNDmCTglxbs/At4A=",
 			"path": "github.com/master-g/omgo/utils",
 			"revision": "9c4100ed83f0d327c4c0fae3f6e3442b44cfb04a",
 			"revisionTime": "2017-04-11T07:07:26Z"
+		},
+		{
+			"path": "golang.org/x/crypto/curve25519",
+			"revision": ""
 		},
 		{
 			"checksumSHA1": "mIZhS4hXW3qVQxsJ6tqztjJoJ8A=",
