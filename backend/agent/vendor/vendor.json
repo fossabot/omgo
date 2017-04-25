@@ -289,6 +289,12 @@
 			"path": "google.golang.org/grpc/transport",
 			"revision": "72b617aacebed7836e806925e6f61eef55cb40c8",
 			"revisionTime": "2017-04-21T23:18:50Z"
+		},
+		{
+			"checksumSHA1": "yFolYpsrXIjWE0UjR8ChC6Nmrhg=",
+			"path": "gopkg.in/urfave/cli.v2",
+			"revision": "61c3eb6ba1da1df17cd50f1456a9252d92bf5edd",
+			"revisionTime": "2017-04-24T21:45:55Z"
 		}
 	],
 	"rootPath": "github.com/master-g/omgo/backend/agent"
