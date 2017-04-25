@@ -15,19 +15,19 @@ enum Cmd {
     PING_REQ = 0x1001;
     PING_RSP = 0x1002;
 
-    COMMON_END = 0x10000;
+    CMD_COMMON_END = 0x10000;
 }
 
-enum StatusCode {
-    OK = 0;
-    TIMEOUT = 1;
-    UNAUTH = 2;
-    UNKNOWN_CMD = 3;
-    SRV_INTERNAL_ERROR = 4;
+enum ResultCode {
+    RESULT_OK = 0;
+    RESULT_TIMEOUT = 1;
+    RESULT_UNAUTH = 2;
+    RESULT_UNKNOWN_CMD = 3;
+    RESULT_INTERNAL_ERROR = 4;
 }
 
 message RspHeader {
-    StatusCode status = 1;
+    ResultCode status = 1;
     fixed64 timestamp = 2;
     string msg = 3;
 }
