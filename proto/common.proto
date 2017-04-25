@@ -1,0 +1,31 @@
+syntax = "proto3";
+package proto.common;
+
+// commands
+// S -> C : even
+// C -> S : odd
+enum Cmd {
+    RESERVED = 0;
+    HEART_BEAT_REQ = 0x1;
+    HEART_BEAT_RSP = 0x2;
+    LOGIN_REQ = 0x11;
+    LOGIN_RSP = 0x12;
+    GET_SEED_REQ = 0x31;
+    GET_SEED_RSP = 0x32;
+    PING_REQ = 0x1001;
+    PING_RSP = 0x1002;
+}
+
+enum StatusCode {
+    OK = 0;
+    TIMEOUT = 1;
+    UNAUTH = 2;
+    UNKNOWN_CMD = 3;
+    SRV_INTERNAL_ERROR = 4;
+}
+
+message RspHeader {
+    StatusCode status = 1;
+    fixed64 timestamp = 2;
+    string msg = 3;
+}
