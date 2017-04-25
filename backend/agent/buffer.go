@@ -27,11 +27,12 @@ func (buf *Buffer) send(session *types.Session, data []byte) {
 
 	// encryption
 	// (NOT_ENCRYPTED) -> KEYEXCG -> ENCRYPTED
-	if session.Flag&types.SESS_ENCRYPT != 0 {
+	if session.IsFlagEncryptedSet() {
 		// encryption is enabled
 		session.Encoder.XORKeyStream(data, data)
-	} else if session.Flag&types.SESS_KEYEXCG != 0 {
+	} else if session.IsFlagKeyExchangedSet() {
 		// key is exchanged, encryption is not yet enabled
+
 		session.Flag &^= types.SESS_KEYEXCG
 		session.Flag |= types.SESS_ENCRYPT
 	}

@@ -15,7 +15,7 @@ func route(session *types.Session, p []byte) []byte {
 	start := time.Now()
 	defer utils.PrintPanicStack(session, p)
 	// decrypt
-	if session.Flag&types.SESS_ENCRYPT != 0 {
+	if session.IsFlagEncryptedSet() {
 		session.Decoder.XORKeyStream(p, p)
 	}
 	// packet reader
@@ -26,14 +26,14 @@ func route(session *types.Session, p []byte) []byte {
 	seqNumber, err := reader.ReadU32()
 	if err != nil {
 		log.Error("read client timestamp failed:", err)
-		session.Flag |= types.SESS_KICKED
+		session.SetFlagKicked()
 		return nil
 	}
 
 	// sequence number verification
 	if seqNumber != session.PacketCount {
 		log.Errorf("illegal packet sequence id:%v should be %v size:%v", seqNumber, session.PacketCount, len(p)-6)
-		session.Flag |= types.SESS_KICKED
+		session.SetFlagKicked()
 		return nil
 	}
 
@@ -41,7 +41,7 @@ func route(session *types.Session, p []byte) []byte {
 	cmdValue, err := reader.ReadS32()
 	if err != nil {
 		log.Error("read protocol number failed.")
-		session.Flag |= types.SESS_KICKED
+		session.SetFlagKicked()
 		return nil
 	}
 
@@ -49,10 +49,10 @@ func route(session *types.Session, p []byte) []byte {
 
 	// route message to different service by protocol number
 	var ret []byte
-	if cmd < proto_common.Cmd_COMMON_END {
+	if cmd < proto_common.Cmd_CMD_COMMON_END {
 		if err := forward(session, p[4:]); err != nil {
 			log.Errorf("service id:%v execute failed, error:%v", cmd, err)
-			session.Flag |= types.SESS_KICKED
+			session.SetFlagKicked()
 			return nil
 		}
 	} else {
@@ -60,7 +60,7 @@ func route(session *types.Session, p []byte) []byte {
 			ret = h(session, reader)
 		} else {
 			log.Errorf("service id:%v not bind", cmd)
-			session.Flag |= types.SESS_KICKED
+			session.SetFlagKicked()
 			return nil
 		}
 	}

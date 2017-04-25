@@ -43,7 +43,7 @@ func ProcGetSeedReq(session *types.Session, reader *packet.RawPacket) []byte {
 	}
 	session.Encoder = encoder
 	session.Decoder = decoder
-	session.Flag |= types.SESS_KEYEXCG
+	session.SetFlagKeyExchanged()
 
 	p := packet.NewRawPacket()
 	p.WriteS16(Code["get_seed_rsp"])
@@ -95,4 +95,8 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	p.WriteU32(session.UserID)
 
 	return p.Data()
+}
+
+func ProcPingReq(session *types.Session, reader *packet.RawPacket) []byte {
+	return nil
 }

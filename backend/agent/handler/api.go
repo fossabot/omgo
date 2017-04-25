@@ -6,16 +6,13 @@ import (
 	"github.com/master-g/omgo/proto/pb"
 )
 
-const (
-	ProtocolAuthEnd = proto_common.Cmd_COMMON_END
-)
-
 var Handlers map[int32]func(*types.Session, *packet.RawPacket) []byte
 
 func init() {
 	Handlers = map[int32]func(*types.Session, *packet.RawPacket) []byte{
-		0:  ProcHeartBeatReq,
-		10: ProcUserLoginReq,
-		30: ProcGetSeedReq,
+		int32(proto_common.Cmd_HEART_BEAT_REQ): ProcHeartBeatReq,
+		int32(proto_common.Cmd_LOGIN_REQ):      ProcUserLoginReq,
+		int32(proto_common.Cmd_GET_SEED_REQ):   ProcGetSeedReq,
+		int32(proto_common.Cmd_PING_REQ):       ProcPingReq,
 	}
 }

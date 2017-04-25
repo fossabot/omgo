@@ -8,12 +8,17 @@ import (
 )
 
 const (
-	SESS_KEYEXCG = 0x1 // if key is exchanged
-	SESS_ENCRYPT = 0x2 // if encryption is available
-	SESS_KICKED  = 0x4 // kick out
-	SESS_AUTHED  = 0x8 // if authorized
+	// FlagKeyExchanged indicates the key exchange process has completed
+	FlagKeyExchanged = 0x1
+	// FlagEncrypted indicates the trasmission of this session is encrypted
+	FlagEncrypted = 0x2
+	// FlagKicked indicates the client has been kicked out
+	FlagKicked = 0x4
+	// FlagAuthed indicates the session has been authorized
+	FlagAuthed = 0x8
 )
 
+// Session holds the context of a client having conversation with agent
 type Session struct {
 	IP                net.IP                      // client IP address
 	MQ                chan pb.Game_Frame          // channel of async messages send back to client
@@ -29,4 +34,72 @@ type Session struct {
 	LastPacketTime    time.Time                   // timestamp of previous packet arrived
 	PacketCount       uint32                      // total packets received
 	PacketCountPerMin int                         // packets received per minute
+}
+
+// SetFlagKeyExchanged sets the key exchanged bit
+func (s *Session) SetFlagKeyExchanged() *Session {
+	s.Flag |= FlagKeyExchanged
+	return s
+}
+
+// ClearFlagKeyExchanged clears the key exchanged bit
+func (s *Session) ClearFlagKeyExchanged() *Session {
+	s.Flag &^= FlagKeyExchanged
+	return s
+}
+
+// IsFlagKeyExchangedSet return true if the key exchanged bit is set
+func (s *Session) IsFlagKeyExchangedSet() bool {
+	return s.Flag&FlagKeyExchanged != 0
+}
+
+// SetFlagEncrypted sets the encrypted bit
+func (s *Session) SetFlagEncrypted() *Session {
+	s.Flag |= FlagEncrypted
+	return s
+}
+
+// ClearFlagEncrypted clears the encrypted bit
+func (s *Session) ClearFlagEncrypted() *Session {
+	s.Flag &^= FlagEncrypted
+	return s
+}
+
+// IsFlagEncryptedSet returns true if the encrypted bit is set
+func (s *Session) IsFlagEncryptedSet() bool {
+	return s.Flag&FlagEncrypted != 0
+}
+
+// SetFlagKicked sets the kicked bit
+func (s *Session) SetFlagKicked() *Session {
+	s.Flag |= FlagKicked
+	return s
+}
+
+// ClearFlagKicked clears the kicked bit
+func (s *Session) ClearFlagKicked() *Session {
+	s.Flag &^= FlagKicked
+	return s
+}
+
+// IsFlagKickedSet returns true if the kicked bit is set
+func (s *Session) IsFlagKickedSet() bool {
+	return s.Flag&FlagKicked != 0
+}
+
+// SetFlagAuthed sets the authed bit
+func (s *Session) SetFlagAuthed() *Session {
+	s.Flag |= FlagAuthed
+	return s
+}
+
+// ClearFlagAuthed clears the authed bit
+func (s *Session) ClearFlagAuthed() *Session {
+	s.Flag &^= FlagAuthed
+	return s
+}
+
+// IsFlagAuthedSet returns true if the authed bit is set
+func (s *Session) IsFlagAuthedSet() bool {
+	return s.Flag&FlagAuthed != 0
 }

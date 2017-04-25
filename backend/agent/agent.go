@@ -58,17 +58,17 @@ func agent(session *types.Session, in chan []byte, out *Buffer) {
 			case pb.Game_Message:
 				out.send(session, frame.Message)
 			case pb.Game_Kick:
-				session.Flag |= types.SESS_KICKED
+				session.SetFlagKicked()
 			}
 		case <-minTimer: // minutes timer
 			timerWork(session, out)
 			minTimer = time.After(time.Minute)
 		case <-die: // server is shutting down
-			session.Flag |= types.SESS_KICKED
+			session.SetFlagKicked()
 		}
 
 		// see if user should be kicked out
-		if session.Flag&types.SESS_KICKED != 0 {
+		if session.IsFlagKickedSet() {
 			return
 		}
 	}

@@ -20,7 +20,7 @@ func timerWork(session *types.Session, out *Buffer) {
 
 	// rpm control
 	if session.PacketCountPerMin > rpmLimit {
-		session.Flag |= types.SESS_KICKED
+		session.SetFlagKicked()
 		log.WithFields(log.Fields{
 			"userid": session.UserID,
 			"rate":   session.PacketCountPerMin,
