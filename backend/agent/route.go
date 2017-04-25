@@ -10,6 +10,10 @@ import (
 	"time"
 )
 
+func getPacketBody(reader *packet.RawPacket) []byte {
+	return reader.Data()[reader.Pos():]
+}
+
 // route client protocol
 func route(session *types.Session, p []byte) []byte {
 	start := time.Now()
@@ -21,36 +25,19 @@ func route(session *types.Session, p []byte) []byte {
 	// packet reader
 	reader := packet.NewRawPacketReader(p)
 
-	// read client packet sequence number
-	// every time client sends a packet, its sequence number must strictly increase by one
-	seqNumber, err := reader.ReadU32()
-	if err != nil {
-		log.Error("read client timestamp failed:", err)
-		session.SetFlagKicked()
-		return nil
-	}
-
-	// sequence number verification
-	if seqNumber != session.PacketCount {
-		log.Errorf("illegal packet sequence id:%v should be %v size:%v", seqNumber, session.PacketCount, len(p)-6)
-		session.SetFlagKicked()
-		return nil
-	}
-
-	// read protocol number
+	// read cmd
 	cmdValue, err := reader.ReadS32()
 	if err != nil {
-		log.Error("read protocol number failed.")
+		log.Error("read packet cmd failed:", err)
 		session.SetFlagKicked()
 		return nil
 	}
-
 	cmd := proto_common.Cmd(cmdValue)
 
-	// route message to different service by protocol number
+	// route message to different service by command code
 	var ret []byte
 	if cmd < proto_common.Cmd_CMD_COMMON_END {
-		if err := forward(session, p[4:]); err != nil {
+		if err := forward(session, getPacketBody(reader)); err != nil {
 			log.Errorf("service id:%v execute failed, error:%v", cmd, err)
 			session.SetFlagKicked()
 			return nil

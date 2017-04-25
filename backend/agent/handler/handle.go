@@ -16,7 +16,6 @@ import (
 )
 
 func ProcHeartBeatReq(session *types.Session, reader *packet.RawPacket) []byte {
-	tbl, _ := PacketReadAutoID(reader)
 	p := packet.NewRawPacket()
 	p.WriteS16(Code["heart_beat_rsp"])
 	p.WriteU32(tbl.ID)

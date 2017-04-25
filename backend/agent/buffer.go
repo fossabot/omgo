@@ -32,9 +32,8 @@ func (buf *Buffer) send(session *types.Session, data []byte) {
 		session.Encoder.XORKeyStream(data, data)
 	} else if session.IsFlagKeyExchangedSet() {
 		// key is exchanged, encryption is not yet enabled
-
-		session.Flag &^= types.SESS_KEYEXCG
-		session.Flag |= types.SESS_ENCRYPT
+		session.ClearFlagKeyExchanged()
+		session.SetFlagEncrypted()
 	}
 
 	// queue the data for sending
