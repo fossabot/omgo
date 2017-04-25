@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	ProtocolAuthEnd = 2000
+	ProtocolAuthEnd = proto_common.Cmd_
 )
 
 var Handlers map[int16]func(*types.Session, *packet.RawPacket) []byte
