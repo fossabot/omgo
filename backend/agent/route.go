@@ -46,7 +46,7 @@ func route(session *types.Session, p []byte) []byte {
 		if h := handler.Handlers[cmdValue]; h != nil {
 			ret = h(session, reader)
 		} else {
-			log.Errorf("service id:%v not bind", cmd)
+			log.Errorf("no handler for cmd:%v", cmd)
 			session.SetFlagKicked()
 			return nil
 		}

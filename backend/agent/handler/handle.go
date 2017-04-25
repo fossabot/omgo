@@ -16,6 +16,7 @@ import (
 )
 
 func ProcHeartBeatReq(session *types.Session, reader *packet.RawPacket) []byte {
+	// TODO make heart beat message in pb file
 	p := packet.NewRawPacket()
 	p.WriteS16(Code["heart_beat_rsp"])
 	p.WriteU32(tbl.ID)

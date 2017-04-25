@@ -5,7 +5,8 @@
 **Packet Structure**
 
 ```
-| Payload Size (2 bytes) | Payload |
+|   2 bytes    | 4 bytes | varient  |
+| payload size |   cmd   | protobuf |
 ```
 
 ###
