@@ -6,7 +6,7 @@ docker rm -f ${SID}
 docker build --no-cache --rm=true -t snowflake .
 docker run --rm=true --name ${SID} -e SERVICE_ID=${SID} -e MACHINE_ID=1 --net=host -p 40001:40001 -d -P snowflake \
     -p 40001 \
-    -e http://${HOST}:2379
+    -e http://${HOST}:2379etc
 
 # register service
 curl -L -X PUT http://${HOST}:2379/v2/keys/backends/snowflake/${SID} -d value=${HOST}:40001
