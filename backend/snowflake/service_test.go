@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	test_key = "test_key"
+	testKey = "test_key"
 )
 
 var address string
@@ -32,7 +32,7 @@ func TestSnowflake(t *testing.T) {
 	c := pb.NewSnowflakeServiceClient(conn)
 
 	// Contact the server and print out its response.
-	r, err := c.Next(context.Background(), &pb.Snowflake_Key{Name: test_key})
+	r, err := c.Next(context.Background(), &pb.Snowflake_Key{Name: testKey})
 	if err != nil {
 		t.Fatalf("could not get next value: %v", err)
 	}
@@ -50,7 +50,7 @@ func BenchmarkSnowflake(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		// Contact the server and print out its response.
-		_, err := c.Next(context.Background(), &pb.Snowflake_Key{Name: test_key})
+		_, err := c.Next(context.Background(), &pb.Snowflake_Key{Name: testKey})
 		if err != nil {
 			b.Fatalf("Could not get next value: %v", err)
 		}
