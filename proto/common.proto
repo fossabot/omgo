@@ -32,6 +32,11 @@ message RspHeader {
     string msg = 3;
 }
 
+message C2SGetSeedReq {
+    bytes send_seed = 1; // public key for server to encrypt sending data
+    bytes recv_seed = 2; // public key for server to decrypt receive data
+}
+
 message S2CGetSeedRsp {
     RspHeader header = 1;
     bytes send_seed = 2; // public key for client to encrypt sending data
