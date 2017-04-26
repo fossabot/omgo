@@ -1,10 +1,10 @@
 package services
 
 import (
+	log "github.com/Sirupsen/logrus"
 	etcdclient "github.com/coreos/etcd/client"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"

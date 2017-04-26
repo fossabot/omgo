@@ -3,6 +3,10 @@
 	"ignore": "test",
 	"package": [
 		{
+			"path": "github.com/Sirupsen/logrus",
+			"revision": ""
+		},
+		{
 			"checksumSHA1": "Zgqp9pp3G4cSZbepa6tzhNeHZOI=",
 			"path": "github.com/coreos/etcd/client",
 			"revision": "9ca7f22e84f58deb40ea0de78b350c0fe3eaf77b",

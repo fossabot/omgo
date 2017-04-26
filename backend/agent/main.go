@@ -25,7 +25,7 @@ var (
 	profileAddr          = "0.0.0.0:6666"
 	defaultETCD          = "http://127.0.0.1:2379"
 	defaultRoot          = "/backends"
-	defaultServices      = []string{"snowflake-100", "game-100"}
+	defaultServices      = []string{"snowflake1", "game1"}
 	defaultReadDeadLine  = 15 * time.Second
 	defaultSockBufSize   = 32*1024 - 1
 	defaultTxQueueLength = 128
@@ -50,7 +50,7 @@ func main() {
 				Value:   ":8888",
 			},
 			&cli.StringSliceFlag{
-				Aliases: []string{"h"},
+				Aliases: []string{"e"},
 				Name:    "etcdhosts",
 				Usage:   "etcd hosts",
 				Value:   cli.NewStringSlice(defaultETCD),
@@ -102,7 +102,7 @@ func main() {
 			log.Println("etcdroot:", etcdRoot)
 			log.Println("services:", serviceNames)
 			log.Println("deadline:", c.Duration("deadline"))
-			log.Println("txqueuelen:", c.Duration("txqueuelen"))
+			log.Println("txqueuelen:", c.Int("txqueuelen"))
 			log.Println("sockbufsize:", c.Int("sockbufsize"))
 			log.Println("rpm:", rpmLimit)
 
