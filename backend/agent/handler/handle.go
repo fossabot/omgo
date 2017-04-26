@@ -13,13 +13,12 @@ import (
 	"github.com/master-g/omgo/services"
 	"google.golang.org/grpc/metadata"
 	"io"
+    "github.com/master-g/omgo/proto/pb"
 )
 
 func ProcHeartBeatReq(session *types.Session, reader *packet.RawPacket) []byte {
-	// TODO make heart beat message in pb file
 	p := packet.NewRawPacket()
-	p.WriteS16(Code["heart_beat_rsp"])
-	p.WriteU32(tbl.ID)
+    p.WriteS32(int32(proto_common.Cmd_HEART_BEAT_RSP))
 	return p.Data()
 }
 
