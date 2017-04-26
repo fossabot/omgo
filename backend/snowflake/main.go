@@ -5,6 +5,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	pb "github.com/master-g/omgo/backend/snowflake/proto"
 	"github.com/master-g/omgo/etcdclient"
+	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc"
 	"gopkg.in/urfave/cli.v2"
 	"net"
@@ -17,6 +18,9 @@ const (
 )
 
 func main() {
+	log.SetLevel(log.DebugLevel)
+	defer utils.PrintPanicStack()
+
 	app := &cli.App{
 		Flags: []cli.Flag{
 			&cli.IntFlag{
@@ -70,21 +74,4 @@ func startSnowflake(endpoints []string, port int) {
 
 	// Start service
 	s.Serve(listener)
-}
-
-// GetLocalIP returns the non loopback local IP of the host
-func GetLocalIP() string {
-	addrs, err := net.InterfaceAddrs()
-	if err != nil {
-		return ""
-	}
-	for _, address := range addrs {
-		// check the address type and if it is not a loopback the display it
-		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			if ipnet.IP.To4() != nil {
-				return ipnet.IP.String()
-			}
-		}
-	}
-	return ""
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	pb "github.com/master-g/omgo/backend/snowflake/proto"
+	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc"
 	"testing"
 )
@@ -14,7 +15,7 @@ const (
 var address string
 
 func init() {
-	address = GetLocalIP() + ":40001"
+	address = utils.GetLocalIP() + ":40001"
 }
 
 func TestCasDelay(t *testing.T) {
