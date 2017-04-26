@@ -29,7 +29,7 @@ func send(conn net.Conn, data []byte, t *testing.T) {
 	cache := make([]byte, 2+size)
 	binary.BigEndian.PutUint16(cache, uint16(size))
 	copy(cache[2:], data)
-	_, err := conn.Write(cache)
+	_, err := conn.Write(cache[:size+2])
 	if err != nil {
 		t.Fatalf("error while sending data: %v", err)
 	}

@@ -194,7 +194,7 @@ func handleClient(conn net.Conn, config *Config) {
 	// read loop
 	for {
 		// solve dead link problem:
-		// physical disconnection without any communcation between client and server
+		// physical disconnection without any communication between client and server
 		// will cause the read to block FOREVER, so a timeout will save the day.
 		conn.SetReadDeadline(time.Now().Add(config.readDeadline))
 
