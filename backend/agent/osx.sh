@@ -15,4 +15,4 @@ docker run --name ${SID} -e SERVICE_ID=${SID} -e MACHINE_ID=1 -p 8888:8888 -d -P
     -e http://${IPADDR}:2379
 
 # register service
-curl -L -X PUT http://${LOCALHOST}:2379/v2/keys/backends/${SID} -d value=${LOCALHOST}:8888
+curl -L -X PUT http://${LOCALHOST}:2379/v2/keys/backends/agent/${SID} -d value=${IPADDR}:8888

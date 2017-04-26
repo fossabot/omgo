@@ -24,7 +24,7 @@ docker run --name ${SID} -e SERVICE_ID=${SID} -e MACHINE_ID=1 -p 40001:40001 -d 
     -e http://${IPADDR}:2379
 
 # register service
-curl -L -X PUT http://${LOCALHOST}:2379/v2/keys/backends/${SID} -d value=${LOCALHOST}:40001
+curl -L -X PUT http://${LOCALHOST}:2379/v2/keys/backends/snowflake/${SID} -d value=${IPADDR}:40001
 
 # init etcd variables
 curl -L -X PUT http://${LOCALHOST}:2379/v2/keys/seqs/test_key -d value="0"

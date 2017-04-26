@@ -25,7 +25,7 @@ var (
 	profileAddr          = "0.0.0.0:6666"
 	defaultETCD          = "http://127.0.0.1:2379"
 	defaultRoot          = "/backends"
-	defaultServices      = []string{"snowflake1", "game1"}
+	defaultServices      = []string{"snowflake", "game"}
 	defaultReadDeadLine  = 15 * time.Second
 	defaultSockBufSize   = 32*1024 - 1
 	defaultTxQueueLength = 128
