@@ -15,59 +15,58 @@ import (
 )
 
 const (
-	SERVICE        = "[SNOWFLAKE]"
-	ENV_MACHINE_ID = "MACHINE_ID" // Specific machine id
-	PATH           = "/seqs"
-	UUID_KEY       = "/seqs/snowflake-uuid"
-	BACKOFF        = 100  // Max backoff delay millisecond
-	CONCURRENT     = 128  // Max concurrent connections to etcd
-	UUID_QUEUE     = 1024 // UUID process queue
+	envMachineID = "MACHINE_ID" // Specific machine id
+	etcdPath     = "/seqs/"
+	uuidKey      = "/seqs/snowflake-uuid"
+	backoff      = 100  // Max backoff delay millisecond
+	concurrent   = 128  // Max concurrent connections to etcd
+	uuidQueue    = 1024 // UUID process queue
 )
 
 const (
-	TS_MASK         = 0x1FFFFFFFFFF // 41bit
-	SN_MASK         = 0xFFF         // 12bit
-	MACHINE_ID_MASK = 0x3FF         // 10bit
+	tsMask        = 0x1FFFFFFFFFF // 41bit
+	snMask        = 0xFFF         // 12bit
+	machineIDmask = 0x3FF         // 10bit
 )
 
 type server struct {
-	machineId  uint64 // 10-bit machine id
+	machineID  uint64 // 10-bit machine id
 	clientPool chan etcd.KeysAPI
 	chProc     chan chan uint64
 }
 
 func (s *server) init() {
-	s.clientPool = make(chan etcd.KeysAPI, CONCURRENT)
-	s.chProc = make(chan chan uint64, UUID_QUEUE)
+	s.clientPool = make(chan etcd.KeysAPI, concurrent)
+	s.chProc = make(chan chan uint64, uuidQueue)
 
 	// Init client pool
-	for i := 0; i < CONCURRENT; i++ {
+	for i := 0; i < concurrent; i++ {
 		s.clientPool <- etcdclient.KeysAPI()
 	}
 
 	// Check if user specified machine id is set
-	if env := os.Getenv(ENV_MACHINE_ID); env != "" {
+	if env := os.Getenv(envMachineID); env != "" {
 		if id, err := strconv.Atoi(env); err == nil {
-			s.machineId = (uint64(id) & MACHINE_ID_MASK) << 12
+			s.machineID = (uint64(id) & machineIDmask) << 12
 			log.Info("machine id specified:", id)
 		} else {
 			log.Panic(err)
 			os.Exit(-1)
 		}
 	} else {
-		s.initMachineId()
+		s.initMachineID()
 	}
 
 	go s.uuidTask()
 }
 
-func (s *server) initMachineId() {
+func (s *server) initMachineID() {
 	client := <-s.clientPool
 	defer func() { s.clientPool <- client }()
 
 	for {
 		// Get the key
-		resp, err := client.Get(context.Background(), UUID_KEY, nil)
+		resp, err := client.Get(context.Background(), uuidKey, nil)
 		if err != nil {
 			log.Panic(err)
 			os.Exit(-1)
@@ -82,14 +81,14 @@ func (s *server) initMachineId() {
 		prevIndex := resp.Node.ModifiedIndex
 
 		// CompareAndSwap
-		resp, err = client.Set(context.Background(), UUID_KEY, fmt.Sprint(prevValue+1), &etcd.SetOptions{PrevIndex: prevIndex})
+		resp, err = client.Set(context.Background(), uuidKey, fmt.Sprint(prevValue+1), &etcd.SetOptions{PrevIndex: prevIndex})
 		if err != nil {
 			casDelay()
 			continue
 		}
 
 		// record serial number of this service, already shifted
-		s.machineId = (uint64(prevValue+1) & MACHINE_ID_MASK) << 12
+		s.machineID = (uint64(prevValue+1) & machineIDmask) << 12
 		return
 	}
 }
@@ -98,13 +97,13 @@ func (s *server) initMachineId() {
 func (s *server) Next(ctx context.Context, in *pb.Snowflake_Key) (*pb.Snowflake_Value, error) {
 	client := <-s.clientPool
 	defer func() { s.clientPool <- client }()
-	key := PATH + in.Name
+	key := etcdPath + in.Name
 	for {
 		// Get the key
 		resp, err := client.Get(context.Background(), key, nil)
 		if err != nil {
 			log.Error(err)
-			return nil, errors.New("Keys not exists, need to create first")
+			return nil, errors.New(fmt.Sprintf("Key:%v not exists, need to create first", key))
 		}
 
 		// Get prevValue & prevIndex
@@ -146,7 +145,7 @@ func (s *server) uuidTask() {
 		}
 
 		if lastTs == t { // same millisecond
-			sn = (sn + 1) & SN_MASK
+			sn = (sn + 1) & snMask
 			if sn == 0 { // serial number overflows, wait until next ms
 				t = s.waitMilliseconds(lastTs)
 			}
@@ -161,8 +160,8 @@ func (s *server) uuidTask() {
 		// 0		0.................0		0..............0	0........0
 		// 1-bit	41bit timestamp			10bit machine-id	12bit sn
 		var uuid uint64
-		uuid |= (uint64(t) & TS_MASK) << 22
-		uuid |= s.machineId
+		uuid |= (uint64(t) & tsMask) << 22
+		uuid |= s.machineID
 		uuid |= sn
 		ret <- uuid
 	}
@@ -180,7 +179,7 @@ func (s *server) waitMilliseconds(lastTs int64) int64 {
 ////////////////////////////////////////////////////////////////////////////////
 // random delay
 func casDelay() {
-	<-time.After(time.Duration(rand.Int63n(BACKOFF)) * time.Millisecond)
+	<-time.After(time.Duration(rand.Int63n(backoff)) * time.Millisecond)
 }
 
 // get timestamp

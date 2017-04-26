@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	test_key = "/test_key"
+	test_key = "test_key"
 )
 
 var address string

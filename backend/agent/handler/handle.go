@@ -18,8 +18,15 @@ import (
 	"time"
 )
 
-func errorRsp(cmd proto_common.Cmd, msg proto.Message) {
-
+func response(cmd proto_common.Cmd, msg proto.Message) []byte {
+	p := packet.NewRawPacket()
+	p.WriteS32(int32(cmd))
+	rspBytes, err := proto.Marshal(msg)
+	if err != nil {
+		return nil
+	}
+	p.WriteBytes(rspBytes)
+	return p.Data()
 }
 
 func genRspHeader() *proto_common.RspHeader {
@@ -44,6 +51,7 @@ func ProcGetSeedReq(session *types.Session, reader *packet.RawPacket) []byte {
 	if err := proto.Unmarshal(reader.Data(), req); err != nil {
 		log.Errorf("invalid protobuf :%v", err)
 		rsp.Header.Status = proto_common.ResultCode_RESULT_INTERNAL_ERROR
+		return response(proto_common.Cmd_GET_SEED_RSP, rsp)
 	}
 
 	curve := ecdh.NewCurve25519ECDH()
@@ -55,12 +63,14 @@ func ProcGetSeedReq(session *types.Session, reader *packet.RawPacket) []byte {
 	encoder, err := rc4.NewCipher([]byte(fmt.Sprintf("%v%v", Salt, key2)))
 	if err != nil {
 		log.Error(err)
-		return nil
+		rsp.Header.Status = proto_common.ResultCode_RESULT_INTERNAL_ERROR
+		return response(proto_common.Cmd_GET_SEED_RSP, rsp)
 	}
 	decoder, err := rc4.NewCipher([]byte(fmt.Sprintf("%v%v", Salt, key1)))
 	if err != nil {
 		log.Error(err)
-		return nil
+		rsp.Header.Status = proto_common.ResultCode_RESULT_INTERNAL_ERROR
+		return response(proto_common.Cmd_GET_SEED_RSP, rsp)
 	}
 	session.Encoder = encoder
 	session.Decoder = decoder
@@ -68,18 +78,8 @@ func ProcGetSeedReq(session *types.Session, reader *packet.RawPacket) []byte {
 
 	rsp.SendSeed = e1
 	rsp.RecvSeed = e2
-	rspBytes, err := proto.Marshal(rsp)
-	if err != nil {
-		log.Errorf("failed to marshal response, error:%v", err)
-		return nil
-	}
 
-Response:
-	p := packet.NewRawPacket()
-	p.WriteS32(int32(proto_common.Cmd_GET_SEED_RSP))
-	p.WriteBytes(rspBytes)
-
-	return p.Data()
+	return response(proto_common.Cmd_GET_SEED_RSP, rsp)
 }
 
 func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
@@ -119,6 +119,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 		}
 	}
 	go fetcherTask(session)
+
 	p := packet.NewRawPacket()
 	p.WriteS32(int32(proto_common.Cmd_LOGIN_RSP))
 	p.WriteU32(session.UserID)

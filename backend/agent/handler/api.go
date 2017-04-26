@@ -13,6 +13,5 @@ func init() {
 		int32(proto_common.Cmd_HEART_BEAT_REQ): ProcHeartBeatReq,
 		int32(proto_common.Cmd_LOGIN_REQ):      ProcUserLoginReq,
 		int32(proto_common.Cmd_GET_SEED_REQ):   ProcGetSeedReq,
-		int32(proto_common.Cmd_PING_REQ):       ProcPingReq,
 	}
 }

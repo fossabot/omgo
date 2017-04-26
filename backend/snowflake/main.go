@@ -1,7 +1,3 @@
-/*
- * This is a standard gRPC server implementation
- * the Snowflake.ServiceServer is implement in service.go
- */
 package main
 
 import (
@@ -17,25 +13,25 @@ import (
 )
 
 const (
-	DEFAULT_ETCD = "http://127.0.0.1:2379"
+	defaultETCD = "http://127.0.0.1:2379"
 )
 
 func main() {
 	app := &cli.App{
 		Flags: []cli.Flag{
 			&cli.IntFlag{
-				Name:        "port",
-				Value:       0,
 				Aliases:     []string{"p"},
-				Usage:       "local port to listen",
 				DefaultText: "random",
+				Name:        "port",
+				Usage:       "local port to listen",
+				Value:       0,
 			},
 			&cli.StringSliceFlag{
-				Name:    "etcd",
-				Value:   cli.NewStringSlice(DEFAULT_ETCD),
 				Aliases: []string{"e"},
-				Usage:   "etcd server address, if multiple hosts, -e host1 -e host2 ...",
 				EnvVars: []string{"ETCD_HOST"},
+				Name:    "etcd",
+				Usage:   "etcd server address, if multiple hosts, -e host1 -e host2 ...",
+				Value:   cli.NewStringSlice(defaultETCD),
 			},
 		},
 		Name:    "snowflake",
@@ -44,11 +40,8 @@ func main() {
 		Action: func(c *cli.Context) error {
 			port := c.Int("port")
 			etcdHosts := c.StringSlice("etcd")
-			endpoints := []string{DEFAULT_ETCD}
-			if etcdHosts == nil {
-				endpoints = etcdHosts
-			}
-			startSnowflake(endpoints, port)
+			log.Infof("start snowflake with etcd hosts:%v", etcdHosts)
+			startSnowflake(etcdHosts, port)
 			return nil
 		},
 	}
