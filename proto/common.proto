@@ -23,7 +23,8 @@ enum ResultCode {
     RESULT_TIMEOUT = 1;
     RESULT_UNAUTH = 2;
     RESULT_UNKNOWN_CMD = 3;
-    RESULT_INTERNAL_ERROR = 4;
+    RESULT_INVALID = 4;
+    RESULT_INTERNAL_ERROR = 5;
 }
 
 message RspHeader {
@@ -41,4 +42,13 @@ message S2CGetSeedRsp {
     RspHeader header = 1;
     bytes send_seed = 2; // public key for client to encrypt sending data
     bytes recv_seed = 3; // public key for client to decrypt recevie data
+}
+
+message C2SLoginReq {
+    fixed64 timestamp = 1;
+}
+
+message S2CLoginRsp {
+    RspHeader header = 1;
+    // userinfo
 }
