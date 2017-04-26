@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/binary"
 	"github.com/master-g/omgo/net/packet"
 	"github.com/master-g/omgo/proto/pb"
 	"github.com/master-g/omgo/utils"
@@ -23,6 +24,17 @@ func connect(t *testing.T) net.Conn {
 	return conn
 }
 
+func send(conn net.Conn, data []byte, t *testing.T) {
+	size := len(data)
+	cache := make([]byte, 2+size)
+	binary.BigEndian.PutUint16(cache, uint16(size))
+	copy(cache[2:], data)
+	_, err := conn.Write(cache)
+	if err != nil {
+		t.Fatalf("error while sending data: %v", err)
+	}
+}
+
 func TestConnect(t *testing.T) {
 	// Setup a connection to the agent server.
 	conn := connect(t)
@@ -36,4 +48,6 @@ func TestHeartBeat(t *testing.T) {
 
 	reqPacket := packet.NewRawPacket()
 	reqPacket.WriteS32(int32(proto_common.Cmd_HEART_BEAT_REQ))
+	conn.Write(reqPacket.Data())
+	send(conn, reqPacket.Data(), t)
 }
