@@ -36,7 +36,7 @@ func route(session *types.Session, p []byte) []byte {
 
 	// route message to different service by command code
 	var ret []byte
-	if cmd < proto_common.Cmd_CMD_COMMON_END {
+	if cmd > proto_common.Cmd_CMD_COMMON_END {
 		if err := forward(session, getPacketBody(reader)); err != nil {
 			log.Errorf("service id:%v execute failed, error:%v", cmd, err)
 			session.SetFlagKicked()
@@ -53,13 +53,12 @@ func route(session *types.Session, p []byte) []byte {
 	}
 
 	elapsed := time.Now().Sub(start)
-	if cmd != 0 {
-		log.WithFields(log.Fields{
-			"cost": elapsed,
-			"api":  proto_common.Cmd_name[cmdValue],
-			"code": cmd,
-		}).Debug("REQ")
-	}
+	//if cmd != proto_common.Cmd_HEART_BEAT_REQ {
+	log.WithFields(log.Fields{
+		"cost": elapsed,
+		"code": cmd,
+	}).Debug("REQ")
+	//}
 
 	return ret
 }

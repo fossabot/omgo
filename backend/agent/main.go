@@ -174,11 +174,11 @@ func handleClient(conn net.Conn, config *Config) {
 	var session types.Session
 	host, port, err := net.SplitHostPort(conn.RemoteAddr().String())
 	if err != nil {
-		log.Error("cannot get remote address:", err)
+		log.Error("get remote address failed: ", err)
 		return
 	}
 	session.IP = net.ParseIP(host)
-	log.Infof("new connection from:%v port:%v", host, port)
+	log.Infof("new connection from %v:%v", host, port)
 
 	// session die signal, will be triggered by agent()
 	session.Die = make(chan struct{})
@@ -201,7 +201,7 @@ func handleClient(conn net.Conn, config *Config) {
 		// read size header
 		n, err := io.ReadFull(conn, header)
 		if err != nil {
-			log.Warningf("read header failed, ip:%v reason:%v size:%v", session.IP, err, n)
+			log.Warningf("%v read header failed: %v %v bytes read", session.IP, err, n)
 			return
 		}
 		size := binary.BigEndian.Uint16(header)
@@ -210,7 +210,7 @@ func handleClient(conn net.Conn, config *Config) {
 		payload := make([]byte, size)
 		n, err = io.ReadFull(conn, payload)
 		if err != nil {
-			log.Warningf("read payload failed, ip:%v reason:%v size:%v", session.IP, err, n)
+			log.Warningf("%v read payload failed: %v expect: %v actual read: %v", session.IP, err, size, n)
 			return
 		}
 
@@ -218,7 +218,7 @@ func handleClient(conn net.Conn, config *Config) {
 		select {
 		case in <- payload:
 		case <-session.Die:
-			log.Warningf("connection closed by logic, flag:%v ip:%v", session.Flag, session.IP)
+			log.Warningf("%v connection closed by logic, flag: %v", session.IP, session.Flag)
 			return
 		}
 	}
