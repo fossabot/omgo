@@ -1,9 +1,12 @@
 package main
 
 import (
+	"crypto/rand"
 	"encoding/binary"
+	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/net/packet"
 	"github.com/master-g/omgo/proto/pb"
+	"github.com/master-g/omgo/security/ecdh"
 	"github.com/master-g/omgo/utils"
 	"io"
 	"net"
@@ -62,4 +65,28 @@ func TestHeartBeat(t *testing.T) {
 	send(conn, reqPacket.Data(), t)
 
 	recv(conn, t)
+}
+
+func TestGetSeed(t *testing.T) {
+	conn := connect(t)
+	defer conn.Close()
+
+	reqPacket := packet.NewRawPacket()
+	reqPacket.WriteS32(int32(proto_common.Cmd_GET_SEED_REQ))
+
+	req := &proto_common.C2SGetSeedReq{}
+
+	curve := ecdh.NewCurve25519ECDH()
+	_, e1 := curve.GenerateECKeyBuf(rand.Reader)
+	_, e2 := curve.GenerateECKeyBuf(rand.Reader)
+
+	req.SendSeed = e1
+	req.RecvSeed = e2
+
+	data, err := proto.Marshal(req)
+	if err != nil {
+		t.Fatalf("error while create request:%v", err)
+	}
+	reqPacket.WriteBytes(data)
+	send(conn, reqPacket.Data(), t)
 }
