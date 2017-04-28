@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"crypto"
 	"crypto/rand"
+	"encoding/hex"
+	"log"
 	"testing"
 )
 
@@ -54,24 +56,27 @@ func testECDH(e ECDH, t testing.TB) {
 	if !bytes.Equal(secret1, secret2) {
 		t.Fatalf("The two shared keys: %d, %d do not match", secret1, secret2)
 	}
-
-	//fmt.Println(hex.EncodeToString(privKey1.(*[32]uint8)[:]))
-	//fmt.Println(hex.EncodeToString(privKey2.(*[32]uint8)[:]))
-	//fmt.Println(hex.EncodeToString(pubKey1.(*[32]uint8)[:]))
-	//fmt.Println(hex.EncodeToString(pubKey2.(*[32]uint8)[:]))
-	//fmt.Println(hex.EncodeToString(secret1))
-
-	//p(privKey1.(*[32]uint8)[:])
-	//p(privKey2.(*[32]uint8)[:])
-	//p(pubKey1.(*[32]uint8)[:])
-	//p(pubKey2.(*[32]uint8)[:])
-	//p(secret1)
 }
 
-//func p(s []uint8) {
-//	fmt.Printf("{")
-//	for _, v := range s {
-//		fmt.Printf("0x%02x, ", v)
-//	}
-//	fmt.Printf("}\n")
-//}
+func TestExchange(t *testing.T) {
+	ecdh := NewCurve25519ECDH()
+	cX1, cE1 := ecdh.GenerateECKeyBuf(rand.Reader)
+	cX2, cE2 := ecdh.GenerateECKeyBuf(rand.Reader)
+
+	sX1, sE1 := ecdh.GenerateECKeyBuf(rand.Reader)
+	sX2, sE2 := ecdh.GenerateECKeyBuf(rand.Reader)
+
+	sKey1 := ecdh.GenerateSharedSecretBuf(sX1, cE1)
+	sKey2 := ecdh.GenerateSharedSecretBuf(sX2, cE2)
+
+	cKey1 := ecdh.GenerateSharedSecretBuf(cX1, sE1)
+	cKey2 := ecdh.GenerateSharedSecretBuf(cX2, sE2)
+
+	if !bytes.Equal(sKey1, cKey1) || !bytes.Equal(sKey2, cKey2) {
+		log.Println("sKey1:", hex.EncodeToString(sKey1))
+		log.Println("sKey2:", hex.EncodeToString(sKey2))
+		log.Println("cKey1:", hex.EncodeToString(cKey1))
+		log.Println("cKey2:", hex.EncodeToString(cKey2))
+		t.Fatalf("keys not match!")
+	}
+}

@@ -87,7 +87,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	session.UserID = 1
 	session.GSID = DefaultGSID
 
-	conn := services.GetServiceWithID("game-1000", session.GSID)
+	conn := services.GetServiceWithID("game", session.GSID)
 	if conn == nil {
 		log.Error("cannot get game service:", session.GSID)
 		return nil
