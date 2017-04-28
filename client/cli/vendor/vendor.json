@@ -3,8 +3,92 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "ZKxETlJdB2XubMrZnXB0FQimVA8=",
+			"path": "github.com/Sirupsen/logrus",
+			"revision": "10f801ebc38b33738c9d17d50860f484a0988ff5",
+			"revisionTime": "2017-03-17T14:32:14Z"
+		},
+		{
+			"checksumSHA1": "1xTJpPUB4IgQDek5aFmg9/fMlVs=",
 			"path": "github.com/abiosoft/ishell",
+			"revision": "2222f789bcc250e96208f0cd054733eafb75d6ec",
+			"revisionTime": "2017-04-07T20:41:17Z"
+		},
+		{
+			"path": "github.com/aiosoft/ishell",
 			"revision": ""
+		},
+		{
+			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
+			"path": "github.com/davecgh/go-spew/spew",
+			"revision": "346938d642f2ec3594ed81d874461961cd0faa76",
+			"revisionTime": "2016-10-29T20:57:26Z"
+		},
+		{
+			"checksumSHA1": "yLQg8NdQKYqqytcvKA/0EBkOIkw=",
+			"path": "github.com/flynn-archive/go-shlex",
+			"revision": "3f9db97f856818214da2e1057f8ad84803971cff",
+			"revisionTime": "2015-05-15T14:53:56Z"
+		},
+		{
+			"checksumSHA1": "kBeNcaKk56FguvPSUCEaH6AxpRc=",
+			"path": "github.com/golang/protobuf/proto",
+			"revision": "2bba0603135d7d7f5cb73b2125beeda19c09f4ef",
+			"revisionTime": "2017-03-31T03:19:02Z"
+		},
+		{
+			"checksumSHA1": "7hln62oZPZmyqEmgXaybf9WxQ7A=",
+			"path": "github.com/maruel/panicparse/stack",
+			"revision": "ae43f192cef2add653fe1481a3070ed00a4a6981",
+			"revisionTime": "2017-03-28T20:03:51Z"
+		},
+		{
+			"checksumSHA1": "FPfUfOVHglv1DZxCki3bcZGKiGs=",
+			"path": "github.com/master-g/omgo/net/packet",
+			"revision": "92cc1cb300ddf0596f42a1303016922b0e521183",
+			"revisionTime": "2017-04-28T07:23:20Z"
+		},
+		{
+			"checksumSHA1": "kNlYI1fVwyNIoMNIe/aM5eDGpqI=",
+			"path": "github.com/master-g/omgo/proto/pb",
+			"revision": "92cc1cb300ddf0596f42a1303016922b0e521183",
+			"revisionTime": "2017-04-28T07:23:20Z"
+		},
+		{
+			"checksumSHA1": "9q6Hp+sNIabmNWMh1Iq58eMMN5A=",
+			"path": "github.com/master-g/omgo/security/ecdh",
+			"revision": "92cc1cb300ddf0596f42a1303016922b0e521183",
+			"revisionTime": "2017-04-28T07:23:20Z"
+		},
+		{
+			"checksumSHA1": "Nyk4FhSwkZTwc4191KHsSF/aQi8=",
+			"path": "github.com/master-g/omgo/utils",
+			"revision": "92cc1cb300ddf0596f42a1303016922b0e521183",
+			"revisionTime": "2017-04-28T07:23:20Z"
+		},
+		{
+			"checksumSHA1": "nAu0XmCeC6WnUySyI8R7w4cxAqU=",
+			"path": "golang.org/x/crypto/curve25519",
+			"revision": "c7af5bf2638a1164f2eb5467c39c6cffbd13a02e",
+			"revisionTime": "2017-04-25T18:31:00Z"
+		},
+		{
+			"checksumSHA1": "oS0UZOGWVVsVciOQ8nZJ582mFF8=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "9ccfe848b9db8435a24c424abbc07a921adf1df5",
+			"revisionTime": "2017-04-27T03:54:25Z"
+		},
+		{
+			"checksumSHA1": "VAPpB3iZ9bfjWqNDoX7qXqfRcQU=",
+			"path": "gopkg.in/readline.v1",
+			"revision": "62c6fe6193755f722b8b8788aa7357be55a50ff1",
+			"revisionTime": "2016-07-26T13:51:17Z"
+		},
+		{
+			"checksumSHA1": "yFolYpsrXIjWE0UjR8ChC6Nmrhg=",
+			"path": "gopkg.in/urfave/cli.v2",
+			"revision": "61c3eb6ba1da1df17cd50f1456a9252d92bf5edd",
+			"revisionTime": "2017-04-24T21:45:55Z"
 		}
 	],
 	"rootPath": "github.com/master-g/omgo/client/cli"
