@@ -2,7 +2,9 @@ package main
 
 import (
 	"crypto/rand"
+	"crypto/rc4"
 	"encoding/binary"
+	"fmt"
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/net/packet"
 	"github.com/master-g/omgo/proto/pb"
@@ -13,7 +15,15 @@ import (
 	"testing"
 )
 
-var address string
+var (
+	address string
+	encoder *rc4.Cipher
+	decoder *rc4.Cipher
+)
+
+const (
+	Salt = "DH"
+)
 
 func init() {
 	address = utils.GetLocalIP() + ":8888"
@@ -77,8 +87,8 @@ func TestGetSeed(t *testing.T) {
 	req := &proto_common.C2SGetSeedReq{}
 
 	curve := ecdh.NewCurve25519ECDH()
-	_, e1 := curve.GenerateECKeyBuf(rand.Reader)
-	_, e2 := curve.GenerateECKeyBuf(rand.Reader)
+	x1, e1 := curve.GenerateECKeyBuf(rand.Reader)
+	x2, e2 := curve.GenerateECKeyBuf(rand.Reader)
 
 	req.SendSeed = e1
 	req.RecvSeed = e2
@@ -89,4 +99,30 @@ func TestGetSeed(t *testing.T) {
 	}
 	reqPacket.WriteBytes(data)
 	send(conn, reqPacket.Data(), t)
+
+	rspBody := recv(conn, t)
+	rsp := &proto_common.S2CGetSeedRsp{}
+	reader := packet.NewRawPacketReader(rspBody)
+	cmd, err := reader.ReadS32()
+	buf, err := reader.ReadBytes()
+	if cmd != int32(proto_common.Cmd_GET_SEED_RSP) || err != nil {
+		t.Fatalf("error while parsing response cmd:%v error:%v", cmd, err)
+	}
+
+	err = proto.Unmarshal(buf, rsp)
+	if err != nil {
+		t.Fatalf("error while parsing proto:%v", err)
+	}
+
+	key1 := curve.GenerateSharedSecretBuf(x1, rsp.GetSendSeed())
+	key2 := curve.GenerateSharedSecretBuf(x2, rsp.GetRecvSeed())
+
+	encoder, err = rc4.NewCipher([]byte(fmt.Sprintf("%v%v", Salt, key2)))
+	if err != nil {
+		t.Fatalf("error while creating encoder:%v", err)
+	}
+	decoder, err = rc4.NewCipher([]byte(fmt.Sprintf("%v%v", Salt, key1)))
+	if err != nil {
+		t.Fatalf("error while creating decoder:%v", err)
+	}
 }

@@ -46,9 +46,10 @@ func ProcHeartBeatReq(session *types.Session, reader *packet.RawPacket) []byte {
 
 func ProcGetSeedReq(session *types.Session, reader *packet.RawPacket) []byte {
 	rsp := &proto_common.S2CGetSeedRsp{Header: genRspHeader()}
-
 	req := &proto_common.C2SGetSeedReq{}
-	if err := proto.Unmarshal(reader.Data(), req); err != nil {
+	marshalPb, _ := reader.ReadBytes()
+
+	if err := proto.Unmarshal(marshalPb, req); err != nil {
 		log.Errorf("invalid protobuf :%v", err)
 		rsp.Header.Status = proto_common.ResultCode_RESULT_INTERNAL_ERROR
 		return response(proto_common.Cmd_GET_SEED_RSP, rsp)
