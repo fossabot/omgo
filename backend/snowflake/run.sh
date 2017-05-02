@@ -9,8 +9,6 @@ case "$(uname -s)" in
    Darwin)
      IPADDR=$(ifconfig en0 | grep "inet " | cut -d " " -f2)
      NETHOST=''
-     echo ${IPADDR}
-     echo ${NETHOST}
      ;;
 esac
 
