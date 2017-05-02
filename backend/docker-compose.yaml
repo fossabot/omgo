@@ -1,0 +1,43 @@
+version: '3'
+services:
+    etcd0:
+        image: quay.io/coreos/etcd
+        environment:
+            - 'EXTERNAL_IP=${EXTERNAL_IP}'
+        ports:
+            - 2379
+        volumes:
+            - etcd0:/data.etcd
+        command:
+            - --name
+            - etcd0
+            - --data-dir=/data.etcd
+            - --initial-advertise-peer-urls
+            - http://${EXTERNAL_IP}:2380
+            - --listen-peer-urls
+            - http://${EXTERNAL_IP}:2380
+            - --advertise-client-urls
+            - http://0.0.0.0:2379
+            - --listen-client-urls
+            - http://0.0.0.0:2379
+            - --initial-cluster
+            - etcd0=http://${EXTERNAL_IP}:2380
+            - --initial-cluster-state
+            - new
+            - --initial-cluster-token
+            - my-etcd-token
+
+    snowflake:
+        build: ./snowflake
+        environment:
+            - "EXTERNAL_IP=${EXTERNAL_IP}"
+        ports:
+            - 40001
+        command:
+            - -p
+            - '40001'
+            - -e
+            - http://${EXTERNAL_IP}:2379
+
+volumes:
+    etcd0:

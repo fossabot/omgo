@@ -103,7 +103,7 @@ func (s *server) Next(ctx context.Context, in *pb.Snowflake_Key) (*pb.Snowflake_
 		resp, err := client.Get(context.Background(), key, nil)
 		if err != nil {
 			log.Error(err)
-			return nil, errors.New(fmt.Sprintf("Key:%v not exists, need to create first", key))
+			return nil, fmt.Errorf("Key:%v not exists, need to create first", key)
 		}
 
 		// Get prevValue & prevIndex
