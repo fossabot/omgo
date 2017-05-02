@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 IPADDR=127.0.0.1
 LOCALHOST=127.0.0.1
@@ -27,7 +27,13 @@ docker run -d ${NETHOST} -p 2379:2379 -p 2380:2380 --name etcd quay.io/coreos/et
 
 docker rm -f ${SID}
 docker build --no-cache --rm=true -t snowflake .
-docker run --name ${SID} -e SERVICE_ID=${SID} -e MACHINE_ID=1 ${NETHOST} -p 40001:40001 -d -P snowflake \
+docker run -d \
+    --entrypoint /go/bin/snowflake \
+    --name ${SID} \
+    -e SERVICE_ID=${SID} -e MACHINE_ID=1 \
+    ${NETHOST} \
+    -p 40001:40001 \
+    -P snowflake \
     -p 40001 \
     -e http://${IPADDR}:2379
 

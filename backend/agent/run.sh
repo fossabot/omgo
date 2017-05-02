@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 IPADDR=127.0.0.1
 LOCALHOST=127.0.0.1
@@ -14,7 +14,13 @@ esac
 
 docker rm -f ${SID}
 docker build --no-cache --rm=true -t agent .
-docker run --name ${SID} -e SERVICE_ID=${SID} ${NETHOST} -p 8888:8888 -d -P agent \
+docker run -d \
+    --entrypoint /go/bin/agent \
+    --name ${SID} \
+    -e SERVICE_ID=${SID} \
+    ${NETHOST} \
+    -p 8888:8888 \
+    -P agent \
     -l :8888 \
     -e http://${IPADDR}:2379
 
