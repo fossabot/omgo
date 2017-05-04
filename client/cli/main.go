@@ -260,6 +260,30 @@ func main() {
 			}
 		},
 	})
+	shell.AddCmd(&ishell.Cmd{
+		Name: "japari",
+		Help: "welcome to japari park",
+		Func: func(c *ishell.Context) {
+			serverAddr, err := net.ResolveUDPAddr("udp", "127.0.0.1:6666")
+			if err != nil {
+				log.Error(err)
+			}
+			localAddr, err := net.ResolveUDPAddr("udp", "127.0.0.1:0")
+			if err != nil {
+				log.Error(err)
+			}
+			udpConn, err := net.DialUDP("udp", localAddr, serverAddr)
+			if err != nil {
+				log.Error(err)
+			}
+			defer udpConn.Close()
+			buf := []byte("hello")
+			_, err = udpConn.Write(buf)
+			if err != nil {
+				log.Error(err)
+			}
+		},
+	})
 
 	shell.Start()
 }
