@@ -103,14 +103,14 @@ func (s *server) Next(ctx context.Context, in *pb.Snowflake_Key) (*pb.Snowflake_
 		resp, err := client.Get(context.Background(), key, nil)
 		if err != nil {
 			log.Error(err)
-			return nil, fmt.Errorf("Key:%v not exists, need to create first", key)
+			return nil, fmt.Errorf("key:%v not exists, need to create first", key)
 		}
 
 		// Get prevValue & prevIndex
 		prevValue, err := strconv.Atoi(resp.Node.Value)
 		if err != nil {
 			log.Error(err)
-			return nil, errors.New("Marlformed value")
+			return nil, errors.New("marlformed value")
 		}
 		prevIndex := resp.Node.ModifiedIndex
 
@@ -120,7 +120,7 @@ func (s *server) Next(ctx context.Context, in *pb.Snowflake_Key) (*pb.Snowflake_
 			casDelay()
 			continue
 		}
-		return &pb.Snowflake_Value{int64(prevValue + 1)}, nil
+		return &pb.Snowflake_Value{Value: int64(prevValue + 1)}, nil
 	}
 }
 
@@ -128,7 +128,7 @@ func (s *server) Next(ctx context.Context, in *pb.Snowflake_Key) (*pb.Snowflake_
 func (s *server) GetUUID(context.Context, *pb.Snowflake_NullRequest) (*pb.Snowflake_UUID, error) {
 	req := make(chan uint64, 1)
 	s.chProc <- req
-	return &pb.Snowflake_UUID{<-req}, nil
+	return &pb.Snowflake_UUID{Uuid: <-req}, nil
 }
 
 // UUID generator

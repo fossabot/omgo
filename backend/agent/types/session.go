@@ -20,20 +20,20 @@ const (
 
 // Session holds the context of a client having conversation with agent
 type Session struct {
-	IP                net.IP                      // client IP address
-	MQ                chan pb.Game_Frame          // channel of async messages send back to client
-	Encoder           *rc4.Cipher                 // encrypt
-	Decoder           *rc4.Cipher                 // decrypt
-	UserID            uint32                      // user ID
-	GSID              string                      // game server ID
-	Stream            pb.GameService_StreamClient // data stream send to game server
-	Die               chan struct{}               // session close signal
-	Flag              int32                       // session flag
-	ConnectTime       time.Time                   // timestamp of TCP connection established
-	PacketTime        time.Time                   // timestamp of current packet arrived
-	LastPacketTime    time.Time                   // timestamp of previous packet arrived
-	PacketCount       uint32                      // total packets received
-	PacketCountPerMin int                         // packets received per minute
+	IP                net.IP                      // Client IP address
+	MQ                chan pb.Game_Frame          // Channel of async messages send back to client
+	Encoder           *rc4.Cipher                 // Encrypt
+	Decoder           *rc4.Cipher                 // Decrypt
+	UserID            uint32                      // User ID
+	GSID              string                      // Game server ID
+	Stream            pb.GameService_StreamClient // Data stream send to game server
+	Die               chan struct{}               // Session close signal
+	Flag              int32                       // Session flag
+	ConnectTime       time.Time                   // Timestamp of TCP connection established
+	PacketTime        time.Time                   // Timestamp of current packet arrived
+	LastPacketTime    time.Time                   // Timestamp of previous packet arrived
+	PacketCount       uint32                      // Total packets received
+	PacketCountPerMin int                         // Packets received per minute
 }
 
 // SetFlagKeyExchanged sets the key exchanged bit

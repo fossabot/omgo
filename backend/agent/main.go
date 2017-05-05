@@ -21,8 +21,8 @@ type Config struct {
 	txQueueLength int           // transmission queue length
 }
 
-var (
-	profileAddr          = "0.0.0.0:6666"
+const (
+	profileAddress       = "0.0.0.0:6666"
 	defaultETCD          = "http://127.0.0.1:2379"
 	defaultRoot          = "/backends"
 	defaultServices      = []string{"snowflake", "game"}
@@ -37,7 +37,9 @@ func main() {
 	defer utils.PrintPanicStack()
 
 	// profiling
-	go http.ListenAndServe(profileAddr, nil)
+	go http.ListenAndServe(profileAddress, nil)
+
+	// cli
 	app := &cli.App{
 		Name:    "agent",
 		Usage:   "a gateway service for game server",
