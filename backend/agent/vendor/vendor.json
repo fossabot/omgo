@@ -69,6 +69,12 @@
 			"revisionTime": "2017-05-05T07:35:19Z"
 		},
 		{
+			"checksumSHA1": "reb7aBaxJTw/uN1fEBMXqlGtiGM=",
+			"path": "github.com/master-g/omgo/proto/grpc/game",
+			"revision": "506ad36cc1c173c062a236b077a3461403b5a47c",
+			"revisionTime": "2017-05-05T17:47:09Z"
+		},
+		{
 			"checksumSHA1": "kNlYI1fVwyNIoMNIe/aM5eDGpqI=",
 			"path": "github.com/master-g/omgo/proto/pb",
 			"revision": "0239b72d536821d80f2d686cae600442f64f0b7f",
