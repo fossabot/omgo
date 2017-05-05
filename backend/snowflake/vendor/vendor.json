@@ -47,8 +47,8 @@
 		{
 			"checksumSHA1": "kBeNcaKk56FguvPSUCEaH6AxpRc=",
 			"path": "github.com/golang/protobuf/proto",
-			"revision": "8ee79997227bf9b34611aee7946ae64735e6fd93",
-			"revisionTime": "2016-11-17T03:31:26Z"
+			"revision": "2bba0603135d7d7f5cb73b2125beeda19c09f4ef",
+			"revisionTime": "2017-03-31T03:19:02Z"
 		},
 		{
 			"checksumSHA1": "7hln62oZPZmyqEmgXaybf9WxQ7A=",
@@ -59,14 +59,14 @@
 		{
 			"checksumSHA1": "EEujmrfp58TOs/cFI50UJ8yzRVo=",
 			"path": "github.com/master-g/omgo/etcdclient",
-			"revision": "2c80ea1e3ba6a49ebe97534bab549d57c1be271e",
-			"revisionTime": "2017-04-11T04:16:13Z"
+			"revision": "ccb5d0a84003303e719f8ab79923bae73658f07a",
+			"revisionTime": "2017-05-05T07:32:33Z"
 		},
 		{
 			"checksumSHA1": "Nyk4FhSwkZTwc4191KHsSF/aQi8=",
 			"path": "github.com/master-g/omgo/utils",
-			"revision": "0f0b1be74c1f282c513147ed3e79c7bfc80556bf",
-			"revisionTime": "2017-04-26T09:19:49Z"
+			"revision": "ccb5d0a84003303e719f8ab79923bae73658f07a",
+			"revisionTime": "2017-05-05T07:32:33Z"
 		},
 		{
 			"checksumSHA1": "CoxdaTYdPZNJXr8mJfLxye428N0=",

@@ -48,7 +48,6 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/transport"
 )
@@ -141,7 +140,6 @@ type callInfo struct {
 	failFast  bool
 	headerMD  metadata.MD
 	trailerMD metadata.MD
-	peer      *peer.Peer
 	traceInfo traceInfo // in trace.go
 }
 
@@ -185,20 +183,12 @@ func Trailer(md *metadata.MD) CallOption {
 	})
 }
 
-// Peer returns a CallOption that retrieves peer information for a
-// unary RPC.
-func Peer(peer *peer.Peer) CallOption {
-	return afterCall(func(c *callInfo) {
-		*peer = *c.peer
-	})
-}
-
 // FailFast configures the action to take when an RPC is attempted on broken
 // connections or unreachable servers. If failfast is true, the RPC will fail
 // immediately. Otherwise, the RPC client will block the call until a
 // connection is available (or the call is canceled or times out) and will retry
 // the call if it fails due to a transient error. Please refer to
-// https://github.com/grpc/grpc/blob/master/doc/fail_fast.md. Note: failFast is default to true.
+// https://github.com/grpc/grpc/blob/master/doc/fail_fast.md
 func FailFast(failFast bool) CallOption {
 	return beforeCall(func(c *callInfo) error {
 		c.failFast = failFast
@@ -377,7 +367,7 @@ type rpcError struct {
 }
 
 func (e *rpcError) Error() string {
-	return fmt.Sprintf("rpc error: code = %s desc = %s", e.code, e.desc)
+	return fmt.Sprintf("rpc error: code = %d desc = %s", e.code, e.desc)
 }
 
 // Code returns the error code for err if it was produced by the rpc system.
@@ -527,6 +517,3 @@ type ServiceConfig struct {
 // requires a synchronised update of grpc-go and protoc-gen-go. This constant
 // should not be referenced from any other code.
 const SupportPackageIsVersion4 = true
-
-// Version is the current grpc version.
-const Version = "1.3.0-dev"

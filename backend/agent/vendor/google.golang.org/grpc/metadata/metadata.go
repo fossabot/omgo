@@ -32,7 +32,6 @@
  */
 
 // Package metadata define the structure of the metadata supported by gRPC library.
-// Please refer to http://www.grpc.io/docs/guides/wire.html for more information about custom-metadata.
 package metadata // import "google.golang.org/grpc/metadata"
 
 import (
@@ -83,7 +82,6 @@ func DecodeKeyValue(k, v string) (string, string, error) {
 type MD map[string][]string
 
 // New creates a MD from given key-value map.
-// Keys are automatically converted to lowercase. And for keys having "-bin" as suffix, their values will be applied Base64 encoding.
 func New(m map[string]string) MD {
 	md := MD{}
 	for k, v := range m {
@@ -95,7 +93,6 @@ func New(m map[string]string) MD {
 
 // Pairs returns an MD formed by the mapping of key, value ...
 // Pairs panics if len(kv) is odd.
-// Keys are automatically converted to lowercase. And for keys having "-bin" as suffix, their values will be appplied Base64 encoding.
 func Pairs(kv ...string) MD {
 	if len(kv)%2 == 1 {
 		panic(fmt.Sprintf("metadata: Pairs got the odd number of input pairs for metadata: %d", len(kv)))
@@ -136,41 +133,17 @@ func Join(mds ...MD) MD {
 	return out
 }
 
-type mdIncomingKey struct{}
-type mdOutgoingKey struct{}
+type mdKey struct{}
 
-// NewContext is a wrapper for NewOutgoingContext(ctx, md).  Deprecated.
+// NewContext creates a new context with md attached.
 func NewContext(ctx context.Context, md MD) context.Context {
-	return NewOutgoingContext(ctx, md)
+	return context.WithValue(ctx, mdKey{}, md)
 }
 
-// NewIncomingContext creates a new context with incoming md attached.
-func NewIncomingContext(ctx context.Context, md MD) context.Context {
-	return context.WithValue(ctx, mdIncomingKey{}, md)
-}
-
-// NewOutgoingContext creates a new context with outgoing md attached.
-func NewOutgoingContext(ctx context.Context, md MD) context.Context {
-	return context.WithValue(ctx, mdOutgoingKey{}, md)
-}
-
-// FromContext is a wrapper for FromIncomingContext(ctx).  Deprecated.
+// FromContext returns the MD in ctx if it exists.
+// The returned md should be immutable, writing to it may cause races.
+// Modification should be made to the copies of the returned md.
 func FromContext(ctx context.Context) (md MD, ok bool) {
-	return FromIncomingContext(ctx)
-}
-
-// FromIncomingContext returns the incoming MD in ctx if it exists.  The
-// returned md should be immutable, writing to it may cause races.
-// Modification should be made to the copies of the returned md.
-func FromIncomingContext(ctx context.Context) (md MD, ok bool) {
-	md, ok = ctx.Value(mdIncomingKey{}).(MD)
-	return
-}
-
-// FromOutgoingContext returns the outgoing MD in ctx if it exists.  The
-// returned md should be immutable, writing to it may cause races.
-// Modification should be made to the copies of the returned md.
-func FromOutgoingContext(ctx context.Context) (md MD, ok bool) {
-	md, ok = ctx.Value(mdOutgoingKey{}).(MD)
+	md, ok = ctx.Value(mdKey{}).(MD)
 	return
 }

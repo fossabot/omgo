@@ -35,9 +35,7 @@ package transport
 
 import (
 	"fmt"
-	"math"
 	"sync"
-	"time"
 
 	"golang.org/x/net/http2"
 )
@@ -46,17 +44,8 @@ const (
 	// The default value of flow control window size in HTTP2 spec.
 	defaultWindowSize = 65535
 	// The initial window size for flow control.
-	initialWindowSize             = defaultWindowSize      // for an RPC
-	initialConnWindowSize         = defaultWindowSize * 16 // for a connection
-	infinity                      = time.Duration(math.MaxInt64)
-	defaultClientKeepaliveTime    = infinity
-	defaultClientKeepaliveTimeout = time.Duration(20 * time.Second)
-	defaultMaxStreamsClient       = 100
-	defaultMaxConnectionIdle      = infinity
-	defaultMaxConnectionAge       = infinity
-	defaultMaxConnectionAgeGrace  = infinity
-	defaultServerKeepaliveTime    = time.Duration(2 * time.Hour)
-	defaultServerKeepaliveTimeout = time.Duration(20 * time.Second)
+	initialWindowSize     = defaultWindowSize      // for an RPC
+	initialConnWindowSize = defaultWindowSize * 16 // for a connection
 )
 
 // The following defines various control items which could flow through
