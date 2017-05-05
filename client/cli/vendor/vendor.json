@@ -45,26 +45,26 @@
 		{
 			"checksumSHA1": "FPfUfOVHglv1DZxCki3bcZGKiGs=",
 			"path": "github.com/master-g/omgo/net/packet",
-			"revision": "ccb5d0a84003303e719f8ab79923bae73658f07a",
-			"revisionTime": "2017-05-05T07:32:33Z"
+			"revision": "0239b72d536821d80f2d686cae600442f64f0b7f",
+			"revisionTime": "2017-05-05T07:35:19Z"
 		},
 		{
 			"checksumSHA1": "kNlYI1fVwyNIoMNIe/aM5eDGpqI=",
 			"path": "github.com/master-g/omgo/proto/pb",
-			"revision": "ccb5d0a84003303e719f8ab79923bae73658f07a",
-			"revisionTime": "2017-05-05T07:32:33Z"
+			"revision": "0239b72d536821d80f2d686cae600442f64f0b7f",
+			"revisionTime": "2017-05-05T07:35:19Z"
 		},
 		{
 			"checksumSHA1": "9q6Hp+sNIabmNWMh1Iq58eMMN5A=",
 			"path": "github.com/master-g/omgo/security/ecdh",
-			"revision": "ccb5d0a84003303e719f8ab79923bae73658f07a",
-			"revisionTime": "2017-05-05T07:32:33Z"
+			"revision": "0239b72d536821d80f2d686cae600442f64f0b7f",
+			"revisionTime": "2017-05-05T07:35:19Z"
 		},
 		{
 			"checksumSHA1": "Nyk4FhSwkZTwc4191KHsSF/aQi8=",
 			"path": "github.com/master-g/omgo/utils",
-			"revision": "ccb5d0a84003303e719f8ab79923bae73658f07a",
-			"revisionTime": "2017-05-05T07:32:33Z"
+			"revision": "0239b72d536821d80f2d686cae600442f64f0b7f",
+			"revisionTime": "2017-05-05T07:35:19Z"
 		},
 		{
 			"checksumSHA1": "nAu0XmCeC6WnUySyI8R7w4cxAqU=",
