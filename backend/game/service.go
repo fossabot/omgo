@@ -11,6 +11,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"io"
 	"strconv"
+	"github.com/master-g/omgo/backend/game/handler"
 )
 
 const (
@@ -106,6 +107,27 @@ func (s *server) Stream(stream proto.GameService_StreamServer) error {
 				if err != nil {
 					log.Error(err)
 					return err
+				}
+				// handle request
+				h := handler.Handlers[c]
+				if h == nil {
+					log.Error("service not bound for:", c)
+					return ErrorServiceNotBound
+				}
+				ret := h(&sess, reader)
+
+				// construct frame and return message from logic
+				if ret != nil {
+					if err := stream.Send(&proto.Game_Frame{Type:proto.Game_Message, Message:ret}); err != nil {
+						log.Error(err)
+						return err
+					}
+				}
+
+				// session control by logic
+				if sess.Flag & types.FlagKicked != 0 {
+					// logic kick out
+					if err := stream.Send(&proto.Game_Frame{Type:proto.Game_Kick})
 				}
 			}
 		}
