@@ -63,7 +63,7 @@ func main() {
 				Value:   cli.NewStringSlice(defaultServices...),
 			},
 		},
-		Action: func(c *cli.Context) {
+		Action: func(c *cli.Context) error {
 			log.Println("id:", c.String("id"))
 
 			// listen
@@ -75,6 +75,8 @@ func main() {
 			log.Info("listening on ", lis.Addr())
 
 			// register services
+
+			return nil
 		},
 	}
 
