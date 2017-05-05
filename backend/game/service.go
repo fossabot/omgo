@@ -3,18 +3,18 @@ package main
 import (
 	"errors"
 	log "github.com/Sirupsen/logrus"
-	"github.com/master-g/omgo/backend/agent/proto"
+	"github.com/master-g/omgo/backend/game/handler"
 	"github.com/master-g/omgo/backend/game/registry"
 	"github.com/master-g/omgo/backend/game/types"
 	"github.com/master-g/omgo/net/packet"
+	"github.com/master-g/omgo/proto/grpc/game"
 	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc/metadata"
 	"io"
 	"strconv"
-	"github.com/master-g/omgo/backend/game/handler"
 )
 
-const (
+var (
 	DefaultIPCChannelSize   = 16
 	ErrorIncorrectFrameType = errors.New("incorrect frame type")
 	ErrorServiceNotBound    = errors.New("service not bound")
@@ -118,16 +118,18 @@ func (s *server) Stream(stream proto.GameService_StreamServer) error {
 
 				// construct frame and return message from logic
 				if ret != nil {
-					if err := stream.Send(&proto.Game_Frame{Type:proto.Game_Message, Message:ret}); err != nil {
+					if err := stream.Send(&proto.Game_Frame{Type: proto.Game_Message, Message: ret}); err != nil {
 						log.Error(err)
 						return err
 					}
 				}
 
 				// session control by logic
-				if sess.Flag & types.FlagKicked != 0 {
+				if sess.Flag&types.FlagKicked != 0 {
 					// logic kick out
-					if err := stream.Send(&proto.Game_Frame{Type:proto.Game_Kick})
+					if err := stream.Send(&proto.Game_Frame{Type: proto.Game_Kick}); err != nil {
+
+					}
 				}
 			}
 		}

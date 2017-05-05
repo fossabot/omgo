@@ -3,8 +3,8 @@ package main
 import (
 	"errors"
 	log "github.com/Sirupsen/logrus"
-	pb "github.com/master-g/omgo/backend/agent/proto"
 	"github.com/master-g/omgo/backend/agent/types"
+	pb "github.com/master-g/omgo/proto/grpc/game"
 )
 
 var (

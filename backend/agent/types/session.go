@@ -2,7 +2,7 @@ package types
 
 import (
 	"crypto/rc4"
-	pb "github.com/master-g/omgo/backend/agent/proto"
+	pb "github.com/master-g/omgo/proto/grpc/game"
 	"net"
 	"time"
 )

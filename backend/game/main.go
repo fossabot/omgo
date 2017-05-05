@@ -10,9 +10,12 @@ import (
 )
 
 const (
-	profileAddress  = "0.0.0.0:6666"
-	defaultETCD     = "http://127.0.0.1:2379"
-	defaultRoot     = "/backends"
+	profileAddress = "0.0.0.0:6666"
+	defaultETCD    = "http://127.0.0.1:2379"
+	defaultRoot    = "/backends"
+)
+
+var (
 	defaultServices = []string{"snowflake", "agent"}
 )
 

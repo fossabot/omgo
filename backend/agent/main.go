@@ -25,11 +25,14 @@ const (
 	profileAddress       = "0.0.0.0:6666"
 	defaultETCD          = "http://127.0.0.1:2379"
 	defaultRoot          = "/backends"
-	defaultServices      = []string{"snowflake", "game"}
 	defaultReadDeadLine  = 15 * time.Second
 	defaultSockBufSize   = 32*1024 - 1
 	defaultTxQueueLength = 128
-	defaultRPMlimit      = 200
+	defaultRPMLimit      = 200
+)
+
+var (
+	defaultServices = []string{"snowflake", "game"}
 )
 
 func main() {
@@ -91,7 +94,7 @@ func main() {
 				Aliases: []string{"p"},
 				Name:    "rpm",
 				Usage:   "Packet limit per minute per connection",
-				Value:   defaultRPMlimit,
+				Value:   defaultRPMLimit,
 			},
 		},
 		Action: func(c *cli.Context) error {

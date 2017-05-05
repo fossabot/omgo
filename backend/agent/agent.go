@@ -1,8 +1,8 @@
 package main
 
 import (
-	pb "github.com/master-g/omgo/backend/agent/proto"
 	"github.com/master-g/omgo/backend/agent/types"
+	pb "github.com/master-g/omgo/proto/grpc/game"
 	"github.com/master-g/omgo/utils"
 	"time"
 )
