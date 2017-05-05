@@ -6,9 +6,11 @@ import (
 	"github.com/master-g/omgo/backend/agent/proto"
 	"github.com/master-g/omgo/backend/game/registry"
 	"github.com/master-g/omgo/backend/game/types"
+	"github.com/master-g/omgo/net/packet"
 	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc/metadata"
 	"io"
+	"strconv"
 )
 
 const (
@@ -70,5 +72,42 @@ func (s *server) Stream(stream proto.GameService_StreamServer) error {
 	if !ok {
 		log.Error("cannot read metadata from context")
 		return ErrorIncorrectFrameType
+	}
+	// read key
+	if len(md["userid"]) == 0 {
+		log.Error("cannot read key:userid from metadata")
+		return ErrorIncorrectFrameType
+	}
+	// parse userID
+	userID, err := strconv.Atoi(md["userid"][0])
+	if err != nil {
+		log.Error(err)
+		return ErrorIncorrectFrameType
+	}
+
+	// register user
+	sess.UserID = int32(userID)
+	registry.Register(sess.UserID, chIPC)
+	log.Debug("userid", sess.UserID, "logged in")
+
+	// *** main message loop ***
+	for {
+		select {
+		case frame, ok := <-chAgent:
+			// frame from agent
+			if !ok {
+				return nil
+			}
+			switch frame.Type {
+			case proto.Game_Message:
+				// passthrough message from client->agent
+				reader := packet.NewRawPacketReader(frame.Message)
+				c, err := reader.ReadS32()
+				if err != nil {
+					log.Error(err)
+					return err
+				}
+			}
+		}
 	}
 }
