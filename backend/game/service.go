@@ -57,15 +57,15 @@ func (s *server) recv(stream proto.GameService_StreamServer, chSessDie chan stru
 func (s *server) Stream(stream proto.GameService_StreamServer) error {
 	defer utils.PrintPanicStack()
 	// session init
-	var sess types.Session
-	chSessDie := make(chan struct{})
-	chAgent := s.recv(stream, chSessDie)
+	var session types.Session
+	chSessionDie := make(chan struct{})
+	chAgent := s.recv(stream, chSessionDie)
 	chIPC := make(chan *proto.Game_Frame, DefaultIPCChannelSize)
 
 	defer func() {
-		registry.Unregister(sess.UserID, chIPC)
-		close(chSessDie)
-		log.Debug("stream end:", sess.UserID)
+		registry.Unregister(session.UserID, chIPC)
+		close(chSessionDie)
+		log.Debug("stream end:", session.UserID)
 	}()
 
 	// read metadata from context
@@ -87,9 +87,9 @@ func (s *server) Stream(stream proto.GameService_StreamServer) error {
 	}
 
 	// register user
-	sess.UserID = int32(userID)
-	registry.Register(sess.UserID, chIPC)
-	log.Debug("userid", sess.UserID, "logged in")
+	session.UserID = int32(userID)
+	registry.Register(session.UserID, chIPC)
+	log.Debug("userid", session.UserID, "logged in")
 
 	// *** main message loop ***
 	for {
@@ -114,7 +114,7 @@ func (s *server) Stream(stream proto.GameService_StreamServer) error {
 					log.Error("service not bound for:", c)
 					return ErrorServiceNotBound
 				}
-				ret := h(&sess, reader)
+				ret := h(&session, reader)
 
 				// construct frame and return message from logic
 				if ret != nil {
@@ -125,12 +125,29 @@ func (s *server) Stream(stream proto.GameService_StreamServer) error {
 				}
 
 				// session control by logic
-				if sess.Flag&types.FlagKicked != 0 {
+				if session.IsFlagKickedSet() {
 					// logic kick out
 					if err := stream.Send(&proto.Game_Frame{Type: proto.Game_Kick}); err != nil {
-
+						log.Error(err)
+						return err
 					}
+					return nil
 				}
+			case proto.Game_Ping:
+				if err := stream.Send(&proto.Game_Frame{Type: proto.Game_Ping, Message: frame.Message}); err != nil {
+					log.Error(err)
+					return err
+				}
+				log.Debug("ping respond")
+			default:
+				log.Error("incorrect frame type:", frame.Type)
+				return ErrorIncorrectFrameType
+			}
+		case frame := <-chIPC:
+			// forward async messages from interprocess(goroutines) communication
+			if err := stream.Send(frame); err != nil {
+				log.Error(err)
+				return err
 			}
 		}
 	}

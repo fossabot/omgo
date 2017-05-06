@@ -2,7 +2,11 @@ package main
 
 import (
 	log "github.com/Sirupsen/logrus"
+	"github.com/master-g/omgo/etcdclient"
+	pb "github.com/master-g/omgo/proto/grpc/game"
+	"github.com/master-g/omgo/services"
 	"github.com/master-g/omgo/utils"
+	"google.golang.org/grpc"
 	"gopkg.in/urfave/cli.v2"
 	"net"
 	"net/http"
@@ -64,10 +68,19 @@ func main() {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			log.Println("id:", c.String("id"))
+			cfgID := c.String("id")
+			cfgListen := c.String("listen")
+			cfgETCDHosts := c.StringSlice("etcdhosts")
+			cfgETCDRoot := c.String("etcdroot")
+			cfgServices := c.StringSlice("services")
 
+			log.Println("id:", cfgID)
+			log.Println("listen:", cfgListen)
+			log.Println("etcd-hosts:", cfgETCDHosts)
+			log.Println("etcd-root:", cfgETCDRoot)
+			log.Println("services:", cfgServices)
 			// listen
-			lis, err := net.Listen("tcp", c.String("listen"))
+			lis, err := net.Listen("tcp", cfgListen)
 			if err != nil {
 				log.Panic(err)
 				os.Exit(-1)
@@ -75,10 +88,16 @@ func main() {
 			log.Info("listening on ", lis.Addr())
 
 			// register services
+			s := grpc.NewServer()
+			ins := new(server)
+			pb.RegisterGameServiceServer(s, ins)
 
-			return nil
+			// initialize services
+			etcdclient.Init(cfgETCDHosts)
+			services.Init(cfgETCDRoot, cfgETCDHosts, cfgServices)
+
+			return s.Serve(lis)
 		},
 	}
-
 	app.Run(os.Args)
 }
