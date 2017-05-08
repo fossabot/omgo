@@ -1,7 +1,7 @@
 package types
 
 type User struct {
-	ID     int32  // User ID
+	ID     uint64 // User ID
 	Name   string // User name
 	Avatar string // Avatar image url
 }

@@ -123,7 +123,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 
 	p := packet.NewRawPacket()
 	p.WriteS32(int32(proto_common.Cmd_LOGIN_RSP))
-	p.WriteU32(session.UserID)
+	p.WriteU64(session.UserID)
 
 	return p.Data()
 }

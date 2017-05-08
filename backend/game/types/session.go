@@ -7,8 +7,8 @@ const (
 
 // Session holds the context of a client having conversation with game
 type Session struct {
-	Flag   int32 // Session flag
-	UserID int32 // User ID
+	Flag   int32  // Session flag
+	UserID uint64 // User ID
 }
 
 // SetFlagKicked sets the kicked bit
