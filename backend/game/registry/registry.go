@@ -5,7 +5,7 @@ import "sync"
 // Registry is a in memory map for recording user information
 type Registry struct {
 	sync.RWMutex
-	records map[int32]interface{} // id -> v
+	records map[uint64]interface{} // id -> v
 }
 
 var (
@@ -17,18 +17,18 @@ func init() {
 }
 
 func (r *Registry) init() {
-	r.records = make(map[int32]interface{})
+	r.records = make(map[uint64]interface{})
 }
 
 // Register add an user to record and use user's ID as key
-func (r *Registry) Register(id int32, v interface{}) {
+func (r *Registry) Register(id uint64, v interface{}) {
 	r.Lock()
 	r.records[id] = v
 	r.Unlock()
 }
 
 // Unregister removes user with specific user ID from record
-func (r *Registry) Unregister(id int32, v interface{}) {
+func (r *Registry) Unregister(id uint64, v interface{}) {
 	r.Lock()
 	if oldv, ok := r.records[id]; ok {
 		if oldv == v {
@@ -39,7 +39,7 @@ func (r *Registry) Unregister(id int32, v interface{}) {
 }
 
 // Query user with ID
-func (r *Registry) Query(id int32) (v interface{}) {
+func (r *Registry) Query(id uint64) (v interface{}) {
 	r.RLock()
 	v = r.records[id]
 	r.RUnlock()
@@ -55,17 +55,17 @@ func (r *Registry) Count() (count int) {
 }
 
 // Register an user to default registry
-func Register(id int32, v interface{}) {
+func Register(id uint64, v interface{}) {
 	defaultRegistry.Register(id, v)
 }
 
 // Unregister an user from default registry
-func Unregister(id int32, v interface{}) {
+func Unregister(id uint64, v interface{}) {
 	defaultRegistry.Unregister(id, v)
 }
 
 // Query user in default registry
-func Query(id int32) interface{} {
+func Query(id uint64) interface{} {
 	return defaultRegistry.Query(id)
 }
 
