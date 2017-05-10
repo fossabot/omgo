@@ -1,0 +1,49 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "m+iiamnbukzE8kFPfBche6D0FmQ=",
+			"path": "github.com/Sirupsen/logrus",
+			"revision": "5b60b3d3ee017ed00bcd0225fcca7acab767844b",
+			"revisionTime": "2017-05-04T07:10:19Z"
+		},
+		{
+			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
+			"path": "github.com/davecgh/go-spew/spew",
+			"revision": "346938d642f2ec3594ed81d874461961cd0faa76",
+			"revisionTime": "2016-10-29T20:57:26Z"
+		},
+		{
+			"checksumSHA1": "g/V4qrXjUGG9B+e3hB+4NAYJ5Gs=",
+			"path": "github.com/gorilla/context",
+			"revision": "08b5f424b9271eedf6f9f0ce86cb9396ed337a42",
+			"revisionTime": "2016-08-17T18:46:32Z"
+		},
+		{
+			"checksumSHA1": "zmCk+lgIeiOf0Ng9aFP9aFy8ksE=",
+			"path": "github.com/gorilla/mux",
+			"revision": "4c1c3952b7d9d0a061a3fa7b36fd373ba0398ebc",
+			"revisionTime": "2017-04-27T04:12:50Z"
+		},
+		{
+			"checksumSHA1": "7hln62oZPZmyqEmgXaybf9WxQ7A=",
+			"path": "github.com/maruel/panicparse/stack",
+			"revision": "ae43f192cef2add653fe1481a3070ed00a4a6981",
+			"revisionTime": "2017-03-28T20:03:51Z"
+		},
+		{
+			"checksumSHA1": "Nyk4FhSwkZTwc4191KHsSF/aQi8=",
+			"path": "github.com/master-g/omgo/utils",
+			"revision": "80ff0cfcaca2f0e69defab1cd0cf2a4822647528",
+			"revisionTime": "2017-05-09T11:53:07Z"
+		},
+		{
+			"checksumSHA1": "oS0UZOGWVVsVciOQ8nZJ582mFF8=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "9ccfe848b9db8435a24c424abbc07a921adf1df5",
+			"revisionTime": "2017-04-27T03:54:25Z"
+		}
+	],
+	"rootPath": "github.com/master-g/omgo/backend/auth"
+}

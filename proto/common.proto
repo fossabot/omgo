@@ -5,50 +5,67 @@ package proto.common;
 // S -> C : even
 // C -> S : odd
 enum Cmd {
-    RESERVED = 0;
-    HEART_BEAT_REQ = 0x1;
-    HEART_BEAT_RSP = 0x2;
-    LOGIN_REQ = 0x11;
-    LOGIN_RSP = 0x12;
-    GET_SEED_REQ = 0x31;
-    GET_SEED_RSP = 0x32;
-    PING_REQ = 0x1001;
-    PING_RSP = 0x1002;
+  RESERVED = 0;
+  HEART_BEAT_REQ = 0x1;
+  HEART_BEAT_RSP = 0x2;
+  LOGIN_REQ = 0x11;
+  LOGIN_RSP = 0x12;
+  GET_SEED_REQ = 0x31;
+  GET_SEED_RSP = 0x32;
+  PING_REQ = 0x1001;
+  PING_RSP = 0x1002;
 
-    CMD_COMMON_END = 0x10000;
+  CMD_COMMON_END = 0x10000;
 }
 
 enum ResultCode {
-    RESULT_OK = 0;
-    RESULT_TIMEOUT = 1;
-    RESULT_UNAUTH = 2;
-    RESULT_UNKNOWN_CMD = 3;
-    RESULT_INVALID = 4;
-    RESULT_INTERNAL_ERROR = 5;
+  RESULT_OK = 0;
+  RESULT_TIMEOUT = 1;
+  RESULT_UNAUTH = 2;
+  RESULT_UNKNOWN_CMD = 3;
+  RESULT_INVALID = 4;
+  RESULT_INTERNAL_ERROR = 5;
 }
 
 message RspHeader {
-    ResultCode status = 1;
-    fixed64 timestamp = 2;
-    string msg = 3;
+  ResultCode status = 1;
+  fixed64 timestamp = 2;
+  string msg = 3;
+}
+
+enum Gender {
+  GENDER_UNKNOWN = 0;
+  GENDER_FEMALE = 1;
+  GENDER_MALE = 2;
+}
+
+message UserBasicInfo {
+  fixed64 usn = 1;       // user serial no. internal only
+  uint64 uid = 2;        // id
+  fixed64 birthday = 3;  // EPOCH
+  Gender gender = 4;     // gender
+  string nickname = 5;   // name
+  string email = 6;      // email address
+  string avatar = 7;     // avatar url
+  string country = 8;    // country / region
 }
 
 message C2SGetSeedReq {
-    bytes send_seed = 1; // public key for server to encrypt sending data
-    bytes recv_seed = 2; // public key for server to decrypt receive data
+  bytes send_seed = 1;  // public key for server to encrypt sending data
+  bytes recv_seed = 2;  // public key for server to decrypt receive data
 }
 
 message S2CGetSeedRsp {
-    RspHeader header = 1;
-    bytes send_seed = 2; // public key for client to encrypt sending data
-    bytes recv_seed = 3; // public key for client to decrypt recevie data
+  RspHeader header = 1;
+  bytes send_seed = 2;  // public key for client to encrypt sending data
+  bytes recv_seed = 3;  // public key for client to decrypt recevie data
 }
 
 message C2SLoginReq {
-    fixed64 timestamp = 1;
+  fixed64 timestamp = 1;
 }
 
 message S2CLoginRsp {
-    RspHeader header = 1;
-    // userinfo
+  RspHeader header = 1;
+  UserBasicInfo user_info = 2;
 }
