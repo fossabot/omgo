@@ -6,14 +6,17 @@ import (
 	"gopkg.in/urfave/cli.v2"
 	"net/http"
 	"os"
+	"time"
 )
 
 const (
-	profileAddress = "0.0.0.0:6666"
-	defaultETCD    = "http://127.0.0.1:2379"
-	defaultRoot    = "/backends"
-	defaultListen  = ":40000"
-	defaultPort    = ":8080"
+	profileAddress      = "0.0.0.0:6666"
+	defaultETCD         = "http://127.0.0.1:2379"
+	defaultRoot         = "/backends"
+	defaultListen       = ":40000"
+	defaultPort         = ":8080"
+	defaultReadTimeout  = 15 * time.Second
+	defaultWriteTimeout = 15 * time.Second
 )
 
 var (
@@ -63,6 +66,16 @@ func main() {
 				Usage:   "service names",
 				Value:   cli.NewStringSlice(defaultServices...),
 			},
+			&cli.DurationFlag{
+				Name:  "readtimeout",
+				Usage: "seconds before reads timeout",
+				Value: defaultReadTimeout,
+			},
+			&cli.DurationFlag{
+				Name:  "writetimeout",
+				Usage: "seconds before writes timeout",
+				Value: defaultWriteTimeout,
+			},
 		},
 		Action: func(c *cli.Context) error {
 			listen := c.String("listen")
@@ -70,13 +83,17 @@ func main() {
 			etcdRoot := c.String("etcdroot")
 			serviceNames := c.StringSlice("services")
 			port := c.String("port")
+			rt := c.Duration("readtimeout")
+			wt := c.Duration("writetimeout")
 			log.Println("listen:", listen)
 			log.Println("http:", port)
 			log.Println("etcdhosts:", etcdHosts)
 			log.Println("etcdroot:", etcdRoot)
 			log.Println("services:", serviceNames)
+			log.Println("read timeout:", rt)
+			log.Println("write timeout:", wt)
 
-			startHTTP(port)
+			startHTTP(port, rt, wt)
 
 			return nil
 		},

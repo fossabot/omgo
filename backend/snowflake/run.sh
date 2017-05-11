@@ -2,7 +2,7 @@
 
 IPADDR=127.0.0.1
 LOCALHOST=127.0.0.1
-SNOWFLAKE_SID=snowflake1
+SNOWFLAKE_SID=snowflake-0
 ETCD_SID=etcd0
 NETHOST=--net=host
 

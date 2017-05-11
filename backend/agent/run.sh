@@ -2,7 +2,7 @@
 
 IPADDR=127.0.0.1
 LOCALHOST=127.0.0.1
-SID=agent1
+SID=agent-0
 NETHOST=--net=host
 
 case "$(uname -s)" in

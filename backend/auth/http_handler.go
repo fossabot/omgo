@@ -1,12 +1,11 @@
 package main
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"encoding/json"
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	"github.com/master-g/omgo/proto/pb"
+	"github.com/master-g/omgo/utils"
 	"net/http"
 	"time"
 )
@@ -36,7 +35,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		Gender:   proto_common.Gender_GENDER_FEMALE,
 		Nickname: "wow",
 		Email:    email,
-		Avatar:   "http://www.gravatar.com/" + hex.EncodeToString(md5.Sum([]byte(email))),
+		Avatar:   "http://www.gravatar.com/" + utils.GetStringMD5Hash(email),
 		Country:  "cn",
 	}
 
@@ -54,14 +53,13 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
-func startHTTP(addr string) {
+func startHTTP(addr string, rt, wt time.Duration) {
 	router.HandleFunc("/login", loginHandler).Methods("GET")
 	srv := &http.Server{
-		Handler: router,
-		Addr:    ":8080",
-		// Good practice: enforce timeouts for servers you create!
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		Handler:      router,
+		Addr:         addr,
+		WriteTimeout: wt,
+		ReadTimeout:  rt,
 	}
 	log.Fatal(srv.ListenAndServe())
 }
