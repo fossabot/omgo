@@ -33,6 +33,10 @@
 			"revisionTime": "2017-03-28T20:03:51Z"
 		},
 		{
+			"path": "github.com/master-g/omgo/services",
+			"revision": ""
+		},
+		{
 			"checksumSHA1": "Nyk4FhSwkZTwc4191KHsSF/aQi8=",
 			"path": "github.com/master-g/omgo/utils",
 			"revision": "80ff0cfcaca2f0e69defab1cd0cf2a4822647528",
@@ -43,6 +47,12 @@
 			"path": "golang.org/x/sys/unix",
 			"revision": "9ccfe848b9db8435a24c424abbc07a921adf1df5",
 			"revisionTime": "2017-04-27T03:54:25Z"
+		},
+		{
+			"checksumSHA1": "yFolYpsrXIjWE0UjR8ChC6Nmrhg=",
+			"path": "gopkg.in/urfave/cli.v2",
+			"revision": "61c3eb6ba1da1df17cd50f1456a9252d92bf5edd",
+			"revisionTime": "2017-04-24T21:45:55Z"
 		}
 	],
 	"rootPath": "github.com/master-g/omgo/backend/auth"
