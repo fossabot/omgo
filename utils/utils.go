@@ -26,6 +26,8 @@ package utils
 
 import (
 	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 	log "github.com/Sirupsen/logrus"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/maruel/panicparse/stack"
@@ -76,4 +78,11 @@ func GetLocalIP() string {
 		}
 	}
 	return ""
+}
+
+// GetStringMD5Hash will return text's md5 digest hex encoded
+func GetStringMD5Hash(text string) string {
+	hash := md5.New()
+	hash.Write([]byte(text))
+	return hex.EncodeToString(hash.Sum(nil))
 }

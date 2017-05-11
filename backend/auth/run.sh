@@ -15,11 +15,14 @@ esac
 # auth
 docker rm -f ${SID}
 docker build --no-cache --rm=true -t auth .
-docker run --rm -d ${NETHOST} -p 40000:40000 \
+docker run --rm -d ${NETHOST} \
+    -p 40000:40000 \
+    -p 8080:8080 \
     --name ${SID} \
     --entrypoint /go/bin/auth \
     auth \
     -l :40000 \
+    -p :8080 \
     -e http://${IPADDR}:2379
 
 # register service

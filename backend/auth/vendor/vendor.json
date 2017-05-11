@@ -81,6 +81,12 @@
 			"revisionTime": "2017-03-28T20:03:51Z"
 		},
 		{
+			"checksumSHA1": "dOwWx/TzvqOwVmh/pN5LEJ2+iy0=",
+			"path": "github.com/master-g/omgo/proto/pb",
+			"revision": "c2120aa8d51ac3eb5fadd89585c0813913775e59",
+			"revisionTime": "2017-05-11T08:55:20Z"
+		},
+		{
 			"checksumSHA1": "MEYuXwhrjh8U0XHH0Go8tKUZvN0=",
 			"path": "github.com/master-g/omgo/services",
 			"revision": "2632a580c33b176a8ed21e141eba50aacf30ef31",
