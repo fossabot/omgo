@@ -6,11 +6,13 @@ import "common.proto";
 
 // Database service definition
 service DBService {
-    rpc QueryUserByEmail(DB.KeyEmail) returns (proto.common.UserBasicInfo);
+    rpc QueryUser(DB.UserKey) returns (proto.common.UserBasicInfo);
 }
 
 message DB {
-    message KeyEmail {
-        string email = 1;
+    message UserKey {
+        fixed64 usn = 1;
+        uint64 uid = 2;
+        string email = 3;
     }
 }

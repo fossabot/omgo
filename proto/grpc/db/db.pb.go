@@ -42,16 +42,32 @@ func (m *DB) String() string            { return proto1.CompactTextString(m) }
 func (*DB) ProtoMessage()               {}
 func (*DB) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
-type DB_KeyEmail struct {
-	Email string `protobuf:"bytes,1,opt,name=email" json:"email,omitempty"`
+type DB_UserKey struct {
+	Usn   uint64 `protobuf:"fixed64,1,opt,name=usn" json:"usn,omitempty"`
+	Uid   uint64 `protobuf:"varint,2,opt,name=uid" json:"uid,omitempty"`
+	Email string `protobuf:"bytes,3,opt,name=email" json:"email,omitempty"`
 }
 
-func (m *DB_KeyEmail) Reset()                    { *m = DB_KeyEmail{} }
-func (m *DB_KeyEmail) String() string            { return proto1.CompactTextString(m) }
-func (*DB_KeyEmail) ProtoMessage()               {}
-func (*DB_KeyEmail) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 0} }
+func (m *DB_UserKey) Reset()                    { *m = DB_UserKey{} }
+func (m *DB_UserKey) String() string            { return proto1.CompactTextString(m) }
+func (*DB_UserKey) ProtoMessage()               {}
+func (*DB_UserKey) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 0} }
 
-func (m *DB_KeyEmail) GetEmail() string {
+func (m *DB_UserKey) GetUsn() uint64 {
+	if m != nil {
+		return m.Usn
+	}
+	return 0
+}
+
+func (m *DB_UserKey) GetUid() uint64 {
+	if m != nil {
+		return m.Uid
+	}
+	return 0
+}
+
+func (m *DB_UserKey) GetEmail() string {
 	if m != nil {
 		return m.Email
 	}
@@ -60,7 +76,7 @@ func (m *DB_KeyEmail) GetEmail() string {
 
 func init() {
 	proto1.RegisterType((*DB)(nil), "proto.DB")
-	proto1.RegisterType((*DB_KeyEmail)(nil), "proto.DB.KeyEmail")
+	proto1.RegisterType((*DB_UserKey)(nil), "proto.DB.UserKey")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -74,7 +90,7 @@ const _ = grpc.SupportPackageIsVersion4
 // Client API for DBService service
 
 type DBServiceClient interface {
-	QueryUserByEmail(ctx context.Context, in *DB_KeyEmail, opts ...grpc.CallOption) (*proto_common.UserBasicInfo, error)
+	QueryUser(ctx context.Context, in *DB_UserKey, opts ...grpc.CallOption) (*proto_common.UserBasicInfo, error)
 }
 
 type dBServiceClient struct {
@@ -85,9 +101,9 @@ func NewDBServiceClient(cc *grpc.ClientConn) DBServiceClient {
 	return &dBServiceClient{cc}
 }
 
-func (c *dBServiceClient) QueryUserByEmail(ctx context.Context, in *DB_KeyEmail, opts ...grpc.CallOption) (*proto_common.UserBasicInfo, error) {
+func (c *dBServiceClient) QueryUser(ctx context.Context, in *DB_UserKey, opts ...grpc.CallOption) (*proto_common.UserBasicInfo, error) {
 	out := new(proto_common.UserBasicInfo)
-	err := grpc.Invoke(ctx, "/proto.DBService/QueryUserByEmail", in, out, c.cc, opts...)
+	err := grpc.Invoke(ctx, "/proto.DBService/QueryUser", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -97,27 +113,27 @@ func (c *dBServiceClient) QueryUserByEmail(ctx context.Context, in *DB_KeyEmail,
 // Server API for DBService service
 
 type DBServiceServer interface {
-	QueryUserByEmail(context.Context, *DB_KeyEmail) (*proto_common.UserBasicInfo, error)
+	QueryUser(context.Context, *DB_UserKey) (*proto_common.UserBasicInfo, error)
 }
 
 func RegisterDBServiceServer(s *grpc.Server, srv DBServiceServer) {
 	s.RegisterService(&_DBService_serviceDesc, srv)
 }
 
-func _DBService_QueryUserByEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DB_KeyEmail)
+func _DBService_QueryUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DB_UserKey)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DBServiceServer).QueryUserByEmail(ctx, in)
+		return srv.(DBServiceServer).QueryUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.DBService/QueryUserByEmail",
+		FullMethod: "/proto.DBService/QueryUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DBServiceServer).QueryUserByEmail(ctx, req.(*DB_KeyEmail))
+		return srv.(DBServiceServer).QueryUser(ctx, req.(*DB_UserKey))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -127,8 +143,8 @@ var _DBService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*DBServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "QueryUserByEmail",
-			Handler:    _DBService_QueryUserByEmail_Handler,
+			MethodName: "QueryUser",
+			Handler:    _DBService_QueryUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -138,14 +154,16 @@ var _DBService_serviceDesc = grpc.ServiceDesc{
 func init() { proto1.RegisterFile("db.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 140 bytes of a gzipped FileDescriptorProto
+	// 167 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x48, 0x49, 0xd2, 0x2b,
 	0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x05, 0x53, 0x52, 0x3c, 0xc9, 0xf9, 0xb9, 0xb9, 0xf9, 0x79,
-	0x10, 0x41, 0x25, 0x35, 0x2e, 0x26, 0x17, 0x27, 0x29, 0x05, 0x2e, 0x0e, 0xef, 0xd4, 0x4a, 0xd7,
-	0xdc, 0xc4, 0xcc, 0x1c, 0x21, 0x11, 0x2e, 0xd6, 0x54, 0x10, 0x43, 0x82, 0x51, 0x81, 0x51, 0x83,
-	0x33, 0x08, 0xc2, 0x31, 0x0a, 0xe0, 0xe2, 0x74, 0x71, 0x0a, 0x4e, 0x2d, 0x2a, 0xcb, 0x4c, 0x4e,
-	0x15, 0x72, 0xe6, 0x12, 0x08, 0x2c, 0x4d, 0x2d, 0xaa, 0x0c, 0x2d, 0x4e, 0x2d, 0x72, 0x82, 0x6a,
-	0x13, 0x82, 0x18, 0xa8, 0xe7, 0xe2, 0xa4, 0x07, 0x33, 0x4a, 0x4a, 0x1a, 0x2a, 0x06, 0xb5, 0x11,
-	0xac, 0x3c, 0xb1, 0x38, 0x33, 0xd9, 0x33, 0x2f, 0x2d, 0x3f, 0x89, 0x0d, 0x2c, 0x67, 0x0c, 0x08,
-	0x00, 0x00, 0xff, 0xff, 0x15, 0xbc, 0x97, 0xea, 0xa1, 0x00, 0x00, 0x00,
+	0x10, 0x41, 0x25, 0x4f, 0x2e, 0x26, 0x17, 0x27, 0x29, 0x67, 0x2e, 0xf6, 0xd0, 0xe2, 0xd4, 0x22,
+	0xef, 0xd4, 0x4a, 0x21, 0x01, 0x2e, 0xe6, 0xd2, 0xe2, 0x3c, 0x09, 0x46, 0x05, 0x46, 0x0d, 0xb6,
+	0x20, 0x10, 0x13, 0x2c, 0x92, 0x99, 0x22, 0xc1, 0xa4, 0xc0, 0xa8, 0xc1, 0x12, 0x04, 0x62, 0x0a,
+	0x89, 0x70, 0xb1, 0xa6, 0xe6, 0x26, 0x66, 0xe6, 0x48, 0x30, 0x2b, 0x30, 0x6a, 0x70, 0x06, 0x41,
+	0x38, 0x46, 0x1e, 0x5c, 0x9c, 0x2e, 0x4e, 0xc1, 0xa9, 0x45, 0x65, 0x99, 0xc9, 0xa9, 0x42, 0xd6,
+	0x5c, 0x9c, 0x81, 0xa5, 0xa9, 0x45, 0x95, 0x20, 0x63, 0x85, 0x04, 0x21, 0x96, 0xe9, 0xb9, 0x38,
+	0xe9, 0x41, 0xad, 0x91, 0x92, 0x86, 0x0a, 0x41, 0x1d, 0x03, 0x12, 0x76, 0x4a, 0x2c, 0xce, 0x4c,
+	0xf6, 0xcc, 0x4b, 0xcb, 0x4f, 0x62, 0x03, 0xcb, 0x19, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0x42,
+	0x67, 0x76, 0x8a, 0xbc, 0x00, 0x00, 0x00,
 }
