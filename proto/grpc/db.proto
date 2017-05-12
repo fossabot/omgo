@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package proto;
+
+import "common.proto";
+
+// Database service definition
+service DBService {
+    rpc QueryUserByEmail(DB.KeyEmail) returns (proto.common.UserBasicInfo);
+}
+
+message DB {
+    message KeyEmail {
+        string email = 1;
+    }
+}

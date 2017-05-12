@@ -115,7 +115,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		Gender:   proto_common.Gender_GENDER_FEMALE,
 		Nickname: "wow",
 		Email:    email,
-		Avatar:   "http://www.gravatar.com/" + utils.GetStringMD5Hash(email),
+		Avatar:   "https://www.gravatar.com/avatar/" + utils.GetStringMD5Hash(email) + "?s=200&r=pg&d=404",
 		Country:  "cn",
 	}
 
