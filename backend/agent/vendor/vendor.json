@@ -69,16 +69,16 @@
 			"revisionTime": "2017-05-05T07:35:19Z"
 		},
 		{
-			"checksumSHA1": "reb7aBaxJTw/uN1fEBMXqlGtiGM=",
+			"checksumSHA1": "vvbb/jvreIKuPOzN7oZzE9ZEDUw=",
 			"path": "github.com/master-g/omgo/proto/grpc/game",
-			"revision": "506ad36cc1c173c062a236b077a3461403b5a47c",
-			"revisionTime": "2017-05-05T17:47:09Z"
+			"revision": "df8d1132e08191bfc2ca213ef01d8d064cc835df",
+			"revisionTime": "2017-05-12T10:03:18Z"
 		},
 		{
-			"checksumSHA1": "dOwWx/TzvqOwVmh/pN5LEJ2+iy0=",
-			"path": "github.com/master-g/omgo/proto/pb",
-			"revision": "ddc0236645455990ffbf4113a1f545a1f7425a35",
-			"revisionTime": "2017-05-11T07:48:43Z"
+			"checksumSHA1": "iyKSCKIkYkub9UY4F0M2hp+FiZw=",
+			"path": "github.com/master-g/omgo/proto/pb/common",
+			"revision": "df8d1132e08191bfc2ca213ef01d8d064cc835df",
+			"revisionTime": "2017-05-12T10:03:18Z"
 		},
 		{
 			"checksumSHA1": "9q6Hp+sNIabmNWMh1Iq58eMMN5A=",

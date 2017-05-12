@@ -63,10 +63,10 @@
 			"revisionTime": "2017-05-05T07:35:19Z"
 		},
 		{
-			"checksumSHA1": "C7PW893CE/J1XLshzjt4q1eQp7Q=",
+			"checksumSHA1": "zkgSZHgOn9XnQLcqBb2bb2TApPM=",
 			"path": "github.com/master-g/omgo/proto/grpc/snowflake",
-			"revision": "6e57871938b4e9b8996e0176653c1c8dcbbd26c0",
-			"revisionTime": "2017-05-05T17:41:55Z"
+			"revision": "df8d1132e08191bfc2ca213ef01d8d064cc835df",
+			"revisionTime": "2017-05-12T10:03:18Z"
 		},
 		{
 			"checksumSHA1": "Nyk4FhSwkZTwc4191KHsSF/aQi8=",
