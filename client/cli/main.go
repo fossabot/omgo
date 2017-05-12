@@ -10,7 +10,7 @@ import (
 	"github.com/abiosoft/ishell"
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/net/packet"
-	"github.com/master-g/omgo/proto/pb"
+	"github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/security/ecdh"
 	"github.com/master-g/omgo/utils"
 	"gopkg.in/urfave/cli.v2"

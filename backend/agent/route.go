@@ -1,13 +1,14 @@
 package main
 
 import (
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/backend/agent/handler"
 	"github.com/master-g/omgo/backend/agent/types"
 	"github.com/master-g/omgo/net/packet"
-	"github.com/master-g/omgo/proto/pb"
+	"github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/utils"
-	"time"
 )
 
 func getPacketBody(reader *packet.RawPacket) []byte {

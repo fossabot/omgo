@@ -10,7 +10,7 @@ import (
 	"github.com/master-g/omgo/backend/agent/types"
 	"github.com/master-g/omgo/net/packet"
 	pb "github.com/master-g/omgo/proto/grpc/game"
-	"github.com/master-g/omgo/proto/pb"
+	"github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/security/ecdh"
 	"github.com/master-g/omgo/services"
 	"google.golang.org/grpc/metadata"

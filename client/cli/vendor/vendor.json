@@ -55,6 +55,12 @@
 			"revisionTime": "2017-05-05T07:35:19Z"
 		},
 		{
+			"checksumSHA1": "+ghZtA+tdoy8U0nBZZNXh2vF3K0=",
+			"path": "github.com/master-g/omgo/proto/pb/common",
+			"revision": "391243fda5abefc398001c27757fa2595ea8dc2a",
+			"revisionTime": "2017-05-12T10:13:29Z"
+		},
+		{
 			"checksumSHA1": "9q6Hp+sNIabmNWMh1Iq58eMMN5A=",
 			"path": "github.com/master-g/omgo/security/ecdh",
 			"revision": "0239b72d536821d80f2d686cae600442f64f0b7f",
