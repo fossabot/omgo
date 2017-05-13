@@ -2,12 +2,11 @@ syntax = "proto3";
 
 package proto;
 
-// import "common.proto";
+import "common.proto";
 
 // Database service definition
 service DBService {
-    // rpc QueryUser(DB.UserKey) returns (proto.common.UserBasicInfo);
-    rpc QueryUser(DB.UserKey) returns (DB.Tmp);
+    rpc QueryUser(DB.UserKey) returns (proto.common.UserBasicInfo);
 }
 
 message DB {
@@ -15,8 +14,5 @@ message DB {
         fixed64 usn = 1;
         uint64 uid = 2;
         string email = 3;
-    }
-    message Tmp {
-      string msg = 1;
     }
 }

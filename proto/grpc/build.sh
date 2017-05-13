@@ -10,7 +10,7 @@ do
   mkdir -p ${output}
   # compile
   parent=$(dirname "$(pwd)")
-  protoc -I . -I ../ --go_out=plugins=grpc:${name} ${name}.proto
+  protoc -I . -I ../ --go_out=plugins=grpc:${name} ${name}.proto 
 
   #[ -d ${f} ] && cd "${f}" && protoc -I=../ --go_out=plugins=grpc:. *.proto
 done;

@@ -1,6 +1,6 @@
 syntax = "proto3";
 package proto.common;
-// option go_package = "pb";
+option go_package = "github.com/master-g/omgo/proto/pb/common";
 
 // commands
 // S -> C : even

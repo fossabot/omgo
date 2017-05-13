@@ -14,6 +14,6 @@ do
   output=$(pwd)/pb/${name}
   mkdir -p ${output}
   # compile
-  protoc -I=. --go_out=pb/${name} ${name}.proto
+  protoc -I=. --go_out=${GOPATH}/src ${name}.proto
 done;
 
