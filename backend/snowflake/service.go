@@ -15,18 +15,18 @@ import (
 )
 
 const (
-	envMachineID = "MACHINE_ID" // Specific machine id
-	etcdPath     = "/seqs/"
-	uuidKey      = "/seqs/snowflake-uuid"
-	backoff      = 100  // Max backoff delay millisecond
-	concurrent   = 128  // Max concurrent connections to etcd
-	uuidQueue    = 1024 // UUID process queue
+	envMachineID   = "MACHINE_ID" // Specific machine id
+	pathETCD       = "/seqs/"
+	uuidKey        = "/seqs/snowflake-uuid"
+	reduction      = 100  // Max reduction delay millisecond
+	concurrentETCD = 128  // Max concurrent connections to ETCD
+	uuidQueueSize  = 1024 // UUID process queue
 )
 
 const (
 	tsMask        = 0x1FFFFFFFFFF // 41bit
 	snMask        = 0xFFF         // 12bit
-	machineIDmask = 0x3FF         // 10bit
+	machineIDMask = 0x3FF         // 10bit
 )
 
 type server struct {
@@ -36,18 +36,18 @@ type server struct {
 }
 
 func (s *server) init() {
-	s.clientPool = make(chan etcd.KeysAPI, concurrent)
-	s.chProc = make(chan chan uint64, uuidQueue)
+	s.clientPool = make(chan etcd.KeysAPI, concurrentETCD)
+	s.chProc = make(chan chan uint64, uuidQueueSize)
 
 	// Init client pool
-	for i := 0; i < concurrent; i++ {
+	for i := 0; i < concurrentETCD; i++ {
 		s.clientPool <- etcdclient.KeysAPI()
 	}
 
 	// Check if user specified machine id is set
 	if env := os.Getenv(envMachineID); env != "" {
 		if id, err := strconv.Atoi(env); err == nil {
-			s.machineID = (uint64(id) & machineIDmask) << 12
+			s.machineID = (uint64(id) & machineIDMask) << 12
 			log.Info("machine id specified:", id)
 		} else {
 			log.Panic(err)
@@ -88,7 +88,7 @@ func (s *server) initMachineID() {
 		}
 
 		// record serial number of this service, already shifted
-		s.machineID = (uint64(prevValue+1) & machineIDmask) << 12
+		s.machineID = (uint64(prevValue+1) & machineIDMask) << 12
 		return
 	}
 }
@@ -97,7 +97,7 @@ func (s *server) initMachineID() {
 func (s *server) Next(ctx context.Context, in *pb.Snowflake_Key) (*pb.Snowflake_Value, error) {
 	client := <-s.clientPool
 	defer func() { s.clientPool <- client }()
-	key := etcdPath + in.Name
+	key := pathETCD + in.Name
 	for {
 		// Get the key
 		resp, err := client.Get(context.Background(), key, nil)
@@ -179,7 +179,7 @@ func (s *server) waitMilliseconds(lastTs int64) int64 {
 ////////////////////////////////////////////////////////////////////////////////
 // random delay
 func casDelay() {
-	<-time.After(time.Duration(rand.Int63n(backoff)) * time.Millisecond)
+	<-time.After(time.Duration(rand.Int63n(reduction)) * time.Millisecond)
 }
 
 // get timestamp
