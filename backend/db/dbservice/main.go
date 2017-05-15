@@ -5,6 +5,7 @@ import (
 	pb "github.com/master-g/omgo/proto/grpc/db"
 	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/urfave/cli.v2"
 	"net"
 	"os"
@@ -13,12 +14,20 @@ import (
 )
 
 const (
-	defaultListen      = ":60001"
-	defaultRedisHost   = "127.0.0.1:27017"
-	defaultRedisDB     = 0
-	defaultMaxIdle     = 80
-	defaultMaxActive   = 1024
-	defaultIdleTimeout = 180 * time.Second
+	// gRPC
+	defaultListen = ":60001"
+	// mongodb
+	defaultMongoHost     = "127.0.0.1:37017"
+	defaultMongoTimeout  = 60 * time.Second
+	defaultMongoDatabase = "master"
+	defaultMongoUserName = "admin"
+	defaultMongoPassword = "admin"
+	// redis
+	defaultRedisHost        = "127.0.0.1:6379" // DO NOT use 6379 in production environment
+	defaultRedisDB          = 0
+	defaultRedisMaxIdle     = 80
+	defaultRedisMaxActive   = 1024
+	defaultRedisIdleTimeout = 180 * time.Second
 )
 
 func main() {
@@ -38,13 +47,13 @@ func main() {
 			},
 			&cli.StringFlag{
 				Aliases: []string{"r"},
-				Name:    "host",
+				Name:    "redis-host",
 				Usage:   "redis host",
 				Value:   defaultRedisHost,
 			},
 			&cli.IntFlag{
 				Aliases: []string{"d"},
-				Name:    "db",
+				Name:    "redis-db",
 				Usage:   "redis db",
 				Value:   defaultRedisDB,
 			},
@@ -52,34 +61,94 @@ func main() {
 				Aliases: []string{"i"},
 				Name:    "idle",
 				Usage:   "max idle connection to redis",
-				Value:   defaultMaxIdle,
+				Value:   defaultRedisMaxIdle,
 			},
 			&cli.IntFlag{
 				Aliases: []string{"a"},
 				Name:    "active",
 				Usage:   "max active connection to redis",
-				Value:   defaultMaxActive,
+				Value:   defaultRedisMaxActive,
 			},
 			&cli.DurationFlag{
 				Aliases: []string{"t"},
 				Name:    "timeout",
 				Usage:   "idle connection timeout duration",
-				Value:   defaultIdleTimeout,
+				Value:   defaultRedisIdleTimeout,
+			},
+			&cli.StringFlag{
+				Aliases: []string{"m"},
+				Name:    "mongo-host",
+				Usage:   "mongodb host",
+				Value:   defaultMongoHost,
+			},
+			&cli.DurationFlag{
+				Aliases: []string{"o"},
+				Name:    "mongo-timeout",
+				Usage:   "mongodb connect timeout",
+				Value:   defaultMongoTimeout,
+			},
+			&cli.StringFlag{
+				Aliases: []string{"b"},
+				Name:    "mongo-database",
+				Usage:   "mongodb-database",
+				Value:   defaultMongoDatabase,
+			},
+			&cli.StringFlag{
+				Aliases: []string{"u"},
+				Name:    "mongo-username",
+				Usage:   "mongodb user name",
+				Value:   defaultMongoUserName,
+			},
+			&cli.StringFlag{
+				Aliases: []string{"p"},
+				Name:    "mongo-password",
+				Usage:   "mongodb password",
+				Value:   defaultMongoPassword,
 			},
 		},
 		Action: func(c *cli.Context) error {
+			// gRPC
 			listen := c.String("listen")
-			host := c.String("host")
-			db := c.Int("db")
-			maxIdle := c.Int("idle")
-			maxActive := c.Int("active")
-			idleTimeout := c.Duration("timeout")
+			// redis
+			redisHost := c.String("redis-host")
+			redisDB := c.Int("redis-db")
+			redisMaxIdle := c.Int("idle")
+			redisMaxActive := c.Int("active")
+			redisIdleTimeout := c.Duration("timeout")
+			// mongoDB
+			mongoHost := c.String("mongo-host")
+			mongoTimeout := c.Duration("mongo-timeout")
+			mongoDatabase := c.String("mongo-database")
+			mongoUsername := c.String("mongo-username")
+			mongoPassword := c.String("mongo-password")
+
 			log.Println("listen:", listen)
-			log.Println("host:", host)
-			log.Println("db:", db)
-			log.Println("maxIdle:", maxIdle)
-			log.Println("maxActive:", maxActive)
-			log.Println("idleTimeout:", idleTimeout)
+			log.Println("redis host:", redisHost)
+			log.Println("redis db:", redisDB)
+			log.Println("redis max idle:", redisMaxIdle)
+			log.Println("redis max active:", redisMaxActive)
+			log.Println("redis timeout:", redisIdleTimeout)
+			log.Println("mongo host:", mongoHost)
+			log.Println("mongo timeout:", mongoTimeout)
+			log.Println("mongo database:", mongoDatabase)
+			log.Println("mongo username:", mongoUsername)
+			log.Println("mongo password:", mongoPassword)
+
+			redisCfg := &redisConfig{
+				host:        redisHost,
+				db:          redisDB,
+				maxIdle:     redisMaxIdle,
+				maxActive:   redisMaxActive,
+				idleTimeout: redisIdleTimeout,
+			}
+
+			mongoCfg := &mgo.DialInfo{
+				ServiceHost: mongoHost,
+				Timeout:     mongoTimeout,
+				Database:    mongoDatabase,
+				Username:    mongoUsername,
+				Password:    mongoPassword,
+			}
 
 			// listen
 			lis, err := net.Listen("tcp", listen)
@@ -92,7 +161,7 @@ func main() {
 			// register service
 			s := grpc.NewServer()
 			instance := &server{}
-			instance.init(host, db, maxIdle, maxActive, idleTimeout)
+			instance.init(mongoCfg, redisCfg)
 			pb.RegisterDBServiceServer(s, instance)
 
 			// start service

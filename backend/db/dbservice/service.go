@@ -7,34 +7,19 @@ import (
 	"github.com/master-g/omgo/proto/grpc/db"
 	proto_common "github.com/master-g/omgo/proto/pb/common"
 	"golang.org/x/net/context"
-	"time"
+	"gopkg.in/mgo.v2"
 )
 
 // gRPC
 type server struct {
-	redisClient *redis.Pool
+	driver driver
 }
 
-func (s *server) init(host string, db, maxIdle, maxActive int, idleTimeout time.Duration) {
-	// init redis client with pool
-	s.redisClient = &redis.Pool{
-		MaxIdle:     maxIdle,
-		MaxActive:   maxActive,
-		IdleTimeout: idleTimeout,
-		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", host)
-			if err != nil {
-				log.Panic(err)
-				return nil, err
-			}
-			// select redis db
-			c.Do("SELECT", db)
-			return c, nil
-		},
-	}
+func (s *server) init(mcfg *mgo.DialInfo, rcfg *redisConfig) {
+	s.driver.init(mcfg, rcfg)
 }
 
-func (s *server) QueryUser(ctx context.Context, in *proto.DB_UserKey) (info *proto_common.UserBasicInfo, err error) {
+func (s *server) QueryUser(ctx context.Context, in *proto.DB_UserKey) (ret *proto.DB_UserQueryResult, err error) {
 	// get redis connection from pool
 	conn := s.redisClient.Get()
 
@@ -48,9 +33,16 @@ func (s *server) QueryUser(ctx context.Context, in *proto.DB_UserKey) (info *pro
 	}
 	conn.Close()
 
-	if err = redis.ScanStruct(values, &info); err != nil {
+	var userInfo proto_common.UserBasicInfo
+	status := proto_common.ResultCode_RESULT_OK
+
+	if err = redis.ScanStruct(values, &userInfo); err != nil {
 		log.Error(err)
+		status = proto_common.ResultCode_RESULT_INVALID
 	}
 
-	return info, err
+	return &proto.DB_UserQueryResult{
+		Status: status,
+		Info:   userInfo,
+	}, err
 }
