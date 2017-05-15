@@ -5,9 +5,7 @@ package proto;
 import "common.proto";
 
 // Database service definition
-service DBService {
-    rpc QueryUser(DB.UserKey) returns (proto.common.UserBasicInfo);
-}
+service DBService { rpc QueryUser(DB.UserKey) returns (DB.UserQueryResult); }
 
 message DB {
     message UserKey {
