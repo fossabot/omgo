@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
+	log "github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
+	"github.com/master-g/omgo/proto/grpc/db"
+	proto_common "github.com/master-g/omgo/proto/pb/common"
 	"gopkg.in/mgo.v2"
-	"log"
 	"os"
 	"time"
 )
@@ -47,4 +50,24 @@ func (d *driver) init(minfo *mgo.DialInfo, rcfg *redisConfig) {
 			return c, nil
 		},
 	}
+}
+
+func (d *driver) queryUser(key *proto.DB_UserKey) (*proto_common.UserBasicInfo, error) {
+	var userInfo proto_common.UserBasicInfo
+	var err error
+
+	if key.Usn != 0 {
+		// a valid usn, query in redis first
+		redisConn := d.redisClient.Get()
+		values, err := redisConn.Do("HGETALL", fmt.Printf("user:%d", key.Usn))
+		if err != nil {
+			log.Error(err)
+		}
+		err = redis.ScanStruct(values, &userInfo)
+		if err != nil {
+			log.Error(err)
+		}
+	}
+
+	return &userInfo, err
 }
