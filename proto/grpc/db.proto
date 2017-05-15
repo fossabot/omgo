@@ -11,8 +11,12 @@ service DBService {
 
 message DB {
     message UserKey {
-        fixed64 usn = 1;
-        uint64 uid = 2;
-        string email = 3;
+        fixed64 usn   = 1;
+        uint64  uid   = 2;
+        string  email = 3;
+    }
+    message UserQueryResult {
+        proto.common.ResultCode    status = 1;
+        proto.common.UserBasicInfo info   = 2;
     }
 }

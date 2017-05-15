@@ -1,0 +1,9 @@
+---
+# We'll use defaults from the LLVM style, but with 4 columns indentation.
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+BasedOnStyle: LLVM
+---
+Language: Proto
+IndentWidth: 4
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true

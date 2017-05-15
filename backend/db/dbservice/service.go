@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
+	log "github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
 	"github.com/master-g/omgo/proto/grpc/db"
-	"github.com/master-g/omgo/proto/pb/common"
+	proto_common "github.com/master-g/omgo/proto/pb/common"
 	"golang.org/x/net/context"
-	"log"
 	"time"
 )
 
@@ -33,6 +34,23 @@ func (s *server) init(host string, db, maxIdle, maxActive int, idleTimeout time.
 	}
 }
 
-func (s *server) QueryUser(ctx context.Context, in *proto.DB_UserKey) (*proto_common.UserBasicInfo, error) {
-	return nil, nil
+func (s *server) QueryUser(ctx context.Context, in *proto.DB_UserKey) (info *proto_common.UserBasicInfo, err error) {
+	// get redis connection from pool
+	conn := s.redisClient.Get()
+
+	// query user information
+	var values interface{}
+	switch {
+	case in.Usn != 0:
+		values, err = conn.Do("HGETALL", fmt.Printf("user:%d", in.Usn))
+	case in.Uid != 0:
+
+	}
+	conn.Close()
+
+	if err = redis.ScanStruct(values, &info); err != nil {
+		log.Error(err)
+	}
+
+	return info, err
 }
