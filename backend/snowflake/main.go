@@ -72,6 +72,6 @@ func startSnowflake(endpoints []string, port int) {
 	instance.init()
 	pb.RegisterSnowflakeServiceServer(s, instance)
 
-	// Start service
+	// start service
 	s.Serve(listener)
 }

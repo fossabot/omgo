@@ -23,6 +23,7 @@ type Config struct {
 
 const (
 	profileAddress       = "0.0.0.0:6666"
+	defaultListen        = ":8888"
 	defaultETCD          = "http://127.0.0.1:2379"
 	defaultRoot          = "/backends"
 	defaultReadDeadLine  = 15 * time.Second
@@ -52,7 +53,7 @@ func main() {
 				Aliases: []string{"l"},
 				Name:    "listen",
 				Usage:   "listening address:port",
-				Value:   ":8888",
+				Value:   defaultListen,
 			},
 			&cli.StringSliceFlag{
 				Aliases: []string{"e"},

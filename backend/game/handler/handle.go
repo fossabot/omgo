@@ -4,7 +4,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/backend/game/types"
 	"github.com/master-g/omgo/net/packet"
-	"github.com/master-g/omgo/proto/pb"
+	proto_common "github.com/master-g/omgo/proto/pb/common"
 	"time"
 )
 

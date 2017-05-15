@@ -3,6 +3,24 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "QEFgaacveBTGCeIXWTwqMFpCQNw=",
+			"path": "github.com/Sirupsen/logrus",
+			"revision": "acfabf31db8f45a9174f54a0d48ea4d15627af4d",
+			"revisionTime": "2017-05-12T19:21:58Z"
+		},
+		{
+			"checksumSHA1": "2UmMbNHc8FBr98mJFN1k8ISOIHk=",
+			"path": "github.com/garyburd/redigo/internal",
+			"revision": "433969511232c397de61b1442f9fd49ec06ae9ba",
+			"revisionTime": "2017-05-10T23:06:39Z"
+		},
+		{
+			"checksumSHA1": "/42qbOB5nE4WjdPstQzI4b3IZCU=",
+			"path": "github.com/garyburd/redigo/redis",
+			"revision": "433969511232c397de61b1442f9fd49ec06ae9ba",
+			"revisionTime": "2017-05-10T23:06:39Z"
+		},
+		{
 			"checksumSHA1": "kBeNcaKk56FguvPSUCEaH6AxpRc=",
 			"path": "github.com/golang/protobuf/proto",
 			"revision": "fec3b39b059c0f88fa6b20f5ed012b1aa203a8b4",
@@ -67,6 +85,12 @@
 			"path": "golang.org/x/net/trace",
 			"revision": "84f0e6f92b10139f986b1756e149a7d9de270cdc",
 			"revisionTime": "2017-05-12T21:27:43Z"
+		},
+		{
+			"checksumSHA1": "5VxR5SMHHsE7QM8kwrc8ZckU0TU=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "1e99a4f9d247b28c670884b9a8d6801f39a47b77",
+			"revisionTime": "2017-05-14T19:20:32Z"
 		},
 		{
 			"checksumSHA1": "faFDXp++cLjLBlvsr+izZ+go1WU=",

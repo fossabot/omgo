@@ -87,6 +87,12 @@
 			"revisionTime": "2017-05-11T08:55:20Z"
 		},
 		{
+			"checksumSHA1": "DRqXXgiN/34kATe0NexOHbQKXTI=",
+			"path": "github.com/master-g/omgo/proto/pb/common",
+			"revision": "e85d4dc8e27fe5bf5ca3a35d99003f27ff687a74",
+			"revisionTime": "2017-05-14T16:06:52Z"
+		},
+		{
 			"checksumSHA1": "MEYuXwhrjh8U0XHH0Go8tKUZvN0=",
 			"path": "github.com/master-g/omgo/services",
 			"revision": "2632a580c33b176a8ed21e141eba50aacf30ef31",
@@ -279,5 +285,5 @@
 			"revisionTime": "2017-04-24T21:45:55Z"
 		}
 	],
-	"rootPath": "github.com/master-g/omgo/backend/auth"
+	"rootPath": "github.com/master-g/omgo/backend/reception"
 }

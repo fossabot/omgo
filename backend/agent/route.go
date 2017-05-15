@@ -7,7 +7,7 @@ import (
 	"github.com/master-g/omgo/backend/agent/handler"
 	"github.com/master-g/omgo/backend/agent/types"
 	"github.com/master-g/omgo/net/packet"
-	"github.com/master-g/omgo/proto/pb/common"
+	proto_common "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/utils"
 )
 
