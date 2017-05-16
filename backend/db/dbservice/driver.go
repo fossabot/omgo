@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	log "github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
 	"github.com/master-g/omgo/proto/grpc/db"
@@ -72,7 +71,7 @@ func (d *driver) queryUser(key *proto.DB_UserKey) (*proto_common.UserBasicInfo, 
 	}
 
 	// query in mongodb
-	err = d.queryUserInMongoDB(&key, &userInfo)
+	err = d.queryUserInMongoDB(key, &userInfo)
 	if err != nil {
 		// found in mongodb, update to redis
 		d.updateUserInfoRedis(&userInfo)
@@ -85,7 +84,7 @@ func (d *driver) queryUserInRedis(usn uint64, userInfo *proto_common.UserBasicIn
 	conn := d.redisClient.Get()
 	defer conn.Close()
 
-	values, err := redis.Values(conn.Do("HGETALL", fmt.Printf("user:%d", usn)))
+	values, err := redis.Values(conn.Do("HGETALL", "user:"+usn))
 	if err == nil && len(values) > 0 {
 		err = redis.ScanStruct(values, userInfo)
 	}

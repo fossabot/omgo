@@ -108,11 +108,11 @@ func main() {
 				Usage:   "idle connection timeout duration",
 				Value:   defaultRedisIdleTimeout,
 			},
-			&cli.StringFlag{
+			&cli.StringSliceFlag{
 				Aliases: []string{"m"},
 				Name:    "mongo-host",
 				Usage:   "mongodb host",
-				Value:   defaultMongoHost,
+				Value:   []string{defaultMongoHost},
 			},
 			&cli.DurationFlag{
 				Aliases: []string{"o"},
@@ -149,7 +149,7 @@ func main() {
 			redisMaxActive := c.Int("active")
 			redisIdleTimeout := c.Duration("timeout")
 			// mongoDB
-			mongoHost := c.String("mongo-host")
+			mongoHost := c.StringSlice("mongo-host")
 			mongoTimeout := c.Duration("mongo-timeout")
 			mongoDatabase := c.String("mongo-database")
 			mongoUsername := c.String("mongo-username")

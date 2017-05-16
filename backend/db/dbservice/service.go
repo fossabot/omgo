@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	log "github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
 	"github.com/master-g/omgo/proto/grpc/db"
@@ -27,7 +26,7 @@ func (s *server) QueryUser(ctx context.Context, in *proto.DB_UserKey) (ret *prot
 	var values interface{}
 	switch {
 	case in.Usn != 0:
-		values, err = conn.Do("HGETALL", fmt.Printf("user:%d", in.Usn))
+		values, err = redis.Values(conn.Do("HGETALL", "user:"+in.Usn))
 	case in.Uid != 0:
 
 	}
@@ -43,6 +42,6 @@ func (s *server) QueryUser(ctx context.Context, in *proto.DB_UserKey) (ret *prot
 
 	return &proto.DB_UserQueryResult{
 		Status: status,
-		Info:   userInfo,
+		Info:   &userInfo,
 	}, err
 }
