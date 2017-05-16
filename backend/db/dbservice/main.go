@@ -112,7 +112,7 @@ func main() {
 				Aliases: []string{"m"},
 				Name:    "mongo-host",
 				Usage:   "mongodb host",
-				Value:   []string{defaultMongoHost},
+				Value:   cli.NewStringSlice(defaultMongoHost),
 			},
 			&cli.DurationFlag{
 				Aliases: []string{"o"},

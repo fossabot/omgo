@@ -24,7 +24,7 @@ func (s *server) QueryUser(ctx context.Context, in *proto.DB_UserKey) (ret *prot
 	conn := s.driver.redisClient.Get()
 
 	// query user information
-	var values interface{}
+	var values []interface{}
 	switch {
 	case in.Usn != 0:
 		values, err = redis.Values(conn.Do("HGETALL", fmt.Sprintf("user:%v", in.Usn)))
