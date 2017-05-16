@@ -3,16 +3,16 @@ package main
 import (
 	log "github.com/Sirupsen/logrus"
 	pb "github.com/master-g/omgo/proto/grpc/db"
+	proto_common "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc"
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/urfave/cli.v2"
 	"net"
 	"os"
 	"sort"
 	"time"
-	proto_common "github.com/master-g/omgo/proto/pb/common"
-	"gopkg.in/mgo.v2/bson"
 )
 
 const (
@@ -46,17 +46,17 @@ func testMongoDB(dialInfo *mgo.DialInfo) {
 	}
 
 	userInfo := proto_common.UserBasicInfo{
-		Usn      : 10001,
-		Uid      : 10002,
-		Birthday : 12345,
-		Gender   : proto_common.Gender_GENDER_FEMALE,
-		Nickname : "Anna",
-		Email    : "anna@acme.com",
-		Avatar   : "gg",
-		Country  : "cn",
+		Usn:      10001,
+		Uid:      10002,
+		Birthday: 12345,
+		Gender:   proto_common.Gender_GENDER_FEMALE,
+		Nickname: "Anna",
+		Email:    "anna@acme.com",
+		Avatar:   "gg",
+		Country:  "cn",
 	}
 
-	v, err := c.Upsert(bson.M{"usn":userInfo.Usn}, userInfo)
+	v, err := c.Upsert(bson.M{"usn": userInfo.Usn}, userInfo)
 	if err != nil {
 		log.Fatal(err)
 	}

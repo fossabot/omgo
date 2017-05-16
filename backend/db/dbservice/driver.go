@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	log "github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
 	"github.com/master-g/omgo/proto/grpc/db"
@@ -84,7 +85,7 @@ func (d *driver) queryUserInRedis(usn uint64, userInfo *proto_common.UserBasicIn
 	conn := d.redisClient.Get()
 	defer conn.Close()
 
-	values, err := redis.Values(conn.Do("HGETALL", "user:"+usn))
+	values, err := redis.Values(conn.Do("HGETALL", fmt.Sprintf("user:%v", usn)))
 	if err == nil && len(values) > 0 {
 		err = redis.ScanStruct(values, userInfo)
 	}
