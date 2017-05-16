@@ -143,11 +143,11 @@ func main() {
 			}
 
 			mongoCfg := &mgo.DialInfo{
-				ServiceHost: mongoHost,
-				Timeout:     mongoTimeout,
-				Database:    mongoDatabase,
-				Username:    mongoUsername,
-				Password:    mongoPassword,
+				Addrs:    mongoHost,
+				Timeout:  mongoTimeout,
+				Database: mongoDatabase,
+				Username: mongoUsername,
+				Password: mongoPassword,
 			}
 
 			// listen

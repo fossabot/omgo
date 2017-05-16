@@ -21,7 +21,7 @@ func (s *server) init(mcfg *mgo.DialInfo, rcfg *redisConfig) {
 
 func (s *server) QueryUser(ctx context.Context, in *proto.DB_UserKey) (ret *proto.DB_UserQueryResult, err error) {
 	// get redis connection from pool
-	conn := s.redisClient.Get()
+	conn := s.driver.redisClient.Get()
 
 	// query user information
 	var values interface{}

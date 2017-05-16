@@ -1,12 +1,14 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	log "github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
 	"github.com/master-g/omgo/proto/grpc/db"
 	proto_common "github.com/master-g/omgo/proto/pb/common"
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 	"os"
 	"time"
 )
@@ -32,7 +34,7 @@ func (d *driver) init(minfo *mgo.DialInfo, rcfg *redisConfig) {
 		log.Fatal(err)
 		os.Exit(-1)
 	}
-	d.mongoSession.SetMode(mgo.Monotonic)
+	d.mongoSession.SetMode(mgo.Monotonic, true)
 
 	// init redis client with pool
 	d.redisClient = &redis.Pool{
@@ -42,12 +44,12 @@ func (d *driver) init(minfo *mgo.DialInfo, rcfg *redisConfig) {
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", rcfg.host)
 			if err != nil {
-				log.Fatal(err)
-				os.Exit(-1)
+				log.Error(err)
+			} else {
+				// select redis db
+				c.Do("SELECT", rcfg.db)
 			}
-			// select redis db
-			c.Do("SELECT", rcfg.db)
-			return c, nil
+			return c, err
 		},
 	}
 }
@@ -58,16 +60,54 @@ func (d *driver) queryUser(key *proto.DB_UserKey) (*proto_common.UserBasicInfo, 
 
 	if key.Usn != 0 {
 		// a valid usn, query in redis first
-		redisConn := d.redisClient.Get()
-		values, err := redisConn.Do("HGETALL", fmt.Printf("user:%d", key.Usn))
-		if err != nil {
-			log.Error(err)
-		}
-		err = redis.ScanStruct(values, &userInfo)
-		if err != nil {
-			log.Error(err)
+		err = d.queryUserInRedis(key.Usn, &userInfo)
+		if err == nil && userInfo.Usn == key.Usn {
+			// found in redis
+			return &userInfo, err
 		}
 	}
 
+	// query in mongodb
+	err = d.queryUserInMongoDB(&key, &userInfo)
+	if err != nil {
+		// found in mongodb, update to redis
+		d.updateUserInfoRedis(&userInfo)
+	}
+
 	return &userInfo, err
+}
+
+func (d *driver) queryUserInRedis(usn uint64, userInfo *proto_common.UserBasicInfo) error {
+	conn := d.redisClient.Get()
+	defer conn.Close()
+
+	values, err := redis.Values(conn.Do("HGETALL", fmt.Printf("user:%d", usn)))
+	if err == nil && len(values) > 0 {
+		err = redis.ScanStruct(values, userInfo)
+	}
+
+	return err
+}
+
+func (d *driver) queryUserInMongoDB(key *proto.DB_UserKey, userInfo *proto_common.UserBasicInfo) error {
+	c := d.mongoSession.DB("master").C("users")
+	if c == nil {
+		return errors.New("no such db or collection")
+	}
+	err := c.Find(bson.M{"usn": key.Usn, "email": key.Email, "uid": key.Uid}).One(userInfo)
+	if err != nil {
+		// no found in mongodb
+		return err
+	}
+
+	return nil
+}
+
+func (d *driver) updateUserInfoRedis(userInfo *proto_common.UserBasicInfo) error {
+	// store result to redis
+	_, err := d.redisClient.Get().Do("HMSET", redis.Args{}.Add("user:", userInfo.Usn).AddFlat(userInfo))
+	if err != nil {
+		log.Error(err)
+	}
+	return err
 }

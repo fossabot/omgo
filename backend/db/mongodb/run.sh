@@ -2,7 +2,7 @@
 
 # https://hub.docker.com/_/mongo/
 
-SID=mongodb1
+SID=mongodb-0
 NETHOST=--net=host
 
 case "$(uname -s)" in
