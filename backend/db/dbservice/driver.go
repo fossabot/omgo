@@ -26,6 +26,10 @@ type redisConfig struct {
 	idleTimeout time.Duration
 }
 
+var (
+	mongoDBInvalidError = errors.New("no such db or collection")
+)
+
 func (d *driver) init(minfo *mgo.DialInfo, rcfg *redisConfig) {
 	// init mongodb client
 	var err error
@@ -90,9 +94,12 @@ func (d *driver) queryUserInRedis(usn uint64, userInfo *proto_common.UserBasicIn
 }
 
 func (d *driver) queryUserInMongoDB(key *proto.DB_UserKey, userInfo *proto_common.UserBasicInfo) error {
-	c := d.mongoSession.DB("master").C("users")
+	sessionCpy := d.mongoSession.Copy()
+	defer sessionCpy.Close()
+
+	c := sessionCpy.DB("master").C("users")
 	if c == nil {
-		return errors.New("no such db or collection")
+		return mongoDBInvalidError
 	}
 	err := c.Find(bson.M{"usn": key.Usn, "email": key.Email, "uid": key.Uid}).One(userInfo)
 	if err != nil {
@@ -109,5 +116,21 @@ func (d *driver) updateUserInfoRedis(userInfo *proto_common.UserBasicInfo) error
 	if err != nil {
 		log.Error(err)
 	}
+	return err
+}
+
+func (d *driver) updateUserInfoMongoDB(userInfo *proto_common.UserBasicInfo) error {
+	sessionCpy := d.mongoSession.Copy()
+	defer sessionCpy.Close()
+
+	c := sessionCpy.DB("master").C("users")
+	if c == nil {
+		return mongoDBInvalidError
+	}
+	_, err := c.Upsert(bson.M{"usn": userInfo.Usn}, userInfo)
+	if err != nil {
+		log.Errorf("error while upsert userinfo:%v error:%v", userInfo, err)
+	}
+
 	return err
 }
