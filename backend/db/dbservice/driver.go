@@ -30,6 +30,7 @@ var (
 	mongoDBInvalidError = errors.New("no such db or collection")
 )
 
+// init both redis and mongodb client
 func (d *driver) init(minfo *mgo.DialInfo, rcfg *redisConfig) {
 	// init mongodb client
 	var err error
@@ -58,7 +59,8 @@ func (d *driver) init(minfo *mgo.DialInfo, rcfg *redisConfig) {
 	}
 }
 
-func (d *driver) queryUser(key *proto.DB_UserKey) (*proto_common.UserBasicInfo, error) {
+// query user basic info in both redis and mongodb
+func (d *driver) queryUserBasicInfo(key *proto.DB_UserKey) (*proto_common.UserBasicInfo, error) {
 	var userInfo proto_common.UserBasicInfo
 	var err error
 

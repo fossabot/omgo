@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	log "github.com/Sirupsen/logrus"
-	"github.com/garyburd/redigo/redis"
 	"github.com/master-g/omgo/proto/grpc/db"
 	pc "github.com/master-g/omgo/proto/pb/common"
 	"golang.org/x/net/context"
@@ -27,8 +26,8 @@ func (s *server) init(mcfg *mgo.DialInfo, rcfg *redisConfig) {
 }
 
 // query user info
-func (s *server) UserQuery(ctx context.Context, key *proto.DB_UserKey) (*proto.DB_UserQueryResult, error) {
-	var queryResult proto.DB_UserQueryResult
+func (s *server) UserQuery(ctx context.Context, key *proto.DB_UserKey) (*proto.DB_UserQueryResponse, error) {
+	var queryResult proto.DB_UserQueryResponse
 	setRspHeader(queryResult.Result)
 
 	if key.Usn == 0 && key.Uid == 0 && key.Email == "" {
@@ -36,7 +35,7 @@ func (s *server) UserQuery(ctx context.Context, key *proto.DB_UserKey) (*proto.D
 		return queryResult, nil
 	}
 
-	userInfo, err := s.driver.queryUser(key)
+	userInfo, err := s.driver.queryUserBasicInfo(key)
 	queryResult.Info = userInfo
 
 	if err != nil {
@@ -49,16 +48,21 @@ func (s *server) UserQuery(ctx context.Context, key *proto.DB_UserKey) (*proto.D
 }
 
 // update user info
-func (s *server) UserUpdateInfo(ctx context.Context, userInfo *pc.UserBasicInfo) (*pc.RspHeader, error) {
-
+func (s *server) UserUpdateInfo(ctx context.Context, userBasicInfo *pc.UserBasicInfo) (*pc.RspHeader, error) {
+	return nil, nil
 }
 
 // register
-func (s *server) UserRegister(ctx context.Context, userInfo *pc.UserBasicInfo) (*proto.DB_UserLoginResult, error) {
+func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegisterRequest) (*proto.DB_UserRegisterResponse, error) {
+	return nil, nil
+}
 
+// login
+func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginRequest) (*proto.DB_UserLoginResponse, error) {
+	return nil, nil
 }
 
 // logout
 func (s *server) UserLogout(ctx context.Context, key *proto.DB_UserKey) (*pc.RspHeader, error) {
-
+	return nil, nil
 }
