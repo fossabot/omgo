@@ -7,14 +7,17 @@ import "common.proto";
 // Database service definition
 service DBService {
     // query user info
-    rpc UserQuery(DB.UserKey) returns (DB.UserQueryResult);
+    rpc UserQuery(DB.UserKey) returns (DB.UserQueryResponse);
 
     // update user info
     rpc UserUpdateInfo(proto.common.UserBasicInfo)
         returns (proto.common.RspHeader);
 
     // register
-    rpc UserRegister(proto.common.UserBasicInfo) returns (DB.UserLoginResult);
+    rpc UserRegister(DB.UserRegisterRequest) returns (DB.UserRegisterResponse);
+
+    // login
+    rpc UserLogin(DB.UserLoginRequest) returns (DB.UserLoginResponse);
 
     // logout
     rpc UserLogout(DB.UserKey) returns (proto.common.RspHeader);
@@ -32,18 +35,27 @@ message DB {
         bytes secret = 1; // password hash
         bytes token  = 2; // access token
     }
-    message UserQueryResult {
+    message UserQueryResponse {
         proto.common.RspHeader     result = 1;
         proto.common.UserBasicInfo info   = 2;
     }
-    message RegisterRequest {
+    message UserRegisterRequest {
         proto.common.RspHeader     result = 1;
         proto.common.UserBasicInfo info   = 2;
-        UserExtraInfo              extra  = 3;
+        bytes                      secret = 3;
     }
-    message UserLoginResult {
+    message UserRegisterResponse {
         proto.common.RspHeader     result = 1;
         proto.common.UserBasicInfo info   = 2;
-        UserExtraInfo              extra  = 3;
+        bytes                      token  = 3;
+    }
+    message UserLoginRequest {
+        proto.common.UserBasicInfo info   = 1;
+        bytes                      secret = 2;
+    }
+    message UserLoginResponse {
+        proto.common.RspHeader     result = 1;
+        proto.common.UserBasicInfo info   = 2;
+        bytes                      token  = 3;
     }
 }

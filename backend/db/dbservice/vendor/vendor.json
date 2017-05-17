@@ -33,10 +33,10 @@
 			"revisionTime": "2017-05-12T17:16:34Z"
 		},
 		{
-			"checksumSHA1": "ZOFmSdPu6QZM6mhtaDmeJgOs//Q=",
+			"checksumSHA1": "UnKDep7TMeo/TlE1jjPBc6OvNUk=",
 			"path": "github.com/master-g/omgo/proto/grpc/db",
-			"revision": "5d81fde3b49cf7fac078cde6743732891f1a4c38",
-			"revisionTime": "2017-05-17T07:42:51Z"
+			"revision": "899298e28db02addc59aecd8b9cc30762374e203",
+			"revisionTime": "2017-05-17T08:48:29Z"
 		},
 		{
 			"checksumSHA1": "owsG0MOItaIrKUPKozr0XE+ASHs=",
