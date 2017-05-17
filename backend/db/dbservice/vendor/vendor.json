@@ -33,16 +33,16 @@
 			"revisionTime": "2017-05-12T17:16:34Z"
 		},
 		{
-			"checksumSHA1": "ZwsRaEp61y3WwK4wdGXZD/ZsExA=",
+			"checksumSHA1": "ZOFmSdPu6QZM6mhtaDmeJgOs//Q=",
 			"path": "github.com/master-g/omgo/proto/grpc/db",
-			"revision": "b17f759264bbe49c8ff0ec2993602be69080bf77",
-			"revisionTime": "2017-05-15T09:18:56Z"
+			"revision": "5d81fde3b49cf7fac078cde6743732891f1a4c38",
+			"revisionTime": "2017-05-17T07:42:51Z"
 		},
 		{
-			"checksumSHA1": "DRqXXgiN/34kATe0NexOHbQKXTI=",
+			"checksumSHA1": "owsG0MOItaIrKUPKozr0XE+ASHs=",
 			"path": "github.com/master-g/omgo/proto/pb/common",
-			"revision": "f8d030c2650ca5946448383e9608b47636daa63d",
-			"revisionTime": "2017-05-13T18:41:53Z"
+			"revision": "5d81fde3b49cf7fac078cde6743732891f1a4c38",
+			"revisionTime": "2017-05-17T07:42:51Z"
 		},
 		{
 			"checksumSHA1": "Y+HGqEkYM15ir+J93MEaHdyFy0c=",

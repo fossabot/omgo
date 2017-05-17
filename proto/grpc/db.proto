@@ -21,22 +21,29 @@ service DBService {
 }
 
 message DB {
+    // user query key
     message UserKey {
         fixed64 usn   = 1;
         uint64  uid   = 2;
         string  email = 3;
+    }
+    // user extra information
+    message UserExtraInfo {
+        bytes secret = 1; // password hash
+        bytes token  = 2; // access token
     }
     message UserQueryResult {
         proto.common.RspHeader     result = 1;
         proto.common.UserBasicInfo info   = 2;
     }
     message RegisterRequest {
-        proto.common.UserBasicInfo info   = 1;
-        string                     secret = 2;
+        proto.common.RspHeader     result = 1;
+        proto.common.UserBasicInfo info   = 2;
+        UserExtraInfo              extra  = 3;
     }
     message UserLoginResult {
         proto.common.RspHeader     result = 1;
         proto.common.UserBasicInfo info   = 2;
-        bytes                      token  = 3;
+        UserExtraInfo              extra  = 3;
     }
 }

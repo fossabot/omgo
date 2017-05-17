@@ -5,9 +5,10 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
 	"github.com/master-g/omgo/proto/grpc/db"
-	proto_common "github.com/master-g/omgo/proto/pb/common"
+	pc "github.com/master-g/omgo/proto/pb/common"
 	"golang.org/x/net/context"
 	"gopkg.in/mgo.v2"
+	"time"
 )
 
 // gRPC
@@ -15,34 +16,49 @@ type server struct {
 	driver driver
 }
 
+func setRspHeader(header *pc.RspHeader) *pc.RspHeader {
+	header.Status = pc.ResultCode_RESULT_OK
+	header.Timestamp = time.Now().Unix()
+	return header
+}
+
 func (s *server) init(mcfg *mgo.DialInfo, rcfg *redisConfig) {
 	s.driver.init(mcfg, rcfg)
 }
 
-func (s *server) QueryUser(ctx context.Context, in *proto.DB_UserKey) (ret *proto.DB_UserQueryResult, err error) {
-	// get redis connection from pool
-	conn := s.driver.redisClient.Get()
+// query user info
+func (s *server) UserQuery(ctx context.Context, key *proto.DB_UserKey) (*proto.DB_UserQueryResult, error) {
+	var queryResult proto.DB_UserQueryResult
+	setRspHeader(queryResult.Result)
 
-	// query user information
-	var values []interface{}
-	switch {
-	case in.Usn != 0:
-		values, err = redis.Values(conn.Do("HGETALL", fmt.Sprintf("user:%v", in.Usn)))
-	case in.Uid != 0:
-
-	}
-	conn.Close()
-
-	var userInfo proto_common.UserBasicInfo
-	status := proto_common.ResultCode_RESULT_OK
-
-	if err = redis.ScanStruct(values, &userInfo); err != nil {
-		log.Error(err)
-		status = proto_common.ResultCode_RESULT_INVALID
+	if key.Usn == 0 && key.Uid == 0 && key.Email == "" {
+		queryResult.Result.Status = pc.ResultCode_RESULT_INVALID
+		return queryResult, nil
 	}
 
-	return &proto.DB_UserQueryResult{
-		Status: status,
-		Info:   &userInfo,
-	}, err
+	userInfo, err := s.driver.queryUser(key)
+	queryResult.Info = userInfo
+
+	if err != nil {
+		log.Errorf("error while query user:%v", err)
+		queryResult.Result.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		queryResult.Result.Msg = fmt.Sprintf("error:%v", err)
+	}
+
+	return queryResult, nil
+}
+
+// update user info
+func (s *server) UserUpdateInfo(ctx context.Context, userInfo *pc.UserBasicInfo) (*pc.RspHeader, error) {
+
+}
+
+// register
+func (s *server) UserRegister(ctx context.Context, userInfo *pc.UserBasicInfo) (*proto.DB_UserLoginResult, error) {
+
+}
+
+// logout
+func (s *server) UserLogout(ctx context.Context, key *proto.DB_UserKey) (*pc.RspHeader, error) {
+
 }
