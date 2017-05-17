@@ -41,14 +41,16 @@ enum Gender {
 }
 
 message UserBasicInfo {
-    fixed64 usn      = 1; // user serial no. internal only
-    uint64  uid      = 2; // id
-    fixed64 birthday = 3; // EPOCH
-    Gender  gender   = 4; // gender
-    string  nickname = 5; // name
-    string  email    = 6; // email address
-    string  avatar   = 7; // avatar url
-    string  country  = 8; // country / region
+    fixed64 usn        = 1;  // user serial no. internal only
+    uint64  uid        = 2;  // id
+    fixed64 birthday   = 3;  // EPOCH
+    Gender  gender     = 4;  // gender
+    string  nickname   = 5;  // name
+    string  email      = 6;  // email address
+    string  avatar     = 7;  // avatar url
+    string  country    = 8;  // country / region
+    fixed64 since      = 9;  // register timestamp
+    fixed64 last_login = 10; // last login timestamp
 }
 
 message C2SGetSeedReq {

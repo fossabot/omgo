@@ -5,7 +5,20 @@ package proto;
 import "common.proto";
 
 // Database service definition
-service DBService { rpc QueryUser(DB.UserKey) returns (DB.UserQueryResult); }
+service DBService {
+    // query user info
+    rpc UserQuery(DB.UserKey) returns (DB.UserQueryResult);
+
+    // update user info
+    rpc UserUpdateInfo(proto.common.UserBasicInfo)
+        returns (proto.common.RspHeader);
+
+    // register
+    rpc UserRegister(proto.common.UserBasicInfo) returns (DB.UserLoginResult);
+
+    // logout
+    rpc UserLogout(DB.UserKey) returns (proto.common.RspHeader);
+}
 
 message DB {
     message UserKey {
@@ -14,7 +27,16 @@ message DB {
         string  email = 3;
     }
     message UserQueryResult {
-        proto.common.ResultCode    status = 1;
+        proto.common.RspHeader     result = 1;
         proto.common.UserBasicInfo info   = 2;
+    }
+    message RegisterRequest {
+        proto.common.UserBasicInfo info   = 1;
+        string                     secret = 2;
+    }
+    message UserLoginResult {
+        proto.common.RspHeader     result = 1;
+        proto.common.UserBasicInfo info   = 2;
+        bytes                      token  = 3;
     }
 }
