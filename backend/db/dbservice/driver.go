@@ -66,7 +66,7 @@ func (d *driver) queryUserBasicInfo(key *proto.DB_UserKey) (*proto_common.UserBa
 
 	if key.Usn != 0 {
 		// a valid usn, query in redis first
-		err = d.queryUserInRedis(key.Usn, &userInfo)
+		err = d.queryUserBasicInfoRedis(key.Usn, &userInfo)
 		if err == nil && userInfo.Usn == key.Usn {
 			// found in redis
 			return &userInfo, err
@@ -74,7 +74,7 @@ func (d *driver) queryUserBasicInfo(key *proto.DB_UserKey) (*proto_common.UserBa
 	}
 
 	// query in mongodb
-	err = d.queryUserInMongoDB(key, &userInfo)
+	err = d.queryUserBasicInfoMongoDB(key, &userInfo)
 	if err != nil {
 		// found in mongodb, update to redis
 		d.updateUserInfoRedis(&userInfo)
@@ -83,7 +83,7 @@ func (d *driver) queryUserBasicInfo(key *proto.DB_UserKey) (*proto_common.UserBa
 	return &userInfo, err
 }
 
-func (d *driver) queryUserInRedis(usn uint64, userInfo *proto_common.UserBasicInfo) error {
+func (d *driver) queryUserBasicInfoRedis(usn uint64, userInfo *proto_common.UserBasicInfo) error {
 	conn := d.redisClient.Get()
 	defer conn.Close()
 
@@ -95,7 +95,7 @@ func (d *driver) queryUserInRedis(usn uint64, userInfo *proto_common.UserBasicIn
 	return err
 }
 
-func (d *driver) queryUserInMongoDB(key *proto.DB_UserKey, userInfo *proto_common.UserBasicInfo) error {
+func (d *driver) queryUserBasicInfoMongoDB(key *proto.DB_UserKey, userInfo *proto_common.UserBasicInfo) error {
 	sessionCpy := d.mongoSession.Copy()
 	defer sessionCpy.Close()
 
@@ -105,13 +105,76 @@ func (d *driver) queryUserInMongoDB(key *proto.DB_UserKey, userInfo *proto_commo
 	}
 	err := c.Find(bson.M{"usn": key.Usn, "email": key.Email, "uid": key.Uid}).One(userInfo)
 	if err != nil {
-		// no found in mongodb
+		// not found in mongodb
 		return err
 	}
 
 	return nil
 }
 
+// query user extra info in both redis and mongodb
+func (d *driver) queryUserExtraInfo(usn uint64) (*proto.DB_UserExtraInfo, error) {
+	var extraInfo proto.DB_UserExtraInfo
+	var err error
+
+	if usn != 0 {
+		// a valid usn, query in redis first
+		err = d.queryUserExtraRedis(usn, &extraInfo)
+		if err == nil && len(extraInfo.Secret) != 0 {
+			// found in redis
+			return &extraInfo, err
+		}
+	}
+
+	// query in mongodb
+	err = d.queryUserExtraMongoDB(usn, &extraInfo)
+	if err != nil {
+		// found in mongodb, update to redis
+		d.updateUserExtraRedis(usn, &extraInfo)
+	}
+
+	return &extraInfo, err
+}
+
+func (d *driver) queryUserExtraRedis(usn uint64, extraInfo *proto.DB_UserExtraInfo) error {
+	conn := d.redisClient.Get()
+	defer conn.Close()
+
+	values, err := redis.Values(conn.Do("HGETALL", fmt.Sprintf("userExtra:%v", usn)))
+	if err == nil && len(values) > 0 {
+		err = redis.ScanStruct(values, extraInfo)
+	}
+
+	return err
+}
+
+func (d *driver) queryUserExtraMongoDB(usn uint64, extraInfo *proto.DB_UserExtraInfo) error {
+	sessionCpy := d.mongoSession.Copy()
+	defer sessionCpy.Close()
+
+	c := sessionCpy.DB("master").C("userExtra")
+	if c == nil {
+		return mongoDBInvalidError
+	}
+	err := c.Find(bson.M{"usn": usn}).One(extraInfo)
+	if err != nil {
+		// not found in mongodb
+		return err
+	}
+
+	return nil
+}
+
+func (d *driver) updateUserExtraRedis(usn uint64, extraInfo *proto.DB_UserExtraInfo) error {
+	// store result to redis
+	_, err := d.redisClient.Get().Do("HMSET", redis.Args{}.Add("userExtra:", usn).AddFlat(extraInfo))
+	if err != nil {
+		log.Error(err)
+	}
+	return err
+}
+
+// update user basic info in redis
 func (d *driver) updateUserInfoRedis(userInfo *proto_common.UserBasicInfo) error {
 	// store result to redis
 	_, err := d.redisClient.Get().Do("HMSET", redis.Args{}.Add("user:", userInfo.Usn).AddFlat(userInfo))
