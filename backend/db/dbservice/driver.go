@@ -59,6 +59,10 @@ func (d *driver) init(minfo *mgo.DialInfo, rcfg *redisConfig) {
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Basic Info
+////////////////////////////////////////////////////////////////////////////////
+
 // query user basic info in both redis and mongodb
 func (d *driver) queryUserBasicInfo(key *proto.DB_UserKey) (*proto_common.UserBasicInfo, error) {
 	var userInfo proto_common.UserBasicInfo
@@ -111,6 +115,36 @@ func (d *driver) queryUserBasicInfoMongoDB(key *proto.DB_UserKey, userInfo *prot
 
 	return nil
 }
+
+// update user basic info in redis
+func (d *driver) updateUserInfoRedis(userInfo *proto_common.UserBasicInfo) error {
+	// store result to redis
+	_, err := d.redisClient.Get().Do("HMSET", redis.Args{}.Add("user:", userInfo.Usn).AddFlat(userInfo))
+	if err != nil {
+		log.Error(err)
+	}
+	return err
+}
+
+func (d *driver) updateUserInfoMongoDB(userInfo *proto_common.UserBasicInfo) error {
+	sessionCpy := d.mongoSession.Copy()
+	defer sessionCpy.Close()
+
+	c := sessionCpy.DB("master").C("users")
+	if c == nil {
+		return mongoDBInvalidError
+	}
+	_, err := c.Upsert(bson.M{"usn": userInfo.Usn}, userInfo)
+	if err != nil {
+		log.Errorf("error while upsert userinfo:%v error:%v", userInfo, err)
+	}
+
+	return err
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Extra Info
+////////////////////////////////////////////////////////////////////////////////
 
 // query user extra info in both redis and mongodb
 func (d *driver) queryUserExtraInfo(usn uint64) (*proto.DB_UserExtraInfo, error) {
@@ -174,27 +208,17 @@ func (d *driver) updateUserExtraRedis(usn uint64, extraInfo *proto.DB_UserExtraI
 	return err
 }
 
-// update user basic info in redis
-func (d *driver) updateUserInfoRedis(userInfo *proto_common.UserBasicInfo) error {
-	// store result to redis
-	_, err := d.redisClient.Get().Do("HMSET", redis.Args{}.Add("user:", userInfo.Usn).AddFlat(userInfo))
-	if err != nil {
-		log.Error(err)
-	}
-	return err
-}
-
-func (d *driver) updateUserInfoMongoDB(userInfo *proto_common.UserBasicInfo) error {
+func (d *driver) updateUserExtraMongoDB(usn uint64, extraInfo *proto.DB_UserExtraInfo) error {
 	sessionCpy := d.mongoSession.Copy()
 	defer sessionCpy.Close()
 
-	c := sessionCpy.DB("master").C("users")
+	c := sessionCpy.DB("master").C("userExtra")
 	if c == nil {
 		return mongoDBInvalidError
 	}
-	_, err := c.Upsert(bson.M{"usn": userInfo.Usn}, userInfo)
+	_, err := c.Upsert(bson.M{"usn": usn}, extraInfo)
 	if err != nil {
-		log.Errorf("error while upsert userinfo:%v error:%v", userInfo, err)
+		log.Errorf("error while upsert userextra:%v error:%v", extraInfo, err)
 	}
 
 	return err
