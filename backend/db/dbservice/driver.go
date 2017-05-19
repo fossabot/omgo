@@ -26,6 +26,12 @@ type redisConfig struct {
 	idleTimeout time.Duration
 }
 
+type DBUserStatus struct {
+	key string
+	usn uint64
+	uid uint64
+}
+
 var (
 	mongoDBInvalidError = errors.New("no such db or collection")
 )
@@ -57,6 +63,32 @@ func (d *driver) init(minfo *mgo.DialInfo, rcfg *redisConfig) {
 			return c, err
 		},
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// usn, uid
+////////////////////////////////////////////////////////////////////////////////
+func (d *driver) getUniqueID() (usn, uid uint64, err error) {
+	sessionCpy := d.mongoSession.Copy()
+	defer sessionCpy.Close()
+
+	c := sessionCpy.DB("master").C("status")
+	if c == nil {
+		return 0, 0, mongoDBInvalidError
+	}
+	change := mgo.Change{
+		Update:    bson.M{"$inc": bson.M{"usn": 1, "uid": 1}},
+		Upsert:    true,
+		ReturnNew: true,
+	}
+	dbStatus := DBUserStatus{}
+	_, err = c.Find(bson.M{"key": "user"}).Apply(change, &dbStatus)
+	if err != nil {
+		// not found in mongodb
+		return 0, 0, err
+	}
+
+	return dbStatus.usn, dbStatus.uid, nil
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -103,11 +135,23 @@ func (d *driver) queryUserBasicInfoMongoDB(key *proto.DB_UserKey, userInfo *prot
 	sessionCpy := d.mongoSession.Copy()
 	defer sessionCpy.Close()
 
+	index := mgo.Index{
+		Key:        []string{"usn", "uid", "email"},
+		Unique:     true,
+		DropDups:   true,
+		Background: true,
+		Sparse:     true,
+	}
+
 	c := sessionCpy.DB("master").C("users")
 	if c == nil {
 		return mongoDBInvalidError
 	}
-	err := c.Find(bson.M{"usn": key.Usn, "email": key.Email, "uid": key.Uid}).One(userInfo)
+	err := c.EnsureIndex(index)
+	if err != nil {
+		log.Error(err)
+	}
+	err = c.Find(bson.M{"usn": key.Usn, "email": key.Email, "uid": key.Uid}).One(userInfo)
 	if err != nil {
 		// not found in mongodb
 		return err

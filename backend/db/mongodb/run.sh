@@ -20,3 +20,9 @@ docker run -d --name ${SID} ${NETHOST} \
   -v ${PWD}/db:/data/db \
   mongo \
   --config /etc/mongod.conf
+
+
+# use master
+# db.users.insert({usn:1})
+# db.userExtra.insert({usn:1, secret:0})
+# db.status.insert({usn:1, uid:1})

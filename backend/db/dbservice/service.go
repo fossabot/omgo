@@ -49,11 +49,28 @@ func (s *server) UserQuery(ctx context.Context, key *proto.DB_UserKey) (*proto.D
 
 // update user info
 func (s *server) UserUpdateInfo(ctx context.Context, userBasicInfo *pc.UserBasicInfo) (*pc.RspHeader, error) {
-	return nil, nil
+	var ret pc.RspHeader
+	err := s.driver.updateUserInfoMongoDB(userBasicInfo)
+	if err == nil {
+		err = s.driver.updateUserInfoRedis(userBasicInfo)
+	}
+
+	if err != nil {
+		log.Errorf("error while update user basic:%v", err)
+		ret.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		ret.Msg = fmt.Sprintf("error:%v", err)
+	}
+
+	return ret, nil
 }
 
 // register
 func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegisterRequest) (*proto.DB_UserRegisterResponse, error) {
+	userBasicInfo, err := s.driver.queryUserBasicInfo(request.Info.Email)
+	if userBasicInfo.Usn != 0 {
+		// email already registered
+	}
+
 	return nil, nil
 }
 
