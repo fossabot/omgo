@@ -146,6 +146,13 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 			userBasicInfo.Avatar = gravatarUrl + utils.GetStringMD5Hash(email)
 		}
 
+		// TODO get a token here
+		extra := &proto.DB_UserExtraInfo{Secret: request.Secret}
+		s.driver.updateUserExtraMongoDB(usn, extra)
+		s.driver.updateUserExtraRedis(usn, extra)
+		s.driver.updateUserInfoMongoDB(userBasicInfo)
+		s.driver.updateUserInfoRedis(userBasicInfo)
+
 		break
 	}
 
