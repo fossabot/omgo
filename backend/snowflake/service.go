@@ -97,7 +97,7 @@ func (s *server) initMachineID() {
 func (s *server) Next(ctx context.Context, in *pb.Snowflake_Key) (*pb.Snowflake_Value, error) {
 	client := <-s.clientPool
 	defer func() { s.clientPool <- client }()
-	key := pathETCD + in.Name
+	key := pathETCD + in.GetName()
 	for {
 		// Get the key
 		resp, err := client.Get(context.Background(), key, nil)
