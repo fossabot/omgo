@@ -11,6 +11,7 @@ import (
 	"github.com/master-g/omgo/proto/grpc/db"
 	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/utils"
+	uuid "github.com/satori/go.uuid"
 	"golang.org/x/net/context"
 	"gopkg.in/mgo.v2"
 )
@@ -34,10 +35,6 @@ func setRspHeader(header *pc.RspHeader) *pc.RspHeader {
 	return header
 }
 
-func (s *server) init(mcfg *mgo.DialInfo, rcfg *redisConfig) {
-	s.driver.init(mcfg, rcfg)
-}
-
 func checkEmail(email string) (trimmed string, valid bool) {
 	trimmed = strings.TrimSpace(email)
 	valid = emailRegexp.MatchString(trimmed)
@@ -59,6 +56,15 @@ func regulateUserKey(key *proto.DB_UserKey) error {
 	}
 
 	return nil
+}
+
+func genToken() []byte {
+	u := uuid.NewV4()
+	return u
+}
+
+func (s *server) init(mcfg *mgo.DialInfo, rcfg *redisConfig) {
+	s.driver.init(mcfg, rcfg)
 }
 
 // query user info
@@ -147,8 +153,8 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 			userBasicInfo.Avatar = gravatarURL + utils.GetStringMD5Hash(email)
 		}
 
-		// TODO get a token here
-		extra := &proto.DB_UserExtraInfo{Secret: request.Secret}
+		// TODO add expire time to token
+		extra := &proto.DB_UserExtraInfo{Secret: request.Secret, Token: genToken()}
 		s.driver.updateUserExtraMongoDB(usn, extra)
 		s.driver.updateUserExtraRedis(usn, extra)
 		s.driver.updateUserInfoMongoDB(userBasicInfo)
