@@ -385,9 +385,6 @@ func (rr *roundRobin) Notify() <-chan []Address {
 func (rr *roundRobin) Close() error {
 	rr.mu.Lock()
 	defer rr.mu.Unlock()
-	if rr.done {
-		return errBalancerClosed
-	}
 	rr.done = true
 	if rr.w != nil {
 		rr.w.Close()

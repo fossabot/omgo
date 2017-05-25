@@ -2,8 +2,9 @@ package ecdh
 
 import (
 	"crypto"
-	"golang.org/x/crypto/curve25519"
 	"io"
+
+	"golang.org/x/crypto/curve25519"
 )
 
 type curve25519ECDH struct {

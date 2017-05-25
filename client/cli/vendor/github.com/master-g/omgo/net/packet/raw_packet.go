@@ -5,6 +5,7 @@ import (
 	"errors"
 )
 
+// RawPacket holds a bytes buffer and its read write position
 type RawPacket struct {
 	buf []byte
 	pos int
@@ -30,6 +31,7 @@ func (p *RawPacket) Len() int {
 	return len(p.buf)
 }
 
+// Pos retuns current read/write position of the packet
 func (p *RawPacket) Pos() int {
 	return p.pos
 }

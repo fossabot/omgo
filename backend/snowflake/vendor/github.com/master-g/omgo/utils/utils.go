@@ -26,12 +26,15 @@ package utils
 
 import (
 	"bytes"
-	log "github.com/Sirupsen/logrus"
-	"github.com/davecgh/go-spew/spew"
-	"github.com/maruel/panicparse/stack"
+	"crypto/md5"
+	"encoding/hex"
 	"net"
 	"os"
 	"runtime/debug"
+
+	log "github.com/Sirupsen/logrus"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/maruel/panicparse/stack"
 )
 
 // PrintPanicStack prints panic stack info
@@ -76,4 +79,11 @@ func GetLocalIP() string {
 		}
 	}
 	return ""
+}
+
+// GetStringMD5Hash will return text's md5 digest hex encoded
+func GetStringMD5Hash(text string) string {
+	hash := md5.New()
+	hash.Write([]byte(text))
+	return hex.EncodeToString(hash.Sum(nil))
 }

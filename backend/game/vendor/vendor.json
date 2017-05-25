@@ -63,16 +63,16 @@
 			"revisionTime": "2017-03-28T20:03:51Z"
 		},
 		{
-			"checksumSHA1": "FPfUfOVHglv1DZxCki3bcZGKiGs=",
+			"checksumSHA1": "Et5hHvnk5iVRSJr5PepcG/4fhJw=",
 			"path": "github.com/master-g/omgo/net/packet",
-			"revision": "0239b72d536821d80f2d686cae600442f64f0b7f",
-			"revisionTime": "2017-05-05T07:35:19Z"
+			"revision": "3fe93053acd9c9eb50e5a315d910bff25da27adb",
+			"revisionTime": "2017-05-25T04:23:02Z"
 		},
 		{
-			"checksumSHA1": "reb7aBaxJTw/uN1fEBMXqlGtiGM=",
+			"checksumSHA1": "vvbb/jvreIKuPOzN7oZzE9ZEDUw=",
 			"path": "github.com/master-g/omgo/proto/grpc/game",
-			"revision": "506ad36cc1c173c062a236b077a3461403b5a47c",
-			"revisionTime": "2017-05-05T17:47:09Z"
+			"revision": "3fe93053acd9c9eb50e5a315d910bff25da27adb",
+			"revisionTime": "2017-05-25T04:23:02Z"
 		},
 		{
 			"checksumSHA1": "dOwWx/TzvqOwVmh/pN5LEJ2+iy0=",
@@ -81,28 +81,28 @@
 			"revisionTime": "2017-05-11T07:48:43Z"
 		},
 		{
-			"checksumSHA1": "DRqXXgiN/34kATe0NexOHbQKXTI=",
+			"checksumSHA1": "owsG0MOItaIrKUPKozr0XE+ASHs=",
 			"path": "github.com/master-g/omgo/proto/pb/common",
-			"revision": "e85d4dc8e27fe5bf5ca3a35d99003f27ff687a74",
-			"revisionTime": "2017-05-14T16:06:52Z"
+			"revision": "3fe93053acd9c9eb50e5a315d910bff25da27adb",
+			"revisionTime": "2017-05-25T04:23:02Z"
 		},
 		{
-			"checksumSHA1": "9q6Hp+sNIabmNWMh1Iq58eMMN5A=",
+			"checksumSHA1": "GQdCBkVO55pEQpXzI0c6z5u2YXY=",
 			"path": "github.com/master-g/omgo/security/ecdh",
-			"revision": "0239b72d536821d80f2d686cae600442f64f0b7f",
-			"revisionTime": "2017-05-05T07:35:19Z"
+			"revision": "3fe93053acd9c9eb50e5a315d910bff25da27adb",
+			"revisionTime": "2017-05-25T04:23:02Z"
 		},
 		{
-			"checksumSHA1": "MEYuXwhrjh8U0XHH0Go8tKUZvN0=",
+			"checksumSHA1": "yiV3F9me4BR3oVS/tYEKzbi3sJo=",
 			"path": "github.com/master-g/omgo/services",
-			"revision": "0239b72d536821d80f2d686cae600442f64f0b7f",
-			"revisionTime": "2017-05-05T07:35:19Z"
+			"revision": "3fe93053acd9c9eb50e5a315d910bff25da27adb",
+			"revisionTime": "2017-05-25T04:23:02Z"
 		},
 		{
-			"checksumSHA1": "Nyk4FhSwkZTwc4191KHsSF/aQi8=",
+			"checksumSHA1": "YcvEUmL8uxbM7H0ZacyvZuos1rQ=",
 			"path": "github.com/master-g/omgo/utils",
-			"revision": "0239b72d536821d80f2d686cae600442f64f0b7f",
-			"revisionTime": "2017-05-05T07:35:19Z"
+			"revision": "3fe93053acd9c9eb50e5a315d910bff25da27adb",
+			"revisionTime": "2017-05-25T04:23:02Z"
 		},
 		{
 			"checksumSHA1": "CoxdaTYdPZNJXr8mJfLxye428N0=",
@@ -307,10 +307,10 @@
 			"revisionTime": "2017-01-27T15:26:01Z"
 		},
 		{
-			"checksumSHA1": "yFolYpsrXIjWE0UjR8ChC6Nmrhg=",
+			"checksumSHA1": "1Rx4tdcCywDRfdX4Tzn/7riP6Go=",
 			"path": "gopkg.in/urfave/cli.v2",
-			"revision": "61c3eb6ba1da1df17cd50f1456a9252d92bf5edd",
-			"revisionTime": "2017-04-24T21:45:55Z"
+			"revision": "04b2f4ff79cf1fd71e138bafc67df8bbdb5b81c2",
+			"revisionTime": "2017-02-15T05:18:00Z"
 		}
 	],
 	"rootPath": "github.com/master-g/omgo/backend/game"

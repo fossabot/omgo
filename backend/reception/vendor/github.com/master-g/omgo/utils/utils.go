@@ -28,12 +28,13 @@ import (
 	"bytes"
 	"crypto/md5"
 	"encoding/hex"
-	log "github.com/Sirupsen/logrus"
-	"github.com/davecgh/go-spew/spew"
-	"github.com/maruel/panicparse/stack"
 	"net"
 	"os"
 	"runtime/debug"
+
+	log "github.com/Sirupsen/logrus"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/maruel/panicparse/stack"
 )
 
 // PrintPanicStack prints panic stack info
