@@ -2,11 +2,12 @@ package main
 
 import (
 	"encoding/binary"
+	"net"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/backend/agent/types"
 	"github.com/master-g/omgo/net/packet"
 	"github.com/master-g/omgo/utils"
-	"net"
 )
 
 // PIPELINE #3: buffer

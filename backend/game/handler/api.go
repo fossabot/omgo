@@ -6,6 +6,7 @@ import (
 	proto_common "github.com/master-g/omgo/proto/pb/common"
 )
 
+// Handlers maps cmd to its corresponding handler
 var Handlers map[int32]func(*types.Session, *packet.RawPacket) []byte
 
 func init() {

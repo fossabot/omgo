@@ -2,12 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"net/http"
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	"github.com/master-g/omgo/proto/pb"
 	"github.com/master-g/omgo/utils"
-	"net/http"
-	"time"
 )
 
 var router *mux.Router

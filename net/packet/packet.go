@@ -1,6 +1,7 @@
 package packet
 
 const (
+	// MaximumPacketSize 64KB
 	MaximumPacketSize = 64*1024 - 1
 )
 

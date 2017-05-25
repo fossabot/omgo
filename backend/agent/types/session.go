@@ -2,9 +2,10 @@ package types
 
 import (
 	"crypto/rc4"
-	pb "github.com/master-g/omgo/proto/grpc/game"
 	"net"
 	"time"
+
+	pb "github.com/master-g/omgo/proto/grpc/game"
 )
 
 const (

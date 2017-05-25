@@ -1,12 +1,13 @@
 package main
 
 import (
-	log "github.com/Sirupsen/logrus"
-	"github.com/master-g/omgo/utils"
-	"gopkg.in/urfave/cli.v2"
 	"net/http"
 	"os"
 	"time"
+
+	log "github.com/Sirupsen/logrus"
+	"github.com/master-g/omgo/utils"
+	"gopkg.in/urfave/cli.v2"
 )
 
 const (

@@ -3,19 +3,20 @@ package main
 import (
 	"errors"
 	"fmt"
+	"regexp"
+	"strings"
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/proto/grpc/db"
 	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/utils"
 	"golang.org/x/net/context"
 	"gopkg.in/mgo.v2"
-	"regexp"
-	"strings"
-	"time"
 )
 
 const (
-	gravatarUrl = "http://www.gravatar.com/avatar/"
+	gravatarURL = "http://www.gravatar.com/avatar/"
 )
 
 var (
@@ -143,7 +144,7 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 		userBasicInfo.Since = time.Now().Unix()
 		userBasicInfo.Email = email
 		if userBasicInfo.GetAvatar() == "" {
-			userBasicInfo.Avatar = gravatarUrl + utils.GetStringMD5Hash(email)
+			userBasicInfo.Avatar = gravatarURL + utils.GetStringMD5Hash(email)
 		}
 
 		// TODO get a token here

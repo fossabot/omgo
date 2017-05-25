@@ -2,14 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"net/http"
+	"os"
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	proto_common "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/utils"
 	"gopkg.in/urfave/cli.v2"
-	"net/http"
-	"os"
-	"time"
 )
 
 const (

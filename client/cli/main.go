@@ -6,6 +6,11 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"io"
+	"net"
+	"os"
+	"strings"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/abiosoft/ishell"
 	"github.com/golang/protobuf/proto"
@@ -14,10 +19,6 @@ import (
 	"github.com/master-g/omgo/security/ecdh"
 	"github.com/master-g/omgo/utils"
 	"gopkg.in/urfave/cli.v2"
-	"io"
-	"net"
-	"os"
-	"strings"
 )
 
 var (
@@ -29,6 +30,7 @@ var (
 )
 
 const (
+	// Salt for ECDH key-exchange process
 	Salt = "DH"
 )
 
@@ -45,9 +47,8 @@ func connect(addr string) {
 		if err != nil {
 			log.Error("get remote address failed: ", err)
 			return
-		} else {
-			log.Infof("server %v:%v connected", host, port)
 		}
+		log.Infof("server %v:%v connected", host, port)
 	}
 }
 
@@ -233,9 +234,8 @@ func main() {
 			if conn == nil {
 				c.Println("no connection")
 				return
-			} else {
-				heartbeat()
 			}
+			heartbeat()
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
@@ -255,9 +255,8 @@ func main() {
 			if conn == nil {
 				c.Println("no connection")
 				return
-			} else {
-				keyExchange()
 			}
+			keyExchange()
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{

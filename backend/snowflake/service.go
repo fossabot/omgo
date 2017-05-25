@@ -3,15 +3,16 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math/rand"
+	"os"
+	"strconv"
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	etcd "github.com/coreos/etcd/client"
 	"github.com/master-g/omgo/etcdclient"
 	pb "github.com/master-g/omgo/proto/grpc/snowflake"
 	"golang.org/x/net/context"
-	"math/rand"
-	"os"
-	"strconv"
-	"time"
 )
 
 const (

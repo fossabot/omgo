@@ -1,12 +1,13 @@
 package main
 
 import (
-	log "github.com/Sirupsen/logrus"
-	"github.com/master-g/omgo/utils"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
+
+	log "github.com/Sirupsen/logrus"
+	"github.com/master-g/omgo/utils"
 )
 
 var (

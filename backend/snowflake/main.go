@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
+	"net"
+	"os"
+	"sort"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/etcdclient"
 	pb "github.com/master-g/omgo/proto/grpc/snowflake"
 	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc"
 	"gopkg.in/urfave/cli.v2"
-	"net"
-	"os"
-	"sort"
 )
 
 const (

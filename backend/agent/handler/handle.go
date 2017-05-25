@@ -5,6 +5,9 @@ import (
 	"crypto/rand"
 	"crypto/rc4"
 	"fmt"
+	"io"
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/backend/agent/types"
@@ -14,8 +17,6 @@ import (
 	"github.com/master-g/omgo/security/ecdh"
 	"github.com/master-g/omgo/services"
 	"google.golang.org/grpc/metadata"
-	"io"
-	"time"
 )
 
 func response(cmd proto_common.Cmd, msg proto.Message) []byte {

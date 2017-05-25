@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/backend/agent/types"
 	pb "github.com/master-g/omgo/proto/grpc/game"

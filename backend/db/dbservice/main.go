@@ -1,16 +1,17 @@
 package main
 
 import (
+	"net"
+	"os"
+	"sort"
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	pb "github.com/master-g/omgo/proto/grpc/db"
 	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/urfave/cli.v2"
-	"net"
-	"os"
-	"sort"
-	"time"
 )
 
 const (

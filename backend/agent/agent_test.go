@@ -5,14 +5,14 @@ import (
 	"crypto/rc4"
 	"encoding/binary"
 	"fmt"
-	"github.com/golang/protobuf/proto"
-	"github.com/master-g/omgo/net/packet"
-	"github.com/master-g/omgo/proto/pb/common"
-	"github.com/master-g/omgo/security/ecdh"
-	"github.com/master-g/omgo/utils"
 	"io"
 	"net"
 	"testing"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/master-g/omgo/net/packet"
+	"github.com/master-g/omgo/security/ecdh"
+	"github.com/master-g/omgo/utils"
 )
 
 var (

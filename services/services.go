@@ -1,15 +1,16 @@
 package services
 
 import (
-	log "github.com/Sirupsen/logrus"
-	etcdclient "github.com/coreos/etcd/client"
-	"golang.org/x/net/context"
-	"google.golang.org/grpc"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 	"sync/atomic"
+
+	log "github.com/Sirupsen/logrus"
+	etcdclient "github.com/coreos/etcd/client"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 )
 
 // single connection

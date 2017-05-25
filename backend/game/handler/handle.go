@@ -1,11 +1,12 @@
 package handler
 
 import (
+	"time"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/backend/game/types"
 	"github.com/master-g/omgo/net/packet"
 	proto_common "github.com/master-g/omgo/proto/pb/common"
-	"time"
 )
 
 func response(cmd proto_common.Cmd, msg proto.Message) []byte {

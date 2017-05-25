@@ -1,6 +1,10 @@
 package main
 
 import (
+	"net"
+	"net/http"
+	"os"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/etcdclient"
 	pb "github.com/master-g/omgo/proto/grpc/game"
@@ -8,9 +12,6 @@ import (
 	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc"
 	"gopkg.in/urfave/cli.v2"
-	"net"
-	"net/http"
-	"os"
 )
 
 const (

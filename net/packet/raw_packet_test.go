@@ -24,8 +24,8 @@ func TestRawPacketWriter(t *testing.T) {
 
 	p.WriteString(str)
 	p.WriteBytes([]byte(str))
-	var nil_bytes []byte
-	p.WriteBytes(nil_bytes)
+	var nilBytes []byte
+	p.WriteBytes(nilBytes)
 
 	reader := NewRawPacketReader(p.Data())
 

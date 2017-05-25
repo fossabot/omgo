@@ -1,10 +1,11 @@
 package main
 
 import (
+	"time"
+
 	"github.com/master-g/omgo/backend/agent/types"
 	pb "github.com/master-g/omgo/proto/grpc/game"
 	"github.com/master-g/omgo/utils"
-	"time"
 )
 
 const (

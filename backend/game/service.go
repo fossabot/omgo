@@ -2,6 +2,9 @@ package main
 
 import (
 	"errors"
+	"io"
+	"strconv"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/backend/game/handler"
 	"github.com/master-g/omgo/backend/game/registry"
@@ -10,8 +13,6 @@ import (
 	"github.com/master-g/omgo/proto/grpc/game"
 	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc/metadata"
-	"io"
-	"strconv"
 )
 
 var (

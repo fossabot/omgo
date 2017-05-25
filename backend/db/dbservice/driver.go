@@ -3,14 +3,15 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os"
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
 	"github.com/master-g/omgo/proto/grpc/db"
 	proto_common "github.com/master-g/omgo/proto/pb/common"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"os"
-	"time"
 )
 
 type driver struct {
@@ -26,6 +27,7 @@ type redisConfig struct {
 	idleTimeout time.Duration
 }
 
+// DBUserStatus is used as a database user status index
 type DBUserStatus struct {
 	key string
 	usn uint64
@@ -33,7 +35,7 @@ type DBUserStatus struct {
 }
 
 var (
-	mongoDBInvalidError = errors.New("no such db or collection")
+	errMongoDBInvalid = errors.New("no such db or collection")
 )
 
 // init both redis and mongodb client
@@ -74,7 +76,7 @@ func (d *driver) getUniqueID() (usn, uid uint64, err error) {
 
 	c := sessionCpy.DB("master").C("status")
 	if c == nil {
-		return 0, 0, mongoDBInvalidError
+		return 0, 0, errMongoDBInvalid
 	}
 	change := mgo.Change{
 		Update:    bson.M{"$inc": bson.M{"usn": 1, "uid": 1}},
@@ -145,7 +147,7 @@ func (d *driver) queryUserBasicInfoMongoDB(key *proto.DB_UserKey, userInfo *prot
 
 	c := sessionCpy.DB("master").C("users")
 	if c == nil {
-		return mongoDBInvalidError
+		return errMongoDBInvalid
 	}
 	err := c.EnsureIndex(index)
 	if err != nil {
@@ -176,7 +178,7 @@ func (d *driver) updateUserInfoMongoDB(userInfo *proto_common.UserBasicInfo) err
 
 	c := sessionCpy.DB("master").C("users")
 	if c == nil {
-		return mongoDBInvalidError
+		return errMongoDBInvalid
 	}
 	_, err := c.Upsert(bson.M{"usn": userInfo.Usn}, userInfo)
 	if err != nil {
@@ -232,7 +234,7 @@ func (d *driver) queryUserExtraMongoDB(usn uint64, extraInfo *proto.DB_UserExtra
 
 	c := sessionCpy.DB("master").C("userExtra")
 	if c == nil {
-		return mongoDBInvalidError
+		return errMongoDBInvalid
 	}
 	err := c.Find(bson.M{"usn": usn}).One(extraInfo)
 	if err != nil {
@@ -258,7 +260,7 @@ func (d *driver) updateUserExtraMongoDB(usn uint64, extraInfo *proto.DB_UserExtr
 
 	c := sessionCpy.DB("master").C("userExtra")
 	if c == nil {
-		return mongoDBInvalidError
+		return errMongoDBInvalid
 	}
 	_, err := c.Upsert(bson.M{"usn": usn}, extraInfo)
 	if err != nil {

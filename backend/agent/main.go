@@ -2,15 +2,16 @@ package main
 
 import (
 	"encoding/binary"
-	log "github.com/Sirupsen/logrus"
-	"github.com/master-g/omgo/backend/agent/types"
-	"github.com/master-g/omgo/utils"
-	"gopkg.in/urfave/cli.v2"
 	"io"
 	"net"
 	"net/http"
 	"os"
 	"time"
+
+	log "github.com/Sirupsen/logrus"
+	"github.com/master-g/omgo/backend/agent/types"
+	"github.com/master-g/omgo/utils"
+	"gopkg.in/urfave/cli.v2"
 )
 
 // Config holds configuration for agent
