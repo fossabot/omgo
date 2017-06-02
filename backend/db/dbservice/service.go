@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-	"time"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/proto/grpc/db"
@@ -22,6 +21,7 @@ const (
 )
 
 var (
+	letterSet   = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	emailRegexp = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 )
 
@@ -32,7 +32,7 @@ type server struct {
 
 func setRspHeader(header *pc.RspHeader) *pc.RspHeader {
 	header.Status = pc.ResultCode_RESULT_OK
-	header.Timestamp = uint64(time.Now().Unix())
+	header.Timestamp = utils.Timestamp()
 	return header
 }
 
@@ -59,9 +59,13 @@ func regulateUserKey(key *proto.DB_UserKey) error {
 	return nil
 }
 
-func genToken() []byte {
-	u := uuid.NewV4()
-	return u[:]
+func genToken() string {
+	raw := uuid.NewV4()
+	token := make([]byte, len(raw))
+	for i, v := range raw {
+		token[i] = letterSet[int(v)%len(letterSet)]
+	}
+	return string(token)
 }
 
 func (s *server) init(mcfg *mgo.DialInfo, rcfg *redisConfig) {
@@ -119,7 +123,7 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 		log.Info(ret.Result.Msg)
 		return
 	}
-	userBasicInfo, err := s.driver.queryUserBasicInfo(proto.DB_UserKey{Email: email})
+	userBasicInfo, err := s.driver.queryUserBasicInfo(&proto.DB_UserKey{Email: email})
 	if err != nil {
 		log.Errorf("error while register user:%v", err)
 		return
@@ -146,7 +150,7 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 	userBasicInfo = request.Info
 	userBasicInfo.Usn = usn
 	userBasicInfo.Uid = uid
-	userBasicInfo.Since = uint64(time.Now().Unix())
+	userBasicInfo.Since = utils.Timestamp()
 	userBasicInfo.Email = email
 	if userBasicInfo.GetAvatar() == "" {
 		userBasicInfo.Avatar = gravatarURL + utils.GetStringMD5Hash(email)
@@ -198,7 +202,7 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 	s.driver.updateUserExtraMongoDB(userInfo.Usn, userExtra)
 	s.driver.updateUserExtraRedis(userInfo.Usn, userExtra)
 	// update last time login
-	userInfo.LastLogin = time.Now().Unix()
+	userInfo.LastLogin = utils.Timestamp()
 	s.driver.updateUserInfoMongoDB(userInfo)
 	s.driver.updateUserInfoRedis(userInfo)
 
@@ -217,11 +221,12 @@ func (s *server) UserLogout(ctx context.Context, request *proto.DB_UserLogoutReq
 
 	userExtra, err := s.driver.queryUserExtraInfo(request.Usn)
 	if err != nil {
+		log.Errorf("unable to find user extra info:%v", err)
 		ret.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
-		ret.Msg = err
+		ret.Msg = "interal error"
 		return
 	}
-	if bytes.Compare(userExtra.GetToken(), request.GetToken()) != 0 {
+	if strings.Compare(userExtra.GetToken(), request.GetToken()) != 0 {
 		ret.Status = pc.ResultCode_RESULT_INVALID
 		ret.Msg = "session invalid"
 		return

@@ -11,28 +11,38 @@ import (
 	"os"
 	"strings"
 
+	"encoding/json"
 	log "github.com/Sirupsen/logrus"
 	"github.com/abiosoft/ishell"
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/net/packet"
-	"github.com/master-g/omgo/proto/pb/common"
+	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/security/ecdh"
 	"github.com/master-g/omgo/utils"
 	"gopkg.in/urfave/cli.v2"
+	"net/http"
+	"time"
 )
 
 var (
-	address   string
-	conn      net.Conn
-	encrypted bool
-	encoder   *rc4.Cipher
-	decoder   *rc4.Cipher
+	address    string
+	conn       net.Conn
+	encrypted  bool
+	encoder    *rc4.Cipher
+	decoder    *rc4.Cipher
+	httpclient *http.Client
 )
 
 const (
 	// Salt for ECDH key-exchange process
 	Salt = "DH"
 )
+
+func init() {
+	httpclient = &http.Client{
+		Timeout: time.Second * 3,
+	}
+}
 
 func connect(addr string) {
 	log.Infof("connecting to %v", addr)
@@ -108,7 +118,7 @@ func recv() []byte {
 func heartbeat() {
 	log.Info("sending heartbeat")
 	reqPacket := packet.NewRawPacket()
-	reqPacket.WriteS32(int32(proto_common.Cmd_HEART_BEAT_REQ))
+	reqPacket.WriteS32(int32(pc.Cmd_HEART_BEAT_REQ))
 	send(reqPacket.Data())
 	rspPacket := recv()
 	if rspPacket != nil {
@@ -118,8 +128,8 @@ func heartbeat() {
 			log.Fatalf("read cmd failed:%v", err)
 			return
 		}
-		if cmd != int32(proto_common.Cmd_HEART_BEAT_RSP) {
-			log.Fatalf("expect %v got %v", proto_common.Cmd_HEART_BEAT_RSP, cmd)
+		if cmd != int32(pc.Cmd_HEART_BEAT_RSP) {
+			log.Fatalf("expect %v got %v", pc.Cmd_HEART_BEAT_RSP, cmd)
 			return
 		}
 		log.Info("recv heartbeat response from server")
@@ -129,9 +139,9 @@ func heartbeat() {
 func keyExchange() {
 	log.Info("about to exchange key")
 	reqPacket := packet.NewRawPacket()
-	reqPacket.WriteS32(int32(proto_common.Cmd_GET_SEED_REQ))
+	reqPacket.WriteS32(int32(pc.Cmd_GET_SEED_REQ))
 
-	req := &proto_common.C2SGetSeedReq{}
+	req := &pc.C2SGetSeedReq{}
 
 	curve := ecdh.NewCurve25519ECDH()
 	x1, e1 := curve.GenerateECKeyBuf(rand.Reader)
@@ -148,11 +158,11 @@ func keyExchange() {
 	send(reqPacket.Data())
 
 	rspBody := recv()
-	rsp := &proto_common.S2CGetSeedRsp{}
+	rsp := &pc.S2CGetSeedRsp{}
 	reader := packet.NewRawPacketReader(rspBody)
 	cmd, err := reader.ReadS32()
 	buf, err := reader.ReadBytes()
-	if cmd != int32(proto_common.Cmd_GET_SEED_RSP) || err != nil {
+	if cmd != int32(pc.Cmd_GET_SEED_RSP) || err != nil {
 		log.Fatalf("error while parsing response cmd:%v error:%v", cmd, err)
 	}
 
@@ -179,7 +189,7 @@ func keyExchange() {
 	encrypted = true
 }
 
-func main() {
+func main2() {
 	log.SetLevel(log.DebugLevel)
 	defer disconnect()
 	defer utils.PrintPanicStack()
@@ -285,4 +295,22 @@ func main() {
 	})
 
 	shell.Start()
+}
+
+func main() {
+	req, err := http.NewRequest("GET", "http://localhost:8080/login", nil)
+	if err != nil {
+		log.Errorf("error while create http request:%v", err)
+	}
+	req.Header.Add("email", "masterg@yeah.net")
+	req.Header.Add("pass", "aabbccddeeff")
+	resp, err := httpclient.Do(req)
+	if err != nil {
+		log.Errorf("error while sending request:%v", err)
+	}
+
+	var userInfo pc.UserBasicInfo
+	json.NewDecoder(resp.Body).Decode(&userInfo)
+
+	log.Info(userInfo)
 }

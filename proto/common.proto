@@ -61,7 +61,7 @@ message C2SGetSeedReq {
 message S2CGetSeedRsp {
     RspHeader header    = 1;
     bytes     send_seed = 2; // public key for client to encrypt sending data
-    bytes     recv_seed = 3; // public key for client to decrypt recevie data
+    bytes     recv_seed = 3; // public key for client to decrypt receive data
 }
 
 message C2SLoginReq { fixed64 timestamp = 1; }
@@ -69,4 +69,5 @@ message C2SLoginReq { fixed64 timestamp = 1; }
 message S2CLoginRsp {
     RspHeader     header    = 1;
     UserBasicInfo user_info = 2;
+    string        token     = 3;
 }

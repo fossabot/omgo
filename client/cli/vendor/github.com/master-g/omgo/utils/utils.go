@@ -31,6 +31,7 @@ import (
 	"net"
 	"os"
 	"runtime/debug"
+	"time"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/davecgh/go-spew/spew"
@@ -86,4 +87,9 @@ func GetStringMD5Hash(text string) string {
 	hash := md5.New()
 	hash.Write([]byte(text))
 	return hex.EncodeToString(hash.Sum(nil))
+}
+
+// Timestamp returns current unix timestamp in uint64 format
+func Timestamp() uint64 {
+	return uint64(time.Now().Unix())
 }

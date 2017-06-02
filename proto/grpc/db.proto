@@ -32,8 +32,8 @@ message DB {
     }
     // user extra information
     message UserExtraInfo {
-        bytes secret = 1; // password hash
-        bytes token  = 2; // access token
+        bytes  secret = 1; // password hash
+        string token  = 2; // access token
     }
     message UserQueryResponse {
         proto.common.RspHeader     result = 1;
@@ -47,7 +47,7 @@ message DB {
     message UserRegisterResponse {
         proto.common.RspHeader     result = 1;
         proto.common.UserBasicInfo info   = 2;
-        bytes                      token  = 3;
+        string                     token  = 3;
     }
     message UserLoginRequest {
         proto.common.UserBasicInfo info   = 1;
@@ -56,10 +56,10 @@ message DB {
     message UserLoginResponse {
         proto.common.RspHeader     result = 1;
         proto.common.UserBasicInfo info   = 2;
-        bytes                      token  = 3;
+        string                     token  = 3;
     }
     message UserLogoutRequest {
         uint64 usn   = 1;
-        bytes  token = 2;
+        string token = 2;
     }
 }
