@@ -8,7 +8,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
-	proto_common "github.com/master-g/omgo/proto/pb/common"
+	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/utils"
 	"gopkg.in/urfave/cli.v2"
 )
@@ -25,6 +25,12 @@ const (
 var (
 	defaultServices = []string{"db"}
 )
+
+func setRspHeader(rsp *pc.RspHeader) *pc.RspHeader {
+	rsp.Timestamp = utils.Timestamp()
+	rsp.Status = pc.ResultCode_RESULT_OK
+	return rsp
+}
 
 func main() {
 	log.SetLevel(log.DebugLevel)
@@ -98,6 +104,10 @@ func main() {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
+	var ret pc.S2CLoginRsp
+	ret.Header = &pc.RspHeader{}
+	setRspHeader(ret.Header)
+
 	email := r.Header.Get("email")
 	pass := r.Header.Get("pass")
 
@@ -105,24 +115,23 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	log.Info("pass:", pass)
 
 	if email == "" || pass == "" {
-		http.Error(w, "invalid parameter(s)", http.StatusBadRequest)
-		return
+		ret.Header.Status = pc.ResultCode_RESULT_INVALID
+		ret.Header.Msg = "invalid parameter(s)"
+	} else {
+		ret.UserInfo = &pc.UserBasicInfo{
+			Usn:       utils.Timestamp(),
+			Uid:       1234,
+			Birthday:  0,
+			Gender:    pc.Gender_GENDER_FEMALE,
+			Nickname:  "wow",
+			Email:     email,
+			Avatar:    "https://www.gravatar.com/avatar/" + utils.GetStringMD5Hash(email) + "?s=200&r=pg&d=404",
+			Country:   "cn",
+			LastLogin: utils.Timestamp(),
+		}
 	}
 
-	profile := &proto_common.UserBasicInfo{
-		Usn:      uint64(time.Now().Unix()),
-		Uid:      1234,
-		Birthday: 0,
-		Gender:   proto_common.Gender_GENDER_FEMALE,
-		Nickname: "wow",
-		Email:    email,
-		Avatar:   "https://www.gravatar.com/avatar/" + utils.GetStringMD5Hash(email) + "?s=200&r=pg&d=404",
-		Country:  "cn",
-	}
-
-	js, err := json.Marshal(profile)
-
-	log.Debug(js)
+	js, err := json.Marshal(ret)
 
 	if err != nil {
 		log.Error(err)
