@@ -9,6 +9,12 @@
 			"revisionTime": "2017-05-12T19:21:58Z"
 		},
 		{
+			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
+			"path": "github.com/davecgh/go-spew/spew",
+			"revision": "346938d642f2ec3594ed81d874461961cd0faa76",
+			"revisionTime": "2016-10-29T20:57:26Z"
+		},
+		{
 			"checksumSHA1": "2UmMbNHc8FBr98mJFN1k8ISOIHk=",
 			"path": "github.com/garyburd/redigo/internal",
 			"revision": "433969511232c397de61b1442f9fd49ec06ae9ba",
@@ -33,16 +39,28 @@
 			"revisionTime": "2017-03-31T03:19:02Z"
 		},
 		{
-			"checksumSHA1": "TK+sXGksfySIOoixPdQQJlM3Lb8=",
+			"checksumSHA1": "7hln62oZPZmyqEmgXaybf9WxQ7A=",
+			"path": "github.com/maruel/panicparse/stack",
+			"revision": "ae43f192cef2add653fe1481a3070ed00a4a6981",
+			"revisionTime": "2017-03-28T20:03:51Z"
+		},
+		{
+			"checksumSHA1": "V7MipAJXqgSj6ldxk0dZWQyCjAE=",
 			"path": "github.com/master-g/omgo/proto/grpc/db",
-			"revision": "1e632bedd24d69447eda07db9ad901dafe82a528",
-			"revisionTime": "2017-05-25T04:28:25Z"
+			"revision": "325b8a2c1b15346e1fa7227a0f15f451542fe572",
+			"revisionTime": "2017-06-02T07:40:21Z"
 		},
 		{
 			"checksumSHA1": "owsG0MOItaIrKUPKozr0XE+ASHs=",
 			"path": "github.com/master-g/omgo/proto/pb/common",
-			"revision": "1e632bedd24d69447eda07db9ad901dafe82a528",
-			"revisionTime": "2017-05-25T04:28:25Z"
+			"revision": "325b8a2c1b15346e1fa7227a0f15f451542fe572",
+			"revisionTime": "2017-06-02T07:40:21Z"
+		},
+		{
+			"checksumSHA1": "YcvEUmL8uxbM7H0ZacyvZuos1rQ=",
+			"path": "github.com/master-g/omgo/utils",
+			"revision": "325b8a2c1b15346e1fa7227a0f15f451542fe572",
+			"revisionTime": "2017-06-02T07:40:21Z"
 		},
 		{
 			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",

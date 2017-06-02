@@ -35,6 +35,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/maruel/panicparse/stack"
+	"time"
 )
 
 // PrintPanicStack prints panic stack info
@@ -86,4 +87,9 @@ func GetStringMD5Hash(text string) string {
 	hash := md5.New()
 	hash.Write([]byte(text))
 	return hex.EncodeToString(hash.Sum(nil))
+}
+
+// Timestamp returns current unix timestamp in uint64 format
+func Timestamp() uint64 {
+	return uint64(time.Now().Unix())
 }

@@ -40,7 +40,7 @@ var (
 
 const (
 	// 0.5 day
-	expireDuration = time.Hour.Seconds() * 12
+	expireDuration = 60 * 60 * 12
 	keyUser        = "user"
 	keyUserExtra   = "userExtra"
 )
@@ -85,9 +85,13 @@ func (d *driver) getUniqueID() (usn, uid uint64, err error) {
 	sessionCpy := d.mongoSession.Copy()
 	defer sessionCpy.Close()
 
+	usn = 0
+	uid = 0
+
 	c := sessionCpy.DB("master").C("status")
 	if c == nil {
-		return 0, 0, errMongoDBInvalid
+		err = errMongoDBInvalid
+		return
 	}
 	change := mgo.Change{
 		Update:    bson.M{"$inc": bson.M{"usn": 1, "uid": 1}},
@@ -98,10 +102,13 @@ func (d *driver) getUniqueID() (usn, uid uint64, err error) {
 	_, err = c.Find(bson.M{"key": keyUser}).Apply(change, &dbStatus)
 	if err != nil {
 		// not found in mongodb
-		return 0, 0, err
+		return
 	}
 
-	return dbStatus.usn, dbStatus.uid, nil
+	usn = dbStatus.usn
+	uid = dbStatus.uid
+
+	return
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -208,6 +215,18 @@ func (d *driver) updateUserInfoMongoDB(userInfo *proto_common.UserBasicInfo) err
 	return err
 }
 
+func (d *driver) deleteUserInfoRedis(usn uint64) error {
+	conn := d.redisClient.Get()
+	defer conn.Close()
+
+	_, err := conn.Do("DEL", redisKey(keyUser, usn))
+	if err != nil {
+		log.Errorf("error while removing userinfo:%v error%v", usn, err)
+	}
+
+	return err
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extra Info
 ////////////////////////////////////////////////////////////////////////////////
@@ -293,6 +312,18 @@ func (d *driver) updateUserExtraMongoDB(usn uint64, extraInfo *proto.DB_UserExtr
 	_, err := c.Upsert(bson.M{"usn": usn}, extraInfo)
 	if err != nil {
 		log.Errorf("error while upsert userextra:%v error:%v", extraInfo, err)
+	}
+
+	return err
+}
+
+func (d *driver) deleteUserExtraRedis(usn uint64) error {
+	conn := d.redisClient.Get()
+	defer conn.Close()
+
+	_, err := conn.Do("DEL", redisKey(keyUserExtra, usn))
+	if err != nil {
+		log.Errorf("error while removing userextra:%v error%v", usn, err)
 	}
 
 	return err
