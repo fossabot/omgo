@@ -38,6 +38,17 @@ var (
 	errMongoDBInvalid = errors.New("no such db or collection")
 )
 
+const (
+	// 0.5 day
+	expireDuration = time.Hour.Seconds() * 12
+	keyUser        = "user"
+	keyUserExtra   = "userExtra"
+)
+
+func redisKey(key string, usn uint64) string {
+	return fmt.Sprintf("%v:%v", key, usn)
+}
+
 // init both redis and mongodb client
 func (d *driver) init(minfo *mgo.DialInfo, rcfg *redisConfig) {
 	// init mongodb client
@@ -84,7 +95,7 @@ func (d *driver) getUniqueID() (usn, uid uint64, err error) {
 		ReturnNew: true,
 	}
 	dbStatus := DBUserStatus{}
-	_, err = c.Find(bson.M{"key": "user"}).Apply(change, &dbStatus)
+	_, err = c.Find(bson.M{"key": keyUser}).Apply(change, &dbStatus)
 	if err != nil {
 		// not found in mongodb
 		return 0, 0, err
@@ -113,7 +124,7 @@ func (d *driver) queryUserBasicInfo(key *proto.DB_UserKey) (*proto_common.UserBa
 
 	// query in mongodb
 	err = d.queryUserBasicInfoMongoDB(key, &userInfo)
-	if err != nil {
+	if err == nil {
 		// found in mongodb, update to redis
 		d.updateUserInfoRedis(&userInfo)
 	}
@@ -125,7 +136,7 @@ func (d *driver) queryUserBasicInfoRedis(usn uint64, userInfo *proto_common.User
 	conn := d.redisClient.Get()
 	defer conn.Close()
 
-	values, err := redis.Values(conn.Do("HGETALL", fmt.Sprintf("user:%v", usn)))
+	values, err := redis.Values(conn.Do("HGETALL", redisKey(keyUser, usn)))
 	if err == nil && len(values) > 0 {
 		err = redis.ScanStruct(values, userInfo)
 	}
@@ -145,7 +156,7 @@ func (d *driver) queryUserBasicInfoMongoDB(key *proto.DB_UserKey, userInfo *prot
 		Sparse:     true,
 	}
 
-	c := sessionCpy.DB("master").C("users")
+	c := sessionCpy.DB("master").C(keyUser)
 	if c == nil {
 		return errMongoDBInvalid
 	}
@@ -164,11 +175,20 @@ func (d *driver) queryUserBasicInfoMongoDB(key *proto.DB_UserKey, userInfo *prot
 
 // update user basic info in redis
 func (d *driver) updateUserInfoRedis(userInfo *proto_common.UserBasicInfo) error {
+	conn := d.redisClient.Get()
+	defer conn.Close()
+
+	key := redisKey(keyUser, userInfo.Usn)
 	// store result to redis
-	_, err := d.redisClient.Get().Do("HMSET", redis.Args{}.Add("user:", userInfo.Usn).AddFlat(userInfo))
+	_, err := conn.Do("HMSET", redis.Args{}.Add(key).AddFlat(userInfo))
 	if err != nil {
 		log.Error(err)
 	}
+	_, err = conn.Do("EXPIRE", key, expireDuration)
+	if err != nil {
+		log.Error(err)
+	}
+
 	return err
 }
 
@@ -176,7 +196,7 @@ func (d *driver) updateUserInfoMongoDB(userInfo *proto_common.UserBasicInfo) err
 	sessionCpy := d.mongoSession.Copy()
 	defer sessionCpy.Close()
 
-	c := sessionCpy.DB("master").C("users")
+	c := sessionCpy.DB("master").C(keyUser)
 	if c == nil {
 		return errMongoDBInvalid
 	}
@@ -220,7 +240,7 @@ func (d *driver) queryUserExtraRedis(usn uint64, extraInfo *proto.DB_UserExtraIn
 	conn := d.redisClient.Get()
 	defer conn.Close()
 
-	values, err := redis.Values(conn.Do("HGETALL", fmt.Sprintf("userExtra:%v", usn)))
+	values, err := redis.Values(conn.Do("HGETALL", redisKey(keyUserExtra, usn)))
 	if err == nil && len(values) > 0 {
 		err = redis.ScanStruct(values, extraInfo)
 	}
@@ -232,7 +252,7 @@ func (d *driver) queryUserExtraMongoDB(usn uint64, extraInfo *proto.DB_UserExtra
 	sessionCpy := d.mongoSession.Copy()
 	defer sessionCpy.Close()
 
-	c := sessionCpy.DB("master").C("userExtra")
+	c := sessionCpy.DB("master").C(keyUserExtra)
 	if c == nil {
 		return errMongoDBInvalid
 	}
@@ -246,11 +266,19 @@ func (d *driver) queryUserExtraMongoDB(usn uint64, extraInfo *proto.DB_UserExtra
 }
 
 func (d *driver) updateUserExtraRedis(usn uint64, extraInfo *proto.DB_UserExtraInfo) error {
+	conn := d.redisClient.Get()
+	defer conn.Close()
 	// store result to redis
-	_, err := d.redisClient.Get().Do("HMSET", redis.Args{}.Add("userExtra:", usn).AddFlat(extraInfo))
+	key := redisKey(keyUserExtra, usn)
+	_, err := conn.Do("HMSET", redis.Args{}.Add(key).AddFlat(extraInfo))
 	if err != nil {
 		log.Error(err)
 	}
+	_, err = conn.Do("EXPIRE", key, time.Hour.Seconds()*12)
+	if err != nil {
+		log.Error(err)
+	}
+
 	return err
 }
 
@@ -258,7 +286,7 @@ func (d *driver) updateUserExtraMongoDB(usn uint64, extraInfo *proto.DB_UserExtr
 	sessionCpy := d.mongoSession.Copy()
 	defer sessionCpy.Close()
 
-	c := sessionCpy.DB("master").C("userExtra")
+	c := sessionCpy.DB("master").C(keyUserExtra)
 	if c == nil {
 		return errMongoDBInvalid
 	}

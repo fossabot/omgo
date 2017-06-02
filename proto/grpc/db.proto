@@ -20,7 +20,7 @@ service DBService {
     rpc UserLogin(DB.UserLoginRequest) returns (DB.UserLoginResponse);
 
     // logout
-    rpc UserLogout(DB.UserKey) returns (proto.common.RspHeader);
+    rpc UserLogout(DB.UserLogoutRequest) returns (proto.common.RspHeader);
 }
 
 message DB {
@@ -57,5 +57,9 @@ message DB {
         proto.common.RspHeader     result = 1;
         proto.common.UserBasicInfo info   = 2;
         bytes                      token  = 3;
+    }
+    message UserLogoutRequest {
+        uint64 usn   = 1;
+        bytes  token = 2;
     }
 }

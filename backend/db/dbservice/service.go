@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"regexp"
@@ -153,7 +154,6 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 			userBasicInfo.Avatar = gravatarURL + utils.GetStringMD5Hash(email)
 		}
 
-		// TODO add expire time to token
 		extra := &proto.DB_UserExtraInfo{Secret: request.Secret, Token: genToken()}
 		s.driver.updateUserExtraMongoDB(usn, extra)
 		s.driver.updateUserExtraRedis(usn, extra)
@@ -168,10 +168,54 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 
 // login
 func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginRequest) (*proto.DB_UserLoginResponse, error) {
-	return nil, nil
+	var ret proto.DB_UserLoginResponse
+	setRspHeader(ret.Result)
+	for {
+		// basic check
+		if request.GetInfo().GetEmail() == "" || len(request.GetSecret()) == 0 {
+			ret.Result.Status = pc.ResultCode_RESULT_INVALID
+			log.Errorf("incoming invalid login request:%v", request)
+			break
+		}
+
+		// query user
+		userInfo, err := s.driver.queryUserBasicInfo(&proto.DB_UserKey{Email: request.GetInfo().GetEmail()})
+		if err != nil {
+			ret.Result.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+			log.Errorf("query user failed")
+			break
+		}
+
+		// query user extra info
+		userExtra, err := s.driver.queryUserExtraInfo(userInfo.Usn)
+		if err != nil {
+			ret.Result.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+			log.Errorf("query user extra failed")
+			break
+		}
+
+		if bytes.Compare(userExtra.Secret, request.GetSecret()) != 0 {
+			ret.Result.Status = pc.ResultCode_RESULT_INVALID
+			log.Info("login with invalid credentials")
+			break
+		}
+
+		// update token
+		userExtra.Token = genToken()
+		s.driver.updateUserExtraMongoDB(userInfo.Usn, userExtra)
+		s.driver.updateUserExtraRedis(userInfo.Usn, userExtra)
+		// update last time login
+		userInfo.LastLogin = time.Now().Unix()
+		s.driver.updateUserInfoMongoDB(userInfo)
+		s.driver.updateUserInfoRedis(userInfo)
+		break
+	}
+
+	return ret, nil
 }
 
 // logout
 func (s *server) UserLogout(ctx context.Context, key *proto.DB_UserKey) (*pc.RspHeader, error) {
+
 	return nil, nil
 }
