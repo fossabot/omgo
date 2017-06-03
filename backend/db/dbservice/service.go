@@ -74,6 +74,8 @@ func (s *server) init(mcfg *mgo.DialInfo, rcfg *redisConfig) {
 
 // query user info
 func (s *server) UserQuery(ctx context.Context, key *proto.DB_UserKey) (ret *proto.DB_UserQueryResponse, err error) {
+	ret = &proto.DB_UserQueryResponse{}
+	ret.Result = &pc.RspHeader{}
 	setRspHeader(ret.Result)
 
 	err = regulateUserKey(key)
@@ -97,6 +99,7 @@ func (s *server) UserQuery(ctx context.Context, key *proto.DB_UserKey) (ret *pro
 
 // update user info
 func (s *server) UserUpdateInfo(ctx context.Context, userBasicInfo *pc.UserBasicInfo) (ret *pc.RspHeader, err error) {
+	ret = &pc.RspHeader{}
 	setRspHeader(ret)
 	err = s.driver.updateUserInfoMongoDB(userBasicInfo)
 	if err == nil {
@@ -114,6 +117,8 @@ func (s *server) UserUpdateInfo(ctx context.Context, userBasicInfo *pc.UserBasic
 
 // register
 func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegisterRequest) (ret *proto.DB_UserRegisterResponse, err error) {
+	ret = &proto.DB_UserRegisterResponse{}
+	ret.Result = &pc.RspHeader{}
 	setRspHeader(ret.Result)
 	// check for existed user by email address
 	email, valid := checkEmail(request.GetInfo().GetEmail())
@@ -123,17 +128,17 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 		log.Info(ret.Result.Msg)
 		return
 	}
-	userBasicInfo, err := s.driver.queryUserBasicInfo(&proto.DB_UserKey{Email: email})
+	ret.Info, err = s.driver.queryUserBasicInfo(&proto.DB_UserKey{Email: email})
 	if err != nil {
 		log.Errorf("error while register user:%v", err)
 		return
 	}
 
 	// user already existed
-	if userBasicInfo.Usn != 0 {
+	if ret.Info.Usn != 0 {
 		// email already registered
 		ret.Result.Status = pc.ResultCode_RESULT_INVALID
-		ret.Result.Msg = fmt.Sprintf("user:%v already registered", userBasicInfo)
+		ret.Result.Msg = fmt.Sprintf("user:%v already registered", ret.Info)
 		log.Info(ret.Result.Msg)
 		return
 	}
@@ -147,26 +152,27 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 		return
 	}
 
-	userBasicInfo = request.Info
-	userBasicInfo.Usn = usn
-	userBasicInfo.Uid = uid
-	userBasicInfo.Since = utils.Timestamp()
-	userBasicInfo.Email = email
-	if userBasicInfo.GetAvatar() == "" {
-		userBasicInfo.Avatar = gravatarURL + utils.GetStringMD5Hash(email)
+	ret.Info = request.Info
+	ret.Info.Usn = usn
+	ret.Info.Uid = uid
+	ret.Info.Since = utils.Timestamp()
+	ret.Info.Email = email
+	if ret.Info.GetAvatar() == "" {
+		ret.Info.Avatar = gravatarURL + utils.GetStringMD5Hash(email)
 	}
 
 	extra := &proto.DB_UserExtraInfo{Secret: request.Secret, Token: genToken()}
 	s.driver.updateUserExtraMongoDB(usn, extra)
 	s.driver.updateUserExtraRedis(usn, extra)
-	s.driver.updateUserInfoMongoDB(userBasicInfo)
-	s.driver.updateUserInfoRedis(userBasicInfo)
+	s.driver.updateUserInfoMongoDB(ret.Info)
+	s.driver.updateUserInfoRedis(ret.Info)
 
 	return
 }
 
 // login
 func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginRequest) (ret *proto.DB_UserLoginResponse, err error) {
+	ret = &proto.DB_UserLoginResponse{}
 	setRspHeader(ret.Result)
 	// basic check
 	if request.GetInfo().GetEmail() == "" || len(request.GetSecret()) == 0 {
@@ -176,7 +182,7 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 	}
 
 	// query user
-	userInfo, err := s.driver.queryUserBasicInfo(&proto.DB_UserKey{Email: request.GetInfo().GetEmail()})
+	ret.Info, err = s.driver.queryUserBasicInfo(&proto.DB_UserKey{Email: request.GetInfo().GetEmail()})
 	if err != nil {
 		ret.Result.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
 		log.Errorf("query user failed")
@@ -184,7 +190,7 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 	}
 
 	// query user extra info
-	userExtra, err := s.driver.queryUserExtraInfo(userInfo.Usn)
+	userExtra, err := s.driver.queryUserExtraInfo(ret.Info.Usn)
 	if err != nil {
 		ret.Result.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
 		log.Errorf("query user extra failed")
@@ -199,18 +205,19 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 
 	// update token
 	userExtra.Token = genToken()
-	s.driver.updateUserExtraMongoDB(userInfo.Usn, userExtra)
-	s.driver.updateUserExtraRedis(userInfo.Usn, userExtra)
+	s.driver.updateUserExtraMongoDB(ret.Info.Usn, userExtra)
+	s.driver.updateUserExtraRedis(ret.Info.Usn, userExtra)
 	// update last time login
-	userInfo.LastLogin = utils.Timestamp()
-	s.driver.updateUserInfoMongoDB(userInfo)
-	s.driver.updateUserInfoRedis(userInfo)
+	ret.Info.LastLogin = utils.Timestamp()
+	s.driver.updateUserInfoMongoDB(ret.Info)
+	s.driver.updateUserInfoRedis(ret.Info)
 
 	return
 }
 
 // logout
 func (s *server) UserLogout(ctx context.Context, request *proto.DB_UserLogoutRequest) (ret *pc.RspHeader, err error) {
+	ret = &pc.RspHeader{}
 	setRspHeader(ret)
 
 	if request.Usn == 0 || len(request.GetToken()) == 0 {
