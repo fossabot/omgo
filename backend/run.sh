@@ -1,29 +1,35 @@
 #!/bin/bash
 
+echo starting snowflake
 cd ./snowflake/
 govendor update +v
-exec ./run.sh
+sh ./run.sh
 cd ..
 
+echo starting agent
 cd ./agent/
 govendor update +v
-exec ./run.sh
+sh ./run.sh
 cd ..
 
+echo starting mongodb
 cd ./db/mongodb/
-exec ./run.sh
+sh ./run.sh
 cd ..
 
+echo starting redis
 cd ./redis/
-exec ./run.sh
+sh ./run.sh
 cd ..
 
+echo starting dbservice
 cd ./dbservice/
 govendor update +v
-exec ./run.sh
+sh ./run.sh
 cd ../../
 
+echo starting reception
 cd ./reception/
 govendor update +v
-exec ./run.sh
+sh ./run.sh
 cd ..
