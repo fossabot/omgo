@@ -33,6 +33,8 @@ import (
 	"runtime/debug"
 	"time"
 
+	"crypto/sha1"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/maruel/panicparse/stack"
@@ -85,6 +87,13 @@ func GetLocalIP() string {
 // GetStringMD5Hash will return text's md5 digest hex encoded
 func GetStringMD5Hash(text string) string {
 	hash := md5.New()
+	hash.Write([]byte(text))
+	return hex.EncodeToString(hash.Sum(nil))
+}
+
+// GetStringSHA1Hash will return text's sha1 digest hex encoded
+func GetStringSHA1Hash(text string) string {
+	hash := sha1.New()
 	hash.Write([]byte(text))
 	return hex.EncodeToString(hash.Sum(nil))
 }

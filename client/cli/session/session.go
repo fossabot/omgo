@@ -178,3 +178,10 @@ func (s *Session) ExchangeKey() {
 
 	s.encrypted = true
 }
+
+func (s *Session) Bye() {
+	log.Info("sending bye")
+	reqPacket := makePacket(pc.Cmd_OFFLINE_REQ)
+	s.Send(reqPacket.Data())
+	s.Close()
+}

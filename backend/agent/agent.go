@@ -3,6 +3,7 @@ package main
 import (
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/backend/agent/types"
 	pb "github.com/master-g/omgo/proto/grpc/game"
 	"github.com/master-g/omgo/utils"
@@ -70,6 +71,7 @@ func agent(session *types.Session, in chan []byte, out *Buffer) {
 
 		// see if user should be kicked out
 		if session.IsFlagKickedSet() {
+			log.Infof("session kicked:%v", session.IP.String())
 			return
 		}
 	}

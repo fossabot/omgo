@@ -21,11 +21,6 @@ var (
 	httpclient *http.Client
 )
 
-const (
-	// Salt for ECDH key-exchange process
-	Salt = "DH"
-)
-
 func init() {
 	sess = session.NewSession("")
 	httpclient = &http.Client{
@@ -121,7 +116,7 @@ func main() {
 			c.ShowPrompt(false)
 			defer c.ShowPrompt(true)
 			// http address
-			c.Print("API host(http://localhost:8080):")
+			c.Print("API host (http://localhost:8080):")
 			apiHost := c.ReadLine()
 			if apiHost == "" {
 				apiHost = "http://localhost:8080"
@@ -148,6 +143,17 @@ func main() {
 			json.NewDecoder(resp.Body).Decode(&rsp)
 
 			log.Info(rsp)
+		},
+	})
+	shell.AddCmd(&ishell.Cmd{
+		Name: "bye",
+		Help: "offline",
+		Func: func(c *ishell.Context) {
+			if !sess.IsConnected {
+				c.Println("no connection")
+				return
+			}
+			sess.Bye()
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{

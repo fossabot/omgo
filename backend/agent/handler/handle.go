@@ -130,6 +130,6 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 }
 
 func ProcOfflineReq(session *types.Session, reader *packet.RawPacket) []byte {
-	close(session.Die)
+	session.SetFlagKicked()
 	return nil
 }
