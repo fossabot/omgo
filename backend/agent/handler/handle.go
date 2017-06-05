@@ -128,3 +128,8 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 
 	return p.Data()
 }
+
+func ProcOfflineReq(session *types.Session, reader *packet.RawPacket) []byte {
+	close(session.Die)
+	return nil
+}
