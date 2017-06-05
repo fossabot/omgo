@@ -18,13 +18,13 @@ const (
 	// gRPC
 	defaultListen = ":60001"
 	// mongodb
-	defaultMongoHost     = "127.0.0.1:37017"
+	defaultMongoHost     = ":37017"
 	defaultMongoTimeout  = 60 * time.Second
 	defaultMongoDatabase = "master"
 	defaultMongoUserName = "admin"
 	defaultMongoPassword = "admin"
 	// redis
-	defaultRedisHost        = "127.0.0.1:6379" // FIXME: DO NOT use 6379 in production environment
+	defaultRedisHost        = ":6379" // FIXME: DO NOT use 6379 in production environment
 	defaultRedisDB          = 0
 	defaultRedisMaxIdle     = 80
 	defaultRedisMaxActive   = 1024

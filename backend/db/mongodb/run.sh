@@ -21,6 +21,7 @@ docker run -d --name ${SID} ${NETHOST} \
   mongo \
   --config /etc/mongod.conf
 
+# docker exec -it mongodb-0 mongo master -u admin -p admin
 
 # use master
 # db.users.insert({usn:1})

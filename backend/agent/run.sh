@@ -1,7 +1,7 @@
 #!/bin/bash
 
-IPADDR=127.0.0.1
 LOCALHOST=127.0.0.1
+IPADDR=127.0.0.1
 SID=agent-0
 NETHOST=--net=host
 
@@ -25,4 +25,4 @@ docker run -d \
     -e http://${IPADDR}:2379
 
 # register service
-curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/backends/agent/${SID} -d value=${LOCALHOST}:8888
+curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/backends/agent/${SID} -d value=${IPADDR}:8888

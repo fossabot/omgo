@@ -1,35 +1,23 @@
 package main
 
 import (
-	"crypto/rand"
-	"crypto/rc4"
-	"encoding/binary"
-	"encoding/hex"
-	"fmt"
-	"io"
-	"net"
-	"os"
-	"strings"
-
 	"encoding/json"
+	"net"
+	"net/http"
+	"os"
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/abiosoft/ishell"
-	"github.com/golang/protobuf/proto"
-	"github.com/master-g/omgo/net/packet"
+	"github.com/master-g/omgo/client/cli/session"
 	pc "github.com/master-g/omgo/proto/pb/common"
-	"github.com/master-g/omgo/security/ecdh"
 	"github.com/master-g/omgo/utils"
 	"gopkg.in/urfave/cli.v2"
-	"net/http"
-	"time"
 )
 
 var (
 	address    string
-	conn       net.Conn
-	encrypted  bool
-	encoder    *rc4.Cipher
-	decoder    *rc4.Cipher
+	sess       *session.Session
 	httpclient *http.Client
 )
 
@@ -39,159 +27,15 @@ const (
 )
 
 func init() {
+	sess = session.NewSession("")
 	httpclient = &http.Client{
 		Timeout: time.Second * 3,
 	}
 }
 
-func connect(addr string) {
-	log.Infof("connecting to %v", addr)
-
-	_conn, err := net.Dial("tcp", addr)
-	if err != nil {
-		log.Fatalf("could not connect to server %v, error: %v", address, err)
-	} else {
-		address = addr
-		conn = _conn
-		host, port, err := net.SplitHostPort(conn.RemoteAddr().String())
-		if err != nil {
-			log.Error("get remote address failed: ", err)
-			return
-		}
-		log.Infof("server %v:%v connected", host, port)
-	}
-}
-
-func disconnect() bool {
-	if conn != nil {
-		log.Infof("disconnecting from %v", address)
-		conn.Close()
-		conn = nil
-		return true
-	}
-	return false
-}
-
-func send(data []byte) {
-	if encrypted {
-		encoder.XORKeyStream(data, data)
-	}
-
-	size := len(data)
-	cache := make([]byte, 2+size)
-	binary.BigEndian.PutUint16(cache, uint16(size))
-	copy(cache[2:], data)
-	_, err := conn.Write(cache[:size+2])
-	if err != nil {
-		log.Fatalf("error while sending data: %v", err)
-	}
-
-	log.Infof("--> %v bytes", size+2)
-}
-
-func recv() []byte {
-	header := make([]byte, 2)
-	_, err := io.ReadFull(conn, header)
-	if err != nil {
-		log.Fatalf("error while reading header:%v", err)
-		return nil
-	}
-
-	size := binary.BigEndian.Uint16(header)
-	// data
-	payload := make([]byte, size)
-	n, err := io.ReadFull(conn, payload)
-	if err != nil {
-		log.Fatalf("read payload failed: %v expect: %v actual read: %v", err, size, n)
-		return nil
-	}
-
-	if decoder != nil {
-		decoder.XORKeyStream(payload, payload)
-	}
-
-	log.Infof("<-- %v bytes", size+2)
-
-	return payload
-}
-
-func heartbeat() {
-	log.Info("sending heartbeat")
-	reqPacket := packet.NewRawPacket()
-	reqPacket.WriteS32(int32(pc.Cmd_HEART_BEAT_REQ))
-	send(reqPacket.Data())
-	rspPacket := recv()
-	if rspPacket != nil {
-		reader := packet.NewRawPacketReader(rspPacket)
-		cmd, err := reader.ReadS32()
-		if err != nil {
-			log.Fatalf("read cmd failed:%v", err)
-			return
-		}
-		if cmd != int32(pc.Cmd_HEART_BEAT_RSP) {
-			log.Fatalf("expect %v got %v", pc.Cmd_HEART_BEAT_RSP, cmd)
-			return
-		}
-		log.Info("recv heartbeat response from server")
-	}
-}
-
-func keyExchange() {
-	log.Info("about to exchange key")
-	reqPacket := packet.NewRawPacket()
-	reqPacket.WriteS32(int32(pc.Cmd_GET_SEED_REQ))
-
-	req := &pc.C2SGetSeedReq{}
-
-	curve := ecdh.NewCurve25519ECDH()
-	x1, e1 := curve.GenerateECKeyBuf(rand.Reader)
-	x2, e2 := curve.GenerateECKeyBuf(rand.Reader)
-
-	req.SendSeed = e1
-	req.RecvSeed = e2
-
-	data, err := proto.Marshal(req)
-	if err != nil {
-		log.Fatalf("error while create request:%v", err)
-	}
-	reqPacket.WriteBytes(data)
-	send(reqPacket.Data())
-
-	rspBody := recv()
-	rsp := &pc.S2CGetSeedRsp{}
-	reader := packet.NewRawPacketReader(rspBody)
-	cmd, err := reader.ReadS32()
-	buf, err := reader.ReadBytes()
-	if cmd != int32(pc.Cmd_GET_SEED_RSP) || err != nil {
-		log.Fatalf("error while parsing response cmd:%v error:%v", cmd, err)
-	}
-
-	err = proto.Unmarshal(buf, rsp)
-	if err != nil {
-		log.Fatalf("error while parsing proto:%v", err)
-	}
-
-	key1 := curve.GenerateSharedSecretBuf(x1, rsp.GetSendSeed())
-	key2 := curve.GenerateSharedSecretBuf(x2, rsp.GetRecvSeed())
-
-	encoder, err = rc4.NewCipher([]byte(fmt.Sprintf("%v%v", Salt, key1)))
-	if err != nil {
-		log.Fatalf("error while creating encoder:%v", err)
-	}
-	decoder, err = rc4.NewCipher([]byte(fmt.Sprintf("%v%v", Salt, key2)))
-	if err != nil {
-		log.Fatalf("error while creating decoder:%v", err)
-	}
-
-	log.Infof("encoder seed:%v", strings.ToUpper(hex.EncodeToString(key2)))
-	log.Infof("decoder seed:%v", strings.ToUpper(hex.EncodeToString(key1)))
-
-	encrypted = true
-}
-
-func main2() {
+func main() {
 	log.SetLevel(log.DebugLevel)
-	defer disconnect()
+	defer sess.Close()
 	defer utils.PrintPanicStack()
 
 	app := &cli.App{
@@ -222,18 +66,19 @@ func main2() {
 			if len(c.Args) > 0 {
 				address = c.Args[0]
 			}
-			disconnect()
-			connect(address)
+			sess.Close()
+			sess.Connect(address)
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
 		Name: "disconn",
 		Help: "disconnect from server",
 		Func: func(c *ishell.Context) {
-			if disconnect() {
-				c.Println("disconnected from server")
-			} else {
+			if !sess.IsConnected {
 				c.Println("no connection")
+			} else {
+				sess.Close()
+				c.Println("disconnected from server")
 			}
 		},
 	})
@@ -241,32 +86,68 @@ func main2() {
 		Name: "heartbeat",
 		Help: "sending heartbeat to server",
 		Func: func(c *ishell.Context) {
-			if conn == nil {
+			if !sess.IsConnected {
 				c.Println("no connection")
 				return
 			}
-			heartbeat()
+			sess.Heartbeat()
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
 		Name: "go",
 		Help: "go through all tests",
 		Func: func(c *ishell.Context) {
-			disconnect()
-			connect(address)
-			heartbeat()
-			keyExchange()
+			sess.Close()
+			sess.Connect(address)
+			sess.Heartbeat()
+			sess.ExchangeKey()
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
 		Name: "exchangekey",
 		Help: "exchange public key with server",
 		Func: func(c *ishell.Context) {
-			if conn == nil {
+			if !sess.IsConnected {
 				c.Println("no connection")
 				return
 			}
-			keyExchange()
+			sess.ExchangeKey()
+		},
+	})
+	shell.AddCmd(&ishell.Cmd{
+		Name: "login",
+		Help: "send login request to reception server",
+		Func: func(c *ishell.Context) {
+			c.ShowPrompt(false)
+			defer c.ShowPrompt(true)
+			// http address
+			c.Print("API host(http://localhost:8080):")
+			apiHost := c.ReadLine()
+			if apiHost == "" {
+				apiHost = "http://localhost:8080"
+			}
+			// email
+			c.Print("Email:")
+			email := c.ReadLine()
+			// pass
+			c.Print("Password:")
+			pass := c.ReadPassword()
+
+			req, err := http.NewRequest("GET", apiHost+"/login", nil)
+			if err != nil {
+				log.Errorf("error while create http request:%v", err)
+			}
+			req.Header.Add("email", email)
+			req.Header.Add("pass", pass)
+			resp, err := httpclient.Do(req)
+			if err != nil {
+				log.Errorf("error while sending request:%v", err)
+			}
+
+			var rsp pc.S2CLoginRsp
+			json.NewDecoder(resp.Body).Decode(&rsp)
+
+			log.Info(rsp)
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
@@ -295,22 +176,4 @@ func main2() {
 	})
 
 	shell.Start()
-}
-
-func main() {
-	req, err := http.NewRequest("GET", "http://localhost:8080/login", nil)
-	if err != nil {
-		log.Errorf("error while create http request:%v", err)
-	}
-	req.Header.Add("email", "masterg@yeah.net")
-	req.Header.Add("pass", "aabbccddeeff")
-	resp, err := httpclient.Do(req)
-	if err != nil {
-		log.Errorf("error while sending request:%v", err)
-	}
-
-	var userInfo pc.UserBasicInfo
-	json.NewDecoder(resp.Body).Decode(&userInfo)
-
-	log.Info(userInfo)
 }

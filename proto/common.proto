@@ -11,8 +11,11 @@ enum Cmd {
     HEART_BEAT_RSP = 0x2;
     LOGIN_REQ      = 0x11;
     LOGIN_RSP      = 0x12;
+    LOGOUT_REQ     = 0x13;
+    LOGOUT_RSP     = 0x14;
     GET_SEED_REQ   = 0x31;
     GET_SEED_RSP   = 0x32;
+    OFFLINE_REQ    = 0x87;
     PING_REQ       = 0x1001;
     PING_RSP       = 0x1002;
 

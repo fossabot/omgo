@@ -1,7 +1,6 @@
 #!/bin/bash
 
 IPADDR=127.0.0.1
-LOCALHOST=127.0.0.1
 SID=reception-0
 NETHOST=--net=host
 
