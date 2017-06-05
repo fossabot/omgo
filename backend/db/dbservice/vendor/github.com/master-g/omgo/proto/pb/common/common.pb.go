@@ -139,7 +139,7 @@ func (x Gender) String() string {
 func (Gender) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
 
 type RspHeader struct {
-	Status    ResultCode `protobuf:"varint,1,opt,name=status,enum=proto.common.ResultCode" json:"status,omitempty"`
+	Status    ResultCode `protobuf:"varint,1,opt,name=status,enum=proto.common.ResultCode" json:"status"`
 	Timestamp uint64     `protobuf:"fixed64,2,opt,name=timestamp" json:"timestamp,omitempty"`
 	Msg       string     `protobuf:"bytes,3,opt,name=msg" json:"msg,omitempty"`
 }
@@ -172,9 +172,9 @@ func (m *RspHeader) GetMsg() string {
 
 type UserBasicInfo struct {
 	Usn       uint64 `protobuf:"fixed64,1,opt,name=usn" json:"usn,omitempty"`
-	Uid       uint64 `protobuf:"varint,2,opt,name=uid" json:"uid,omitempty"`
+	Uid       uint64 `protobuf:"varint,2,opt,name=uid" json:"uid"`
 	Birthday  uint64 `protobuf:"fixed64,3,opt,name=birthday" json:"birthday,omitempty"`
-	Gender    Gender `protobuf:"varint,4,opt,name=gender,enum=proto.common.Gender" json:"gender,omitempty"`
+	Gender    Gender `protobuf:"varint,4,opt,name=gender,enum=proto.common.Gender" json:"gender"`
 	Nickname  string `protobuf:"bytes,5,opt,name=nickname" json:"nickname,omitempty"`
 	Email     string `protobuf:"bytes,6,opt,name=email" json:"email,omitempty"`
 	Avatar    string `protobuf:"bytes,7,opt,name=avatar" json:"avatar,omitempty"`

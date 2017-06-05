@@ -66,7 +66,7 @@ func (*Game) ProtoMessage()               {}
 func (*Game) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
 type Game_Frame struct {
-	Type    Game_FrameType `protobuf:"varint,1,opt,name=Type,enum=proto.Game_FrameType" json:"Type,omitempty"`
+	Type    Game_FrameType `protobuf:"varint,1,opt,name=Type,enum=proto.Game_FrameType" json:"Type"`
 	Message []byte         `protobuf:"bytes,2,opt,name=Message,proto3" json:"Message,omitempty"`
 }
 
