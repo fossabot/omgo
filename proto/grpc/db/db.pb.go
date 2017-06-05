@@ -45,7 +45,7 @@ func (*DB) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 // user query key
 type DB_UserKey struct {
 	Usn   uint64 `protobuf:"fixed64,1,opt,name=usn" json:"usn,omitempty"`
-	Uid   uint64 `protobuf:"varint,2,opt,name=uid" json:"uid,omitempty"`
+	Uid   uint64 `protobuf:"varint,2,opt,name=uid" json:"uid"`
 	Email string `protobuf:"bytes,3,opt,name=email" json:"email,omitempty"`
 }
 
@@ -245,7 +245,7 @@ func (m *DB_UserLoginResponse) GetToken() string {
 }
 
 type DB_UserLogoutRequest struct {
-	Usn   uint64 `protobuf:"varint,1,opt,name=usn" json:"usn,omitempty"`
+	Usn   uint64 `protobuf:"varint,1,opt,name=usn" json:"usn"`
 	Token string `protobuf:"bytes,2,opt,name=token" json:"token,omitempty"`
 }
 

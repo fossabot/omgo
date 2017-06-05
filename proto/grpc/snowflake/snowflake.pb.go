@@ -58,7 +58,7 @@ func (m *Snowflake_Key) GetName() string {
 }
 
 type Snowflake_Value struct {
-	Value int64 `protobuf:"varint,1,opt,name=value" json:"value,omitempty"`
+	Value int64 `protobuf:"varint,1,opt,name=value" json:"value"`
 }
 
 func (m *Snowflake_Value) Reset()                    { *m = Snowflake_Value{} }
@@ -82,7 +82,7 @@ func (*Snowflake_NullRequest) ProtoMessage()               {}
 func (*Snowflake_NullRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 2} }
 
 type Snowflake_UUID struct {
-	Uuid uint64 `protobuf:"varint,1,opt,name=uuid" json:"uuid,omitempty"`
+	Uuid uint64 `protobuf:"varint,1,opt,name=uuid" json:"uuid"`
 }
 
 func (m *Snowflake_UUID) Reset()                    { *m = Snowflake_UUID{} }

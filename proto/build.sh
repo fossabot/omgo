@@ -15,5 +15,8 @@ do
   mkdir -p ${output}
   # compile
   protoc -I=. --go_out=${GOPATH}/src ${name}.proto
+  # remove unnecessary `omitempty` for bool key-pair
+  outfile=${output}/${name}
+  sed -e '/varint/ s/,omitempty//' ${outfile}.pb.go > ${outfile}.tmp
+  mv ${outfile}.tmp ${outfile}.pb.go
 done;
-

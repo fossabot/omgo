@@ -10,8 +10,10 @@ do
   mkdir -p ${output}
   # compile
   parent=$(dirname "$(pwd)")
-  protoc -I . -I ../ --go_out=plugins=grpc:${name} ${name}.proto 
-
-  #[ -d ${f} ] && cd "${f}" && protoc -I=../ --go_out=plugins=grpc:. *.proto
+  protoc -I . -I ../ --go_out=plugins=grpc:${name} ${name}.proto
+  # remove unnecessary `omitempty` for bool key-pair
+  outfile=${output}/${name}
+  sed -e '/varint/ s/,omitempty//' ${outfile}.pb.go > ${outfile}.tmp
+  mv ${outfile}.tmp ${outfile}.pb.go
 done;
 
