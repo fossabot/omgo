@@ -20,4 +20,6 @@ docker run --rm -d ${NETHOST} \
     --entrypoint /go/bin/reception \
     reception \
     -l :8080 \
-    -e http://${IPADDR}:2379
+    -e http://${IPADDR}:2379 \
+    -r backends/ \
+    -s dbservice

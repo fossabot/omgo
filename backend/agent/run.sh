@@ -22,7 +22,10 @@ docker run -d \
     -p 8888:8888 \
     -P agent \
     -l :8888 \
-    -e http://${IPADDR}:2379
+    -e http://${IPADDR}:2379 \
+    -r backends/ \
+    -s snowflake \
+    -s game
 
 # register service
 curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/backends/agent/${SID} -d value=${IPADDR}:8888
