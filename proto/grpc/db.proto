@@ -53,8 +53,9 @@ message DB {
         bytes                      secret = 2;
     }
     message UserLoginResponse {
-        proto.common.UserBasicInfo info  = 1;
-        string                     token = 2;
+        proto.common.RspHeader     result = 1;
+        proto.common.UserBasicInfo info   = 2;
+        string                     token  = 3;
     }
     message UserLogoutRequest {
         uint64 usn   = 1;
