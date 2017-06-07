@@ -1,14 +1,14 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
 	"os"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
-	pc "github.com/master-g/omgo/proto/pb/common"
+	"github.com/master-g/omgo/backend/reception/handler"
+	"github.com/master-g/omgo/services"
 	"github.com/master-g/omgo/utils"
 	"gopkg.in/urfave/cli.v2"
 )
@@ -25,12 +25,6 @@ const (
 var (
 	defaultServices = []string{"db"}
 )
-
-func setRspHeader(rsp *pc.RspHeader) *pc.RspHeader {
-	rsp.Timestamp = utils.Timestamp()
-	rsp.Status = pc.ResultCode_RESULT_OK
-	return rsp
-}
 
 func main() {
 	log.SetLevel(log.DebugLevel)
@@ -94,6 +88,8 @@ func main() {
 			log.Println("read timeout:", rt)
 			log.Println("write timeout:", wt)
 
+			services.Init(etcdRoot, etcdHosts, serviceNames)
+
 			startHTTP(listen, rt, wt)
 
 			return nil
@@ -103,49 +99,9 @@ func main() {
 	app.Run(os.Args)
 }
 
-func loginHandler(w http.ResponseWriter, r *http.Request) {
-	var ret pc.S2CLoginRsp
-	ret.Header = &pc.RspHeader{}
-	setRspHeader(ret.Header)
-
-	email := r.Header.Get("email")
-	pass := r.Header.Get("pass")
-
-	log.Info("email:", email)
-	log.Info("pass:", pass)
-
-	if email == "" || pass == "" {
-		ret.Header.Status = pc.ResultCode_RESULT_INVALID
-		ret.Header.Msg = "invalid parameter(s)"
-	} else {
-		ret.UserInfo = &pc.UserBasicInfo{
-			Usn:       utils.Timestamp(),
-			Uid:       1234,
-			Birthday:  0,
-			Gender:    pc.Gender_GENDER_FEMALE,
-			Nickname:  "wow",
-			Email:     email,
-			Avatar:    "https://www.gravatar.com/avatar/" + utils.GetStringMD5Hash(email) + "?s=200&r=pg&d=404",
-			Country:   "cn",
-			LastLogin: utils.Timestamp(),
-		}
-	}
-
-	js, err := json.Marshal(ret)
-
-	if err != nil {
-		log.Error(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
-}
-
 func startHTTP(addr string, rt, wt time.Duration) {
 	router := mux.NewRouter()
-	router.HandleFunc("/login", loginHandler).Methods("GET")
+	router.HandleFunc("/login", handler.Login).Methods("GET")
 	srv := &http.Server{
 		Handler:      router,
 		Addr:         addr,

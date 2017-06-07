@@ -11,6 +11,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/net/packet"
+	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/security/ecdh"
 	"github.com/master-g/omgo/utils"
 )
@@ -71,7 +72,7 @@ func TestHeartBeat(t *testing.T) {
 	defer conn.Close()
 
 	reqPacket := packet.NewRawPacket()
-	reqPacket.WriteS32(int32(proto_common.Cmd_HEART_BEAT_REQ))
+	reqPacket.WriteS32(int32(pc.Cmd_HEART_BEAT_REQ))
 	send(conn, reqPacket.Data(), t)
 
 	recv(conn, t)
@@ -82,9 +83,9 @@ func TestGetSeed(t *testing.T) {
 	defer conn.Close()
 
 	reqPacket := packet.NewRawPacket()
-	reqPacket.WriteS32(int32(proto_common.Cmd_GET_SEED_REQ))
+	reqPacket.WriteS32(int32(pc.Cmd_GET_SEED_REQ))
 
-	req := &proto_common.C2SGetSeedReq{}
+	req := &pc.C2SGetSeedReq{}
 
 	curve := ecdh.NewCurve25519ECDH()
 	x1, e1 := curve.GenerateECKeyBuf(rand.Reader)
@@ -101,11 +102,11 @@ func TestGetSeed(t *testing.T) {
 	send(conn, reqPacket.Data(), t)
 
 	rspBody := recv(conn, t)
-	rsp := &proto_common.S2CGetSeedRsp{}
+	rsp := &pc.S2CGetSeedRsp{}
 	reader := packet.NewRawPacketReader(rspBody)
 	cmd, err := reader.ReadS32()
 	buf, err := reader.ReadBytes()
-	if cmd != int32(proto_common.Cmd_GET_SEED_RSP) || err != nil {
+	if cmd != int32(pc.Cmd_GET_SEED_RSP) || err != nil {
 		t.Fatalf("error while parsing response cmd:%v error:%v", cmd, err)
 	}
 

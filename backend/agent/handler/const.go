@@ -2,5 +2,5 @@ package handler
 
 const (
 	Salt        = "DH"
-	DefaultGSID = "game1"
+	DefaultGSID = "game-0"
 )

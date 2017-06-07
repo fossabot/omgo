@@ -7,6 +7,8 @@ import (
 	"os"
 	"time"
 
+	"strings"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/abiosoft/ishell"
 	"github.com/master-g/omgo/client/cli/session"
@@ -14,6 +16,8 @@ import (
 	"github.com/master-g/omgo/utils"
 	"gopkg.in/urfave/cli.v2"
 )
+
+const salt = "japari"
 
 var (
 	address    string
@@ -128,12 +132,21 @@ func main() {
 			c.Print("Password:")
 			pass := c.ReadPassword()
 
+			afterPass := strings.TrimSpace(pass)
+			if afterPass == "" {
+				log.Error("password invalid")
+				return
+			}
+
+			secret := utils.GetStringSHA1Hash(afterPass + salt)
+
+			// send request
 			req, err := http.NewRequest("GET", apiHost+"/login", nil)
 			if err != nil {
 				log.Errorf("error while create http request:%v", err)
 			}
 			req.Header.Add("email", email)
-			req.Header.Add("pass", pass)
+			req.Header.Add("secret", secret)
 			resp, err := httpclient.Do(req)
 			if err != nil {
 				log.Errorf("error while sending request:%v", err)

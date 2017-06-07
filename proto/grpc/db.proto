@@ -40,9 +40,8 @@ message DB {
         proto.common.UserBasicInfo info   = 2;
     }
     message UserRegisterRequest {
-        proto.common.RspHeader     result = 1;
-        proto.common.UserBasicInfo info   = 2;
-        bytes                      secret = 3;
+        proto.common.UserBasicInfo info   = 1;
+        bytes                      secret = 2;
     }
     message UserRegisterResponse {
         proto.common.RspHeader     result = 1;
@@ -54,9 +53,8 @@ message DB {
         bytes                      secret = 2;
     }
     message UserLoginResponse {
-        proto.common.RspHeader     result = 1;
-        proto.common.UserBasicInfo info   = 2;
-        string                     token  = 3;
+        proto.common.UserBasicInfo info  = 1;
+        string                     token = 2;
     }
     message UserLogoutRequest {
         uint64 usn   = 1;
