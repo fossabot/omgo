@@ -23,3 +23,13 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+# Executables
+
+client/cli/cli
+backend/agent/agent
+backend/auth/auth
+backend/db/dbservice/dbservice
+backend/game/game
+backend/reception/reception
+backend/snowflake/snowflake
