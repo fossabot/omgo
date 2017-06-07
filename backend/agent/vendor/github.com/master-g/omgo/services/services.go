@@ -63,7 +63,7 @@ func (p *servicePool) init(root string, hosts, services []string) {
 		os.Exit(-1)
 	}
 	p.etcdClient = etcdcli
-	p.root = root
+	p.root = pathSep + root
 
 	// init
 	p.services = make(map[string]*service)

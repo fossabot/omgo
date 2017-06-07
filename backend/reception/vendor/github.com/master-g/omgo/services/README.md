@@ -27,5 +27,5 @@ curl -L -X PUT http://YOUR-ETCD-HOST/v2/keys/backends/agent/agent-001 -d value="
 Then you can init services
 
 ```go
-services.Init("/backends", ["127.0.0.1:2379"], ["snowflake", "game"])
+services.Init("backends", ["127.0.0.1:2379"], ["snowflake", "game"])
 ```

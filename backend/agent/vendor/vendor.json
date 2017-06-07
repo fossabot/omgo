@@ -65,38 +65,38 @@
 		{
 			"checksumSHA1": "Et5hHvnk5iVRSJr5PepcG/4fhJw=",
 			"path": "github.com/master-g/omgo/net/packet",
-			"revision": "7a458e8fa15a7a3aa466a3b010d4589203a33a9a",
-			"revisionTime": "2017-06-07T07:26:28Z"
+			"revision": "dae008875abcde38872aa7c77385cdeaa07f3316",
+			"revisionTime": "2017-06-07T08:37:55Z"
 		},
 		{
 			"checksumSHA1": "lhBFXUlc00opf7cCnIzKJSUugh0=",
 			"path": "github.com/master-g/omgo/proto/grpc/game",
-			"revision": "7a458e8fa15a7a3aa466a3b010d4589203a33a9a",
-			"revisionTime": "2017-06-07T07:26:28Z"
+			"revision": "dae008875abcde38872aa7c77385cdeaa07f3316",
+			"revisionTime": "2017-06-07T08:37:55Z"
 		},
 		{
 			"checksumSHA1": "457bu/fwatAjgtxPC/qTaiuzsGM=",
 			"path": "github.com/master-g/omgo/proto/pb/common",
-			"revision": "7a458e8fa15a7a3aa466a3b010d4589203a33a9a",
-			"revisionTime": "2017-06-07T07:26:28Z"
+			"revision": "dae008875abcde38872aa7c77385cdeaa07f3316",
+			"revisionTime": "2017-06-07T08:37:55Z"
 		},
 		{
 			"checksumSHA1": "GQdCBkVO55pEQpXzI0c6z5u2YXY=",
 			"path": "github.com/master-g/omgo/security/ecdh",
-			"revision": "7a458e8fa15a7a3aa466a3b010d4589203a33a9a",
-			"revisionTime": "2017-06-07T07:26:28Z"
+			"revision": "dae008875abcde38872aa7c77385cdeaa07f3316",
+			"revisionTime": "2017-06-07T08:37:55Z"
 		},
 		{
-			"checksumSHA1": "yiV3F9me4BR3oVS/tYEKzbi3sJo=",
+			"checksumSHA1": "nu1LooXq8uAssleSuvuPE+wyMGQ=",
 			"path": "github.com/master-g/omgo/services",
-			"revision": "7a458e8fa15a7a3aa466a3b010d4589203a33a9a",
-			"revisionTime": "2017-06-07T07:26:28Z"
+			"revision": "dae008875abcde38872aa7c77385cdeaa07f3316",
+			"revisionTime": "2017-06-07T08:37:55Z"
 		},
 		{
 			"checksumSHA1": "eRoDQrrR27KLWngj/Ea/mSfEWiY=",
 			"path": "github.com/master-g/omgo/utils",
-			"revision": "7a458e8fa15a7a3aa466a3b010d4589203a33a9a",
-			"revisionTime": "2017-06-07T07:26:28Z"
+			"revision": "dae008875abcde38872aa7c77385cdeaa07f3316",
+			"revisionTime": "2017-06-07T08:37:55Z"
 		},
 		{
 			"checksumSHA1": "CoxdaTYdPZNJXr8mJfLxye428N0=",
