@@ -81,6 +81,12 @@
 			"revisionTime": "2017-03-28T20:03:51Z"
 		},
 		{
+			"checksumSHA1": "TU80QF6yXyAr2o/KzjbGh7pgus4=",
+			"path": "github.com/master-g/omgo/proto/grpc/db",
+			"revision": "34e087582a858e2eb22ce26ce5a1d8f0e415bc71",
+			"revisionTime": "2017-06-07T07:48:06Z"
+		},
+		{
 			"checksumSHA1": "dOwWx/TzvqOwVmh/pN5LEJ2+iy0=",
 			"path": "github.com/master-g/omgo/proto/pb",
 			"revision": "c2120aa8d51ac3eb5fadd89585c0813913775e59",

@@ -23,7 +23,7 @@ docker run -d \
     -P agent \
     -l :8888 \
     -e http://${IPADDR}:2379 \
-    -r backends/ \
+    -r backends \
     -s snowflake \
     -s game
 

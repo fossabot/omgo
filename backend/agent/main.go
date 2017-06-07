@@ -26,7 +26,7 @@ const (
 	profileAddress       = "0.0.0.0:6666"
 	defaultListen        = ":8888"
 	defaultETCD          = "http://127.0.0.1:2379"
-	defaultRoot          = "/backends"
+	defaultRoot          = "backends"
 	defaultReadDeadLine  = 15 * time.Second
 	defaultSockBufSize   = 32*1024 - 1
 	defaultTxQueueLength = 128

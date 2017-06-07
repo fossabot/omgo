@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
@@ -20,6 +21,7 @@ func setRspHeader(rsp *pc.RspHeader) *pc.RspHeader {
 	return rsp
 }
 
+// Login handles user login request
 func Login(w http.ResponseWriter, r *http.Request) {
 	ret := &pc.S2CLoginRsp{}
 	ret.Header = &pc.RspHeader{}
@@ -77,6 +79,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Register handles user register request
 func Register(w http.ResponseWriter, r *http.Request) {
 	ret := &pc.S2CLoginRsp{}
 	ret.Header = &pc.RspHeader{}
@@ -98,6 +101,15 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	email := r.Header.Get("email")
 	nick := r.Header.Get("nickname")
 	password := r.Header.Get("password")
+	birthday, err := strconv.ParseUint(r.Header.Get("birthday"), 10, 64)
+	if err != nil {
+		birthday = 0
+	}
+	gender := pc.Gender_GENDER_UNKNOWN
+	genderValue, err := strconv.ParseInt(r.Header.Get("gender"), 10, 32)
+	if err == nil {
+		gender = pc.Gender(genderValue)
+	}
 
 	email = strings.TrimSpace(email)
 	nick = strings.TrimSpace(nick)
@@ -106,10 +118,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	registerReq := &pb.DB_UserRegisterRequest{}
 	registerReq.Info = &pc.UserBasicInfo{
 		Email:    email,
-		Birthday: r.Header.Get("birthday"),
+		Birthday: birthday,
 		Avatar:   r.Header.Get("avatar"),
 		Nickname: nick,
-		Gender:   r.Header.Get("gender"),
+		Gender:   gender,
 	}
 
 	secret := utils.GetStringSHA1Hash(password + defaultSalt)

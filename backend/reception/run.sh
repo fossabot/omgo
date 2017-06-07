@@ -21,5 +21,5 @@ docker run --rm -d ${NETHOST} \
     reception \
     -l :8080 \
     -e http://${IPADDR}:2379 \
-    -r backends/ \
+    -r backends \
     -s dbservice

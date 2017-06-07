@@ -17,8 +17,6 @@ import (
 	"gopkg.in/urfave/cli.v2"
 )
 
-const salt = "japari"
-
 var (
 	address    string
 	sess       *session.Session
@@ -138,15 +136,13 @@ func main() {
 				return
 			}
 
-			secret := utils.GetStringSHA1Hash(afterPass + salt)
-
 			// send request
 			req, err := http.NewRequest("GET", apiHost+"/login", nil)
 			if err != nil {
 				log.Errorf("error while create http request:%v", err)
 			}
 			req.Header.Add("email", email)
-			req.Header.Add("secret", secret)
+			req.Header.Add("password", afterPass)
 			resp, err := httpclient.Do(req)
 			if err != nil {
 				log.Errorf("error while sending request:%v", err)
