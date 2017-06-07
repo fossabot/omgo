@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	log "github.com/Sirupsen/logrus"
 	pb "github.com/master-g/omgo/proto/grpc/db"
@@ -20,7 +21,7 @@ func setRspHeader(rsp *pc.RspHeader) *pc.RspHeader {
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	var ret pc.S2CLoginRsp
+	ret := &pc.S2CLoginRsp{}
 	ret.Header = &pc.RspHeader{}
 	setRspHeader(ret.Header)
 
@@ -58,12 +59,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var userLoginReq pb.DB_UserLoginRequest
+		userLoginReq := &pb.DB_UserLoginRequest{}
 		userLoginReq.Info = &pc.UserBasicInfo{Email: email}
 		userLoginReq.Secret = secretBytes
 
 		cli := pb.NewDBServiceClient(conn)
-		loginRsp, err := cli.UserLogin(context.Background(), &userLoginReq)
+		loginRsp, err := cli.UserLogin(context.Background(), userLoginReq)
 		if err != nil {
 			ret.Header.Status = pc.ResultCode_RESULT_INVALID
 			ret.Header.Msg = "login failed"
@@ -77,7 +78,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func Register(w http.ResponseWriter, r *http.Request) {
-	var ret pc.S2CLoginRsp
+	ret := &pc.S2CLoginRsp{}
 	ret.Header = &pc.RspHeader{}
 	setRspHeader(ret.Header)
 
@@ -94,6 +95,49 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		w.Write(js)
 	}()
 
-	//registerReq := &pb.DB_UserRegisterRequest{}
-	//registerReq.
+	email := r.Header.Get("email")
+	nick := r.Header.Get("nickname")
+	password := r.Header.Get("password")
+
+	email = strings.TrimSpace(email)
+	nick = strings.TrimSpace(nick)
+	password = strings.TrimSpace(password)
+
+	registerReq := &pb.DB_UserRegisterRequest{}
+	registerReq.Info = &pc.UserBasicInfo{
+		Email:    email,
+		Birthday: r.Header.Get("birthday"),
+		Avatar:   r.Header.Get("avatar"),
+		Nickname: nick,
+		Gender:   r.Header.Get("gender"),
+	}
+
+	secret := utils.GetStringSHA1Hash(password + defaultSalt)
+	secretBytes, err := hex.DecodeString(secret)
+	registerReq.Secret = secretBytes
+
+	if email == "" || nick == "" || password == "" || err != nil {
+		ret.Header.Status = pc.ResultCode_RESULT_INVALID
+		ret.Header.Msg = "invalid parameter(s)"
+	} else {
+		conn := services.GetServiceWithID("dbservice", defaultDBSID)
+		if conn == nil {
+			ret.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+			ret.Header.Msg = "interal error"
+			log.Error("cannot get db service:", defaultDBSID)
+			return
+		}
+
+		cli := pb.NewDBServiceClient(conn)
+		registerRsp, err := cli.UserRegister(context.Background(), registerReq)
+		if err != nil {
+			ret.Header.Status = pc.ResultCode_RESULT_INVALID
+			ret.Header.Msg = "register failed"
+			log.Infof("register failed: %v", err)
+			return
+		}
+
+		ret.UserInfo = registerRsp.Info
+		ret.Token = registerRsp.Token
+	}
 }
