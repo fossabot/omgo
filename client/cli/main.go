@@ -5,10 +5,11 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
-	"strings"
-
+	"github.com/Pallinder/go-randomdata"
 	log "github.com/Sirupsen/logrus"
 	"github.com/abiosoft/ishell"
 	"github.com/master-g/omgo/client/cli/session"
@@ -21,6 +22,7 @@ var (
 	address    string
 	sess       *session.Session
 	httpclient *http.Client
+	apiHost    string
 )
 
 func init() {
@@ -28,6 +30,7 @@ func init() {
 	httpclient = &http.Client{
 		Timeout: time.Second * 3,
 	}
+	apiHost = "http://localhost:8080"
 }
 
 func main() {
@@ -118,20 +121,18 @@ func main() {
 			c.ShowPrompt(false)
 			defer c.ShowPrompt(true)
 			// http address
-			c.Print("API host (http://localhost:8080):")
-			apiHost := c.ReadLine()
-			if apiHost == "" {
-				apiHost = "http://localhost:8080"
+			c.Printf("API host (%v):", apiHost)
+			_apiHost := c.ReadLine()
+			if _apiHost != "" {
+				apiHost = _apiHost
 			}
 			// email
 			c.Print("Email:")
 			email := c.ReadLine()
 			// pass
 			c.Print("Password:")
-			pass := c.ReadPassword()
-
-			afterPass := strings.TrimSpace(pass)
-			if afterPass == "" {
+			pass := strings.TrimSpace(c.ReadPassword())
+			if pass == "" {
 				log.Error("password invalid")
 				return
 			}
@@ -142,7 +143,75 @@ func main() {
 				log.Errorf("error while create http request:%v", err)
 			}
 			req.Header.Add("email", email)
-			req.Header.Add("password", afterPass)
+			req.Header.Add("password", pass)
+			resp, err := httpclient.Do(req)
+			if err != nil {
+				log.Errorf("error while sending request:%v", err)
+			}
+
+			var rsp pc.S2CLoginRsp
+			json.NewDecoder(resp.Body).Decode(&rsp)
+
+			log.Info(rsp)
+		},
+	})
+	shell.AddCmd(&ishell.Cmd{
+		Name: "register",
+		Help: "send register request to reception server",
+		Func: func(c *ishell.Context) {
+			c.ShowPrompt(false)
+			defer c.ShowPrompt(true)
+			// http address
+			c.Printf("API host (%v):", apiHost)
+			_apiHost := c.ReadLine()
+			if _apiHost != "" {
+				apiHost = _apiHost
+			}
+			// email
+			c.Print("Email:")
+			email := c.ReadLine()
+			// pass
+			c.Print("Password:")
+			pass := strings.TrimSpace(c.ReadPassword())
+			if pass == "" {
+				log.Error("password invalid")
+				return
+			}
+			// Gender
+			c.Print("Gender (U)nknow (F)emale (M)ale:")
+			g := c.ReadLine()
+			gender := pc.Gender_GENDER_UNKNOWN
+			if g != "" {
+				g = strings.ToLower(g)
+				if g[0] == 'f' {
+					gender = pc.Gender_GENDER_FEMALE
+				} else {
+					gender = pc.Gender_GENDER_MALE
+				}
+			}
+			// nick
+			nick := ""
+			if gender == pc.Gender_GENDER_FEMALE {
+				nick = randomdata.FirstName(randomdata.Female)
+			} else {
+				nick = randomdata.FirstName(randomdata.Male)
+			}
+			c.Printf("Nickname (%v):", nick)
+			_nick := c.ReadLine()
+			if _nick != "" {
+				nick = _nick
+			}
+
+			// send request
+			req, err := http.NewRequest("GET", apiHost+"/register", nil)
+			if err != nil {
+				log.Errorf("error while create http request:%v", err)
+			}
+			req.Header.Add("email", email)
+			req.Header.Add("password", pass)
+			req.Header.Add("gender", strconv.FormatInt(int64(gender), 10))
+			req.Header.Add("nick", nick)
+
 			resp, err := httpclient.Do(req)
 			if err != nil {
 				log.Errorf("error while sending request:%v", err)

@@ -173,6 +173,7 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 // login
 func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginRequest) (ret *proto.DB_UserLoginResponse, err error) {
 	ret = &proto.DB_UserLoginResponse{}
+	ret.Result = &pc.RspHeader{}
 	setRspHeader(ret.Result)
 	// basic check
 	if request.GetInfo().GetEmail() == "" || len(request.GetSecret()) == 0 {

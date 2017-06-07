@@ -3,6 +3,12 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "8tLSbloQ6bpVBB/CcPbP9sLW45Y=",
+			"path": "github.com/Pallinder/go-randomdata",
+			"revision": "8c3362a5e6781e0d1046f1267b3c1f19b2cde334",
+			"revisionTime": "2017-04-10T16:13:40Z"
+		},
+		{
 			"checksumSHA1": "ZKxETlJdB2XubMrZnXB0FQimVA8=",
 			"path": "github.com/Sirupsen/logrus",
 			"revision": "10f801ebc38b33738c9d17d50860f484a0988ff5",

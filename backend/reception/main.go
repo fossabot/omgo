@@ -102,6 +102,7 @@ func main() {
 func startHTTP(addr string, rt, wt time.Duration) {
 	router := mux.NewRouter()
 	router.HandleFunc("/login", handler.Login).Methods("GET")
+	router.HandleFunc("/register", handler.Register).Methods("GET")
 	srv := &http.Server{
 		Handler:      router,
 		Addr:         addr,
