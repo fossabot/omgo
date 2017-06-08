@@ -21,24 +21,28 @@ func setRspHeader(rsp *pc.RspHeader) *pc.RspHeader {
 	return rsp
 }
 
+func responseFunc(w http.ResponseWriter, ret interface{}) {
+	js, err := json.Marshal(ret)
+
+	if err != nil {
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+}
+
 // Login handles user login request
 func Login(w http.ResponseWriter, r *http.Request) {
 	ret := &pc.S2CLoginRsp{}
 	ret.Header = &pc.RspHeader{}
 	setRspHeader(ret.Header)
 
-	defer func() {
-		js, err := json.Marshal(ret)
+	defer responseFunc(w, ret)
 
-		if err != nil {
-			log.Error(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}()
+	log.Infof("processing login request from %v", r.RemoteAddr)
 
 	email := r.Header.Get("email")
 	password := r.Header.Get("password")
@@ -85,18 +89,9 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	ret.Header = &pc.RspHeader{}
 	setRspHeader(ret.Header)
 
-	defer func() {
-		js, err := json.Marshal(ret)
+	defer responseFunc(w, ret)
 
-		if err != nil {
-			log.Error(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}()
+	log.Infof("processing register request from %v", r.RemoteAddr)
 
 	email := r.Header.Get("email")
 	nick := r.Header.Get("nickname")
@@ -111,9 +106,12 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		gender = pc.Gender(genderValue)
 	}
 
+	country := r.Header.Get("country")
+
 	email = strings.TrimSpace(email)
 	nick = strings.TrimSpace(nick)
 	password = strings.TrimSpace(password)
+	country = strings.TrimSpace(country)
 
 	registerReq := &pb.DB_UserRegisterRequest{}
 	registerReq.Info = &pc.UserBasicInfo{
@@ -122,15 +120,19 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		Avatar:   r.Header.Get("avatar"),
 		Nickname: nick,
 		Gender:   gender,
+		Country:  country,
 	}
 
 	secret := utils.GetStringSHA1Hash(password + defaultSalt)
 	secretBytes, err := hex.DecodeString(secret)
 	registerReq.Secret = secretBytes
 
-	if email == "" || nick == "" || password == "" || err != nil {
+	if email == "" || nick == "" || password == "" || country == "" {
 		ret.Header.Status = pc.ResultCode_RESULT_INVALID
 		ret.Header.Msg = "invalid parameter(s)"
+		if err != nil {
+			log.Errorf("error while register user:%v", err)
+		}
 	} else {
 		conn := services.GetServiceWithID("dbservice", defaultDBSID)
 		if conn == nil {
@@ -139,6 +141,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			log.Error("cannot get db service:", defaultDBSID)
 			return
 		}
+
+		log.Infof("sending register request to db:%v", registerReq)
 
 		cli := pb.NewDBServiceClient(conn)
 		registerRsp, err := cli.UserRegister(context.Background(), registerReq)

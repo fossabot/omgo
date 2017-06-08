@@ -47,20 +47,20 @@
 		{
 			"checksumSHA1": "TU80QF6yXyAr2o/KzjbGh7pgus4=",
 			"path": "github.com/master-g/omgo/proto/grpc/db",
-			"revision": "cda83a1490b777db995b514d69b562a214cc10a9",
-			"revisionTime": "2017-06-07T08:38:37Z"
+			"revision": "de031be15f5167989ba3401ede9c7678b24b9961",
+			"revisionTime": "2017-06-07T12:01:18Z"
 		},
 		{
 			"checksumSHA1": "457bu/fwatAjgtxPC/qTaiuzsGM=",
 			"path": "github.com/master-g/omgo/proto/pb/common",
-			"revision": "cda83a1490b777db995b514d69b562a214cc10a9",
-			"revisionTime": "2017-06-07T08:38:37Z"
+			"revision": "de031be15f5167989ba3401ede9c7678b24b9961",
+			"revisionTime": "2017-06-07T12:01:18Z"
 		},
 		{
 			"checksumSHA1": "eRoDQrrR27KLWngj/Ea/mSfEWiY=",
 			"path": "github.com/master-g/omgo/utils",
-			"revision": "cda83a1490b777db995b514d69b562a214cc10a9",
-			"revisionTime": "2017-06-07T08:38:37Z"
+			"revision": "de031be15f5167989ba3401ede9c7678b24b9961",
+			"revisionTime": "2017-06-07T12:01:18Z"
 		},
 		{
 			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",

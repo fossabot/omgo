@@ -201,6 +201,14 @@ func main() {
 			if _nick != "" {
 				nick = _nick
 			}
+			// country
+			country := randomdata.Country(randomdata.ThreeCharCountry)
+			c.Printf("Country (%v):", country)
+			_country := c.ReadLine()
+			if _country != "" && len(_country) >= 3 {
+				country = strings.ToUpper(_country)
+				country = country[:3]
+			}
 
 			// send request
 			req, err := http.NewRequest("GET", apiHost+"/register", nil)
@@ -210,7 +218,8 @@ func main() {
 			req.Header.Add("email", email)
 			req.Header.Add("password", pass)
 			req.Header.Add("gender", strconv.FormatInt(int64(gender), 10))
-			req.Header.Add("nick", nick)
+			req.Header.Add("nickname", nick)
+			req.Header.Add("country", country)
 
 			resp, err := httpclient.Do(req)
 			if err != nil {

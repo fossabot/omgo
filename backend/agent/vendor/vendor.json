@@ -65,38 +65,38 @@
 		{
 			"checksumSHA1": "Et5hHvnk5iVRSJr5PepcG/4fhJw=",
 			"path": "github.com/master-g/omgo/net/packet",
-			"revision": "cda83a1490b777db995b514d69b562a214cc10a9",
-			"revisionTime": "2017-06-07T08:38:37Z"
+			"revision": "de031be15f5167989ba3401ede9c7678b24b9961",
+			"revisionTime": "2017-06-07T12:01:18Z"
 		},
 		{
 			"checksumSHA1": "lhBFXUlc00opf7cCnIzKJSUugh0=",
 			"path": "github.com/master-g/omgo/proto/grpc/game",
-			"revision": "cda83a1490b777db995b514d69b562a214cc10a9",
-			"revisionTime": "2017-06-07T08:38:37Z"
+			"revision": "de031be15f5167989ba3401ede9c7678b24b9961",
+			"revisionTime": "2017-06-07T12:01:18Z"
 		},
 		{
 			"checksumSHA1": "457bu/fwatAjgtxPC/qTaiuzsGM=",
 			"path": "github.com/master-g/omgo/proto/pb/common",
-			"revision": "cda83a1490b777db995b514d69b562a214cc10a9",
-			"revisionTime": "2017-06-07T08:38:37Z"
+			"revision": "de031be15f5167989ba3401ede9c7678b24b9961",
+			"revisionTime": "2017-06-07T12:01:18Z"
 		},
 		{
 			"checksumSHA1": "GQdCBkVO55pEQpXzI0c6z5u2YXY=",
 			"path": "github.com/master-g/omgo/security/ecdh",
-			"revision": "cda83a1490b777db995b514d69b562a214cc10a9",
-			"revisionTime": "2017-06-07T08:38:37Z"
+			"revision": "de031be15f5167989ba3401ede9c7678b24b9961",
+			"revisionTime": "2017-06-07T12:01:18Z"
 		},
 		{
 			"checksumSHA1": "nu1LooXq8uAssleSuvuPE+wyMGQ=",
 			"path": "github.com/master-g/omgo/services",
-			"revision": "cda83a1490b777db995b514d69b562a214cc10a9",
-			"revisionTime": "2017-06-07T08:38:37Z"
+			"revision": "de031be15f5167989ba3401ede9c7678b24b9961",
+			"revisionTime": "2017-06-07T12:01:18Z"
 		},
 		{
 			"checksumSHA1": "eRoDQrrR27KLWngj/Ea/mSfEWiY=",
 			"path": "github.com/master-g/omgo/utils",
-			"revision": "cda83a1490b777db995b514d69b562a214cc10a9",
-			"revisionTime": "2017-06-07T08:38:37Z"
+			"revision": "de031be15f5167989ba3401ede9c7678b24b9961",
+			"revisionTime": "2017-06-07T12:01:18Z"
 		},
 		{
 			"checksumSHA1": "CoxdaTYdPZNJXr8mJfLxye428N0=",

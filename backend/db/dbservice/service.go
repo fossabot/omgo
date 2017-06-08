@@ -117,6 +117,8 @@ func (s *server) UserUpdateInfo(ctx context.Context, userBasicInfo *pc.UserBasic
 
 // register
 func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegisterRequest) (ret *proto.DB_UserRegisterResponse, err error) {
+	log.Infof("user register:%v", request)
+
 	ret = &proto.DB_UserRegisterResponse{}
 	ret.Result = &pc.RspHeader{}
 	setRspHeader(ret.Result)
@@ -129,10 +131,6 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 		return
 	}
 	ret.Info, err = s.driver.queryUserBasicInfo(&proto.DB_UserKey{Email: email})
-	if err != nil {
-		log.Errorf("error while register user:%v", err)
-		return
-	}
 
 	// user already existed
 	if ret.Info.Usn != 0 {
@@ -157,6 +155,8 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 	ret.Info.Uid = uid
 	ret.Info.Since = utils.Timestamp()
 	ret.Info.Email = email
+	log.Info("Country:", request.Info.Country)
+	log.Info("Country:", ret.Info.Country)
 	if ret.Info.GetAvatar() == "" {
 		ret.Info.Avatar = gravatarURL + utils.GetStringMD5Hash(email)
 	}
@@ -172,6 +172,8 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 
 // login
 func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginRequest) (ret *proto.DB_UserLoginResponse, err error) {
+	log.Infof("user login:%v", request)
+
 	ret = &proto.DB_UserLoginResponse{}
 	ret.Result = &pc.RspHeader{}
 	setRspHeader(ret.Result)
@@ -218,6 +220,8 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 
 // logout
 func (s *server) UserLogout(ctx context.Context, request *proto.DB_UserLogoutRequest) (ret *pc.RspHeader, err error) {
+	log.Infof("user logout:%v", request)
+
 	ret = &pc.RspHeader{}
 	setRspHeader(ret)
 
