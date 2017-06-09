@@ -161,9 +161,9 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 		ret.Info.Avatar = gravatarURL + utils.GetStringMD5Hash(email)
 	}
 
-	extra := &proto.DB_UserExtraInfo{Secret: request.Secret, Token: genToken()}
-	s.driver.updateUserExtraMongoDB(usn, extra)
-	s.driver.updateUserExtraRedis(usn, extra)
+	extra := &proto.DB_UserExtraInfo{Usn: usn, Secret: request.Secret, Token: genToken()}
+	s.driver.updateUserExtraMongoDB(extra)
+	s.driver.updateUserExtraRedis(extra)
 	s.driver.updateUserInfoMongoDB(ret.Info)
 	s.driver.updateUserInfoRedis(ret.Info)
 
@@ -188,6 +188,7 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 	ret.Info, err = s.driver.queryUserBasicInfo(&proto.DB_UserKey{Email: request.GetInfo().GetEmail()})
 	if err != nil {
 		ret.Result.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		ret.Info = nil
 		log.Errorf("query user failed")
 		return
 	}
@@ -196,20 +197,22 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 	userExtra, err := s.driver.queryUserExtraInfo(ret.Info.Usn)
 	if err != nil {
 		ret.Result.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		ret.Info = nil
 		log.Errorf("query user extra failed:%v", ret.Info)
 		return
 	}
 
 	if bytes.Compare(userExtra.Secret, request.GetSecret()) != 0 {
 		ret.Result.Status = pc.ResultCode_RESULT_INVALID
+		ret.Info = nil
 		log.Info("login with invalid credentials")
 		return
 	}
 
 	// update token
 	userExtra.Token = genToken()
-	s.driver.updateUserExtraMongoDB(ret.Info.Usn, userExtra)
-	s.driver.updateUserExtraRedis(ret.Info.Usn, userExtra)
+	s.driver.updateUserExtraMongoDB(userExtra)
+	s.driver.updateUserExtraRedis(userExtra)
 	// update last time login
 	ret.Info.LastLogin = utils.Timestamp()
 	s.driver.updateUserInfoMongoDB(ret.Info)

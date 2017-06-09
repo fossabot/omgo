@@ -254,7 +254,7 @@ func (d *driver) queryUserExtraInfo(usn uint64) (*proto.DB_UserExtraInfo, error)
 	err = d.queryUserExtraMongoDB(usn, &extraInfo)
 	if err != nil {
 		// found in mongodb, update to redis
-		d.updateUserExtraRedis(usn, &extraInfo)
+		d.updateUserExtraRedis(&extraInfo)
 	}
 
 	return &extraInfo, err
@@ -289,11 +289,11 @@ func (d *driver) queryUserExtraMongoDB(usn uint64, extraInfo *proto.DB_UserExtra
 	return nil
 }
 
-func (d *driver) updateUserExtraRedis(usn uint64, extraInfo *proto.DB_UserExtraInfo) error {
+func (d *driver) updateUserExtraRedis(extraInfo *proto.DB_UserExtraInfo) error {
 	conn := d.redisClient.Get()
 	defer conn.Close()
 	// store result to redis
-	key := redisKey(keyUserExtra, usn)
+	key := redisKey(keyUserExtra, extraInfo.Usn)
 	_, err := conn.Do("HMSET", redisFlat(key, extraInfo)...)
 	if err != nil {
 		log.Error(err)
@@ -306,7 +306,7 @@ func (d *driver) updateUserExtraRedis(usn uint64, extraInfo *proto.DB_UserExtraI
 	return err
 }
 
-func (d *driver) updateUserExtraMongoDB(usn uint64, extraInfo *proto.DB_UserExtraInfo) error {
+func (d *driver) updateUserExtraMongoDB(extraInfo *proto.DB_UserExtraInfo) error {
 	sessionCpy := d.mongoSession.Copy()
 	defer sessionCpy.Close()
 
@@ -314,7 +314,7 @@ func (d *driver) updateUserExtraMongoDB(usn uint64, extraInfo *proto.DB_UserExtr
 	if c == nil {
 		return errMongoDBInvalid
 	}
-	_, err := c.Upsert(bson.M{"usn": usn}, extraInfo)
+	_, err := c.Upsert(bson.M{"usn": extraInfo.Usn}, extraInfo)
 	if err != nil {
 		log.Errorf("error while upsert userextra:%v error:%v", extraInfo, err)
 	}
