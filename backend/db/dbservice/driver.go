@@ -51,7 +51,6 @@ func redisKey(key string, usn uint64) string {
 
 func redisFlat(key string, value interface{}) redis.Args {
 	args := redis.Args{}.Add(key).AddFlat(value)
-	log.Infof("redis args: %v", args)
 	return args
 }
 
@@ -193,7 +192,7 @@ func (d *driver) updateUserInfoRedis(userInfo *proto_common.UserBasicInfo) error
 
 	key := redisKey(keyUser, userInfo.Usn)
 	// store result to redis
-	_, err := conn.Do("HMSET", redisFlat(key, userInfo))
+	_, err := conn.Do("HMSET", redisFlat(key, userInfo)...)
 	if err != nil {
 		log.Error(err)
 	}
@@ -295,7 +294,7 @@ func (d *driver) updateUserExtraRedis(usn uint64, extraInfo *proto.DB_UserExtraI
 	defer conn.Close()
 	// store result to redis
 	key := redisKey(keyUserExtra, usn)
-	_, err := conn.Do("HMSET", redisFlat(key, extraInfo))
+	_, err := conn.Do("HMSET", redisFlat(key, extraInfo)...)
 	if err != nil {
 		log.Error(err)
 	}

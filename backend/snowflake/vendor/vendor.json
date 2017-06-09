@@ -59,20 +59,20 @@
 		{
 			"checksumSHA1": "EEujmrfp58TOs/cFI50UJ8yzRVo=",
 			"path": "github.com/master-g/omgo/etcdclient",
-			"revision": "de031be15f5167989ba3401ede9c7678b24b9961",
-			"revisionTime": "2017-06-07T12:01:18Z"
+			"revision": "d9b64b00c94766f63228ab582d831988396af6aa",
+			"revisionTime": "2017-06-08T12:34:32Z"
 		},
 		{
 			"checksumSHA1": "cwOfN3R4hjURMLbvfr2fJOOzg3E=",
 			"path": "github.com/master-g/omgo/proto/grpc/snowflake",
-			"revision": "de031be15f5167989ba3401ede9c7678b24b9961",
-			"revisionTime": "2017-06-07T12:01:18Z"
+			"revision": "d9b64b00c94766f63228ab582d831988396af6aa",
+			"revisionTime": "2017-06-08T12:34:32Z"
 		},
 		{
 			"checksumSHA1": "eRoDQrrR27KLWngj/Ea/mSfEWiY=",
 			"path": "github.com/master-g/omgo/utils",
-			"revision": "de031be15f5167989ba3401ede9c7678b24b9961",
-			"revisionTime": "2017-06-07T12:01:18Z"
+			"revision": "d9b64b00c94766f63228ab582d831988396af6aa",
+			"revisionTime": "2017-06-08T12:34:32Z"
 		},
 		{
 			"checksumSHA1": "CoxdaTYdPZNJXr8mJfLxye428N0=",

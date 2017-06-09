@@ -32,8 +32,9 @@ message DB {
     }
     // user extra information
     message UserExtraInfo {
-        bytes  secret = 1; // password hash
-        string token  = 2; // access token
+        fixed64 usn    = 1; // user serial number
+        bytes   secret = 2; // password hash
+        string  token  = 3; // access token
     }
     message UserQueryResponse {
         proto.common.RspHeader     result = 1;

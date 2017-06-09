@@ -155,8 +155,8 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 	ret.Info.Uid = uid
 	ret.Info.Since = utils.Timestamp()
 	ret.Info.Email = email
-	log.Info("Country:", request.Info.Country)
-	log.Info("Country:", ret.Info.Country)
+	ret.Info.LastLogin = utils.Timestamp()
+
 	if ret.Info.GetAvatar() == "" {
 		ret.Info.Avatar = gravatarURL + utils.GetStringMD5Hash(email)
 	}
@@ -196,7 +196,7 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 	userExtra, err := s.driver.queryUserExtraInfo(ret.Info.Usn)
 	if err != nil {
 		ret.Result.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
-		log.Errorf("query user extra failed")
+		log.Errorf("query user extra failed:%v", ret.Info)
 		return
 	}
 
