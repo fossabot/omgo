@@ -1,4 +1,4 @@
-// +build !go1.6
+// +build go1.6,!go1.7
 
 /*
  * Copyright 2016, Google Inc.
@@ -32,20 +32,25 @@
  *
  */
 
-package transport
+package grpc
 
 import (
+	"fmt"
 	"net"
-	"time"
+	"net/http"
 
 	"golang.org/x/net/context"
 )
 
 // dialContext connects to the address on the named network.
 func dialContext(ctx context.Context, network, address string) (net.Conn, error) {
-	var dialer net.Dialer
-	if deadline, ok := ctx.Deadline(); ok {
-		dialer.Timeout = deadline.Sub(time.Now())
+	return (&net.Dialer{Cancel: ctx.Done()}).Dial(network, address)
+}
+
+func sendHTTPRequest(ctx context.Context, req *http.Request, conn net.Conn) error {
+	req.Cancel = ctx.Done()
+	if err := req.Write(conn); err != nil {
+		return fmt.Errorf("failed to write the HTTP request: %v", err)
 	}
-	return dialer.Dial(network, address)
+	return nil
 }
