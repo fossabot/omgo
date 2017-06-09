@@ -71,7 +71,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 		cli := pb.NewDBServiceClient(conn)
 		loginRsp, err := cli.UserLogin(context.Background(), userLoginReq)
-		if err != nil {
+		if err != nil || loginRsp.Result.Status != pc.ResultCode_RESULT_OK {
 			ret.Header.Status = pc.ResultCode_RESULT_INVALID
 			ret.Header.Msg = "login failed"
 			log.Infof("login failed: %v", err)
@@ -146,7 +146,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 		cli := pb.NewDBServiceClient(conn)
 		registerRsp, err := cli.UserRegister(context.Background(), registerReq)
-		if err != nil {
+		if err != nil || registerRsp.Result.Status != pc.ResultCode_RESULT_OK {
 			ret.Header.Status = pc.ResultCode_RESULT_INVALID
 			ret.Header.Msg = "register failed"
 			log.Infof("register failed: %v", err)
