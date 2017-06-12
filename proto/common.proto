@@ -57,11 +57,13 @@ message UserBasicInfo {
 }
 
 message NetworkConfig {
-    int32  id      = 1; // config id
-    string desc    = 2;
-    string address = 3;
-    int32  port    = 4;
+    int32  id   = 1; // config id
+    string desc = 2; // description
+    string ip   = 3; // host ip
+    int32  port = 4; // port
 }
+
+message AppConfig { repeated NetworkConfig network_cfg = 1; }
 
 message C2SGetSeedReq {
     bytes send_seed = 1; // public key for server to encrypt sending data
@@ -77,8 +79,8 @@ message S2CGetSeedRsp {
 message C2SLoginReq { fixed64 timestamp = 1; }
 
 message S2CLoginRsp {
-    RspHeader     header               = 1;
-    UserBasicInfo user_info            = 2;
-    string        token                = 3;
-    repeated NetworkConfig network_cfg = 4;
+    RspHeader     header    = 1;
+    UserBasicInfo user_info = 2;
+    string        token     = 3;
+    AppConfig     config    = 4;
 }
