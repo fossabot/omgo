@@ -56,6 +56,13 @@ message UserBasicInfo {
     fixed64 last_login = 10; // last login timestamp
 }
 
+message NetworkConfig {
+    int32  id      = 1; // config id
+    string desc    = 2;
+    string address = 3;
+    int32  port    = 4;
+}
+
 message C2SGetSeedReq {
     bytes send_seed = 1; // public key for server to encrypt sending data
     bytes recv_seed = 2; // public key for server to decrypt receive data
@@ -70,7 +77,8 @@ message S2CGetSeedRsp {
 message C2SLoginReq { fixed64 timestamp = 1; }
 
 message S2CLoginRsp {
-    RspHeader     header    = 1;
-    UserBasicInfo user_info = 2;
-    string        token     = 3;
+    RspHeader     header               = 1;
+    UserBasicInfo user_info            = 2;
+    string        token                = 3;
+    repeated NetworkConfig network_cfg = 4;
 }
