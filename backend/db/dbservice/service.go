@@ -131,12 +131,12 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 		return
 	}
 	ret.Info, err = s.driver.queryUserBasicInfo(&proto.DB_UserKey{Email: email})
-
 	// user already existed
 	if ret.Info.Usn != 0 {
 		// email already registered
 		ret.Result.Status = pc.ResultCode_RESULT_INVALID
-		ret.Result.Msg = fmt.Sprintf("user:%v already registered", ret.Info)
+		ret.Result.Msg = fmt.Sprintf("user:%v already registered", ret.Info.Email)
+		ret.Info = nil
 		log.Info(ret.Result.Msg)
 		return
 	}

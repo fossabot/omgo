@@ -29,9 +29,9 @@ type redisConfig struct {
 
 // DBUserStatus is used as a database user status index
 type DBUserStatus struct {
-	key string
-	usn uint64
-	uid uint64
+	Key string `json:"key,omitempty"`
+	Usn uint64 `json:"usn,omitempty"`
+	Uid uint64 `json:"uid,omitempty"`
 }
 
 var (
@@ -110,8 +110,10 @@ func (d *driver) getUniqueID() (usn, uid uint64, err error) {
 		return
 	}
 
-	usn = dbStatus.usn
-	uid = dbStatus.uid
+	log.Info(dbStatus)
+
+	usn = dbStatus.Usn
+	uid = dbStatus.Uid
 
 	return
 }
@@ -176,7 +178,19 @@ func (d *driver) queryUserBasicInfoMongoDB(key *proto.DB_UserKey, userInfo *prot
 	if err != nil {
 		log.Error(err)
 	}
-	err = c.Find(bson.M{"usn": key.Usn, "email": key.Email, "uid": key.Uid}).One(userInfo)
+	query := &bson.M{}
+	switch {
+	case key.Usn != 0:
+		query = &bson.M{"usn": key.Usn}
+		break
+	case key.Uid != 0:
+		query = &bson.M{"uid": key.Uid}
+		break
+	case key.Email != "":
+		query = &bson.M{"email": key.Email}
+		break
+	}
+	err = c.Find(query).One(userInfo)
 	if err != nil {
 		// not found in mongodb
 		return err

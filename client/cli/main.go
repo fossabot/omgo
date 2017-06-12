@@ -60,6 +60,20 @@ func main() {
 
 	shell := ishell.New()
 	shell.AddCmd(&ishell.Cmd{
+		Name: "apihost",
+		Help: "set api host address",
+		Func: func(c *ishell.Context) {
+			c.ShowPrompt(false)
+			defer c.ShowPrompt(true)
+			// http address
+			c.Printf("API host (%v):", apiHost)
+			_apiHost := c.ReadLine()
+			if _apiHost != "" {
+				apiHost = _apiHost
+			}
+		},
+	})
+	shell.AddCmd(&ishell.Cmd{
 		Name: "conn",
 		Help: "conn address:port",
 		Func: func(c *ishell.Context) {
@@ -120,12 +134,6 @@ func main() {
 		Func: func(c *ishell.Context) {
 			c.ShowPrompt(false)
 			defer c.ShowPrompt(true)
-			// http address
-			c.Printf("API host (%v):", apiHost)
-			_apiHost := c.ReadLine()
-			if _apiHost != "" {
-				apiHost = _apiHost
-			}
 			// email
 			c.Print("Email:")
 			email := c.ReadLine()
@@ -161,12 +169,6 @@ func main() {
 		Func: func(c *ishell.Context) {
 			c.ShowPrompt(false)
 			defer c.ShowPrompt(true)
-			// http address
-			c.Printf("API host (%v):", apiHost)
-			_apiHost := c.ReadLine()
-			if _apiHost != "" {
-				apiHost = _apiHost
-			}
 			// email
 			c.Print("Email:")
 			email := c.ReadLine()
