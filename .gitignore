@@ -5,6 +5,7 @@
 *.so
 
 # Folders
+.idea
 _obj
 _test
 

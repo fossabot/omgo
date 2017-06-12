@@ -3,16 +3,28 @@ package handler
 import (
 	"encoding/hex"
 	"encoding/json"
+	"net"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
+	etcd "github.com/coreos/etcd/client"
+	"github.com/master-g/omgo/etcdclient"
 	pb "github.com/master-g/omgo/proto/grpc/db"
 	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/services"
 	"github.com/master-g/omgo/utils"
 	"golang.org/x/net/context"
+)
+
+const (
+	pathSep = string(os.PathSeparator)
+)
+
+var (
+	keyAgentETCD string
 )
 
 func setRspHeader(rsp *pc.RspHeader) *pc.RspHeader {
@@ -32,6 +44,56 @@ func responseFunc(w http.ResponseWriter, ret interface{}) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
+}
+
+func getAppConfig() *pc.AppConfig {
+	keysAPI := etcdclient.KeysAPI()
+	resp, err := keysAPI.Get(context.Background(), keyAgentETCD, &etcd.GetOptions{Recursive: true})
+	log.Infof("reading agent etcd config from:%v", keyAgentETCD)
+	if err != nil {
+		log.Error(err)
+		return nil
+	}
+
+	if !resp.Node.Dir || len(resp.Node.Nodes) == 0 {
+		log.Error("not a directory")
+		return nil
+	}
+
+	ret := &pc.AppConfig{}
+
+	for _, node := range resp.Node.Nodes {
+		if node.Dir {
+			for i, agent := range node.Nodes {
+				ip, strPort, err := net.SplitHostPort(agent.Value)
+				if err != nil {
+					log.Errorf("error while parsing agent host:%v", agent.Value)
+					break
+				}
+				port, err := strconv.ParseInt(strPort, 10, 32)
+				if err != nil {
+					log.Errorf("error while parsing agent port:%v", strPort)
+				}
+				ret.NetworkCfg = append(ret.NetworkCfg, &pc.NetworkConfig{
+					Id:   int32(i),
+					Desc: agent.Key,
+					Ip:   ip,
+					Port: int32(port),
+				})
+			}
+		}
+	}
+
+	log.Info(ret)
+
+	return ret
+}
+
+// Init handle with agent etcd config information
+func Init(root string, endpoints []string, agent string) {
+	etcdclient.Init(endpoints)
+	keyAgentETCD = pathSep + root + pathSep + agent
+	log.Info(getAppConfig())
 }
 
 // Login handles user login request
@@ -80,6 +142,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 		ret.UserInfo = loginRsp.GetInfo()
 		ret.Token = loginRsp.GetToken()
+		ret.Config = getAppConfig()
 	}
 }
 
@@ -155,5 +218,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 		ret.UserInfo = registerRsp.Info
 		ret.Token = registerRsp.Token
+		ret.Config = getAppConfig()
 	}
 }

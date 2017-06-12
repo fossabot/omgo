@@ -89,6 +89,7 @@ func main() {
 			log.Println("write timeout:", wt)
 
 			services.Init(etcdRoot, etcdHosts, serviceNames)
+			handler.Init(etcdRoot, etcdHosts, "agent")
 
 			startHTTP(listen, rt, wt)
 

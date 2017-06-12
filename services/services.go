@@ -97,7 +97,7 @@ func (p *servicePool) connectAll(directory string) {
 
 	// validation
 	if !resp.Node.Dir {
-		log.Println("not a director")
+		log.Println("not a directory")
 		return
 	}
 
