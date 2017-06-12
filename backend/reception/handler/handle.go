@@ -11,7 +11,6 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	etcd "github.com/coreos/etcd/client"
-	"github.com/master-g/omgo/etcdclient"
 	pb "github.com/master-g/omgo/proto/grpc/db"
 	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/services"
@@ -24,6 +23,7 @@ const (
 )
 
 var (
+	etcdClient   etcd.Client
 	keyAgentETCD string
 )
 
@@ -47,7 +47,7 @@ func responseFunc(w http.ResponseWriter, ret interface{}) {
 }
 
 func getAppConfig() *pc.AppConfig {
-	keysAPI := etcdclient.KeysAPI()
+	keysAPI := etcd.NewKeysAPI(etcdClient)
 	resp, err := keysAPI.Get(context.Background(), keyAgentETCD, &etcd.GetOptions{Recursive: true})
 	log.Infof("reading agent etcd config from:%v", keyAgentETCD)
 	if err != nil {
@@ -62,38 +62,39 @@ func getAppConfig() *pc.AppConfig {
 
 	ret := &pc.AppConfig{}
 
-	for _, node := range resp.Node.Nodes {
-		if node.Dir {
-			for i, agent := range node.Nodes {
-				ip, strPort, err := net.SplitHostPort(agent.Value)
-				if err != nil {
-					log.Errorf("error while parsing agent host:%v", agent.Value)
-					break
-				}
-				port, err := strconv.ParseInt(strPort, 10, 32)
-				if err != nil {
-					log.Errorf("error while parsing agent port:%v", strPort)
-				}
-				ret.NetworkCfg = append(ret.NetworkCfg, &pc.NetworkConfig{
-					Id:   int32(i),
-					Desc: agent.Key,
-					Ip:   ip,
-					Port: int32(port),
-				})
-			}
+	for i, agent := range resp.Node.Nodes {
+		ip, strPort, err := net.SplitHostPort(agent.Value)
+		if err != nil {
+			log.Errorf("error while parsing agent host:%v", agent.Value)
+			break
 		}
+		port, err := strconv.ParseInt(strPort, 10, 32)
+		if err != nil {
+			log.Errorf("error while parsing agent port:%v", strPort)
+		}
+		ret.NetworkCfg = append(ret.NetworkCfg, &pc.NetworkConfig{
+			Id:   int32(i),
+			Desc: agent.Key,
+			Ip:   ip,
+			Port: int32(port),
+		})
 	}
-
-	log.Info(ret)
 
 	return ret
 }
 
 // Init handle with agent etcd config information
 func Init(root string, endpoints []string, agent string) {
-	etcdclient.Init(endpoints)
+	cfg := etcd.Config{
+		Endpoints: endpoints,
+		Transport: etcd.DefaultTransport,
+	}
+	var err error
+	etcdClient, err = etcd.New(cfg)
+	if err != nil {
+		log.Errorf("error while creating etcd client:%v", err)
+	}
 	keyAgentETCD = pathSep + root + pathSep + agent
-	log.Info(getAppConfig())
 }
 
 // Login handles user login request

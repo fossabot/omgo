@@ -27,13 +27,12 @@ package utils
 import (
 	"bytes"
 	"crypto/md5"
+	"crypto/sha1"
 	"encoding/hex"
 	"net"
 	"os"
 	"runtime/debug"
 	"time"
-
-	"crypto/sha1"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/davecgh/go-spew/spew"
