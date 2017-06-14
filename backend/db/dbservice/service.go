@@ -161,7 +161,10 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 		ret.Info.Avatar = gravatarURL + utils.GetStringMD5Hash(email)
 	}
 
-	extra := &proto.DB_UserExtraInfo{Usn: usn, Secret: request.Secret, Token: genToken()}
+	token := genToken()
+	ret.Token = token
+
+	extra := &proto.DB_UserExtraInfo{Usn: usn, Secret: request.Secret, Token: token}
 	s.driver.updateUserExtraMongoDB(extra)
 	s.driver.updateUserExtraRedis(extra)
 	s.driver.updateUserInfoMongoDB(ret.Info)
@@ -209,8 +212,11 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 		return
 	}
 
+	token := genToken()
+	ret.Token = token
+
 	// update token
-	userExtra.Token = genToken()
+	userExtra.Token = token
 	s.driver.updateUserExtraMongoDB(userExtra)
 	s.driver.updateUserExtraRedis(userExtra)
 	// update last time login
@@ -238,7 +244,7 @@ func (s *server) UserLogout(ctx context.Context, request *proto.DB_UserLogoutReq
 	if err != nil {
 		log.Errorf("unable to find user extra info:%v", err)
 		ret.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
-		ret.Msg = "interal error"
+		ret.Msg = "internal error"
 		return
 	}
 	if strings.Compare(userExtra.GetToken(), request.GetToken()) != 0 {

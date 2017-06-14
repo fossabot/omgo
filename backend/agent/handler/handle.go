@@ -85,7 +85,7 @@ func ProcGetSeedReq(session *types.Session, reader *packet.RawPacket) []byte {
 }
 
 func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
-	session.UserID = 1
+	session.Usn = 1
 	session.GSID = DefaultGSID
 
 	conn := services.GetServiceWithID("game", session.GSID)
@@ -95,7 +95,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	}
 	cli := pb.NewGameServiceClient(conn)
 
-	ctx := metadata.NewContext(context.Background(), metadata.New(map[string]string{"userid": fmt.Sprint(session.UserID)}))
+	ctx := metadata.NewContext(context.Background(), metadata.New(map[string]string{"usn": fmt.Sprint(session.Usn)}))
 	stream, err := cli.Stream(ctx)
 	if err != nil {
 		log.Error(err)
@@ -124,7 +124,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 
 	p := packet.NewRawPacket()
 	p.WriteS32(int32(proto_common.Cmd_LOGIN_RSP))
-	p.WriteU64(session.UserID)
+	p.WriteU64(session.Usn)
 
 	return p.Data()
 }

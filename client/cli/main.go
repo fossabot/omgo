@@ -25,7 +25,7 @@ var (
 	sess       *session.Session
 	httpclient *http.Client
 	apiHost    string
-	loginRsp   pc.S2CLoginRsp
+	loginRsp   pc.LoginRsp
 )
 
 func init() {
@@ -36,7 +36,7 @@ func init() {
 	apiHost = "http://localhost:8080"
 }
 
-func getAddressFromLoginRsp(rsp *pc.S2CLoginRsp) string {
+func getAddressFromLoginRsp(rsp *pc.LoginRsp) string {
 	if rsp != nil && rsp.Config != nil && len(rsp.Config.NetworkCfg) != 0 {
 		ip := rsp.Config.NetworkCfg[0].Ip
 		port := rsp.Config.NetworkCfg[0].Port
@@ -145,7 +145,7 @@ func main() {
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
-		Name: "login",
+		Name: "httplogin",
 		Help: "send login request to reception server",
 		Func: func(c *ishell.Context) {
 			c.ShowPrompt(false)
@@ -175,7 +175,11 @@ func main() {
 
 			json.NewDecoder(resp.Body).Decode(&loginRsp)
 
-			log.Info(loginRsp)
+			if loginRsp.Header.Status != pc.ResultCode_RESULT_OK {
+				log.Errorf("error while login:%v", loginRsp.Header.Msg)
+				return
+			}
+			log.Infof("login success, token:%v", loginRsp.GetToken())
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
@@ -251,7 +255,11 @@ func main() {
 
 			json.NewDecoder(resp.Body).Decode(&loginRsp)
 
-			log.Info(loginRsp)
+			if loginRsp.Header.Status != pc.ResultCode_RESULT_OK {
+				log.Errorf("error while login:%v", loginRsp.Header.Msg)
+				return
+			}
+			log.Infof("login success, token:%v", loginRsp.GetToken())
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{

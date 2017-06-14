@@ -99,7 +99,7 @@ func Init(root string, endpoints []string, agent string) {
 
 // Login handles user login request
 func Login(w http.ResponseWriter, r *http.Request) {
-	ret := &pc.S2CLoginRsp{}
+	ret := &pc.LoginRsp{}
 	ret.Header = &pc.RspHeader{}
 	setRspHeader(ret.Header)
 
@@ -149,7 +149,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 // Register handles user register request
 func Register(w http.ResponseWriter, r *http.Request) {
-	ret := &pc.S2CLoginRsp{}
+	ret := &pc.LoginRsp{}
 	ret.Header = &pc.RspHeader{}
 	setRspHeader(ret.Header)
 
