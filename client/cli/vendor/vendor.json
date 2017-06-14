@@ -37,10 +37,10 @@
 			"revisionTime": "2015-05-15T14:53:56Z"
 		},
 		{
-			"checksumSHA1": "kBeNcaKk56FguvPSUCEaH6AxpRc=",
+			"checksumSHA1": "qlPUeFabwF4RKAOF1H+yBFU1Veg=",
 			"path": "github.com/golang/protobuf/proto",
-			"revision": "2bba0603135d7d7f5cb73b2125beeda19c09f4ef",
-			"revisionTime": "2017-03-31T03:19:02Z"
+			"revision": "e325f446bebc2998605911c0a2650d9920361d4a",
+			"revisionTime": "2017-06-13T22:42:24Z"
 		},
 		{
 			"checksumSHA1": "7hln62oZPZmyqEmgXaybf9WxQ7A=",
@@ -51,8 +51,8 @@
 		{
 			"checksumSHA1": "Et5hHvnk5iVRSJr5PepcG/4fhJw=",
 			"path": "github.com/master-g/omgo/net/packet",
-			"revision": "3499cc151277690b7d68e4b0c1dcebd0ceafe403",
-			"revisionTime": "2017-06-12T10:08:18Z"
+			"revision": "b0fbbaa1125c60c9023a895dc64c4cf55d73b4fc",
+			"revisionTime": "2017-06-14T10:37:12Z"
 		},
 		{
 			"checksumSHA1": "kNlYI1fVwyNIoMNIe/aM5eDGpqI=",
@@ -61,22 +61,22 @@
 			"revisionTime": "2017-05-05T07:35:19Z"
 		},
 		{
-			"checksumSHA1": "7jbe0SzCoZtp/gLGUGFsTKN4Q0w=",
+			"checksumSHA1": "Qj+BH/C395yROLiHFsZNRiAkTnE=",
 			"path": "github.com/master-g/omgo/proto/pb/common",
-			"revision": "3499cc151277690b7d68e4b0c1dcebd0ceafe403",
-			"revisionTime": "2017-06-12T10:08:18Z"
+			"revision": "b0fbbaa1125c60c9023a895dc64c4cf55d73b4fc",
+			"revisionTime": "2017-06-14T10:37:12Z"
 		},
 		{
 			"checksumSHA1": "GQdCBkVO55pEQpXzI0c6z5u2YXY=",
 			"path": "github.com/master-g/omgo/security/ecdh",
-			"revision": "3499cc151277690b7d68e4b0c1dcebd0ceafe403",
-			"revisionTime": "2017-06-12T10:08:18Z"
+			"revision": "b0fbbaa1125c60c9023a895dc64c4cf55d73b4fc",
+			"revisionTime": "2017-06-14T10:37:12Z"
 		},
 		{
 			"checksumSHA1": "lLtBC1Hn2mOA1ZUzaIFkU5XSdCU=",
 			"path": "github.com/master-g/omgo/utils",
-			"revision": "3499cc151277690b7d68e4b0c1dcebd0ceafe403",
-			"revisionTime": "2017-06-12T10:08:18Z"
+			"revision": "b0fbbaa1125c60c9023a895dc64c4cf55d73b4fc",
+			"revisionTime": "2017-06-14T10:37:12Z"
 		},
 		{
 			"checksumSHA1": "nAu0XmCeC6WnUySyI8R7w4cxAqU=",
