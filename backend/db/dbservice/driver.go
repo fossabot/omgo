@@ -9,7 +9,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/garyburd/redigo/redis"
 	"github.com/master-g/omgo/proto/grpc/db"
-	proto_common "github.com/master-g/omgo/proto/pb/common"
+	pc "github.com/master-g/omgo/proto/pb/common"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -123,8 +123,8 @@ func (d *driver) getUniqueID() (usn, uid uint64, err error) {
 ////////////////////////////////////////////////////////////////////////////////
 
 // query user basic info in both redis and mongodb
-func (d *driver) queryUserBasicInfo(key *proto.DB_UserKey) (*proto_common.UserBasicInfo, error) {
-	var userInfo proto_common.UserBasicInfo
+func (d *driver) queryUserBasicInfo(key *proto.DB_UserKey) (*pc.UserBasicInfo, error) {
+	var userInfo pc.UserBasicInfo
 	var err error
 
 	if key.Usn != 0 {
@@ -146,7 +146,7 @@ func (d *driver) queryUserBasicInfo(key *proto.DB_UserKey) (*proto_common.UserBa
 	return &userInfo, err
 }
 
-func (d *driver) queryUserBasicInfoRedis(usn uint64, userInfo *proto_common.UserBasicInfo) error {
+func (d *driver) queryUserBasicInfoRedis(usn uint64, userInfo *pc.UserBasicInfo) error {
 	conn := d.redisClient.Get()
 	defer conn.Close()
 
@@ -158,7 +158,7 @@ func (d *driver) queryUserBasicInfoRedis(usn uint64, userInfo *proto_common.User
 	return err
 }
 
-func (d *driver) queryUserBasicInfoMongoDB(key *proto.DB_UserKey, userInfo *proto_common.UserBasicInfo) error {
+func (d *driver) queryUserBasicInfoMongoDB(key *proto.DB_UserKey, userInfo *pc.UserBasicInfo) error {
 	sessionCpy := d.mongoSession.Copy()
 	defer sessionCpy.Close()
 
@@ -200,7 +200,7 @@ func (d *driver) queryUserBasicInfoMongoDB(key *proto.DB_UserKey, userInfo *prot
 }
 
 // update user basic info in redis
-func (d *driver) updateUserInfoRedis(userInfo *proto_common.UserBasicInfo) error {
+func (d *driver) updateUserInfoRedis(userInfo *pc.UserBasicInfo) error {
 	conn := d.redisClient.Get()
 	defer conn.Close()
 
@@ -218,7 +218,7 @@ func (d *driver) updateUserInfoRedis(userInfo *proto_common.UserBasicInfo) error
 	return err
 }
 
-func (d *driver) updateUserInfoMongoDB(userInfo *proto_common.UserBasicInfo) error {
+func (d *driver) updateUserInfoMongoDB(userInfo *pc.UserBasicInfo) error {
 	sessionCpy := d.mongoSession.Copy()
 	defer sessionCpy.Close()
 

@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"fmt"
+
 	"github.com/Pallinder/go-randomdata"
 	log "github.com/Sirupsen/logrus"
 	"github.com/abiosoft/ishell"
@@ -23,6 +25,7 @@ var (
 	sess       *session.Session
 	httpclient *http.Client
 	apiHost    string
+	loginRsp   pc.S2CLoginRsp
 )
 
 func init() {
@@ -31,6 +34,17 @@ func init() {
 		Timeout: time.Second * 3,
 	}
 	apiHost = "http://localhost:8080"
+}
+
+func getAddressFromLoginRsp(rsp *pc.S2CLoginRsp) string {
+	if rsp != nil && rsp.Config != nil && len(rsp.Config.NetworkCfg) != 0 {
+		ip := rsp.Config.NetworkCfg[0].Ip
+		port := rsp.Config.NetworkCfg[0].Port
+		addr := fmt.Sprintf("%v:%v", ip, port)
+		log.Info(addr)
+		return addr
+	}
+	return ""
 }
 
 func main() {
@@ -77,10 +91,12 @@ func main() {
 		Name: "conn",
 		Help: "conn address:port",
 		Func: func(c *ishell.Context) {
+			sess.Close()
 			if len(c.Args) > 0 {
 				address = c.Args[0]
+			} else {
+				address = getAddressFromLoginRsp(&loginRsp)
 			}
-			sess.Close()
 			sess.Connect(address)
 		},
 	})
@@ -157,10 +173,9 @@ func main() {
 				log.Errorf("error while sending request:%v", err)
 			}
 
-			var rsp pc.S2CLoginRsp
-			json.NewDecoder(resp.Body).Decode(&rsp)
+			json.NewDecoder(resp.Body).Decode(&loginRsp)
 
-			log.Info(rsp)
+			log.Info(loginRsp)
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
@@ -177,6 +192,12 @@ func main() {
 			pass := strings.TrimSpace(c.ReadPassword())
 			if pass == "" {
 				log.Error("password invalid")
+				return
+			}
+			c.Print("Confirm :")
+			confirm := strings.TrimSpace(c.ReadPassword())
+			if strings.Compare(pass, confirm) != 0 {
+				log.Error("confirm password is different from the first time")
 				return
 			}
 			// Gender
@@ -228,10 +249,9 @@ func main() {
 				log.Errorf("error while sending request:%v", err)
 			}
 
-			var rsp pc.S2CLoginRsp
-			json.NewDecoder(resp.Body).Decode(&rsp)
+			json.NewDecoder(resp.Body).Decode(&loginRsp)
 
-			log.Info(rsp)
+			log.Info(loginRsp)
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{

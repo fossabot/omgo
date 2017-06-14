@@ -21,9 +21,19 @@ docker run -d --name ${SID} ${NETHOST} \
   mongo \
   --config /etc/mongod.conf
 
-# docker exec -it mongodb-0 mongo master -u admin -p admin
+# *** CONNECT TO MONGODB ***
+# docker exec -it mongodb-0 mongo
 
+# *** CREATE ADMIN DB AND ADMIN USER ***
+# use admin
+# db.createUser({ user:'admin', pwd:'admin', roles:['userAdminAnyDatabase', 'dbAdminAnyDatabase', 'readWriteAnyDatabase']})
+
+# *** CREATE DB AND USER FOR DB CLIENT ***
 # use master
-# db.users.insert({usn:1})
-# db.userExtra.insert({usn:1, secret:0})
-# db.status.insert({usn:1, uid:1})
+# db.createUser({user:'dbclient', pwd:'12345678', roles:['dbOwner']})
+
+# *** INITIALIZE DB ***
+# db.status.insert({key:'user', usn:10000, uid:10000})
+
+# docker exec -it mongodb-0 mongo admin -u admin -p admin
+# docker exec -it mongodb-0 mongo master -u dbclient -p 12345678

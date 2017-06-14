@@ -56,6 +56,9 @@ message UserBasicInfo {
     fixed64 last_login = 10; // last login timestamp
 }
 
+//------------------------------------------------------------------------------
+// HTTP login
+
 message NetworkConfig {
     int32  id   = 1; // config id
     string desc = 2; // description
@@ -64,6 +67,16 @@ message NetworkConfig {
 }
 
 message AppConfig { repeated NetworkConfig network_cfg = 1; }
+
+message LoginRsp {
+    RspHeader     header    = 1;
+    string        token     = 2;
+    AppConfig     config    = 3;
+    UserBasicInfo user_info = 4;
+}
+
+//------------------------------------------------------------------------------
+// Agent
 
 message C2SGetSeedReq {
     bytes send_seed = 1; // public key for server to encrypt sending data
@@ -78,9 +91,4 @@ message S2CGetSeedRsp {
 
 message C2SLoginReq { fixed64 timestamp = 1; }
 
-message S2CLoginRsp {
-    RspHeader     header    = 1;
-    UserBasicInfo user_info = 2;
-    string        token     = 3;
-    AppConfig     config    = 4;
-}
+message S2CLoginRsp { RspHeader header = 1; }

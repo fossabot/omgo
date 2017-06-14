@@ -7,6 +7,10 @@ SID=dbs-0
 PORT=60001
 NETHOST=--net=host
 
+DB=master
+DBUSER=dbclient
+PASS=12345678
+
 case "$(uname -s)" in
    Darwin)
      IPADDR=$(ifconfig en0 | grep "inet " | cut -d " " -f2)
@@ -24,9 +28,9 @@ docker run --rm -d ${NETHOST} -p ${PORT}:${PORT} \
     -l :${PORT} \
     -r ${IPADDR}:6379 \
     -m ${IPADDR}:37017 \
-    -b master \
-    -u admin \
-    -p admin
+    -b ${DB} \
+    -u ${DBUSER} \
+    -p ${PASS}
 
 # register service
 curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/backends/${SERVICE_NAME}/${SID} -d value=${IPADDR}:${PORT}
