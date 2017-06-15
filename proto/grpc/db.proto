@@ -21,6 +21,9 @@ service DBService {
 
     // logout
     rpc UserLogout(DB.UserLogoutRequest) returns (proto.common.RspHeader);
+
+    // verify token
+    rpc UserExtraInfoQuery(DB.UserKey) returns (DB.UserExtraInfo);
 }
 
 message DB {
