@@ -6,15 +6,21 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+
+	"github.com/chzyer/readline"
 )
 
 // Actions are actions that can be performed by a shell.
 type Actions interface {
 	// ReadLine reads a line from standard input.
 	ReadLine() string
+	// ReadLineErr is ReadLine but returns error as well
+	ReadLineErr() (string, error)
 	// ReadPassword reads password from standard input without echoing the characters.
 	// Note that this only works as expected when the standard input is a terminal.
 	ReadPassword() string
+	// ReadPasswordErr is ReadPassword but returns error as well
+	ReadPasswordErr() (string, error)
 	// ReadMultiLinesFunc reads multiple lines from standard input. It passes each read line to
 	// f and stops reading when f returns false.
 	ReadMultiLinesFunc(f func(string) bool) string
@@ -31,6 +37,14 @@ type Actions interface {
 	// ShowPaged shows a paged text that is scrollable.
 	// This leverages on "less" for unix and "more" for windows.
 	ShowPaged(text string) error
+	// MultiChoice presents options to the user.
+	// returns the index of the selection or -1 if nothing is
+	// selected.
+	// text is displayed before the options.
+	MultiChoice(options []string, text string) int
+	// Checklist is similar to MultiChoice but user can choose multiple variants using Space.
+	// init is initially selected options.
+	Checklist(options []string, text string, init []int) []int
 	// SetPrompt sets the prompt string. The string to be displayed before the cursor.
 	SetPrompt(prompt string)
 	// SetMultiPrompt sets the prompt string used for multiple lines. The string to be displayed before
@@ -47,7 +61,7 @@ type Actions interface {
 	ClearScreen() error
 	// Stop stops the shell. This will stop the shell from auto reading inputs and calling
 	// registered functions. A stopped shell is only inactive but totally functional.
-	// Its functions can still be called.
+	// Its functions can still be called and can be restarted.
 	Stop()
 }
 
@@ -61,8 +75,16 @@ func (s *shellActionsImpl) ReadLine() string {
 	return line
 }
 
+func (s *shellActionsImpl) ReadLineErr() (string, error) {
+	return s.readLine()
+}
+
 func (s *shellActionsImpl) ReadPassword() string {
 	return s.reader.readPassword()
+}
+
+func (s *shellActionsImpl) ReadPasswordErr() (string, error) {
+	return s.reader.readPasswordErr()
 }
 
 func (s *shellActionsImpl) ReadMultiLinesFunc(f func(string) bool) string {
@@ -96,6 +118,13 @@ func (s *shellActionsImpl) Printf(format string, val ...interface{}) {
 	fmt.Fprintf(s.writer, format, val...)
 }
 
+func (s *shellActionsImpl) MultiChoice(options []string, text string) int {
+	choice := s.multiChoice(options, text, nil, false)
+	return choice[0]
+}
+func (s *shellActionsImpl) Checklist(options []string, text string, init []int) []int {
+	return s.multiChoice(options, text, init, true)
+}
 func (s *shellActionsImpl) SetPrompt(prompt string) {
 	s.reader.prompt = prompt
 	s.reader.scanner.SetPrompt(s.reader.rlPrompt())
@@ -127,16 +156,7 @@ func (s *shellActionsImpl) ShowPaged(text string) error {
 }
 
 func (s *shellActionsImpl) Stop() {
-	s.reader.scanner.Close()
-	if !s.Active() {
-		return
-	}
-	s.activeMutex.Lock()
-	s.active = false
-	s.activeMutex.Unlock()
-	go func() {
-		s.haltChan <- struct{}{}
-	}()
+	s.stop()
 }
 
 func (s *shellActionsImpl) HelpText() string {
@@ -144,14 +164,8 @@ func (s *shellActionsImpl) HelpText() string {
 }
 
 func clearScreen(s *Shell) error {
-	var cmd *exec.Cmd
-	if runtime.GOOS == "windows" {
-		cmd = exec.Command("cmd", "/C", "cls")
-	} else {
-		cmd = exec.Command("clear")
-	}
-	cmd.Stdout = s.writer
-	return cmd.Run()
+	_, err := readline.ClearScreen(s.writer)
+	return err
 }
 
 func showPaged(s *Shell, text string) error {

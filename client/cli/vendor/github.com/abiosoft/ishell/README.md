@@ -35,8 +35,8 @@ func main(){
         },
     })
 
-    // start shell
-    shell.Start()
+    // run shell
+    shell.Run()
 }
 ```
 Execution
@@ -137,6 +137,54 @@ Custom
 shell.Interrupt(func(count int, c *ishell.Context) { ... })
 ```
 
+### Multiple Choice
+
+```go
+func(c *ishell.Context) {
+    choice := c.MultiChoice([]string{
+        "Golangers",
+        "Go programmers",
+        "Gophers",
+        "Goers",
+    }, "What are Go programmers called ?")
+    if choice == 2 {
+        c.Println("You got it!")
+    } else {
+        c.Println("Sorry, you're wrong.")
+    }
+},
+```
+Output
+```
+What are Go programmers called ?
+  Golangers
+  Go programmers
+❯ Gophers
+  Goers
+
+You got it!
+```
+### Checklist
+```go
+func(c *ishell.Context) {
+    languages := []string{"Python", "Go", "Haskell", "Rust"}
+    choices := c.Checklist(languages,
+        "What are your favourite programming languages ?", nil)
+    out := func() []string { ... } // convert index to language 
+    c.Println("Your choices are", strings.Join(out(), ", "))
+}
+```
+Output
+```
+What are your favourite programming languages ?
+    Python
+  ✓ Go
+    Haskell
+ ❯✓ Rust
+
+Your choices are Go, Rust
+```
+
 ### Progress Bar
 Determinate
 ```go
@@ -185,6 +233,31 @@ ishell.ProgressBar().Display(display)
 shell.SetHomeHistoryPath(".ishell_history")
 ```
 
+
+### Non-interactive execution
+In some situations it is desired to exit the program directly after executing a single command.
+
+```go
+// when started with "exit" as first argument, assume non-interactive execution
+if len(os.Args) > 1 && os.Args[1] == "exit" {
+    shell.Process(os.Args[2:]...)
+} else {
+    // start shell
+    shell.Run()
+}
+```
+
+```bash
+# Run normally - interactive mode:
+$ go run main.go
+>>> |
+
+# Run non-interactivelly
+$ go run main.go exit greet Someusername
+Hello Someusername
+```
+
+
 ### Example
 Available [here](https://github.com/abiosoft/ishell/blob/master/example/main.go).
 ```sh
@@ -207,6 +280,9 @@ ishell is in active development and can still change significantly.
 * [x] Subcommands and help texts.
 * [x] Scrollable paged output.
 * [x] Progress bar.
+* [x] Multiple choice prompt.
+* [x] Checklist prompt.
+* [ ] Multiple line progress bars.
 * [ ] Testing, testing, testing.
 
 ## Contribution
@@ -219,8 +295,9 @@ MIT
 ## Credits
 Library | Use
 ------- | -----
-[github.com/flynn-archive/go-shlex](http://github.com/flynn-archive/go-shlex) | splitting input into command and args.
-[gopkg.in/readline.v1](http://gopkg.in/readline.v1) | history, tab completion and reading passwords.
+[github.com/flynn-archive/go-shlex](https://github.com/flynn-archive/go-shlex) | splitting input into command and args.
+[github.com/chzyer/readline](https://github.com/chzyer/readline) | readline capabilities.
+
 
 ## Donate
 ```

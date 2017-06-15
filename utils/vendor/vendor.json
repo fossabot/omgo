@@ -3,10 +3,10 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "ZKxETlJdB2XubMrZnXB0FQimVA8=",
+			"checksumSHA1": "Liv7AJyNinmP3pvwohcXp4R6xY4=",
 			"path": "github.com/Sirupsen/logrus",
-			"revision": "10f801ebc38b33738c9d17d50860f484a0988ff5",
-			"revisionTime": "2017-03-17T14:32:14Z"
+			"revision": "85b1699d505667d13f8ac4478c1debbf85d6c5de",
+			"revisionTime": "2017-06-08T22:14:41Z"
 		},
 		{
 			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
@@ -33,10 +33,10 @@
 			"revisionTime": "2017-03-28T20:03:51Z"
 		},
 		{
-			"checksumSHA1": "uAVg4Tj5Fxi62z7/ScDEkHr6Ue8=",
+			"checksumSHA1": "qNkx9+OTwZI6aFv7K9zuFCGODUw=",
 			"path": "github.com/mattn/go-colorable",
-			"revision": "ded68f7a9561c023e790de24279db7ebf473ea80",
-			"revisionTime": "2017-03-27T08:33:44Z"
+			"revision": "941b50ebc6efddf4c41c8e4537a5f68a4e686b24",
+			"revisionTime": "2017-06-15T03:49:14Z"
 		},
 		{
 			"checksumSHA1": "U6lX43KDDlNOn+Z0Yyww+ZzHfFo=",
@@ -51,10 +51,10 @@
 			"revisionTime": "2017-02-06T15:57:36Z"
 		},
 		{
-			"checksumSHA1": "mIZhS4hXW3qVQxsJ6tqztjJoJ8A=",
+			"checksumSHA1": "rIYurTMbnyUj/eMHsaxTBnTvSnY=",
 			"path": "golang.org/x/sys/unix",
-			"revision": "9a7256cb28ed514b4e1e5f68959914c4c28a92e0",
-			"revisionTime": "2017-03-29T05:31:33Z"
+			"revision": "fb4cac33e3196ff7f507ab9b2d2a44b0142f5b5a",
+			"revisionTime": "2017-06-14T06:48:48Z"
 		}
 	],
 	"rootPath": "github.com/master-g/omgo/utils"
