@@ -256,3 +256,24 @@ func (s *server) UserLogout(ctx context.Context, request *proto.DB_UserLogoutReq
 
 	return
 }
+
+// verify token
+func (s *server) UserExtraInfoQuery(ctx context.Context, request *proto.DB_UserKey) (ret *proto.DB_UserExtraInfo, err error) {
+	log.Infof("query user extra info:%v", request.GetUsn())
+
+	ret = &proto.DB_UserExtraInfo{}
+	if request.GetUsn() == 0 {
+		log.Error("invalid user serial number")
+		return
+	}
+	extraInfo, err := s.driver.queryUserExtraInfo(request.GetUsn())
+	if err != nil {
+		log.Errorf("error while query user extra info:%v", err)
+		return
+	}
+
+	ret.Usn = extraInfo.GetUsn()
+	ret.Token = extraInfo.GetToken()
+	ret.Secret = extraInfo.GetSecret()
+	return
+}

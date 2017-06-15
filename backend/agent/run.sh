@@ -25,6 +25,7 @@ docker run -d \
     -e http://${IPADDR}:2379 \
     -r backends \
     -s snowflake \
+    -s dbservice \
     -s game
 
 # register service

@@ -34,7 +34,7 @@ const (
 )
 
 var (
-	defaultServices = []string{"snowflake", "game"}
+	defaultServices = []string{"snowflake", "dbservice", "game"}
 )
 
 func main() {

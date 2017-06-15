@@ -65,38 +65,44 @@
 		{
 			"checksumSHA1": "Et5hHvnk5iVRSJr5PepcG/4fhJw=",
 			"path": "github.com/master-g/omgo/net/packet",
-			"revision": "2378972ccffbef6c8931703f3cb5ef1ffd3a5fb1",
-			"revisionTime": "2017-06-14T10:37:25Z"
+			"revision": "81df30e54169957aa444b22cf7165527c175492d",
+			"revisionTime": "2017-06-15T03:12:23Z"
+		},
+		{
+			"checksumSHA1": "RicRj0KBHo6cFJC2l6m4Q1oYp3Y=",
+			"path": "github.com/master-g/omgo/proto/grpc/db",
+			"revision": "81df30e54169957aa444b22cf7165527c175492d",
+			"revisionTime": "2017-06-15T03:12:23Z"
 		},
 		{
 			"checksumSHA1": "jW99lATYElE32+vye3zvIxHJRs8=",
 			"path": "github.com/master-g/omgo/proto/grpc/game",
-			"revision": "2378972ccffbef6c8931703f3cb5ef1ffd3a5fb1",
-			"revisionTime": "2017-06-14T10:37:25Z"
+			"revision": "81df30e54169957aa444b22cf7165527c175492d",
+			"revisionTime": "2017-06-15T03:12:23Z"
 		},
 		{
 			"checksumSHA1": "Qj+BH/C395yROLiHFsZNRiAkTnE=",
 			"path": "github.com/master-g/omgo/proto/pb/common",
-			"revision": "2378972ccffbef6c8931703f3cb5ef1ffd3a5fb1",
-			"revisionTime": "2017-06-14T10:37:25Z"
+			"revision": "81df30e54169957aa444b22cf7165527c175492d",
+			"revisionTime": "2017-06-15T03:12:23Z"
 		},
 		{
 			"checksumSHA1": "GQdCBkVO55pEQpXzI0c6z5u2YXY=",
 			"path": "github.com/master-g/omgo/security/ecdh",
-			"revision": "2378972ccffbef6c8931703f3cb5ef1ffd3a5fb1",
-			"revisionTime": "2017-06-14T10:37:25Z"
+			"revision": "81df30e54169957aa444b22cf7165527c175492d",
+			"revisionTime": "2017-06-15T03:12:23Z"
 		},
 		{
 			"checksumSHA1": "+KYVrFlXMWxPGJ/AXeBVj9kL6qI=",
 			"path": "github.com/master-g/omgo/services",
-			"revision": "2378972ccffbef6c8931703f3cb5ef1ffd3a5fb1",
-			"revisionTime": "2017-06-14T10:37:25Z"
+			"revision": "81df30e54169957aa444b22cf7165527c175492d",
+			"revisionTime": "2017-06-15T03:12:23Z"
 		},
 		{
 			"checksumSHA1": "lLtBC1Hn2mOA1ZUzaIFkU5XSdCU=",
 			"path": "github.com/master-g/omgo/utils",
-			"revision": "2378972ccffbef6c8931703f3cb5ef1ffd3a5fb1",
-			"revisionTime": "2017-06-14T10:37:25Z"
+			"revision": "81df30e54169957aa444b22cf7165527c175492d",
+			"revisionTime": "2017-06-15T03:12:23Z"
 		},
 		{
 			"checksumSHA1": "CoxdaTYdPZNJXr8mJfLxye428N0=",
