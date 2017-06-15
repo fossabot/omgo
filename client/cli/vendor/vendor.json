@@ -21,14 +21,23 @@
 			"revisionTime": "2017-06-13T20:03:04Z"
 		},
 		{
-			"path": "github.com/aiosoft/ishell",
-			"revision": ""
+			"checksumSHA1": "aTYPm16eYDQhbVLgreCGwvV2klw=",
+			"path": "github.com/chzyer/readline",
+			"revision": "41eea22f717c616615e1e59aa06cf831f9901f35",
+			"revisionTime": "2017-03-13T23:49:21Z"
 		},
 		{
 			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
+			"origin": "github.com/master-g/omgo/utils/vendor/github.com/davecgh/go-spew/spew",
 			"path": "github.com/davecgh/go-spew/spew",
-			"revision": "346938d642f2ec3594ed81d874461961cd0faa76",
-			"revisionTime": "2016-10-29T20:57:26Z"
+			"revision": "0c7848b9491907580f2e5e7cad378260cd71b13d",
+			"revisionTime": "2017-06-15T10:36:32Z"
+		},
+		{
+			"checksumSHA1": "AANTVr9CVVyzsgviODY6Wi2thuM=",
+			"path": "github.com/fatih/color",
+			"revision": "62e9147c64a1ed519147b62a56a14e83e2be02c1",
+			"revisionTime": "2017-05-23T20:24:04Z"
 		},
 		{
 			"checksumSHA1": "yLQg8NdQKYqqytcvKA/0EBkOIkw=",
@@ -44,57 +53,61 @@
 		},
 		{
 			"checksumSHA1": "7hln62oZPZmyqEmgXaybf9WxQ7A=",
+			"origin": "github.com/master-g/omgo/utils/vendor/github.com/maruel/panicparse/stack",
 			"path": "github.com/maruel/panicparse/stack",
-			"revision": "ae43f192cef2add653fe1481a3070ed00a4a6981",
-			"revisionTime": "2017-03-28T20:03:51Z"
+			"revision": "0c7848b9491907580f2e5e7cad378260cd71b13d",
+			"revisionTime": "2017-06-15T10:36:32Z"
 		},
 		{
 			"checksumSHA1": "Et5hHvnk5iVRSJr5PepcG/4fhJw=",
 			"path": "github.com/master-g/omgo/net/packet",
-			"revision": "ac3e35457d35eda0e5ea167b237540a36de271b0",
-			"revisionTime": "2017-06-15T09:04:02Z"
-		},
-		{
-			"checksumSHA1": "kNlYI1fVwyNIoMNIe/aM5eDGpqI=",
-			"path": "github.com/master-g/omgo/proto/pb",
-			"revision": "0239b72d536821d80f2d686cae600442f64f0b7f",
-			"revisionTime": "2017-05-05T07:35:19Z"
+			"revision": "0c7848b9491907580f2e5e7cad378260cd71b13d",
+			"revisionTime": "2017-06-15T10:36:32Z"
 		},
 		{
 			"checksumSHA1": "Qj+BH/C395yROLiHFsZNRiAkTnE=",
 			"path": "github.com/master-g/omgo/proto/pb/common",
-			"revision": "ac3e35457d35eda0e5ea167b237540a36de271b0",
-			"revisionTime": "2017-06-15T09:04:02Z"
+			"revision": "0c7848b9491907580f2e5e7cad378260cd71b13d",
+			"revisionTime": "2017-06-15T10:36:32Z"
 		},
 		{
 			"checksumSHA1": "GQdCBkVO55pEQpXzI0c6z5u2YXY=",
 			"path": "github.com/master-g/omgo/security/ecdh",
-			"revision": "ac3e35457d35eda0e5ea167b237540a36de271b0",
-			"revisionTime": "2017-06-15T09:04:02Z"
+			"revision": "0c7848b9491907580f2e5e7cad378260cd71b13d",
+			"revisionTime": "2017-06-15T10:36:32Z"
 		},
 		{
 			"checksumSHA1": "lLtBC1Hn2mOA1ZUzaIFkU5XSdCU=",
 			"path": "github.com/master-g/omgo/utils",
-			"revision": "ac3e35457d35eda0e5ea167b237540a36de271b0",
-			"revisionTime": "2017-06-15T09:04:02Z"
+			"revision": "0c7848b9491907580f2e5e7cad378260cd71b13d",
+			"revisionTime": "2017-06-15T10:36:32Z"
+		},
+		{
+			"checksumSHA1": "MrqRXuqj5suGXqcRUUwi+YA7PmE=",
+			"origin": "github.com/fatih/color/vendor/github.com/mattn/go-colorable",
+			"path": "github.com/mattn/go-colorable",
+			"revision": "62e9147c64a1ed519147b62a56a14e83e2be02c1",
+			"revisionTime": "2017-05-23T20:24:04Z"
+		},
+		{
+			"checksumSHA1": "a/chskqRYBBHS8lDTpB3FQqgHb8=",
+			"origin": "github.com/fatih/color/vendor/github.com/mattn/go-isatty",
+			"path": "github.com/mattn/go-isatty",
+			"revision": "62e9147c64a1ed519147b62a56a14e83e2be02c1",
+			"revisionTime": "2017-05-23T20:24:04Z"
 		},
 		{
 			"checksumSHA1": "nAu0XmCeC6WnUySyI8R7w4cxAqU=",
+			"origin": "github.com/master-g/omgo/security/ecdh/vendor/golang.org/x/crypto/curve25519",
 			"path": "golang.org/x/crypto/curve25519",
-			"revision": "850760c427c516be930bc91280636328f1a62286",
-			"revisionTime": "2017-06-13T19:24:08Z"
+			"revision": "0c7848b9491907580f2e5e7cad378260cd71b13d",
+			"revisionTime": "2017-06-15T10:36:32Z"
 		},
 		{
 			"checksumSHA1": "rIYurTMbnyUj/eMHsaxTBnTvSnY=",
 			"path": "golang.org/x/sys/unix",
 			"revision": "fb4cac33e3196ff7f507ab9b2d2a44b0142f5b5a",
 			"revisionTime": "2017-06-14T06:48:48Z"
-		},
-		{
-			"checksumSHA1": "VAPpB3iZ9bfjWqNDoX7qXqfRcQU=",
-			"path": "gopkg.in/readline.v1",
-			"revision": "62c6fe6193755f722b8b8788aa7357be55a50ff1",
-			"revisionTime": "2016-07-26T13:51:17Z"
 		},
 		{
 			"checksumSHA1": "yFolYpsrXIjWE0UjR8ChC6Nmrhg=",
