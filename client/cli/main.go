@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -16,7 +15,6 @@ import (
 	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/utils"
 	"gopkg.in/abiosoft/ishell.v2"
-	"gopkg.in/urfave/cli.v2"
 )
 
 var (
@@ -276,16 +274,6 @@ func main() {
 			}
 		},
 	})
-
-	app := &cli.App{
-		Name:    "client",
-		Usage:   "a cli-client for testing omgo",
-		Version: "1.0",
-		Action: func(c *cli.Context) error {
-			return nil
-		},
-	}
-	app.Run(os.Args)
 
 	shell.Start()
 }

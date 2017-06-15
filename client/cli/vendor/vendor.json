@@ -92,12 +92,6 @@
 			"path": "gopkg.in/readline.v1",
 			"revision": "62c6fe6193755f722b8b8788aa7357be55a50ff1",
 			"revisionTime": "2016-07-26T13:51:17Z"
-		},
-		{
-			"checksumSHA1": "yFolYpsrXIjWE0UjR8ChC6Nmrhg=",
-			"path": "gopkg.in/urfave/cli.v2",
-			"revision": "61c3eb6ba1da1df17cd50f1456a9252d92bf5edd",
-			"revisionTime": "2017-04-24T21:45:55Z"
 		}
 	],
 	"rootPath": "github.com/master-g/omgo/client/cli"
