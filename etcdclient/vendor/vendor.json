@@ -21,6 +21,12 @@
 			"revisionTime": "2017-06-14T22:39:58Z"
 		},
 		{
+			"checksumSHA1": "in4X4M2FFl6+eAXgxdxxSOZi1Vw=",
+			"path": "github.com/coreos/etcd/pkg/srv",
+			"revision": "ee0c805de2fa046f545f303cfef4cda89f91fe9b",
+			"revisionTime": "2017-06-14T22:39:58Z"
+		},
+		{
 			"checksumSHA1": "gx1gJIMU6T0UNQ0bPZ/drQ8cpCI=",
 			"path": "github.com/coreos/etcd/pkg/types",
 			"revision": "ee0c805de2fa046f545f303cfef4cda89f91fe9b",
