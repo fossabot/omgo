@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -9,14 +10,12 @@ import (
 	"strings"
 	"time"
 
-	"fmt"
-
 	"github.com/Pallinder/go-randomdata"
 	log "github.com/Sirupsen/logrus"
-	"github.com/abiosoft/ishell"
 	"github.com/master-g/omgo/client/cli/session"
 	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/utils"
+	"gopkg.in/abiosoft/ishell.v2"
 	"gopkg.in/urfave/cli.v2"
 )
 
@@ -51,26 +50,6 @@ func main() {
 	log.SetLevel(log.DebugLevel)
 	defer sess.Close()
 	defer utils.PrintPanicStack()
-
-	app := &cli.App{
-		Name:    "client",
-		Usage:   "a cli-client for testing omgo",
-		Version: "1.0",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Aliases: []string{"a"},
-				Name:    "address",
-				Usage:   "connect to address:port",
-				Value:   ":8888",
-			},
-		},
-		Action: func(c *cli.Context) error {
-			address = c.String("address")
-			log.Info(address)
-			return nil
-		},
-	}
-	app.Run(os.Args)
 
 	shell := ishell.New()
 	shell.AddCmd(&ishell.Cmd{
@@ -297,6 +276,16 @@ func main() {
 			}
 		},
 	})
+
+	app := &cli.App{
+		Name:    "client",
+		Usage:   "a cli-client for testing omgo",
+		Version: "1.0",
+		Action: func(c *cli.Context) error {
+			return nil
+		},
+	}
+	app.Run(os.Args)
 
 	shell.Start()
 }
