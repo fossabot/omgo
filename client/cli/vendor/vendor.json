@@ -15,23 +15,11 @@
 			"revisionTime": "2017-06-08T22:14:41Z"
 		},
 		{
-			"checksumSHA1": "aTYPm16eYDQhbVLgreCGwvV2klw=",
-			"path": "github.com/chzyer/readline",
-			"revision": "41eea22f717c616615e1e59aa06cf831f9901f35",
-			"revisionTime": "2017-03-13T23:49:21Z"
-		},
-		{
 			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
 			"origin": "github.com/master-g/omgo/utils/vendor/github.com/davecgh/go-spew/spew",
 			"path": "github.com/davecgh/go-spew/spew",
 			"revision": "ab0063823fa5aa8a9623dec273b1e078b8d7c2be",
 			"revisionTime": "2017-06-15T10:44:49Z"
-		},
-		{
-			"checksumSHA1": "AANTVr9CVVyzsgviODY6Wi2thuM=",
-			"path": "github.com/fatih/color",
-			"revision": "62e9147c64a1ed519147b62a56a14e83e2be02c1",
-			"revisionTime": "2017-05-23T20:24:04Z"
 		},
 		{
 			"checksumSHA1": "yLQg8NdQKYqqytcvKA/0EBkOIkw=",
@@ -75,20 +63,6 @@
 			"path": "github.com/master-g/omgo/utils",
 			"revision": "ab0063823fa5aa8a9623dec273b1e078b8d7c2be",
 			"revisionTime": "2017-06-15T10:44:49Z"
-		},
-		{
-			"checksumSHA1": "MrqRXuqj5suGXqcRUUwi+YA7PmE=",
-			"origin": "github.com/fatih/color/vendor/github.com/mattn/go-colorable",
-			"path": "github.com/mattn/go-colorable",
-			"revision": "62e9147c64a1ed519147b62a56a14e83e2be02c1",
-			"revisionTime": "2017-05-23T20:24:04Z"
-		},
-		{
-			"checksumSHA1": "a/chskqRYBBHS8lDTpB3FQqgHb8=",
-			"origin": "github.com/fatih/color/vendor/github.com/mattn/go-isatty",
-			"path": "github.com/mattn/go-isatty",
-			"revision": "62e9147c64a1ed519147b62a56a14e83e2be02c1",
-			"revisionTime": "2017-05-23T20:24:04Z"
 		},
 		{
 			"checksumSHA1": "nAu0XmCeC6WnUySyI8R7w4cxAqU=",
