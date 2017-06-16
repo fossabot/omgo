@@ -26,6 +26,7 @@ type Session struct {
 	Encoder           *rc4.Cipher                 // Encrypt
 	Decoder           *rc4.Cipher                 // Decrypt
 	Usn               uint64                      // User serial number
+	Token             string                      // Session token generate at http login
 	GSID              string                      // Game server ID
 	Stream            pb.GameService_StreamClient // Data stream send to game server
 	Die               chan struct{}               // Session close signal

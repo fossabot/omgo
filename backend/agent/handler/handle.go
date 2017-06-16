@@ -8,11 +8,14 @@ import (
 	"io"
 	"time"
 
+	"strings"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/backend/agent/types"
 	"github.com/master-g/omgo/net/packet"
-	pb "github.com/master-g/omgo/proto/grpc/game"
+	pbdb "github.com/master-g/omgo/proto/grpc/db"
+	pbgame "github.com/master-g/omgo/proto/grpc/game"
 	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/security/ecdh"
 	"github.com/master-g/omgo/services"
@@ -92,22 +95,61 @@ func ProcGetSeedReq(session *types.Session, reader *packet.RawPacket) []byte {
 
 // ProcUserLoginReq process user login request
 func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
+	// can only login after key exchange
 	if !session.IsFlagEncryptedSet() {
 		log.Errorf("session login without encryption:%v", session)
 		session.SetFlagKicked()
 		return nil
 	}
 
+	// parse login request
 	req := &pc.C2SLoginReq{}
 	marshalPb, _ := reader.ReadBytes()
 
 	if err := proto.Unmarshal(marshalPb, req); err != nil {
-		log.Errorf("invalid protobuf :%v", err)
+		log.Errorf("invalid protobuf:%v", err)
 		session.SetFlagKicked()
 		return nil
 	}
 
-	session.Usn = 1
+	usn := req.GetUsn()
+	token := req.GetToken()
+
+	if usn == 0 || token == "" {
+		log.Errorf("invalid usn:%v or token:%v", usn, token)
+		session.SetFlagKicked()
+		return nil
+	}
+
+	// validate user token
+	dbConn := services.GetServiceWithID("dbservice", DefaultDBSID)
+	if dbConn == nil {
+		log.Errorf("cannot get db service:", DefaultDBSID)
+		return nil
+	}
+
+	dbClient := pbdb.NewDBServiceClient(dbConn)
+	userKey := &pbdb.DB_UserKey{Usn: usn}
+	dbRsp, err := dbClient.UserExtraInfoQuery(context.Background(), userKey)
+	if err != nil {
+		log.Errorf("error while query user extra info:%v", usn)
+		return nil
+	}
+
+	if dbRsp.Usn == 0 || dbRsp.GetToken() == "" {
+		log.Errorf("user extra info not found:%v", usn)
+		return nil
+	}
+
+	if strings.Compare(token, dbRsp.GetToken()) != 0 {
+		log.Infof("invalid token")
+		session.SetFlagKicked()
+		return nil
+	}
+
+	// connection to game server
+	session.Usn = usn
+	session.Token = token
 	session.GSID = DefaultGSID
 
 	conn := services.GetServiceWithID("game", session.GSID)
@@ -115,7 +157,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 		log.Error("cannot get game service:", session.GSID)
 		return nil
 	}
-	cli := pb.NewGameServiceClient(conn)
+	cli := pbgame.NewGameServiceClient(conn)
 
 	ctx := metadata.NewContext(context.Background(), metadata.New(map[string]string{"usn": fmt.Sprint(session.Usn)}))
 	stream, err := cli.Stream(ctx)
