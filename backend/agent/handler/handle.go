@@ -13,13 +13,14 @@ import (
 	"github.com/master-g/omgo/backend/agent/types"
 	"github.com/master-g/omgo/net/packet"
 	pb "github.com/master-g/omgo/proto/grpc/game"
-	proto_common "github.com/master-g/omgo/proto/pb/common"
+	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/security/ecdh"
 	"github.com/master-g/omgo/services"
 	"google.golang.org/grpc/metadata"
 )
 
-func response(cmd proto_common.Cmd, msg proto.Message) []byte {
+// convert proto message into packet
+func response(cmd pc.Cmd, msg proto.Message) []byte {
 	p := packet.NewRawPacket()
 	p.WriteS32(int32(cmd))
 	rspBytes, err := proto.Marshal(msg)
@@ -30,30 +31,35 @@ func response(cmd proto_common.Cmd, msg proto.Message) []byte {
 	return p.Data()
 }
 
-func genRspHeader() *proto_common.RspHeader {
-	header := &proto_common.RspHeader{
-		Status:    proto_common.ResultCode_RESULT_OK,
+// generate a common.RspHeader
+func genRspHeader() *pc.RspHeader {
+	header := &pc.RspHeader{
+		Status:    pc.ResultCode_RESULT_OK,
 		Timestamp: uint64(time.Now().Unix()),
 	}
 
 	return header
 }
 
+// ProcHeartBeatReq process client heartbeat packet
+// TODO: reset client timeout timer
 func ProcHeartBeatReq(session *types.Session, reader *packet.RawPacket) []byte {
 	p := packet.NewRawPacket()
-	p.WriteS32(int32(proto_common.Cmd_HEART_BEAT_RSP))
+	p.WriteS32(int32(pc.Cmd_HEART_BEAT_RSP))
 	return p.Data()
 }
 
+// ProcGetSeedReq exchange secret with client via ECDH algorithm
+// TODO: optimize performance
 func ProcGetSeedReq(session *types.Session, reader *packet.RawPacket) []byte {
-	rsp := &proto_common.S2CGetSeedRsp{Header: genRspHeader()}
-	req := &proto_common.C2SGetSeedReq{}
+	rsp := &pc.S2CGetSeedRsp{Header: genRspHeader()}
+	req := &pc.C2SGetSeedReq{}
 	marshalPb, _ := reader.ReadBytes()
 
 	if err := proto.Unmarshal(marshalPb, req); err != nil {
 		log.Errorf("invalid protobuf :%v", err)
-		rsp.Header.Status = proto_common.ResultCode_RESULT_INTERNAL_ERROR
-		return response(proto_common.Cmd_GET_SEED_RSP, rsp)
+		rsp.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		return response(pc.Cmd_GET_SEED_RSP, rsp)
 	}
 
 	curve := ecdh.NewCurve25519ECDH()
@@ -65,14 +71,14 @@ func ProcGetSeedReq(session *types.Session, reader *packet.RawPacket) []byte {
 	encoder, err := rc4.NewCipher([]byte(fmt.Sprintf("%v%v", Salt, key2)))
 	if err != nil {
 		log.Error(err)
-		rsp.Header.Status = proto_common.ResultCode_RESULT_INTERNAL_ERROR
-		return response(proto_common.Cmd_GET_SEED_RSP, rsp)
+		rsp.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		return response(pc.Cmd_GET_SEED_RSP, rsp)
 	}
 	decoder, err := rc4.NewCipher([]byte(fmt.Sprintf("%v%v", Salt, key1)))
 	if err != nil {
 		log.Error(err)
-		rsp.Header.Status = proto_common.ResultCode_RESULT_INTERNAL_ERROR
-		return response(proto_common.Cmd_GET_SEED_RSP, rsp)
+		rsp.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		return response(pc.Cmd_GET_SEED_RSP, rsp)
 	}
 	session.Encoder = encoder
 	session.Decoder = decoder
@@ -81,10 +87,26 @@ func ProcGetSeedReq(session *types.Session, reader *packet.RawPacket) []byte {
 	rsp.SendSeed = e1
 	rsp.RecvSeed = e2
 
-	return response(proto_common.Cmd_GET_SEED_RSP, rsp)
+	return response(pc.Cmd_GET_SEED_RSP, rsp)
 }
 
+// ProcUserLoginReq process user login request
 func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
+	if !session.IsFlagEncryptedSet() {
+		log.Errorf("session login without encryption:%v", session)
+		session.SetFlagKicked()
+		return nil
+	}
+
+	req := &pc.C2SLoginReq{}
+	marshalPb, _ := reader.ReadBytes()
+
+	if err := proto.Unmarshal(marshalPb, req); err != nil {
+		log.Errorf("invalid protobuf :%v", err)
+		session.SetFlagKicked()
+		return nil
+	}
+
 	session.Usn = 1
 	session.GSID = DefaultGSID
 
@@ -123,7 +145,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	go fetcherTask(session)
 
 	p := packet.NewRawPacket()
-	p.WriteS32(int32(proto_common.Cmd_LOGIN_RSP))
+	p.WriteS32(int32(pc.Cmd_LOGIN_RSP))
 	p.WriteU64(session.Usn)
 
 	return p.Data()

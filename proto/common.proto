@@ -89,6 +89,10 @@ message S2CGetSeedRsp {
     bytes     recv_seed = 3; // public key for client to decrypt receive data
 }
 
-message C2SLoginReq { fixed64 timestamp = 1; }
+message C2SLoginReq {
+    fixed64 timestamp = 1; // for random
+    fixed64 usn       = 2;
+    string  token     = 3;
+}
 
 message S2CLoginRsp { RspHeader header = 1; }
