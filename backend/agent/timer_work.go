@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/backend/agent/types"
 )
@@ -26,6 +28,17 @@ func timerWork(session *types.Session, out *Buffer) {
 			"rate":  session.PacketCountPerMin,
 			"total": session.PacketCount,
 		}).Error("RPM")
+		return
+	}
+
+	// heartbeat check
+	elapsed := time.Since(session.LastPacketTime)
+	if time.Minute > elapsed {
+		session.SetFlagKicked()
+		log.WithFields(log.Fields{
+			"usn":         session.Usn,
+			"lastpkgtime": session.LastPacketTime,
+		}).Error("TIMEOUT")
 		return
 	}
 }

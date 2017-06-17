@@ -19,6 +19,7 @@ import (
 	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/security/ecdh"
 	"github.com/master-g/omgo/services"
+	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -47,6 +48,12 @@ func genRspHeader() *pc.RspHeader {
 // ProcHeartBeatReq process client heartbeat packet
 // TODO: reset client timeout timer
 func ProcHeartBeatReq(session *types.Session, reader *packet.RawPacket) []byte {
+	if session.IsFlagAuthedSet() {
+		log.Errorf("heartbeat from unauth session:%v", session)
+		session.SetFlagKicked()
+		return nil
+	}
+
 	p := packet.NewRawPacket()
 	p.WriteS32(int32(pc.Cmd_HEART_BEAT_RSP))
 	return p.Data()
@@ -95,11 +102,15 @@ func ProcGetSeedReq(session *types.Session, reader *packet.RawPacket) []byte {
 
 // ProcUserLoginReq process user login request
 func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
+	rsp := &pc.S2CLoginRsp{Header: genRspHeader()}
+	rsp.Header.Timestamp = utils.Timestamp()
+	rsp.Header.Status = pc.ResultCode_RESULT_INVALID
+
 	// can only login after key exchange
 	if !session.IsFlagEncryptedSet() {
 		log.Errorf("session login without encryption:%v", session)
 		session.SetFlagKicked()
-		return nil
+		return response(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	// parse login request
@@ -109,7 +120,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	if err := proto.Unmarshal(marshalPb, req); err != nil {
 		log.Errorf("invalid protobuf:%v", err)
 		session.SetFlagKicked()
-		return nil
+		return response(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	usn := req.GetUsn()
@@ -118,14 +129,14 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	if usn == 0 || token == "" {
 		log.Errorf("invalid usn:%v or token:%v", usn, token)
 		session.SetFlagKicked()
-		return nil
+		return response(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	// validate user token
 	dbConn := services.GetServiceWithID("dbservice", DefaultDBSID)
 	if dbConn == nil {
 		log.Errorf("cannot get db service:", DefaultDBSID)
-		return nil
+		return response(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	dbClient := pbdb.NewDBServiceClient(dbConn)
@@ -133,32 +144,37 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	dbRsp, err := dbClient.UserExtraInfoQuery(context.Background(), userKey)
 	if err != nil {
 		log.Errorf("error while query user extra info:%v", usn)
-		return nil
+		rsp.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		return response(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	if dbRsp.Usn == 0 || dbRsp.GetToken() == "" {
 		log.Errorf("user extra info not found:%v", usn)
-		return nil
+		rsp.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		return response(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	if strings.Compare(token, dbRsp.GetToken()) != 0 {
 		log.Infof("invalid token")
 		session.SetFlagKicked()
-		return nil
+		return response(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	// connection to game server
 	session.Usn = usn
 	session.Token = token
 	session.GSID = DefaultGSID
+	session.SetFlagAuthed()
 
 	conn := services.GetServiceWithID("game", session.GSID)
 	if conn == nil {
 		log.Error("cannot get game service:", session.GSID)
-		return nil
+		rsp.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		return response(pc.Cmd_LOGIN_RSP, rsp)
 	}
 	cli := pbgame.NewGameServiceClient(conn)
 
+	// open game server stream
 	ctx := metadata.NewContext(context.Background(), metadata.New(map[string]string{"usn": fmt.Sprint(session.Usn)}))
 	stream, err := cli.Stream(ctx)
 	if err != nil {
@@ -167,6 +183,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	}
 	session.Stream = stream
 
+	// read message returned by game server
 	fetcherTask := func(session *types.Session) {
 		for {
 			in, err := session.Stream.Recv()
@@ -186,11 +203,9 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	}
 	go fetcherTask(session)
 
-	p := packet.NewRawPacket()
-	p.WriteS32(int32(pc.Cmd_LOGIN_RSP))
-	p.WriteU64(session.Usn)
-
-	return p.Data()
+	// login success
+	rsp.Header.Status = pc.ResultCode_RESULT_OK
+	return response(pc.Cmd_LOGIN_RSP, rsp)
 }
 
 func ProcOfflineReq(session *types.Session, reader *packet.RawPacket) []byte {
