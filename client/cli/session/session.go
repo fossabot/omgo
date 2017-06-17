@@ -15,6 +15,7 @@ import (
 	"github.com/master-g/omgo/net/packet"
 	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/security/ecdh"
+	"github.com/master-g/omgo/utils"
 )
 
 type Session struct {
@@ -44,16 +45,17 @@ func (s *Session) Connect(addr string) {
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {
 		log.Fatalf("could not connect to server:%v, error:%v", addr, err)
-	} else {
-		s.conn = conn
-		host, port, err := net.SplitHostPort(conn.RemoteAddr().String())
-		if err != nil {
-			log.Errorf("get remote addr failed:%v", err)
-			return
-		}
-		s.IsConnected = true
-		log.Infof("server %v%v connected", host, port)
+		return
 	}
+	s.conn = conn
+	host, port, err := net.SplitHostPort(conn.RemoteAddr().String())
+	if err != nil {
+		log.Errorf("get remote addr failed:%v", err)
+		return
+	}
+
+	s.IsConnected = true
+	log.Infof("server %v%v connected", host, port)
 }
 
 func (s *Session) Close() {
@@ -177,6 +179,22 @@ func (s *Session) ExchangeKey() {
 	log.Infof("decoder seed:%v", strings.ToUpper(hex.EncodeToString(key2)))
 
 	s.encrypted = true
+}
+
+func (s *Session) Login(usn uint64, token string) {
+	log.Info("about to login")
+	reqPacket := makePacket(pc.Cmd_LOGIN_REQ)
+	req := &pc.C2SLoginReq{
+		Timestamp: utils.Timestamp(),
+		Usn:       usn,
+		Token:     token,
+	}
+	data, err := proto.Marshal(req)
+	if err != nil {
+		log.Fatalf("error while create request:%v", err)
+	}
+	reqPacket.WriteBytes(data)
+	s.Send(reqPacket.Data())
 }
 
 func (s *Session) Bye() {

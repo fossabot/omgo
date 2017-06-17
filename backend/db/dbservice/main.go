@@ -7,6 +7,7 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/master-g/omgo/backend/db/dbservice/driver"
 	pb "github.com/master-g/omgo/proto/grpc/db"
 	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc"
@@ -18,11 +19,13 @@ const (
 	// gRPC
 	defaultListen = ":60001"
 	// mongodb
-	defaultMongoHost     = ":37017"
-	defaultMongoTimeout  = 60 * time.Second
-	defaultMongoDatabase = "master"
-	defaultMongoUserName = "admin"
-	defaultMongoPassword = "admin"
+	defaultMongoHost          = ":37017"
+	defaultMongoTimeout       = 60 * time.Second
+	defaultMongoSocketTimeout = 10 * time.Second
+	defaultMongoDatabase      = "master"
+	defaultMongoUserName      = "admin"
+	defaultMongoPassword      = "admin"
+	defaultMongoConcurrent    = 128
 	// redis
 	defaultRedisHost        = ":6379" // FIXME: DO NOT use 6379 in production environment
 	defaultRedisDB          = 0
@@ -106,6 +109,18 @@ func main() {
 				Usage:   "mongodb password",
 				Value:   defaultMongoPassword,
 			},
+			&cli.IntFlag{
+				Aliases: []string{"c"},
+				Name:    "mongo-concurrent",
+				Usage:   "mongodb concurrent pool size",
+				Value:   defaultMongoConcurrent,
+			},
+			&cli.DurationFlag{
+				Aliases: []string{"s"},
+				Name:    "mongo-socket-timeout",
+				Usage:   "mongodb socket timeout",
+				Value:   defaultMongoSocketTimeout,
+			},
 		},
 		Action: func(c *cli.Context) error {
 			// gRPC
@@ -122,6 +137,8 @@ func main() {
 			mongoDatabase := c.String("mongo-database")
 			mongoUsername := c.String("mongo-username")
 			mongoPassword := c.String("mongo-password")
+			mongoConcurrent := c.Int("mongo-concurrent")
+			mongoSocketTimeout := c.Duration("mongo-socket-timeout")
 
 			log.Println("listen:", listen)
 			log.Println("redis host:", redisHost)
@@ -134,13 +151,15 @@ func main() {
 			log.Println("mongo database:", mongoDatabase)
 			log.Println("mongo username:", mongoUsername)
 			log.Println("mongo password:", mongoPassword)
+			log.Println("mongo concurrent:", mongoConcurrent)
+			log.Println("mongo socket timeout:", mongoSocketTimeout)
 
-			redisCfg := &redisConfig{
-				host:        redisHost,
-				db:          redisDB,
-				maxIdle:     redisMaxIdle,
-				maxActive:   redisMaxActive,
-				idleTimeout: redisIdleTimeout,
+			redisCfg := &driver.Config{
+				Host:        redisHost,
+				DB:          redisDB,
+				MaxIdle:     redisMaxIdle,
+				MaxActive:   redisMaxActive,
+				IdleTimeout: redisIdleTimeout,
 			}
 
 			mongoCfg := &mgo.DialInfo{
@@ -162,7 +181,7 @@ func main() {
 			// register service
 			s := grpc.NewServer()
 			instance := &server{}
-			instance.init(mongoCfg, redisCfg)
+			instance.init(mongoCfg, mongoConcurrent, mongoSocketTimeout, redisCfg)
 			pb.RegisterDBServiceServer(s, instance)
 
 			// start service

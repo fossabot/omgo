@@ -240,6 +240,17 @@ func main() {
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
+		Name: "login",
+		Help: "login to agent server",
+		Func: func(c *ishell.Context) {
+			if !sess.IsConnected {
+				c.Println("no connection")
+				return
+			}
+			sess.Login(loginRsp.UserInfo.Usn, loginRsp.Token)
+		},
+	})
+	shell.AddCmd(&ishell.Cmd{
 		Name: "bye",
 		Help: "offline",
 		Func: func(c *ishell.Context) {

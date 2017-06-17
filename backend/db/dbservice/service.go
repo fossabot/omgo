@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/master-g/omgo/backend/db/dbservice/driver"
 	"github.com/master-g/omgo/proto/grpc/db"
 	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/utils"
@@ -27,7 +29,7 @@ var (
 
 // gRPC
 type server struct {
-	driver driver
+	db database
 }
 
 func setRspHeader(header *pc.RspHeader) *pc.RspHeader {
@@ -68,8 +70,8 @@ func genToken() string {
 	return string(token)
 }
 
-func (s *server) init(mcfg *mgo.DialInfo, rcfg *redisConfig) {
-	s.driver.init(mcfg, rcfg)
+func (s *server) init(mcfg *mgo.DialInfo, concurrent int, timeout time.Duration, rcfg *driver.Config) {
+	s.db.init(mcfg, concurrent, timeout, rcfg)
 }
 
 // query user info
@@ -85,7 +87,7 @@ func (s *server) UserQuery(ctx context.Context, key *proto.DB_UserKey) (ret *pro
 		return
 	}
 
-	userInfo, err := s.driver.queryUserBasicInfo(key)
+	userInfo, err := s.db.queryUserBasicInfo(key)
 	ret.Info = userInfo
 
 	if err != nil {
@@ -101,9 +103,9 @@ func (s *server) UserQuery(ctx context.Context, key *proto.DB_UserKey) (ret *pro
 func (s *server) UserUpdateInfo(ctx context.Context, userBasicInfo *pc.UserBasicInfo) (ret *pc.RspHeader, err error) {
 	ret = &pc.RspHeader{}
 	setRspHeader(ret)
-	err = s.driver.updateUserInfoMongoDB(userBasicInfo)
+	err = s.db.updateUserInfoMongoDB(userBasicInfo)
 	if err == nil {
-		err = s.driver.updateUserInfoRedis(userBasicInfo)
+		err = s.db.updateUserInfoRedis(userBasicInfo)
 	}
 
 	if err != nil {
@@ -130,7 +132,7 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 		log.Info(ret.Result.Msg)
 		return
 	}
-	ret.Info, err = s.driver.queryUserBasicInfo(&proto.DB_UserKey{Email: email})
+	ret.Info, err = s.db.queryUserBasicInfo(&proto.DB_UserKey{Email: email})
 	// user already existed
 	if ret.Info.Usn != 0 {
 		// email already registered
@@ -142,7 +144,7 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 	}
 
 	// allocate new usn and uid
-	usn, uid, err := s.driver.getUniqueID()
+	usn, uid, err := s.db.getUniqueID()
 	if err != nil {
 		ret.Result.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
 		ret.Result.Msg = fmt.Sprintf("error while get uniqueID:%v", err)
@@ -165,10 +167,10 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 	ret.Token = token
 
 	extra := &proto.DB_UserExtraInfo{Usn: usn, Secret: request.Secret, Token: token}
-	s.driver.updateUserExtraMongoDB(extra)
-	s.driver.updateUserExtraRedis(extra)
-	s.driver.updateUserInfoMongoDB(ret.Info)
-	s.driver.updateUserInfoRedis(ret.Info)
+	s.db.updateUserExtraMongoDB(extra)
+	s.db.updateUserExtraRedis(extra)
+	s.db.updateUserInfoMongoDB(ret.Info)
+	s.db.updateUserInfoRedis(ret.Info)
 
 	return
 }
@@ -188,7 +190,7 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 	}
 
 	// query user
-	ret.Info, err = s.driver.queryUserBasicInfo(&proto.DB_UserKey{Email: request.GetInfo().GetEmail()})
+	ret.Info, err = s.db.queryUserBasicInfo(&proto.DB_UserKey{Email: request.GetInfo().GetEmail()})
 	if err != nil {
 		ret.Result.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
 		ret.Info = nil
@@ -197,7 +199,7 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 	}
 
 	// query user extra info
-	userExtra, err := s.driver.queryUserExtraInfo(ret.Info.Usn)
+	userExtra, err := s.db.queryUserExtraInfo(ret.Info.Usn)
 	if err != nil {
 		ret.Result.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
 		ret.Info = nil
@@ -217,12 +219,12 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 
 	// update token
 	userExtra.Token = token
-	s.driver.updateUserExtraMongoDB(userExtra)
-	s.driver.updateUserExtraRedis(userExtra)
+	s.db.updateUserExtraMongoDB(userExtra)
+	s.db.updateUserExtraRedis(userExtra)
 	// update last time login
 	ret.Info.LastLogin = utils.Timestamp()
-	s.driver.updateUserInfoMongoDB(ret.Info)
-	s.driver.updateUserInfoRedis(ret.Info)
+	s.db.updateUserInfoMongoDB(ret.Info)
+	s.db.updateUserInfoRedis(ret.Info)
 
 	return
 }
@@ -240,7 +242,7 @@ func (s *server) UserLogout(ctx context.Context, request *proto.DB_UserLogoutReq
 		return
 	}
 
-	userExtra, err := s.driver.queryUserExtraInfo(request.Usn)
+	userExtra, err := s.db.queryUserExtraInfo(request.Usn)
 	if err != nil {
 		log.Errorf("unable to find user extra info:%v", err)
 		ret.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
@@ -252,7 +254,7 @@ func (s *server) UserLogout(ctx context.Context, request *proto.DB_UserLogoutReq
 		ret.Msg = "session invalid"
 		return
 	}
-	s.driver.deleteUserExtraRedis(request.GetUsn())
+	s.db.deleteUserExtraRedis(request.GetUsn())
 
 	return
 }
@@ -266,7 +268,7 @@ func (s *server) UserExtraInfoQuery(ctx context.Context, request *proto.DB_UserK
 		log.Error("invalid user serial number")
 		return
 	}
-	extraInfo, err := s.driver.queryUserExtraInfo(request.GetUsn())
+	extraInfo, err := s.db.queryUserExtraInfo(request.GetUsn())
 	if err != nil {
 		log.Errorf("error while query user extra info:%v", err)
 		return
