@@ -9,6 +9,7 @@ enum Cmd {
     RESERVED       = 0;
     HEART_BEAT_REQ = 0x1;
     HEART_BEAT_RSP = 0x2;
+    KICK_NOTIFY    = 0x4;
     GET_SEED_REQ   = 0x11;
     GET_SEED_RSP   = 0x12;
     LOGIN_REQ      = 0x21;
@@ -96,3 +97,17 @@ message C2SLoginReq {
 }
 
 message S2CLoginRsp { RspHeader header = 1; }
+
+enum KickReason {
+    KICK_NO_REASON         = 0;
+    KICK_LOGIN_ELSEWHERE   = 1;
+    KICK_SESSION_EXPIRED   = 2;
+    KICK_ILLEGAL_OPERATION = 3;
+    KICK_BANNED            = 4;
+}
+
+message S2CKickNotify {
+    fixed64    timestamp = 1;
+    KickReason reason    = 2;
+    string     msg       = 3;
+}

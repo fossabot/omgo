@@ -6,9 +6,8 @@ import (
 	"crypto/rc4"
 	"fmt"
 	"io"
-	"time"
-
 	"strings"
+	"time"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
@@ -17,6 +16,7 @@ import (
 	pbdb "github.com/master-g/omgo/proto/grpc/db"
 	pbgame "github.com/master-g/omgo/proto/grpc/game"
 	pc "github.com/master-g/omgo/proto/pb/common"
+	"github.com/master-g/omgo/registry"
 	"github.com/master-g/omgo/security/ecdh"
 	"github.com/master-g/omgo/services"
 	"github.com/master-g/omgo/utils"
@@ -158,6 +158,12 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 		log.Infof("invalid token")
 		session.SetFlagKicked()
 		return response(pc.Cmd_LOGIN_RSP, rsp)
+	}
+
+	// kick previous session if existed
+	p := registry.Query(usn)
+	if prevSession, ok := p.(*types.Session); ok {
+		prevSession.SetFlagKicked()
 	}
 
 	// connection to game server
