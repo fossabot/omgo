@@ -48,7 +48,7 @@ func genRspHeader() *pc.RspHeader {
 // ProcHeartBeatReq process client heartbeat packet
 // TODO: reset client timeout timer
 func ProcHeartBeatReq(session *types.Session, reader *packet.RawPacket) []byte {
-	if session.IsFlagAuthedSet() {
+	if session.IsFlagAuthSet() {
 		log.Errorf("heartbeat from unauth session:%v", session)
 		session.SetFlagKicked()
 		return nil
@@ -163,6 +163,12 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	// kick previous session if existed
 	p := registry.Query(usn)
 	if prevSession, ok := p.(*types.Session); ok {
+		kickNotify := &pc.S2CKickNotify{
+			Timestamp: utils.Timestamp(),
+			Reason:    pc.KickReason_KICK_LOGIN_ELSEWHERE,
+			Msg:       session.IP.String(),
+		}
+		prevSession.KickPacket = response(pc.Cmd_KICK_NOTIFY, kickNotify)
 		prevSession.SetFlagKicked()
 	}
 
@@ -170,7 +176,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	session.Usn = usn
 	session.Token = token
 	session.GSID = DefaultGSID
-	session.SetFlagAuthed()
+	session.SetFlagAuth()
 
 	conn := services.GetServiceWithID("game", session.GSID)
 	if conn == nil {

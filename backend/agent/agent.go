@@ -72,6 +72,11 @@ func agent(session *types.Session, in chan []byte, out *Buffer) {
 		// see if user should be kicked out
 		if session.IsFlagKickedSet() {
 			log.Infof("session kicked:%v", session.IP.String())
+			if session.KickPacket != nil {
+				log.Infof("last packet sent:%v", session.IP.String())
+				out.send(session, session.KickPacket)
+				session.KickPacket = nil
+			}
 			return
 		}
 	}

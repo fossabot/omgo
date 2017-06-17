@@ -15,27 +15,28 @@ const (
 	FlagEncrypted = 0x2
 	// FlagKicked indicates the client has been kicked out
 	FlagKicked = 0x4
-	// FlagAuthed indicates the session has been authorized
-	FlagAuthed = 0x8
+	// FlagAuth indicates the session has been authorized
+	FlagAuth = 0x8
 )
 
 // Session holds the context of a client having conversation with agent
 type Session struct {
+	Usn               uint64                      // User serial number
+	Token             string                      // Session token generate at http login
+	Die               chan struct{}               // Session close signal
+	Flag              int32                       // Session flag
 	IP                net.IP                      // Client IP address
 	MQ                chan pb.Game_Frame          // Channel of async messages send back to client
 	Encoder           *rc4.Cipher                 // Encrypt
 	Decoder           *rc4.Cipher                 // Decrypt
-	Usn               uint64                      // User serial number
-	Token             string                      // Session token generate at http login
 	GSID              string                      // Game server ID
 	Stream            pb.GameService_StreamClient // Data stream send to game server
-	Die               chan struct{}               // Session close signal
-	Flag              int32                       // Session flag
 	ConnectTime       time.Time                   // Timestamp of TCP connection established
 	PacketTime        time.Time                   // Timestamp of current packet arrived
 	LastPacketTime    time.Time                   // Timestamp of previous packet arrived
 	PacketCount       uint32                      // Total packets received
 	PacketCountPerMin int                         // Packets received per minute
+	KickPacket        []byte                      // packet will be send to client before kicked
 }
 
 // SetFlagKeyExchanged sets the key exchanged bit
@@ -89,19 +90,19 @@ func (s *Session) IsFlagKickedSet() bool {
 	return s.Flag&FlagKicked != 0
 }
 
-// SetFlagAuthed sets the authed bit
-func (s *Session) SetFlagAuthed() *Session {
-	s.Flag |= FlagAuthed
+// SetFlagAuth sets the authed bit
+func (s *Session) SetFlagAuth() *Session {
+	s.Flag |= FlagAuth
 	return s
 }
 
-// ClearFlagAuthed clears the authed bit
-func (s *Session) ClearFlagAuthed() *Session {
-	s.Flag &^= FlagAuthed
+// ClearFlagAuth clears the authed bit
+func (s *Session) ClearFlagAuth() *Session {
+	s.Flag &^= FlagAuth
 	return s
 }
 
-// IsFlagAuthedSet returns true if the authed bit is set
-func (s *Session) IsFlagAuthedSet() bool {
-	return s.Flag&FlagAuthed != 0
+// IsFlagAuthSet returns true if the authed bit is set
+func (s *Session) IsFlagAuthSet() bool {
+	return s.Flag&FlagAuth != 0
 }
