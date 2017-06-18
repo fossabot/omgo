@@ -1,9 +1,8 @@
 package main
 
 import (
-	"net"
-
 	"encoding/binary"
+	"net"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/net/packet"

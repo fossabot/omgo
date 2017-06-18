@@ -1,21 +1,31 @@
 package main
 
 import (
+	"crypto/rand"
 	"crypto/rc4"
-	"github.com/master-g/omgo/utils"
+	"encoding/binary"
+	"io"
 	"net"
 	"time"
-	"unicode"
+
+	log "github.com/Sirupsen/logrus"
+	"github.com/gogo/protobuf/proto"
+	pc "github.com/master-g/omgo/proto/pb/common"
+	"github.com/master-g/omgo/security/ecdh"
+	"github.com/master-g/omgo/utils"
 )
 
 type Session struct {
-	Usn     uint64
-	Token   string
-	Die     chan struct{}
-	Encoder *rc4.Cipher
-	Decoder *rc4.Cipher
-	Flag    int
-	Conn    net.Conn
+	Usn         uint64
+	Token       string
+	Die         chan struct{}
+	Encoder     *rc4.Cipher
+	Decoder     *rc4.Cipher
+	Flag        int
+	Conn        net.Conn
+	Out         *Buffer
+	privateSend []byte
+	privateRecv []byte
 }
 
 const (
@@ -23,17 +33,36 @@ const (
 )
 
 const (
+	// FlagConnected  indicates the connection status of the session
+	FlagConnected = 0x01
 	// FlagKeyExchanged indicates the key exchange process has completed
-	FlagKeyExchanged = 0x1
+	FlagKeyExchanged = 0x2
 	// FlagEncrypted indicates the transmission of this session is encrypted
-	FlagEncrypted = 0x2
+	FlagEncrypted = 0x4
 	// FlagKicked indicates the client has been kicked out
-	FlagKicked = 0x4
+	FlagKicked = 0x8
 	// FlagAuth indicates the session has been authorized
-	FlagAuth = 0x8
+	FlagAuth = 0x10
 )
 
-// SetFlagKeyExchanged sets the key exchanged bit
+// SetFlagConnected sets the connected bit
+func (s *Session) SetFlagConnected() *Session {
+	s.Flag |= FlagConnected
+	return s
+}
+
+// ClearFlagConnected clears the connected bit
+func (s *Session) ClearFlagConnected() *Session {
+	s.Flag &^= FlagConnected
+	return s
+}
+
+// IsFlagConnectedSet return true if the connected bit is set
+func (s *Session) IsFlagConnectedSet() bool {
+	return s.Flag&FlagConnected != 0
+}
+
+// SetFlagKeyExchanged sets the connected bit
 func (s *Session) SetFlagKeyExchanged() *Session {
 	s.Flag |= FlagKeyExchanged
 	return s
@@ -121,7 +150,7 @@ func (s *Session) Loop(in chan []byte, out *Buffer) {
 				out.send(s, result)
 			}
 		case <-minTimer:
-			s.TimeWork(out)
+			s.TimeWork()
 			minTimer = time.After(time.Minute)
 		}
 
@@ -131,10 +160,142 @@ func (s *Session) Loop(in chan []byte, out *Buffer) {
 	}
 }
 
+func (s *Session) startLoop() {
+	defer utils.PrintPanicStack()
+	defer s.Conn.Close()
+	header := make([]byte, 2)
+	in := make(chan []byte)
+	defer func() {
+		close(in)
+	}()
+
+	s.Die = make(chan struct{})
+
+	out := newBuffer(s.Conn, s.Die, 128)
+	go out.start()
+
+	go s.Loop(in, out)
+
+	for {
+		n, err := io.ReadFull(s.Conn, header)
+		if err != nil {
+			log.Warningf("read header failed: %v %v bytes read", err, n)
+			return
+		}
+		size := binary.BigEndian.Uint16(header)
+
+		payload := make([]byte, size)
+		n, err = io.ReadFull(s.Conn, payload)
+		if err != nil {
+			log.Warningf("read payload failed: %v expect: %v actual read: %v", err, size, n)
+			return
+		}
+
+		select {
+		case in <- payload:
+		case <-s.Die:
+			log.Warningf("connection closed by logic, flag: %v", s.Flag)
+			return
+		}
+	}
+}
+
 func (s *Session) Route(msg []byte) []byte {
 	return nil
 }
 
-func (s *Session) TimeWork(out *Buffer) {
+func (s *Session) TimeWork() {
 
+}
+
+//------------------------------------------------------------------------------
+// Interface
+//------------------------------------------------------------------------------
+
+// Connect to agent server
+func (s *Session) Connect(address string) (sess *Session) {
+	if s.IsFlagConnectedSet() {
+		log.Error("already connected")
+		return
+	}
+
+	sess = s
+	log.Infof("connecting to %v", address)
+	conn, err := net.Dial("tcp", address)
+	if err != nil {
+		log.Fatalf("could not connect to server:%v error:%v", address, err)
+		return
+	}
+	s.Conn = conn
+	host, port, err := net.SplitHostPort(conn.RemoteAddr().String())
+	if err != nil {
+		log.Errorf("get remote addr failed:%v", err)
+		return
+	}
+	s.SetFlagConnected()
+	log.Infof("server %v%v connected", host, port)
+
+	s.startLoop()
+	return
+}
+
+// Close connection to agent server
+func (s *Session) Close() *Session {
+	s.SetFlagKicked()
+	return s
+}
+
+func (s *Session) Heartbeat() {
+	log.Info("sending heartbeat")
+	reqPacket := makePacket(pc.Cmd_HEART_BEAT_REQ)
+	s.Out.send(s, reqPacket.Data())
+}
+
+func (s *Session) ExchangeKey() {
+	log.Info("about to exchange key")
+	reqPacket := makePacket(pc.Cmd_GET_SEED_REQ)
+	req := &pc.C2SGetSeedReq{}
+
+	curve := ecdh.NewCurve25519ECDH()
+	x1, e1 := curve.GenerateECKeyBuf(rand.Reader)
+	x2, e2 := curve.GenerateECKeyBuf(rand.Reader)
+
+	req.SendSeed = e1
+	req.RecvSeed = e2
+
+	s.privateSend = x1
+	s.privateRecv = x2
+
+	data, err := proto.Marshal(req)
+	if err != nil {
+		log.Fatalf("error while create request:%v", err)
+		return
+	}
+
+	reqPacket.WriteBytes(data)
+	s.Out.send(s, reqPacket.Data())
+}
+
+func (s *Session) Login() {
+	log.Info("about to login")
+	reqPacket := makePacket(pc.Cmd_LOGIN_REQ)
+	req := &pc.C2SLoginReq{
+		Timestamp: utils.Timestamp(),
+		Usn:       s.Usn,
+		Token:     s.Token,
+	}
+	data, err := proto.Marshal(req)
+	if err != nil {
+		log.Fatalf("error while create request:%v", err)
+		return
+	}
+	reqPacket.WriteBytes(data)
+	s.Out.send(s, reqPacket.Data())
+}
+
+func (s *Session) Bye() {
+	log.Info("sending bye")
+	reqPacket := makePacket(pc.Cmd_OFFLINE_REQ)
+	s.Out.send(s, reqPacket.Data())
+	s.Close()
 }

@@ -9,27 +9,23 @@ import (
 	"strings"
 	"time"
 
-	"encoding/binary"
 	"github.com/Pallinder/go-randomdata"
 	log "github.com/Sirupsen/logrus"
-	"github.com/master-g/omgo/client/cli/session"
 	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/utils"
 	"gopkg.in/abiosoft/ishell.v2"
-	"image/color/palette"
-	"io"
 )
 
 var (
 	address    string
-	sess       *session.Session
+	sess       *Session
 	httpclient *http.Client
 	apiHost    string
 	loginRsp   pc.LoginRsp
 )
 
 func init() {
-	sess = session.NewSession("")
+	sess = &Session{}
 	httpclient = &http.Client{
 		Timeout: time.Second * 3,
 	}
@@ -84,7 +80,7 @@ func main() {
 		Name: "disconn",
 		Help: "disconnect from server",
 		Func: func(c *ishell.Context) {
-			if !sess.IsConnected {
+			if !sess.IsFlagConnectedSet() {
 				c.Println("no connection")
 			} else {
 				sess.Close()
@@ -96,7 +92,7 @@ func main() {
 		Name: "heartbeat",
 		Help: "sending heartbeat to server",
 		Func: func(c *ishell.Context) {
-			if !sess.IsConnected {
+			if !sess.IsFlagConnectedSet() {
 				c.Println("no connection")
 				return
 			}
@@ -117,7 +113,7 @@ func main() {
 		Name: "exchangekey",
 		Help: "exchange public key with server",
 		Func: func(c *ishell.Context) {
-			if !sess.IsConnected {
+			if !sess.IsFlagConnectedSet() {
 				c.Println("no connection")
 				return
 			}
@@ -246,18 +242,20 @@ func main() {
 		Name: "login",
 		Help: "login to agent server",
 		Func: func(c *ishell.Context) {
-			if !sess.IsConnected {
+			if !sess.IsFlagConnectedSet() {
 				c.Println("no connection")
 				return
 			}
-			sess.Login(loginRsp.UserInfo.Usn, loginRsp.Token)
+			sess.Usn = loginRsp.UserInfo.Usn
+			sess.Token = loginRsp.Token
+			sess.Login()
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
 		Name: "bye",
 		Help: "offline",
 		Func: func(c *ishell.Context) {
-			if !sess.IsConnected {
+			if !sess.IsFlagConnectedSet() {
 				c.Println("no connection")
 				return
 			}
@@ -290,44 +288,4 @@ func main() {
 	})
 
 	shell.Start()
-}
-
-func startNetworkLoop(session *Session) {
-	defer utils.PrintPanicStack()
-	defer session.Conn.Close()
-	header := make([]byte, 2)
-	in := make(chan []byte)
-	defer func() {
-		close(in)
-	}()
-
-	session.Die = make(chan struct{})
-
-	out := newBuffer(session.Conn, session.Die, 128)
-	go out.start()
-
-	go session.Loop(in, out)
-
-	for {
-		n, err := io.ReadFull(session.Conn, header)
-		if err != nil {
-			log.Warningf("read header failed: %v %v bytes read", err, n)
-			return
-		}
-		size := binary.BigEndian.Uint16(header)
-
-		payload := make([]byte, size)
-		n, err = io.ReadFull(session.Conn, payload)
-		if err != nil {
-			log.Warningf("read payload failed: %v expect: %v actual read: %v", err, size, n)
-			return
-		}
-
-		select {
-		case in <- payload:
-		case <-session.Die:
-			log.Warningf("connection closed by logic, flag: %v", session.Flag)
-			return
-		}
-	}
 }
