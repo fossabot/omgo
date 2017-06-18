@@ -1,35 +1,3 @@
-package session
-
-import (
-	"crypto/rand"
-	"crypto/rc4"
-	"encoding/binary"
-	"encoding/hex"
-	"fmt"
-	"io"
-	"net"
-	"strings"
-
-	log "github.com/Sirupsen/logrus"
-	"github.com/golang/protobuf/proto"
-	"github.com/master-g/omgo/net/packet"
-	pc "github.com/master-g/omgo/proto/pb/common"
-	"github.com/master-g/omgo/security/ecdh"
-	"github.com/master-g/omgo/utils"
-)
-
-type Session struct {
-	IsConnected bool
-	conn        net.Conn
-	encrypted   bool
-	encoder     *rc4.Cipher
-	decoder     *rc4.Cipher
-}
-
-const (
-	Salt = "DH"
-)
-
 func makePacket(cmd pc.Cmd) *packet.RawPacket {
 	pk := packet.NewRawPacket()
 	pk.WriteS32(int32(cmd))
