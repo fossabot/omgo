@@ -9,12 +9,15 @@ import (
 	"strings"
 	"time"
 
+	"encoding/binary"
 	"github.com/Pallinder/go-randomdata"
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/client/cli/session"
 	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/utils"
 	"gopkg.in/abiosoft/ishell.v2"
+	"image/color/palette"
+	"io"
 )
 
 var (
@@ -287,4 +290,44 @@ func main() {
 	})
 
 	shell.Start()
+}
+
+func startNetworkLoop(session *Session) {
+	defer utils.PrintPanicStack()
+	defer session.Conn.Close()
+	header := make([]byte, 2)
+	in := make(chan []byte)
+	defer func() {
+		close(in)
+	}()
+
+	session.Die = make(chan struct{})
+
+	out := newBuffer(session.Conn, session.Die, 128)
+	go out.start()
+
+	go session.Loop(in, out)
+
+	for {
+		n, err := io.ReadFull(session.Conn, header)
+		if err != nil {
+			log.Warningf("read header failed: %v %v bytes read", err, n)
+			return
+		}
+		size := binary.BigEndian.Uint16(header)
+
+		payload := make([]byte, size)
+		n, err = io.ReadFull(session.Conn, payload)
+		if err != nil {
+			log.Warningf("read payload failed: %v expect: %v actual read: %v", err, size, n)
+			return
+		}
+
+		select {
+		case in <- payload:
+		case <-session.Die:
+			log.Warningf("connection closed by logic, flag: %v", session.Flag)
+			return
+		}
+	}
 }

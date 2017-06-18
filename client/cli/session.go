@@ -2,6 +2,10 @@ package main
 
 import (
 	"crypto/rc4"
+	"github.com/master-g/omgo/utils"
+	"net"
+	"time"
+	"unicode"
 )
 
 type Session struct {
@@ -11,6 +15,7 @@ type Session struct {
 	Encoder *rc4.Cipher
 	Decoder *rc4.Cipher
 	Flag    int
+	Conn    net.Conn
 }
 
 const (
@@ -79,19 +84,57 @@ func (s *Session) IsFlagKickedSet() bool {
 	return s.Flag&FlagKicked != 0
 }
 
-// SetFlagAuth sets the authed bit
+// SetFlagAuth sets the auth bit
 func (s *Session) SetFlagAuth() *Session {
 	s.Flag |= FlagAuth
 	return s
 }
 
-// ClearFlagAuth clears the authed bit
+// ClearFlagAuth clears the auth bit
 func (s *Session) ClearFlagAuth() *Session {
 	s.Flag &^= FlagAuth
 	return s
 }
 
-// IsFlagAuthSet returns true if the authed bit is set
+// IsFlagAuthSet returns true if the auth bit is set
 func (s *Session) IsFlagAuthSet() bool {
 	return s.Flag&FlagAuth != 0
+}
+
+func (s *Session) Loop(in chan []byte, out *Buffer) {
+	defer utils.PrintPanicStack()
+
+	minTimer := time.After(time.Minute)
+
+	defer func() {
+		close(s.Die)
+	}()
+
+	for {
+		select {
+		case msg, ok := <-in:
+			if !ok {
+				return
+			}
+
+			if result := s.Route(msg); result != nil {
+				out.send(s, result)
+			}
+		case <-minTimer:
+			s.TimeWork(out)
+			minTimer = time.After(time.Minute)
+		}
+
+		if s.IsFlagKickedSet() {
+			return
+		}
+	}
+}
+
+func (s *Session) Route(msg []byte) []byte {
+	return nil
+}
+
+func (s *Session) TimeWork(out *Buffer) {
+
 }
