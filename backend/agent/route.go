@@ -29,7 +29,7 @@ func route(session *types.Session, p []byte) []byte {
 	// read cmd
 	cmdValue, err := reader.ReadS32()
 	if err != nil {
-		log.Error("read packet cmd failed:", err)
+		log.Errorf("read packet cmd failed:%v", err)
 		session.SetFlagKicked()
 		return nil
 	}

@@ -10,6 +10,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/gogo/protobuf/proto"
+	"github.com/master-g/omgo/net/packet"
 	pc "github.com/master-g/omgo/proto/pb/common"
 	"github.com/master-g/omgo/security/ecdh"
 	"github.com/master-g/omgo/utils"
@@ -201,7 +202,37 @@ func (s *Session) startLoop() {
 }
 
 func (s *Session) Route(msg []byte) []byte {
-	return nil
+	defer utils.PrintPanicStack()
+	// decrypt
+	if s.IsFlagEncryptedSet() {
+		s.Decoder.XORKeyStream(msg, msg)
+	}
+	// packet reader
+	reader := packet.NewRawPacketReader(msg)
+
+	// read cmd
+	cmdValue, err := reader.ReadS32()
+	if err != nil {
+		log.Errorf("read packet cmd failed:%v", err)
+		s.SetFlagKicked()
+		return nil
+	}
+	cmd := pc.Cmd(cmdValue)
+
+	// route message
+	var ret []byte
+	if cmd > pc.Cmd_CMD_COMMON_END {
+		log.Info("stream function not implemented yet")
+		return nil
+	} else {
+		if h := Handlers[cmdValue]; h != nil {
+			ret = h(s, reader)
+		} else {
+			log.Errorf("no handler for cmd:%v", cmd)
+			return nil
+		}
+	}
+	return ret
 }
 
 func (s *Session) TimeWork() {
