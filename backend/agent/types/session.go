@@ -36,7 +36,7 @@ type Session struct {
 	LastPacketTime    time.Time                   // Timestamp of previous packet arrived
 	PacketCount       uint32                      // Total packets received
 	PacketCountPerMin int                         // Packets received per minute
-	KickPacket        []byte                      // packet will be send to client before kicked
+	Mailbox           chan []byte                 // Mailbox for internal communication
 }
 
 // SetFlagKeyExchanged sets the key exchanged bit

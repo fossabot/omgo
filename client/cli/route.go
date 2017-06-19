@@ -20,6 +20,7 @@ func init() {
 		int32(pc.Cmd_HEART_BEAT_RSP): ProcHeartBeatRsp,
 		int32(pc.Cmd_LOGIN_RSP):      ProcLoginRsp,
 		int32(pc.Cmd_GET_SEED_RSP):   ProcGetSeedRsp,
+		int32(pc.Cmd_KICK_NOTIFY):    ProcKickNotify,
 	}
 }
 
@@ -34,6 +35,7 @@ func readPacketBody(packet *packet.RawPacket) []byte {
 }
 
 func ProcHeartBeatRsp(session *Session, packet *packet.RawPacket) []byte {
+	log.Info("receive server heartbeat response")
 	return nil
 }
 
@@ -68,5 +70,17 @@ func ProcGetSeedRsp(session *Session, packet *packet.RawPacket) []byte {
 
 	session.SetFlagEncrypted()
 
+	return nil
+}
+
+func ProcKickNotify(session *Session, packet *packet.RawPacket) []byte {
+	rspBody := readPacketBody(packet)
+	rsp := &pc.S2CKickNotify{}
+	err := proto.Unmarshal(rspBody, rsp)
+	if err != nil {
+		log.Errorf("error while parsing proto:%v", err)
+		return nil
+	}
+	log.Warnf("kicked by server, msg:%v reason:%v", rsp.Msg, rsp.Reason)
 	return nil
 }

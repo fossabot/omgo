@@ -168,9 +168,10 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 			Reason:    pc.KickReason_KICK_LOGIN_ELSEWHERE,
 			Msg:       session.IP.String(),
 		}
-		prevSession.KickPacket = response(pc.Cmd_KICK_NOTIFY, kickNotify)
+		prevSession.Mailbox <- response(pc.Cmd_KICK_NOTIFY, kickNotify)
 		prevSession.SetFlagKicked()
 	}
+	registry.Register(usn, session)
 
 	// connection to game server
 	session.Usn = usn

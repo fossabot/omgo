@@ -131,7 +131,11 @@ func (s *Session) IsFlagAuthSet() bool {
 	return s.Flag&FlagAuth != 0
 }
 
-func (s *Session) Loop(in chan []byte, out *Buffer) {
+//------------------------------------------------------------------------------
+// goroutines
+//------------------------------------------------------------------------------
+
+func (s *Session) Loop(in chan []byte) {
 	defer utils.PrintPanicStack()
 
 	minTimer := time.After(time.Minute)
@@ -148,7 +152,7 @@ func (s *Session) Loop(in chan []byte, out *Buffer) {
 			}
 
 			if result := s.Route(msg); result != nil {
-				out.send(s, result)
+				s.Out.send(s, result)
 			}
 		case <-minTimer:
 			s.TimeWork()
@@ -156,9 +160,12 @@ func (s *Session) Loop(in chan []byte, out *Buffer) {
 		}
 
 		if s.IsFlagKickedSet() {
+			// TODO
 			return
 		}
 	}
+
+	s.ClearFlagKicked()
 }
 
 func (s *Session) startLoop() {
@@ -171,11 +178,11 @@ func (s *Session) startLoop() {
 	}()
 
 	s.Die = make(chan struct{})
+	s.Out = newBuffer(s.Conn, s.Die, 128)
 
-	out := newBuffer(s.Conn, s.Die, 128)
-	go out.start()
+	go s.Out.start()
 
-	go s.Loop(in, out)
+	go s.Loop(in)
 
 	for {
 		n, err := io.ReadFull(s.Conn, header)
@@ -225,18 +232,23 @@ func (s *Session) Route(msg []byte) []byte {
 		log.Info("stream function not implemented yet")
 		return nil
 	} else {
+		shell.ShowPrompt(false)
+		shell.Println("")
 		if h := Handlers[cmdValue]; h != nil {
 			ret = h(s, reader)
 		} else {
 			log.Errorf("no handler for cmd:%v", cmd)
 			return nil
 		}
+		shell.ShowPrompt(true)
 	}
 	return ret
 }
 
 func (s *Session) TimeWork() {
-
+	shell.ShowPrompt(false)
+	s.Heartbeat()
+	shell.ShowPrompt(true)
 }
 
 //------------------------------------------------------------------------------
@@ -254,7 +266,7 @@ func (s *Session) Connect(address string) (sess *Session) {
 	log.Infof("connecting to %v", address)
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
-		log.Fatalf("could not connect to server:%v error:%v", address, err)
+		log.Errorf("could not connect to server:%v error:%v", address, err)
 		return
 	}
 	s.Conn = conn
@@ -264,9 +276,10 @@ func (s *Session) Connect(address string) (sess *Session) {
 		return
 	}
 	s.SetFlagConnected()
-	log.Infof("server %v%v connected", host, port)
+	log.Infof("server %v:%v connected", host, port)
 
-	s.startLoop()
+	go s.startLoop()
+
 	return
 }
 
@@ -299,7 +312,7 @@ func (s *Session) ExchangeKey() {
 
 	data, err := proto.Marshal(req)
 	if err != nil {
-		log.Fatalf("error while create request:%v", err)
+		log.Errorf("error while create request:%v", err)
 		return
 	}
 
@@ -317,7 +330,7 @@ func (s *Session) Login() {
 	}
 	data, err := proto.Marshal(req)
 	if err != nil {
-		log.Fatalf("error while create request:%v", err)
+		log.Errorf("error while create request:%v", err)
 		return
 	}
 	reqPacket.WriteBytes(data)

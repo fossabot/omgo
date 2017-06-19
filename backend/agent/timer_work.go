@@ -33,7 +33,7 @@ func timerWork(session *types.Session, out *Buffer) {
 
 	// heartbeat check
 	elapsed := time.Since(session.LastPacketTime)
-	if time.Minute > elapsed {
+	if defaultReadDeadLine < elapsed {
 		session.SetFlagKicked()
 		log.WithFields(log.Fields{
 			"usn":         session.Usn,

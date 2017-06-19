@@ -27,7 +27,7 @@ const (
 	defaultListen        = ":8888"
 	defaultETCD          = "http://127.0.0.1:2379"
 	defaultRoot          = "backends"
-	defaultReadDeadLine  = 15 * time.Second
+	defaultReadDeadLine  = 3 * time.Minute
 	defaultSockBufSize   = 32*1024 - 1
 	defaultTxQueueLength = 128
 	defaultRPMLimit      = 200

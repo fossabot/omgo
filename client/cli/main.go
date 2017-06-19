@@ -22,6 +22,7 @@ var (
 	httpclient *http.Client
 	apiHost    string
 	loginRsp   pc.LoginRsp
+	shell      *ishell.Shell
 )
 
 func init() {
@@ -48,7 +49,7 @@ func main() {
 	defer sess.Close()
 	defer utils.PrintPanicStack()
 
-	shell := ishell.New()
+	shell = ishell.New()
 	shell.AddCmd(&ishell.Cmd{
 		Name: "apihost",
 		Help: "set api host address",
@@ -67,9 +68,16 @@ func main() {
 		Name: "conn",
 		Help: "conn address:port",
 		Func: func(c *ishell.Context) {
-			sess.Close()
+			if sess.IsFlagConnectedSet() {
+				sess.Close()
+			}
+
 			if len(c.Args) > 0 {
-				address = c.Args[0]
+				if strings.Compare(c.Args[0], "default") == 0 {
+					address = utils.GetLocalIP() + ":8888"
+				} else {
+					address = c.Args[0]
+				}
 			} else {
 				address = getAddressFromLoginRsp(&loginRsp)
 			}
@@ -81,10 +89,10 @@ func main() {
 		Help: "disconnect from server",
 		Func: func(c *ishell.Context) {
 			if !sess.IsFlagConnectedSet() {
-				c.Println("no connection")
+				log.Error("no connection")
 			} else {
 				sess.Close()
-				c.Println("disconnected from server")
+				log.Info("disconnected from server")
 			}
 		},
 	})
@@ -93,7 +101,7 @@ func main() {
 		Help: "sending heartbeat to server",
 		Func: func(c *ishell.Context) {
 			if !sess.IsFlagConnectedSet() {
-				c.Println("no connection")
+				log.Error("no connection")
 				return
 			}
 			sess.Heartbeat()
@@ -103,7 +111,10 @@ func main() {
 		Name: "go",
 		Help: "go through all tests",
 		Func: func(c *ishell.Context) {
-			sess.Close()
+			if sess.IsFlagConnectedSet() {
+				log.Error("already connected to server, disconnect first")
+				return
+			}
 			sess.Connect(address)
 			sess.Heartbeat()
 			sess.ExchangeKey()
@@ -114,7 +125,7 @@ func main() {
 		Help: "exchange public key with server",
 		Func: func(c *ishell.Context) {
 			if !sess.IsFlagConnectedSet() {
-				c.Println("no connection")
+				log.Error("no connection")
 				return
 			}
 			sess.ExchangeKey()
@@ -136,7 +147,6 @@ func main() {
 				log.Error("password invalid")
 				return
 			}
-
 			// send request
 			req, err := http.NewRequest("GET", apiHost+"/login", nil)
 			if err != nil {
@@ -243,12 +253,20 @@ func main() {
 		Help: "login to agent server",
 		Func: func(c *ishell.Context) {
 			if !sess.IsFlagConnectedSet() {
-				c.Println("no connection")
+				log.Error("no connection")
 				return
 			}
-			sess.Usn = loginRsp.UserInfo.Usn
-			sess.Token = loginRsp.Token
-			sess.Login()
+			if !sess.IsFlagEncryptedSet() {
+				log.Error("need to exchange key first")
+				return
+			}
+			if loginRsp.UserInfo != nil {
+				sess.Usn = loginRsp.UserInfo.Usn
+				sess.Token = loginRsp.Token
+				sess.Login()
+			} else {
+				log.Error("error while try to login, user info is nil")
+			}
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
@@ -256,7 +274,7 @@ func main() {
 		Help: "offline",
 		Func: func(c *ishell.Context) {
 			if !sess.IsFlagConnectedSet() {
-				c.Println("no connection")
+				log.Error("no connection")
 				return
 			}
 			sess.Bye()
@@ -284,6 +302,7 @@ func main() {
 			if err != nil {
 				log.Error(err)
 			}
+
 		},
 	})
 

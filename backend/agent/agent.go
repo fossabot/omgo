@@ -6,11 +6,13 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/backend/agent/types"
 	pb "github.com/master-g/omgo/proto/grpc/game"
+	"github.com/master-g/omgo/registry"
 	"github.com/master-g/omgo/utils"
 )
 
 const (
-	defaultMQSize = 512
+	defaultMQSize      = 512
+	defaultMailboxSize = 128
 )
 
 // PIPELINE #2: agent
@@ -21,6 +23,7 @@ func agent(session *types.Session, in chan []byte, out *Buffer) {
 
 	// init session
 	session.MQ = make(chan pb.Game_Frame, defaultMQSize)
+	session.Mailbox = make(chan []byte, defaultMailboxSize)
 	session.ConnectTime = time.Now()
 	session.LastPacketTime = time.Now()
 	// minute timer
@@ -55,6 +58,8 @@ func agent(session *types.Session, in chan []byte, out *Buffer) {
 				out.send(session, result)
 			}
 			session.LastPacketTime = session.PacketTime
+		case mail := <-session.Mailbox:
+			out.send(session, mail)
 		case frame := <-session.MQ: // packets from frame
 			switch frame.Type {
 			case pb.Game_Message:
@@ -72,11 +77,7 @@ func agent(session *types.Session, in chan []byte, out *Buffer) {
 		// see if user should be kicked out
 		if session.IsFlagKickedSet() {
 			log.Infof("session kicked:%v", session.IP.String())
-			if session.KickPacket != nil {
-				log.Infof("last packet sent:%v", session.IP.String())
-				out.send(session, session.KickPacket)
-				session.KickPacket = nil
-			}
+			registry.Unregister(session.Usn, session)
 			return
 		}
 	}
