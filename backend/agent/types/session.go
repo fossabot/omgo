@@ -26,6 +26,7 @@ type Session struct {
 	Die               chan struct{}               // Session close signal
 	Flag              int32                       // Session flag
 	IP                net.IP                      // Client IP address
+	Port              string                      // Client Port
 	MQ                chan pb.Game_Frame          // Channel of async messages send back to client
 	Encoder           *rc4.Cipher                 // Encrypt
 	Decoder           *rc4.Cipher                 // Decrypt

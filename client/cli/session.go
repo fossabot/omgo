@@ -20,6 +20,7 @@ type Session struct {
 	Usn         uint64
 	Token       string
 	Die         chan struct{}
+	Mailbox     chan []byte
 	Encoder     *rc4.Cipher
 	Decoder     *rc4.Cipher
 	Flag        int
@@ -154,6 +155,10 @@ func (s *Session) Loop(in chan []byte) {
 			if result := s.Route(msg); result != nil {
 				s.Out.send(s, result)
 			}
+		case mail, ok := <-s.Mailbox:
+			if ok {
+				s.Out.send(s, mail)
+			}
 		case <-minTimer:
 			s.TimeWork()
 			minTimer = time.After(time.Minute)
@@ -164,7 +169,7 @@ func (s *Session) Loop(in chan []byte) {
 		}
 	}
 
-	s.ClearFlagKicked()
+	s.Flag = 0
 }
 
 func (s *Session) startLoop() {
@@ -177,6 +182,7 @@ func (s *Session) startLoop() {
 	}()
 
 	s.Die = make(chan struct{})
+	s.Mailbox = make(chan []byte, 128)
 	s.Out = newBuffer(s.Conn, s.Die, 128)
 
 	go s.Out.start()

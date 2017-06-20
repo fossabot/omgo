@@ -76,7 +76,7 @@ func agent(session *types.Session, in chan []byte, out *Buffer) {
 
 		// see if user should be kicked out
 		if session.IsFlagKickedSet() {
-			log.Infof("session kicked:%v", session.IP.String())
+			log.Infof("session kicked:%v:%v", session.IP.String(), session.Port)
 			registry.Unregister(session.Usn, session)
 			return
 		}

@@ -185,6 +185,7 @@ func handleClient(conn net.Conn, config *Config) {
 		return
 	}
 	session.IP = net.ParseIP(host)
+	session.Port = port
 	log.Infof("new connection from %v:%v", host, port)
 
 	// session die signal, will be triggered by agent()
