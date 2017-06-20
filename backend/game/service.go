@@ -6,11 +6,11 @@ import (
 	"strconv"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/master-g/omgo/backend/game/handler"
-	"github.com/master-g/omgo/backend/game/registry"
+	"github.com/master-g/omgo/backend/agent/handler"
 	"github.com/master-g/omgo/backend/game/types"
 	"github.com/master-g/omgo/net/packet"
 	"github.com/master-g/omgo/proto/grpc/game"
+	"github.com/master-g/omgo/registry"
 	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc/metadata"
 )
@@ -64,9 +64,9 @@ func (s *server) Stream(stream proto.GameService_StreamServer) error {
 	chIPC := make(chan *proto.Game_Frame, DefaultIPCChannelSize)
 
 	defer func() {
-		registry.Unregister(session.UserID, chIPC)
+		registry.Unregister(session.Usn, chIPC)
 		close(chSessionDie)
-		log.Debug("stream end:", session.UserID)
+		log.Debug("stream end:", session.Usn)
 	}()
 
 	// read metadata from context
@@ -81,16 +81,16 @@ func (s *server) Stream(stream proto.GameService_StreamServer) error {
 		return ErrorIncorrectFrameType
 	}
 	// parse userID
-	userID, err := strconv.Atoi(md["userid"][0])
+	userID, err := strconv.ParseUint(md["userid"][0], 10, 64)
 	if err != nil {
 		log.Error(err)
 		return ErrorIncorrectFrameType
 	}
 
 	// register user
-	session.UserID = int32(userID)
-	registry.Register(session.UserID, chIPC)
-	log.Debug("userid", session.UserID, "logged in")
+	session.Usn = userID
+	registry.Register(session.Usn, chIPC)
+	log.Debug("userid", session.Usn, "logged in")
 
 	// *** main message loop ***
 	for {

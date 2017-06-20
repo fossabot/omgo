@@ -21,7 +21,7 @@ const (
 )
 
 var (
-	defaultServices = []string{"snowflake", "agent"}
+	defaultServices = []string{"snowflake", "agent", "dbs"}
 )
 
 func main() {
@@ -40,14 +40,14 @@ func main() {
 			&cli.StringFlag{
 				Aliases: []string{"i"},
 				Name:    "id",
-				Value:   "game1",
+				Value:   "game-0",
 				Usage:   "id of this service",
 			},
 			&cli.StringFlag{
 				Aliases: []string{"l"},
 				Name:    "listen",
 				Usage:   "listening address:port",
-				Value:   "10000",
+				Value:   ":10000",
 			},
 			&cli.StringSliceFlag{
 				Aliases: []string{"e"},

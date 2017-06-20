@@ -5,8 +5,10 @@ db -> reception -> auth -> agent -> game
 
 ### TODO
 
+- [ ] game server
+- [ ] service online/offline handling via ETCD
 - [x] remove `omitempty` tag in .proto files
 - [x] session management in agent
 - [x] latch for mongodb in dbservice
-- [ ] add mechanism to agent for kick connections (gRPC ?)
-- [ ] rewrite cli client
+- [x] add mechanism to agent for kick connections (gRPC ?)
+- [x] rewrite cli client
