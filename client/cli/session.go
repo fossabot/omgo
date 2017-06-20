@@ -160,7 +160,6 @@ func (s *Session) Loop(in chan []byte) {
 		}
 
 		if s.IsFlagKickedSet() {
-			// TODO
 			return
 		}
 	}

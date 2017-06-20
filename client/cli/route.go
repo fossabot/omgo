@@ -82,5 +82,6 @@ func ProcKickNotify(session *Session, packet *packet.RawPacket) []byte {
 		return nil
 	}
 	log.Warnf("kicked by server, msg:%v reason:%v", rsp.Msg, rsp.Reason)
+	session.SetFlagKicked()
 	return nil
 }

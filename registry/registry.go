@@ -26,8 +26,8 @@ func (r *Registry) Register(usn uint64, v interface{}) {
 	r.Unlock()
 }
 
-// Unregistry removes an entry from entries
-func (r *Registry) Unregistry(usn uint64, v interface{}) {
+// Unregister removes an entry from entries
+func (r *Registry) Unregister(usn uint64, v interface{}) {
 	r.Lock()
 	if oldv, ok := r.entries[usn]; ok {
 		if oldv == v {
@@ -58,7 +58,7 @@ func Register(usn uint64, v interface{}) {
 
 // Unregister API
 func Unregister(usn uint64, v interface{}) {
-	defaultRegistry.Unregistry(usn, v)
+	defaultRegistry.Unregister(usn, v)
 }
 
 // Query API
