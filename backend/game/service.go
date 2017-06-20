@@ -16,6 +16,7 @@ import (
 
 var (
 	DefaultIPCChannelSize   = 16
+	DefaultMailboxSize      = 8
 	ErrorIncorrectFrameType = errors.New("incorrect frame type")
 	ErrorServiceNotBound    = errors.New("service not bound")
 )
@@ -89,7 +90,9 @@ func (s *server) Stream(stream proto.GameService_StreamServer) error {
 	// register user
 	session.Usn = usn
 	registry.Register(session.Usn, chIPC)
-	log.Debug("userid", session.Usn, "logged in")
+	log.Infof("usn:%v logged in", session.Usn)
+
+	session.Mailbox = make(chan []byte, DefaultMailboxSize)
 
 	// *** main message loop ***
 	for {
@@ -148,6 +151,13 @@ func (s *server) Stream(stream proto.GameService_StreamServer) error {
 			if err := stream.Send(frame); err != nil {
 				log.Error(err)
 				return err
+			}
+		case msg, ok := <-session.Mailbox:
+			if ok {
+				if err := stream.Send(&proto.Game_Frame{Type: proto.Game_Message, Message: msg}); err != nil {
+					log.Error(err)
+					return err
+				}
 			}
 		}
 	}

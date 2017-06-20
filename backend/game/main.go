@@ -18,6 +18,8 @@ const (
 	profileAddress = "0.0.0.0:6666"
 	defaultETCD    = "http://127.0.0.1:2379"
 	defaultRoot    = "/backends"
+	defaultListen  = ":10000"
+	defaultSID     = "game-0"
 )
 
 var (
@@ -40,14 +42,14 @@ func main() {
 			&cli.StringFlag{
 				Aliases: []string{"i"},
 				Name:    "id",
-				Value:   "game-0",
 				Usage:   "id of this service",
+				Value:   defaultSID,
 			},
 			&cli.StringFlag{
 				Aliases: []string{"l"},
 				Name:    "listen",
 				Usage:   "listening address:port",
-				Value:   ":10000",
+				Value:   defaultListen,
 			},
 			&cli.StringSliceFlag{
 				Aliases: []string{"e"},
