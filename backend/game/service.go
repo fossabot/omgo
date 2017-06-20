@@ -3,10 +3,9 @@ package main
 import (
 	"errors"
 	"io"
-	"strconv"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/master-g/omgo/backend/agent/handler"
+	"github.com/master-g/omgo/backend/game/handler"
 	"github.com/master-g/omgo/backend/game/types"
 	"github.com/master-g/omgo/net/packet"
 	"github.com/master-g/omgo/proto/grpc/game"
@@ -81,14 +80,14 @@ func (s *server) Stream(stream proto.GameService_StreamServer) error {
 		return ErrorIncorrectFrameType
 	}
 	// parse userID
-	userID, err := strconv.ParseUint(md["userid"][0], 10, 64)
-	if err != nil {
-		log.Error(err)
+	usn := utils.ParseUInt64(md["userid"][0], 0)
+	if usn == 0 {
+		log.Error("error while parsing usn value")
 		return ErrorIncorrectFrameType
 	}
 
 	// register user
-	session.Usn = userID
+	session.Usn = usn
 	registry.Register(session.Usn, chIPC)
 	log.Debug("userid", session.Usn, "logged in")
 
