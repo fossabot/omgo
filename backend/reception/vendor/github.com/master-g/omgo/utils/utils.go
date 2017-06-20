@@ -34,6 +34,8 @@ import (
 	"runtime/debug"
 	"time"
 
+	"strconv"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/maruel/panicparse/stack"
@@ -100,4 +102,14 @@ func GetStringSHA1Hash(text string) string {
 // Timestamp returns current unix timestamp in uint64 format
 func Timestamp() uint64 {
 	return uint64(time.Now().Unix())
+}
+
+// ParseUInt64 converts a string to uint64, if error, a default value will be returned
+func ParseUInt64(s string, defValue uint64) uint64 {
+	v, err := strconv.ParseUint(s, 10, 64)
+	if err != nil {
+		v = defValue
+	}
+
+	return v
 }
