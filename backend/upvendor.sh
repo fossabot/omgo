@@ -15,3 +15,7 @@ cd ../../
 cd ./reception/
 govendor update +v
 cd ..
+
+cd ./game/
+govendor update +v
+cd ..
