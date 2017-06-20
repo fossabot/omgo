@@ -526,9 +526,7 @@ func (t *http2Client) NewStream(ctx context.Context, callHdr *CallHdr) (_ *Strea
 			return nil, connectionErrorf(true, err, "transport: %v", err)
 		}
 	}
-	s.mu.Lock()
 	s.bytesSent = true
-	s.mu.Unlock()
 
 	if t.statsHandler != nil {
 		outHeader := &stats.OutHeader{
@@ -1011,9 +1009,7 @@ func (t *http2Client) operateHeaders(frame *http2.MetaHeadersFrame) {
 	if !ok {
 		return
 	}
-	s.mu.Lock()
 	s.bytesReceived = true
-	s.mu.Unlock()
 	var state decodeState
 	if err := state.decodeResponseHeader(frame); err != nil {
 		s.mu.Lock()
