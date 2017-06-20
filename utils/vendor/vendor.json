@@ -15,43 +15,13 @@
 			"revisionTime": "2016-10-29T20:57:26Z"
 		},
 		{
-			"checksumSHA1": "QKxSsVPufNBvN3r3ZG8/AA7uzXk=",
-			"path": "github.com/maruel/panicparse",
-			"revision": "ae43f192cef2add653fe1481a3070ed00a4a6981",
-			"revisionTime": "2017-03-28T20:03:51Z"
-		},
-		{
-			"checksumSHA1": "yi9YSmybrJab3uol8OcRE6fiT2Q=",
-			"path": "github.com/maruel/panicparse/internal",
-			"revision": "ae43f192cef2add653fe1481a3070ed00a4a6981",
-			"revisionTime": "2017-03-28T20:03:51Z"
-		},
-		{
 			"checksumSHA1": "7hln62oZPZmyqEmgXaybf9WxQ7A=",
 			"path": "github.com/maruel/panicparse/stack",
 			"revision": "ae43f192cef2add653fe1481a3070ed00a4a6981",
 			"revisionTime": "2017-03-28T20:03:51Z"
 		},
 		{
-			"checksumSHA1": "qNkx9+OTwZI6aFv7K9zuFCGODUw=",
-			"path": "github.com/mattn/go-colorable",
-			"revision": "941b50ebc6efddf4c41c8e4537a5f68a4e686b24",
-			"revisionTime": "2017-06-15T03:49:14Z"
-		},
-		{
-			"checksumSHA1": "U6lX43KDDlNOn+Z0Yyww+ZzHfFo=",
-			"path": "github.com/mattn/go-isatty",
-			"revision": "fc9e8d8ef48496124e79ae0df75490096eccf6fe",
-			"revisionTime": "2017-03-22T23:44:13Z"
-		},
-		{
-			"checksumSHA1": "CIK3BBNX3nuUQCmNqTQydNfMNKI=",
-			"path": "github.com/mgutz/ansi",
-			"revision": "9520e82c474b0a04dd04f8a40959027271bab992",
-			"revisionTime": "2017-02-06T15:57:36Z"
-		},
-		{
-			"checksumSHA1": "rIYurTMbnyUj/eMHsaxTBnTvSnY=",
+			"checksumSHA1": "Tkb1hBdBWeO7SGjixS2Hm48F6+s=",
 			"path": "golang.org/x/sys/unix",
 			"revision": "fb4cac33e3196ff7f507ab9b2d2a44b0142f5b5a",
 			"revisionTime": "2017-06-14T06:48:48Z"
