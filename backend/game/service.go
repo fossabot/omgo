@@ -7,6 +7,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/backend/game/handler"
 	"github.com/master-g/omgo/backend/game/types"
+	"github.com/master-g/omgo/keys"
 	"github.com/master-g/omgo/net/packet"
 	"github.com/master-g/omgo/proto/grpc/game"
 	"github.com/master-g/omgo/registry"
@@ -76,12 +77,12 @@ func (s *server) Stream(stream proto.GameService_StreamServer) error {
 		return ErrorIncorrectFrameType
 	}
 	// read key
-	if len(md["userid"]) == 0 {
+	if len(md[keys.Usn]) == 0 {
 		log.Error("cannot read key:userid from metadata")
 		return ErrorIncorrectFrameType
 	}
 	// parse userID
-	usn := utils.ParseUInt64(md["userid"][0], 0)
+	usn := utils.ParseUInt64(md[keys.Usn][0], 0)
 	if usn == 0 {
 		log.Error("error while parsing usn value")
 		return ErrorIncorrectFrameType

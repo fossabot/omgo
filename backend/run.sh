@@ -20,6 +20,11 @@ cd ./dbservice/
 sh ./run.sh
 cd ../../
 
+# DB service
+cd ./game/
+sh ./run.sh
+cd ..
+
 # Agent
 cd ./agent/
 sh ./run.sh

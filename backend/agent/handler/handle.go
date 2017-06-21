@@ -12,6 +12,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/backend/agent/types"
+	"github.com/master-g/omgo/keys"
 	"github.com/master-g/omgo/net/packet"
 	pbdb "github.com/master-g/omgo/proto/grpc/db"
 	pbgame "github.com/master-g/omgo/proto/grpc/game"
@@ -188,7 +189,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	cli := pbgame.NewGameServiceClient(conn)
 
 	// open game server stream
-	ctx := metadata.NewContext(context.Background(), metadata.New(map[string]string{"usn": fmt.Sprint(session.Usn)}))
+	ctx := metadata.NewContext(context.Background(), metadata.New(map[string]string{keys.Usn: fmt.Sprint(session.Usn)}))
 	stream, err := cli.Stream(ctx)
 	if err != nil {
 		log.Error(err)
