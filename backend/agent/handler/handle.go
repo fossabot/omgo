@@ -134,7 +134,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	}
 
 	// validate user token
-	dbConn := services.GetServiceWithID("dbservice", DefaultDBSID)
+	dbConn := services.GetServiceWithID(keys.SidDB, DefaultDBSID)
 	if dbConn == nil {
 		log.Errorf("cannot get db service:", DefaultDBSID)
 		return response(pc.Cmd_LOGIN_RSP, rsp)
