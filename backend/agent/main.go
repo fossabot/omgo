@@ -27,7 +27,7 @@ const (
 	profileAddress       = "0.0.0.0:6666"
 	defaultListen        = ":8888"
 	defaultETCD          = "http://127.0.0.1:2379"
-	defaultRoot          = keys.SidBackends
+	defaultRoot          = keys.Backends
 	defaultReadDeadLine  = 3 * time.Minute
 	defaultSockBufSize   = 32*1024 - 1
 	defaultTxQueueLength = 128
@@ -35,7 +35,7 @@ const (
 )
 
 var (
-	defaultServices = []string{"snowflake", "dbservice", "game"}
+	defaultServices = []string{keys.SidSnowflake, keys.SidDB, keys.SidGame}
 )
 
 func main() {

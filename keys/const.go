@@ -4,8 +4,8 @@ const (
 	Backends = "backends"
 	Usn      = "usn"
 
-	SidAgent     = "agent"
-	SidDB        = "dbservice"
-	SidGame      = "game"
-	SidSnowflake = "snowflake"
+	ServiceAgent     = "agent"
+	ServiceDB        = "dbservice"
+	ServiceGame      = "game"
+	ServiceSnowflake = "snowflake"
 )
