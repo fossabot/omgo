@@ -13,10 +13,10 @@ message C2SEnterRoomReq {
 }
 
 message S2CEnterRoomRsp {
-    RspHeader header = 1;
+    common.RspHeader header = 1;
 }
 
 message C2SCreateRoomReq {
     RoomType room_type = 1;
-    int room_cards     = 2;
+    int32 room_cards   = 2;
 }
