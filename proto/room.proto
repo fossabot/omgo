@@ -4,14 +4,19 @@ import "common.proto";
 option go_package = "github.com/master-g/omgo/proto/pb/room";
 
 enum RoomType {
-  ROOM_NORMAL = 0;
-  ROOM_BOX = 1;
+    ROOM_NORMAL = 0;
+    ROOM_BOX    = 1;
 }
 
 message C2SEnterRoomReq {
-  RoomType room_type = 1;
+    RoomType room_type = 1;
 }
 
 message S2CEnterRoomRsp {
-  RspHeader header = 1;
+    RspHeader header = 1;
+}
+
+message C2SCreateRoomReq {
+    RoomType room_type = 1;
+    int room_cards     = 2;
 }

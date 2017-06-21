@@ -5,5 +5,16 @@ BasedOnStyle: LLVM
 ---
 Language: Proto
 IndentWidth: 4
+AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: true
-AlignConsecutiveDeclarations: true
+AlignOperands: true
+AlignTrailingComments: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: false
+BreakBeforeBraces: Attach
+DerivePointerAlignment: false
+IndentCaseLabels: false
+KeepEmptyLinesAtTheStartOfBlocks: true
+PointerAlignment: Left
+SpacesBeforeTrailingComments: 1

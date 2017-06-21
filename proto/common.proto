@@ -33,9 +33,9 @@ enum ResultCode {
 }
 
 message RspHeader {
-    ResultCode status    = 1;
-    fixed64    timestamp = 2;
-    string     msg       = 3;
+    int32 status      = 1;
+    fixed64 timestamp = 2;
+    string msg        = 3;
 }
 
 enum Gender {
@@ -46,13 +46,13 @@ enum Gender {
 
 message UserBasicInfo {
     fixed64 usn        = 1;  // user serial no. internal only
-    uint64  uid        = 2;  // id
+    uint64 uid         = 2;  // id
     fixed64 birthday   = 3;  // EPOCH
-    Gender  gender     = 4;  // gender
-    string  nickname   = 5;  // name
-    string  email      = 6;  // email address
-    string  avatar     = 7;  // avatar url
-    string  country    = 8;  // country / region
+    Gender gender      = 4;  // gender
+    string nickname    = 5;  // name
+    string email       = 6;  // email address
+    string avatar      = 7;  // avatar url
+    string country     = 8;  // country / region
     fixed64 since      = 9;  // register timestamp
     fixed64 last_login = 10; // last login timestamp
 }
@@ -61,18 +61,20 @@ message UserBasicInfo {
 // HTTP login
 
 message NetworkConfig {
-    int32  id   = 1; // config id
+    int32 id    = 1; // config id
     string desc = 2; // description
     string ip   = 3; // host ip
-    int32  port = 4; // port
+    int32 port  = 4; // port
 }
 
-message AppConfig { repeated NetworkConfig network_cfg = 1; }
+message AppConfig {
+    repeated NetworkConfig network_cfg = 1;
+}
 
 message LoginRsp {
-    RspHeader     header    = 1;
-    string        token     = 2;
-    AppConfig     config    = 3;
+    RspHeader header        = 1;
+    string token            = 2;
+    AppConfig config        = 3;
     UserBasicInfo user_info = 4;
 }
 
@@ -85,18 +87,20 @@ message C2SGetSeedReq {
 }
 
 message S2CGetSeedRsp {
-    RspHeader header    = 1;
-    bytes     send_seed = 2; // public key for client to encrypt sending data
-    bytes     recv_seed = 3; // public key for client to decrypt receive data
+    RspHeader header = 1;
+    bytes send_seed  = 2; // public key for client to encrypt sending data
+    bytes recv_seed  = 3; // public key for client to decrypt receive data
 }
 
 message C2SLoginReq {
     fixed64 timestamp = 1; // for random
     fixed64 usn       = 2;
-    string  token     = 3;
+    string token      = 3;
 }
 
-message S2CLoginRsp { RspHeader header = 1; }
+message S2CLoginRsp {
+    RspHeader header = 1;
+}
 
 enum KickReason {
     KICK_NO_REASON         = 0;
@@ -107,7 +111,7 @@ enum KickReason {
 }
 
 message S2CKickNotify {
-    fixed64    timestamp = 1;
-    KickReason reason    = 2;
-    string     msg       = 3;
+    fixed64 timestamp = 1;
+    KickReason reason = 2;
+    string msg        = 3;
 }
