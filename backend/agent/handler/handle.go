@@ -134,7 +134,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	}
 
 	// validate user token
-	dbConn := services.GetServiceWithID(keys.SidDB, DefaultDBSID)
+	dbConn := services.GetServiceWithID(keys.ServiceDB, DefaultDBSID)
 	if dbConn == nil {
 		log.Errorf("cannot get db service:", DefaultDBSID)
 		return response(pc.Cmd_LOGIN_RSP, rsp)
@@ -180,7 +180,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	session.GSID = DefaultGSID
 	session.SetFlagAuth()
 
-	conn := services.GetServiceWithID(keys.SidGame, session.GSID)
+	conn := services.GetServiceWithID(keys.ServiceGame, session.GSID)
 	if conn == nil {
 		log.Error("cannot get game service:", session.GSID)
 		rsp.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
