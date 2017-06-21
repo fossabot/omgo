@@ -23,7 +23,7 @@ const (
 )
 
 var (
-	defaultServices = []string{"db"}
+	defaultServices = []string{"dbs"}
 )
 
 func main() {
