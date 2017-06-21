@@ -8,6 +8,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	"github.com/master-g/omgo/backend/reception/handler"
+	"github.com/master-g/omgo/keys"
 	"github.com/master-g/omgo/services"
 	"github.com/master-g/omgo/utils"
 	"gopkg.in/urfave/cli.v2"
@@ -16,7 +17,7 @@ import (
 const (
 	profileAddress      = "0.0.0.0:6666"
 	defaultETCD         = "http://127.0.0.1:2379"
-	defaultRoot         = "backends"
+	defaultRoot         = keys.Backends
 	defaultListen       = ":8080"
 	defaultReadTimeout  = 15 * time.Second
 	defaultWriteTimeout = 15 * time.Second
@@ -89,7 +90,7 @@ func main() {
 			log.Println("write timeout:", wt)
 
 			services.Init(etcdRoot, etcdHosts, serviceNames)
-			handler.Init(etcdRoot, etcdHosts, "agent")
+			handler.Init(etcdRoot, etcdHosts, keys.ServiceAgent)
 
 			startHTTP(listen, rt, wt)
 
