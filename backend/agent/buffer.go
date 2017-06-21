@@ -8,6 +8,7 @@ import (
 	"github.com/master-g/omgo/backend/agent/types"
 	"github.com/master-g/omgo/net/packet"
 	"github.com/master-g/omgo/utils"
+	"github.com/master-g/omgo/keys"
 )
 
 // PIPELINE #3: buffer
@@ -42,7 +43,7 @@ func (buf *Buffer) send(session *types.Session, data []byte) {
 	case buf.pending <- data:
 	default:
 		// packet will be dropped if it exceeds txQueueLength
-		log.WithFields(log.Fields{"usn": session.Usn, "ip": session.IP}).Warning("pending full")
+		log.WithFields(log.Fields{keys.Usn: session.Usn, "ip": session.IP}).Warning("pending full")
 	}
 	return
 }

@@ -1,10 +1,11 @@
 package keys
 
 const (
+	Backends = "backends"
+	Usn      = "usn"
+
 	SidAgent     = "agent"
-	SidBackends  = "backends"
 	SidDB        = "dbservice"
 	SidGame      = "game"
 	SidSnowflake = "snowflake"
-	Usn          = "usn"
 )
