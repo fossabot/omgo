@@ -1,0 +1,17 @@
+syntax = "proto3";
+package proto.room;
+import "common.proto";
+option go_package = "github.com/master-g/omgo/proto/pb/room";
+
+enum RoomType {
+  ROOM_NORMAL = 0;
+  ROOM_BOX = 1;
+}
+
+message C2SEnterRoomReq {
+  RoomType room_type = 1;
+}
+
+message S2CEnterRoomRsp {
+  RspHeader header = 1;
+}
