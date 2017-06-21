@@ -33,7 +33,7 @@ type server struct {
 }
 
 func setRspHeader(header *pc.RspHeader) *pc.RspHeader {
-	header.Status = pc.ResultCode_RESULT_OK
+	header.Status = int32(pc.ResultCode_RESULT_OK)
 	header.Timestamp = utils.Timestamp()
 	return header
 }
@@ -82,7 +82,7 @@ func (s *server) UserQuery(ctx context.Context, key *proto.DB_UserKey) (ret *pro
 
 	err = regulateUserKey(key)
 	if err != nil {
-		ret.Result.Status = pc.ResultCode_RESULT_INVALID
+		ret.Result.Status = int32(pc.ResultCode_RESULT_INVALID)
 		ret.Result.Msg = fmt.Sprintf("err:%v", err)
 		return
 	}
@@ -92,7 +92,7 @@ func (s *server) UserQuery(ctx context.Context, key *proto.DB_UserKey) (ret *pro
 
 	if err != nil {
 		log.Errorf("error while query user:%v", err)
-		ret.Result.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		ret.Result.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		ret.Result.Msg = fmt.Sprintf("error:%v", err)
 	}
 
@@ -110,7 +110,7 @@ func (s *server) UserUpdateInfo(ctx context.Context, userBasicInfo *pc.UserBasic
 
 	if err != nil {
 		log.Errorf("error while update user basic:%v", err)
-		ret.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		ret.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		ret.Msg = fmt.Sprintf("error:%v", err)
 	}
 
@@ -127,7 +127,7 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 	// check for existed user by email address
 	email, valid := checkEmail(request.GetInfo().GetEmail())
 	if !valid {
-		ret.Result.Status = pc.ResultCode_RESULT_INVALID
+		ret.Result.Status = int32(pc.ResultCode_RESULT_INVALID)
 		ret.Result.Msg = fmt.Sprintf("user:%v email invalid", request.Info)
 		log.Info(ret.Result.Msg)
 		return
@@ -136,7 +136,7 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 	// user already existed
 	if ret.Info.Usn != 0 {
 		// email already registered
-		ret.Result.Status = pc.ResultCode_RESULT_INVALID
+		ret.Result.Status = int32(pc.ResultCode_RESULT_INVALID)
 		ret.Result.Msg = fmt.Sprintf("user:%v already registered", ret.Info.Email)
 		ret.Info = nil
 		log.Info(ret.Result.Msg)
@@ -146,7 +146,7 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 	// allocate new usn and uid
 	usn, uid, err := s.db.getUniqueID()
 	if err != nil {
-		ret.Result.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		ret.Result.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		ret.Result.Msg = fmt.Sprintf("error while get uniqueID:%v", err)
 		log.Errorf(ret.Result.Msg)
 		return
@@ -184,7 +184,7 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 	setRspHeader(ret.Result)
 	// basic check
 	if request.GetInfo().GetEmail() == "" || len(request.GetSecret()) == 0 {
-		ret.Result.Status = pc.ResultCode_RESULT_INVALID
+		ret.Result.Status = int32(pc.ResultCode_RESULT_INVALID)
 		log.Errorf("incoming invalid login request:%v", request)
 		return
 	}
@@ -192,7 +192,7 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 	// query user
 	ret.Info, err = s.db.queryUserBasicInfo(&proto.DB_UserKey{Email: request.GetInfo().GetEmail()})
 	if err != nil {
-		ret.Result.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		ret.Result.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		ret.Info = nil
 		log.Errorf("query user failed")
 		return
@@ -201,14 +201,14 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 	// query user extra info
 	userExtra, err := s.db.queryUserExtraInfo(ret.Info.Usn)
 	if err != nil {
-		ret.Result.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		ret.Result.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		ret.Info = nil
 		log.Errorf("query user extra failed:%v", ret.Info)
 		return
 	}
 
 	if bytes.Compare(userExtra.Secret, request.GetSecret()) != 0 {
-		ret.Result.Status = pc.ResultCode_RESULT_INVALID
+		ret.Result.Status = int32(pc.ResultCode_RESULT_INVALID)
 		ret.Info = nil
 		log.Info("login with invalid credentials")
 		return
@@ -237,7 +237,7 @@ func (s *server) UserLogout(ctx context.Context, request *proto.DB_UserLogoutReq
 	setRspHeader(ret)
 
 	if request.Usn == 0 || len(request.GetToken()) == 0 {
-		ret.Status = pc.ResultCode_RESULT_INVALID
+		ret.Status = int32(pc.ResultCode_RESULT_INVALID)
 		ret.Msg = "session invalid"
 		return
 	}
@@ -245,12 +245,12 @@ func (s *server) UserLogout(ctx context.Context, request *proto.DB_UserLogoutReq
 	userExtra, err := s.db.queryUserExtraInfo(request.Usn)
 	if err != nil {
 		log.Errorf("unable to find user extra info:%v", err)
-		ret.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		ret.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		ret.Msg = "internal error"
 		return
 	}
 	if strings.Compare(userExtra.GetToken(), request.GetToken()) != 0 {
-		ret.Status = pc.ResultCode_RESULT_INVALID
+		ret.Status = int32(pc.ResultCode_RESULT_INVALID)
 		ret.Msg = "session invalid"
 		return
 	}

@@ -29,7 +29,7 @@ var (
 
 func setRspHeader(rsp *pc.RspHeader) *pc.RspHeader {
 	rsp.Timestamp = utils.Timestamp()
-	rsp.Status = pc.ResultCode_RESULT_OK
+	rsp.Status = int32(pc.ResultCode_RESULT_OK)
 	return rsp
 }
 
@@ -117,12 +117,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	secretBytes, err := hex.DecodeString(secret)
 
 	if email == "" || secret == "" || secretBytes == nil || err != nil {
-		ret.Header.Status = pc.ResultCode_RESULT_INVALID
+		ret.Header.Status = int32(pc.ResultCode_RESULT_INVALID)
 		ret.Header.Msg = "invalid parameter(s)"
 	} else {
 		conn := services.GetServiceWithID("dbservice", defaultDBSID)
 		if conn == nil {
-			ret.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+			ret.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 			ret.Header.Msg = "interal error"
 			log.Error("cannot get db service:", defaultDBSID)
 			return
@@ -134,8 +134,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 		cli := pb.NewDBServiceClient(conn)
 		loginRsp, err := cli.UserLogin(context.Background(), userLoginReq)
-		if err != nil || loginRsp.Result.Status != pc.ResultCode_RESULT_OK {
-			ret.Header.Status = pc.ResultCode_RESULT_INVALID
+		if err != nil || loginRsp.Result.Status != int32(pc.ResultCode_RESULT_OK) {
+			ret.Header.Status = int32(pc.ResultCode_RESULT_INVALID)
 			ret.Header.Msg = "login failed"
 			log.Infof("login failed: %v", err)
 			return
@@ -192,7 +192,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	registerReq.Secret = secretBytes
 
 	if email == "" || nick == "" || password == "" || country == "" {
-		ret.Header.Status = pc.ResultCode_RESULT_INVALID
+		ret.Header.Status = int32(pc.ResultCode_RESULT_INVALID)
 		ret.Header.Msg = "invalid parameter(s)"
 		if err != nil {
 			log.Errorf("error while register user:%v", err)
@@ -200,7 +200,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	} else {
 		conn := services.GetServiceWithID("dbservice", defaultDBSID)
 		if conn == nil {
-			ret.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+			ret.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 			ret.Header.Msg = "interal error"
 			log.Error("cannot get db service:", defaultDBSID)
 			return
@@ -210,8 +210,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 		cli := pb.NewDBServiceClient(conn)
 		registerRsp, err := cli.UserRegister(context.Background(), registerReq)
-		if err != nil || registerRsp.Result.Status != pc.ResultCode_RESULT_OK {
-			ret.Header.Status = pc.ResultCode_RESULT_INVALID
+		if err != nil || registerRsp.Result.Status != int32(pc.ResultCode_RESULT_OK) {
+			ret.Header.Status = int32(pc.ResultCode_RESULT_INVALID)
 			ret.Header.Msg = "register failed"
 			log.Infof("register failed: %v", err)
 			return

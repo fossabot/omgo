@@ -161,7 +161,7 @@ func main() {
 
 			json.NewDecoder(resp.Body).Decode(&loginRsp)
 
-			if loginRsp.Header.Status != pc.ResultCode_RESULT_OK {
+			if loginRsp.Header.Status != int32(pc.ResultCode_RESULT_OK) {
 				log.Errorf("error while login:%v", loginRsp.Header.Msg)
 				return
 			}
@@ -241,7 +241,7 @@ func main() {
 
 			json.NewDecoder(resp.Body).Decode(&loginRsp)
 
-			if loginRsp.Header.Status != pc.ResultCode_RESULT_OK {
+			if loginRsp.Header.Status != int32(pc.ResultCode_RESULT_OK) {
 				log.Errorf("error while login:%v", loginRsp.Header.Msg)
 				return
 			}

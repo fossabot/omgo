@@ -39,7 +39,7 @@ func response(cmd pc.Cmd, msg proto.Message) []byte {
 // generate a common.RspHeader
 func genRspHeader() *pc.RspHeader {
 	header := &pc.RspHeader{
-		Status:    pc.ResultCode_RESULT_OK,
+		Status:    int32(pc.ResultCode_RESULT_OK),
 		Timestamp: uint64(time.Now().Unix()),
 	}
 
@@ -69,7 +69,7 @@ func ProcGetSeedReq(session *types.Session, reader *packet.RawPacket) []byte {
 
 	if err := proto.Unmarshal(marshalPb, req); err != nil {
 		log.Errorf("invalid protobuf :%v", err)
-		rsp.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		return response(pc.Cmd_GET_SEED_RSP, rsp)
 	}
 
@@ -82,13 +82,13 @@ func ProcGetSeedReq(session *types.Session, reader *packet.RawPacket) []byte {
 	encoder, err := rc4.NewCipher([]byte(fmt.Sprintf("%v%v", Salt, key2)))
 	if err != nil {
 		log.Error(err)
-		rsp.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		return response(pc.Cmd_GET_SEED_RSP, rsp)
 	}
 	decoder, err := rc4.NewCipher([]byte(fmt.Sprintf("%v%v", Salt, key1)))
 	if err != nil {
 		log.Error(err)
-		rsp.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		return response(pc.Cmd_GET_SEED_RSP, rsp)
 	}
 	session.Encoder = encoder
@@ -105,7 +105,7 @@ func ProcGetSeedReq(session *types.Session, reader *packet.RawPacket) []byte {
 func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	rsp := &pc.S2CLoginRsp{Header: genRspHeader()}
 	rsp.Header.Timestamp = utils.Timestamp()
-	rsp.Header.Status = pc.ResultCode_RESULT_INVALID
+	rsp.Header.Status = int32(pc.ResultCode_RESULT_INVALID)
 
 	// can only login after key exchange
 	if !session.IsFlagEncryptedSet() {
@@ -145,13 +145,13 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	dbRsp, err := dbClient.UserExtraInfoQuery(context.Background(), userKey)
 	if err != nil {
 		log.Errorf("error while query user extra info:%v", usn)
-		rsp.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		return response(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	if dbRsp.Usn == 0 || dbRsp.GetToken() == "" {
 		log.Errorf("user extra info not found:%v", usn)
-		rsp.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		return response(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
@@ -183,7 +183,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	conn := services.GetServiceWithID(keys.ServiceGame, session.GSID)
 	if conn == nil {
 		log.Error("cannot get game service:", session.GSID)
-		rsp.Header.Status = pc.ResultCode_RESULT_INTERNAL_ERROR
+		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		return response(pc.Cmd_LOGIN_RSP, rsp)
 	}
 	cli := pbgame.NewGameServiceClient(conn)
@@ -218,7 +218,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	go fetcherTask(session)
 
 	// login success
-	rsp.Header.Status = pc.ResultCode_RESULT_OK
+	rsp.Header.Status = int32(pc.ResultCode_RESULT_OK)
 	return response(pc.Cmd_LOGIN_RSP, rsp)
 }
 
