@@ -4,12 +4,34 @@ import "common.proto";
 option go_package = "github.com/master-g/omgo/proto/pb/room";
 
 enum RoomType {
-    ROOM_NORMAL = 0;
-    ROOM_BOX    = 1;
+    ROOM_RESERVED = 0;
+    ROOM_NORMAL   = 1;
+    ROOM_BOX      = 2;
+}
+
+enum PlayType {
+    PLAY_TYPE_RESERVED = 0;
+    PLAY_TYPE_RACE     = 1; // qiang di zhu
+    PLAY_TYPE_CALL     = 2; // jiao fen
+}
+
+message RoomInfo {
+    fixed64 id         = 1;
+    fixed64 owner      = 2;
+    RoomType room_type = 3;
+    PlayType play_type = 4;
+    string title       = 5;
+    string desc        = 6;
+    fixed64 since      = 7;
+    bool observable    = 8;
+    int32 total_rounds = 9;
+    int32 left_rounds  = 10;
+    int32 boom_limit   = 11;
 }
 
 message C2SEnterRoomReq {
-    RoomType room_type = 1;
+    RoomType type   = 1;
+    string password = 2;
 }
 
 message S2CEnterRoomRsp {
@@ -17,6 +39,7 @@ message S2CEnterRoomRsp {
 }
 
 message C2SCreateRoomReq {
-    RoomType room_type = 1;
-    int32 room_cards   = 2;
+    RoomType type   = 1;
+    int32 card_num  = 2;
+    string password = 3;
 }
