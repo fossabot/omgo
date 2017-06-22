@@ -4,34 +4,57 @@ import "common.proto";
 option go_package = "github.com/master-g/omgo/proto/pb/room";
 
 enum RoomType {
-    ROOM_RESERVED = 0;
-    ROOM_NORMAL   = 1;
-    ROOM_BOX      = 2;
+    ROOM_RESERVED = 0; // 保留值
+    ROOM_NORMAL   = 1; // 普通房
+    ROOM_PRIVATE  = 2; // 私人房
 }
 
 enum PlayType {
-    PLAY_TYPE_RESERVED = 0;
-    PLAY_TYPE_RACE     = 1; // qiang di zhu
-    PLAY_TYPE_CALL     = 2; // jiao fen
+    PLAY_TYPE_RESERVED = 0; // 保留值
+    PLAY_TYPE_RACE     = 1; // 抢地主
+    PLAY_TYPE_CALL     = 2; // 叫分
 }
 
+enum EnterRoomResult {
+    ENTER_ROOM_OK                  = 0; // 进入房间成功
+    ENTER_ROOM_INSUFFICIENT_CREDIT = 1; // 代币不足
+    ENTER_ROOM_WRONG_PASSWORD      = 2; // 房间密码错误
+    ENTER_ROOM_NOT_EXIST           = 3; // 房间不存在
+    ENTER_ROOM_FULL                = 4; // 房间已满
+    ENTER_ROOM_FAIL_NO_OBSERVE     = 5; // 房间已满且禁止观战
+}
+
+enum CreateRoomResult {
+    CREATE_ROOM_OK               = 0; // 创建房间成功
+    CREATE_ROOM_INVALID_PASSWORD = 1; // 无效的密码(过短过长或包含无效字符)
+    CREATE_ROOM_INSUFFICIENT_CARD = 2; // 房卡不足
+    CREATE_ROOM_INVALID_PARAM     = 3; // 创建参数错误 (超额房卡等)
+}
+
+// desc  : 房间详细信息
 message RoomInfo {
-    fixed64 id         = 1;
-    fixed64 owner      = 2;
-    RoomType room_type = 3;
-    PlayType play_type = 4;
-    string title       = 5;
-    string desc        = 6;
-    fixed64 since      = 7;
-    bool observable    = 8;
-    int32 total_rounds = 9;
-    int32 left_rounds  = 10;
-    int32 boom_limit   = 11;
+    fixed64 id               = 1;  // 房间 id
+    fixed64 owner            = 2;  // 房间创建者 usn
+    RoomType room_type       = 3;  // 房间类型
+    PlayType play_type       = 4;  // 游戏类型
+    string title             = 5;  // 房间标题
+    string desc              = 6;  // 房间描述
+    fixed64 since            = 7;  // 房间创建时间
+    bool observable          = 8;  // 是否允许观战
+    int32 total_rounds       = 9;  // 总游戏局数
+    int32 left_rounds        = 10; // 剩余游戏局数
+    int32 boom_limit         = 11; // 炸弹限制
+    repeated fixed64 players = 12; // 玩家列表
+    bool secure              = 13; // 是否携带安全信息
+    string address           = 14; // 创建者地理位置信息
+    string longitude         = 15; // 创建者经度
+    string latitude          = 16; // 创建者纬度
 }
 
 message C2SEnterRoomReq {
     RoomType type   = 1;
-    string password = 2;
+    fixed64 room_id = 2;
+    string password = 3;
 }
 
 message S2CEnterRoomRsp {

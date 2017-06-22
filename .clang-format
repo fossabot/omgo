@@ -18,3 +18,4 @@ IndentCaseLabels: false
 KeepEmptyLinesAtTheStartOfBlocks: true
 PointerAlignment: Left
 SpacesBeforeTrailingComments: 1
+SpaceBeforeAssignmentOperators: true
