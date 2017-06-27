@@ -7,35 +7,36 @@ option go_package = "github.com/master-g/omgo/proto/pb/common";
 // C -> S : odd
 enum Cmd {
     RESERVED       = 0;
-    HEART_BEAT_REQ = 0x1;
-    HEART_BEAT_RSP = 0x2;
-    KICK_NOTIFY    = 0x4;
-    GET_SEED_REQ   = 0x11;
-    GET_SEED_RSP   = 0x12;
-    LOGIN_REQ      = 0x21;
-    LOGIN_RSP      = 0x22;
-    LOGOUT_REQ     = 0x33;
-    LOGOUT_RSP     = 0x34;
-    OFFLINE_REQ    = 0x87;
-    PING_REQ       = 0x1001;
-    PING_RSP       = 0x1002;
+    HEART_BEAT_REQ = 0x1;    // C->S heartbeat request
+    HEART_BEAT_RSP = 0x2;    // S->C heartbeat response
+    KICK_NOTIFY    = 0x4;    // S->C kick notification
+    GET_SEED_REQ   = 0x11;   // C->S cryption key reqeust
+    GET_SEED_RSP   = 0x12;   // S->C cryption key response
+    LOGIN_REQ      = 0x21;   // C->S login request
+    LOGIN_RSP      = 0x22;   // S->C login reponse
+    LOGOUT_REQ     = 0x33;   // C->S logout request
+    LOGOUT_RSP     = 0x34;   // S->C logout response
+    OFFLINE_REQ    = 0x87;   // C->S offline request
+    PING_REQ       = 0x1001; // C->S ping request
+    PING_RSP       = 0x1002; // S->C ping response
 
     CMD_COMMON_END = 0x10000;
 }
 
 enum ResultCode {
-    RESULT_OK             = 0;
-    RESULT_TIMEOUT        = 1;
-    RESULT_UNAUTH         = 2;
-    RESULT_UNKNOWN_CMD    = 3;
-    RESULT_INVALID        = 4;
-    RESULT_INTERNAL_ERROR = 5;
+    RESULT_OK             = 0; // request proceed with no error
+    RESULT_TIMEOUT        = 1; // request timeout
+    RESULT_UNAUTH         = 2; // request needs authentication first
+    RESULT_UNKNOWN_CMD    = 3; // invalid command code
+    RESULT_INVALID        = 4; // parameter,service, data, whatever invalid
+    RESULT_INTERNAL_ERROR = 5; // server internal error
 }
 
+/// Common Response Header
 message RspHeader {
-    int32 status      = 1;
-    fixed64 timestamp = 2;
-    string msg        = 3;
+    int32   status    = 1; /// see ResultCode and other status definitions
+    fixed64 timestamp = 2; /// server timestamp
+    string  msg       = 3; /// extra message returned by server
 }
 
 enum Gender {
@@ -44,15 +45,16 @@ enum Gender {
     GENDER_MALE    = 2;
 }
 
+/// User Basic Information
 message UserBasicInfo {
     fixed64 usn        = 1;  // user serial no. internal only
-    uint64 uid         = 2;  // id
+    uint64  uid        = 2;  // id
     fixed64 birthday   = 3;  // EPOCH
-    Gender gender      = 4;  // gender
-    string nickname    = 5;  // name
-    string email       = 6;  // email address
-    string avatar      = 7;  // avatar url
-    string country     = 8;  // country / region
+    Gender  gender     = 4;  // gender
+    string  nickname   = 5;  // name
+    string  email      = 6;  // email address
+    string  avatar     = 7;  // avatar url
+    string  country    = 8;  // country / region
     fixed64 since      = 9;  // register timestamp
     fixed64 last_login = 10; // last login timestamp
 }
@@ -61,10 +63,10 @@ message UserBasicInfo {
 // HTTP login
 
 message NetworkConfig {
-    int32 id    = 1; // config id
+    int32  id   = 1; // config id
     string desc = 2; // description
     string ip   = 3; // host ip
-    int32 port  = 4; // port
+    int32  port = 4; // port
 }
 
 message AppConfig {
@@ -72,9 +74,9 @@ message AppConfig {
 }
 
 message LoginRsp {
-    RspHeader header        = 1;
-    string token            = 2;
-    AppConfig config        = 3;
+    RspHeader     header    = 1;
+    string        token     = 2;
+    AppConfig     config    = 3;
     UserBasicInfo user_info = 4;
 }
 
@@ -87,15 +89,15 @@ message C2SGetSeedReq {
 }
 
 message S2CGetSeedRsp {
-    RspHeader header = 1;
-    bytes send_seed  = 2; // public key for client to encrypt sending data
-    bytes recv_seed  = 3; // public key for client to decrypt receive data
+    RspHeader header    = 1;
+    bytes     send_seed = 2; // public key for client to encrypt sending data
+    bytes     recv_seed = 3; // public key for client to decrypt receive data
 }
 
 message C2SLoginReq {
     fixed64 timestamp = 1; // for random
     fixed64 usn       = 2;
-    string token      = 3;
+    string  token     = 3;
 }
 
 message S2CLoginRsp {
@@ -111,7 +113,7 @@ enum KickReason {
 }
 
 message S2CKickNotify {
-    fixed64 timestamp = 1;
-    KickReason reason = 2;
-    string msg        = 3;
+    fixed64    timestamp = 1;
+    KickReason reason    = 2;
+    string     msg       = 3;
 }
