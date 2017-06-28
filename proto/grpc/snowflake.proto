@@ -4,10 +4,8 @@ package proto;
 
 // snowflake service definition
 service SnowflakeService {
-    rpc Next(Snowflake.Key)
-        returns (Snowflake.Value); // Generate next serial number
-    rpc GetUUID(Snowflake.NullRequest)
-        returns (Snowflake.UUID); // UUID generator
+    rpc Next(Snowflake.Key) returns (Snowflake.Value);           // Generate next serial number
+    rpc GetUUID(Snowflake.NullRequest) returns (Snowflake.UUID); // UUID generator
 }
 
 message Snowflake {

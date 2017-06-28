@@ -45,8 +45,8 @@ enum Gender {
     GENDER_MALE    = 2;
 }
 
-/// User Basic Information
-message UserBasicInfo {
+/// User Information
+message UserInfo {
     fixed64 usn        = 1;  /// user serial no. internal only
     uint64  uid        = 2;  /// id
     fixed64 birthday   = 3;  /// EPOCH
@@ -59,7 +59,13 @@ message UserBasicInfo {
     fixed64 last_login = 10; /// last login timestamp
 }
 
-//------------------------------------------------------------------------------
+message Location {
+    string longitude = 1;
+    string latitude  = 2;
+    string address   = 3;
+}
+
+//-----------------------------------------------------------------------------
 /// HTTP
 /// the messages in this section is used only for generating HTTP responses
 /// SHOULD NOT BE USED in any other socket services
@@ -81,13 +87,13 @@ message AppConfig {
 
 /// HTTP Login Response
 message LoginRsp {
-    RspHeader     header    = 1;
-    string        token     = 2;
-    AppConfig     config    = 3;
-    UserBasicInfo user_info = 4;
+    RspHeader header    = 1;
+    string    token     = 2;
+    AppConfig config    = 3;
+    UserInfo  user_info = 4;
 }
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 /// Agent
 
 /// Cryption Key Request
@@ -118,14 +124,14 @@ message S2CLoginRsp {
 
 enum KickReason {
     KICK_NO_REASON         = 0;
-    KICK_LOGIN_ELSEWHERE   = 1;
-    KICK_SESSION_EXPIRED   = 2;
-    KICK_ILLEGAL_OPERATION = 3;
-    KICK_BANNED            = 4;
+    KICK_LOGIN_ELSEWHERE   = 1; /// User login from elsewhere
+    KICK_SESSION_EXPIRED   = 2; /// ...
+    KICK_ILLEGAL_OPERATION = 3; ///
+    KICK_BANNED            = 4; /// User gets banned
 }
 
 message S2CKickNotify {
-    fixed64    timestamp = 1;
-    KickReason reason    = 2;
-    string     msg       = 3;
+    fixed64    timestamp = 1; /// Server timestamp
+    KickReason reason    = 2; /// Kick reason
+    string     msg       = 3; /// Kick message
 }

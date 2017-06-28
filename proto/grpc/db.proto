@@ -10,8 +10,7 @@ service DBService {
     rpc UserQuery(DB.UserKey) returns (DB.UserQueryResponse);
 
     // update user info
-    rpc UserUpdateInfo(proto.common.UserBasicInfo)
-        returns (proto.common.RspHeader);
+    rpc UserUpdateInfo(proto.common.UserInfo) returns (proto.common.RspHeader);
 
     // register
     rpc UserRegister(DB.UserRegisterRequest) returns (DB.UserRegisterResponse);
@@ -40,26 +39,26 @@ message DB {
         string  token  = 3; // access token
     }
     message UserQueryResponse {
-        proto.common.RspHeader     result = 1;
-        proto.common.UserBasicInfo info   = 2;
+        proto.common.RspHeader result = 1;
+        proto.common.UserInfo  info   = 2;
     }
     message UserRegisterRequest {
-        proto.common.UserBasicInfo info   = 1;
-        bytes                      secret = 2;
+        proto.common.UserInfo info   = 1;
+        bytes                 secret = 2;
     }
     message UserRegisterResponse {
-        proto.common.RspHeader     result = 1;
-        proto.common.UserBasicInfo info   = 2;
-        string                     token  = 3;
+        proto.common.RspHeader result = 1;
+        proto.common.UserInfo  info   = 2;
+        string                 token  = 3;
     }
     message UserLoginRequest {
-        proto.common.UserBasicInfo info   = 1;
-        bytes                      secret = 2;
+        proto.common.UserInfo info   = 1;
+        bytes                 secret = 2;
     }
     message UserLoginResponse {
-        proto.common.RspHeader     result = 1;
-        proto.common.UserBasicInfo info   = 2;
-        string                     token  = 3;
+        proto.common.RspHeader result = 1;
+        proto.common.UserInfo  info   = 2;
+        string                 token  = 3;
     }
     message UserLogoutRequest {
         uint64 usn   = 1;

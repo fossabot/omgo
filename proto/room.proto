@@ -9,10 +9,10 @@ enum RoomType {
     ROOM_PRIVATE  = 2;
 }
 
-enum PlayType {
-    PLAY_TYPE_RESERVED = 0;
-    PLAY_TYPE_RACE     = 1; // qiang dizhu
-    PLAY_TYPE_CALL     = 2; // jiao fen
+enum GameMode {
+    GAME_MODE_RESERVED = 0;
+    GAME_MODE_RACE     = 1; /// Qiang dizhu mode
+    GAME_MODE_CALL     = 2; /// Jiao fen mode
 }
 
 enum EnterRoomResult {
@@ -32,22 +32,20 @@ enum CreateRoomResult {
 }
 
 message RoomInfo {
-    fixed64  id              = 1;  // room id
-    fixed64  owner           = 2;  // room owner's usn
-    RoomType room_type       = 3;  //
-    PlayType play_type       = 4;  //
-    string   title           = 5;  // room title
-    string   desc            = 6;  // room description
-    fixed64  since           = 7;  // create time
-    bool     observable      = 8;  // is observation enabled
-    int32    total_rounds    = 9;  //
-    int32    left_rounds     = 10; //
-    int32    boom_limit      = 11; // how many bombs can a player have at most
-    bool     secure          = 13; // is this room has secure information
-    string   address         = 14; // room create a this address
-    string   longitude       = 15; // create at longitude
-    string   latitude        = 16; // create at latitude
-    repeated fixed64 players = 12; // player usn list, room owner is players[0]
+    fixed64  id               = 1;  // room id
+    fixed64  owner            = 2;  // room owner's usn
+    RoomType room_type        = 3;  //
+    GameMode game_mode        = 4;  //
+    string   title            = 5;  // room title
+    string   desc             = 6;  // room description
+    fixed64  since            = 7;  // create time
+    bool     observable       = 8;  // is observation enabled
+    int32    total_rounds     = 9;  //
+    int32    left_rounds      = 10; //
+    int32    boom_limit       = 11; // how many bombs can a player have at most
+    repeated fixed64 players  = 12; // player usn list
+    bool             secure   = 13; // is this room has secure information
+    common.Location  location = 14; /// Room create location information
 }
 
 message C2SEnterRoomReq {
@@ -61,7 +59,16 @@ message S2CEnterRoomRsp {
 }
 
 message C2SCreateRoomReq {
-    RoomType type     = 1;
-    int32    card_num = 2;
-    string   password = 3;
+    int32           card_num   = 1;
+    string          password   = 2;
+    string          title      = 3;
+    string          desc       = 4;
+    bool            observable = 5;
+    int32           boom_limit = 6;
+    bool            secure     = 7;
+    common.Location location   = 8;
+}
+
+message S2CCreateRoomRsp {
+    common.RspHeader header = 1;
 }
