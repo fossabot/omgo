@@ -9,55 +9,6 @@
 			"revisionTime": "2017-06-08T22:14:41Z"
 		},
 		{
-			"checksumSHA1": "rqmhhAKJMYGv8DGOcfOJ0obxBto=",
-			"origin": "github.com/master-g/omgo/services/vendor/github.com/coreos/etcd/client",
-			"path": "github.com/coreos/etcd/client",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
-		},
-		{
-			"checksumSHA1": "mKIXx1kDwmVmdIpZ3pJtRBuUKso=",
-			"origin": "github.com/master-g/omgo/services/vendor/github.com/coreos/etcd/pkg/pathutil",
-			"path": "github.com/coreos/etcd/pkg/pathutil",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
-		},
-		{
-			"checksumSHA1": "in4X4M2FFl6+eAXgxdxxSOZi1Vw=",
-			"origin": "github.com/master-g/omgo/services/vendor/github.com/coreos/etcd/pkg/srv",
-			"path": "github.com/coreos/etcd/pkg/srv",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
-		},
-		{
-			"checksumSHA1": "gx1gJIMU6T0UNQ0bPZ/drQ8cpCI=",
-			"origin": "github.com/master-g/omgo/services/vendor/github.com/coreos/etcd/pkg/types",
-			"path": "github.com/coreos/etcd/pkg/types",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
-		},
-		{
-			"checksumSHA1": "MgYezsE5iTHxzTT5dnacBeuJBHY=",
-			"origin": "github.com/master-g/omgo/services/vendor/github.com/coreos/etcd/version",
-			"path": "github.com/coreos/etcd/version",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
-		},
-		{
-			"checksumSHA1": "97BsbXOiZ8+Kr+LIuZkQFtSj7H4=",
-			"origin": "github.com/master-g/omgo/services/vendor/github.com/coreos/go-semver/semver",
-			"path": "github.com/coreos/go-semver/semver",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
-		},
-		{
-			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
-			"origin": "github.com/master-g/omgo/utils/vendor/github.com/davecgh/go-spew/spew",
-			"path": "github.com/davecgh/go-spew/spew",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
-		},
-		{
 			"checksumSHA1": "qlPUeFabwF4RKAOF1H+yBFU1Veg=",
 			"path": "github.com/golang/protobuf/proto",
 			"revision": "e325f446bebc2998605911c0a2650d9920361d4a",
@@ -70,17 +21,10 @@
 			"revisionTime": "2017-06-13T22:42:24Z"
 		},
 		{
-			"checksumSHA1": "7hln62oZPZmyqEmgXaybf9WxQ7A=",
-			"origin": "github.com/master-g/omgo/utils/vendor/github.com/maruel/panicparse/stack",
-			"path": "github.com/maruel/panicparse/stack",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
-		},
-		{
 			"checksumSHA1": "dZtf38v4tM1J5uQbL2b8zgZMIv0=",
 			"path": "github.com/master-g/omgo/keys",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
+			"revision": "a2c2f118e1bea6ea832e36d17f4cdf04d2632068",
+			"revisionTime": "2017-06-28T12:34:32Z"
 		},
 		{
 			"checksumSHA1": "Et5hHvnk5iVRSJr5PepcG/4fhJw=",
@@ -117,13 +61,6 @@
 			"path": "github.com/master-g/omgo/utils",
 			"revision": "5b3981ee526de961bbb159aee245a948af771556",
 			"revisionTime": "2017-06-21T10:10:11Z"
-		},
-		{
-			"checksumSHA1": "MxLnUmfrP+r5HfCZM29+WPKebn8=",
-			"origin": "github.com/master-g/omgo/services/vendor/github.com/ugorji/go/codec",
-			"path": "github.com/ugorji/go/codec",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
 		},
 		{
 			"checksumSHA1": "Y+HGqEkYM15ir+J93MEaHdyFy0c=",

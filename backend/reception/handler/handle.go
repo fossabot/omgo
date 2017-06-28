@@ -129,7 +129,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		userLoginReq := &pb.DB_UserLoginRequest{}
-		userLoginReq.Info = &pc.UserBasicInfo{Email: email}
+		userLoginReq.Info = &pc.UserInfo{Email: email}
 		userLoginReq.Secret = secretBytes
 
 		cli := pb.NewDBServiceClient(conn)
@@ -178,7 +178,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	country = strings.TrimSpace(country)
 
 	registerReq := &pb.DB_UserRegisterRequest{}
-	registerReq.Info = &pc.UserBasicInfo{
+	registerReq.Info = &pc.UserInfo{
 		Email:    email,
 		Birthday: birthday,
 		Avatar:   r.Header.Get("avatar"),

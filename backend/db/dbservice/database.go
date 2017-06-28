@@ -93,13 +93,13 @@ func (db *database) getUniqueID() (usn, uid uint64, err error) {
 ////////////////////////////////////////////////////////////////////////////////
 
 // query user basic info in both redis and mongodb
-func (db *database) queryUserBasicInfo(key *proto.DB_UserKey) (*pc.UserBasicInfo, error) {
-	var userInfo pc.UserBasicInfo
+func (db *database) queryUserInfo(key *proto.DB_UserKey) (*pc.UserInfo, error) {
+	var userInfo pc.UserInfo
 	var err error
 
 	if key.Usn != 0 {
 		// a valid usn, query in redis first
-		err = db.queryUserBasicInfoRedis(key.Usn, &userInfo)
+		err = db.queryUserInfoRedis(key.Usn, &userInfo)
 		if err == nil && userInfo.Usn == key.Usn {
 			// found in redis
 			return &userInfo, err
@@ -107,7 +107,7 @@ func (db *database) queryUserBasicInfo(key *proto.DB_UserKey) (*pc.UserBasicInfo
 	}
 
 	// query in mongodb
-	err = db.queryUserBasicInfoMongoDB(key, &userInfo)
+	err = db.queryUserInfoMongoDB(key, &userInfo)
 	if err == nil {
 		// found in mongodb, update to redis
 		db.updateUserInfoRedis(&userInfo)
@@ -116,7 +116,7 @@ func (db *database) queryUserBasicInfo(key *proto.DB_UserKey) (*pc.UserBasicInfo
 	return &userInfo, err
 }
 
-func (db *database) queryUserBasicInfoRedis(usn uint64, userInfo *pc.UserBasicInfo) error {
+func (db *database) queryUserInfoRedis(usn uint64, userInfo *pc.UserInfo) error {
 	err := db.redis.Execute(func(conn redis.Conn) error {
 		values, err := redis.Values(conn.Do("HGETALL", redisKey(keyUser, usn)))
 		if err == nil && len(values) > 0 {
@@ -129,7 +129,7 @@ func (db *database) queryUserBasicInfoRedis(usn uint64, userInfo *pc.UserBasicIn
 	return err
 }
 
-func (db *database) queryUserBasicInfoMongoDB(key *proto.DB_UserKey, userInfo *pc.UserBasicInfo) error {
+func (db *database) queryUserInfoMongoDB(key *proto.DB_UserKey, userInfo *pc.UserInfo) error {
 	err := db.mongo.Execute(func(sess *mgo.Session) error {
 		index := mgo.Index{
 			Key:        []string{"usn", "uid", "email"},
@@ -172,7 +172,7 @@ func (db *database) queryUserBasicInfoMongoDB(key *proto.DB_UserKey, userInfo *p
 }
 
 // update user basic info in redis
-func (db *database) updateUserInfoRedis(userInfo *pc.UserBasicInfo) error {
+func (db *database) updateUserInfoRedis(userInfo *pc.UserInfo) error {
 	err := db.redis.Execute(func(conn redis.Conn) error {
 		key := redisKey(keyUser, userInfo.Usn)
 		// store result to redis
@@ -191,7 +191,7 @@ func (db *database) updateUserInfoRedis(userInfo *pc.UserBasicInfo) error {
 	return err
 }
 
-func (db *database) updateUserInfoMongoDB(userInfo *pc.UserBasicInfo) error {
+func (db *database) updateUserInfoMongoDB(userInfo *pc.UserInfo) error {
 	err := db.mongo.Execute(func(sess *mgo.Session) error {
 		c := sess.DB("master").C(keyUser)
 		if c == nil {

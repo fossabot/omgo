@@ -48,8 +48,8 @@
 			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
 			"origin": "github.com/master-g/omgo/utils/vendor/github.com/davecgh/go-spew/spew",
 			"path": "github.com/davecgh/go-spew/spew",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
+			"revision": "a2c2f118e1bea6ea832e36d17f4cdf04d2632068",
+			"revisionTime": "2017-06-28T12:34:32Z"
 		},
 		{
 			"checksumSHA1": "qlPUeFabwF4RKAOF1H+yBFU1Veg=",
@@ -73,38 +73,38 @@
 			"checksumSHA1": "7hln62oZPZmyqEmgXaybf9WxQ7A=",
 			"origin": "github.com/master-g/omgo/utils/vendor/github.com/maruel/panicparse/stack",
 			"path": "github.com/maruel/panicparse/stack",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
+			"revision": "a2c2f118e1bea6ea832e36d17f4cdf04d2632068",
+			"revisionTime": "2017-06-28T12:34:32Z"
 		},
 		{
 			"checksumSHA1": "dZtf38v4tM1J5uQbL2b8zgZMIv0=",
 			"path": "github.com/master-g/omgo/keys",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
+			"revision": "a2c2f118e1bea6ea832e36d17f4cdf04d2632068",
+			"revisionTime": "2017-06-28T12:34:32Z"
 		},
 		{
-			"checksumSHA1": "RicRj0KBHo6cFJC2l6m4Q1oYp3Y=",
+			"checksumSHA1": "II/mQTB6I9ZqGg570jHcgr33gyU=",
 			"path": "github.com/master-g/omgo/proto/grpc/db",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
+			"revision": "a2c2f118e1bea6ea832e36d17f4cdf04d2632068",
+			"revisionTime": "2017-06-28T12:34:32Z"
 		},
 		{
-			"checksumSHA1": "++kQzDKS/V1ONbQ0aWrHxOKi07A=",
+			"checksumSHA1": "4rWrnbpsvqm0IxFsldkBDzZm+Pc=",
 			"path": "github.com/master-g/omgo/proto/pb/common",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
+			"revision": "a2c2f118e1bea6ea832e36d17f4cdf04d2632068",
+			"revisionTime": "2017-06-28T12:34:32Z"
 		},
 		{
 			"checksumSHA1": "+KYVrFlXMWxPGJ/AXeBVj9kL6qI=",
 			"path": "github.com/master-g/omgo/services",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
+			"revision": "a2c2f118e1bea6ea832e36d17f4cdf04d2632068",
+			"revisionTime": "2017-06-28T12:34:32Z"
 		},
 		{
 			"checksumSHA1": "2z8kr6ar+EmHwI5L/EepHHnJ+Bg=",
 			"path": "github.com/master-g/omgo/utils",
-			"revision": "fbd4d870a4ca44f26e0e6a421357501537927b2b",
-			"revisionTime": "2017-06-21T14:55:51Z"
+			"revision": "a2c2f118e1bea6ea832e36d17f4cdf04d2632068",
+			"revisionTime": "2017-06-28T12:34:32Z"
 		},
 		{
 			"checksumSHA1": "MxLnUmfrP+r5HfCZM29+WPKebn8=",

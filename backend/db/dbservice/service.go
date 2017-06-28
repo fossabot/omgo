@@ -87,7 +87,7 @@ func (s *server) UserQuery(ctx context.Context, key *proto.DB_UserKey) (ret *pro
 		return
 	}
 
-	userInfo, err := s.db.queryUserBasicInfo(key)
+	userInfo, err := s.db.queryUserInfo(key)
 	ret.Info = userInfo
 
 	if err != nil {
@@ -100,12 +100,12 @@ func (s *server) UserQuery(ctx context.Context, key *proto.DB_UserKey) (ret *pro
 }
 
 // update user info
-func (s *server) UserUpdateInfo(ctx context.Context, userBasicInfo *pc.UserBasicInfo) (ret *pc.RspHeader, err error) {
+func (s *server) UserUpdateInfo(ctx context.Context, userInfo *pc.UserInfo) (ret *pc.RspHeader, err error) {
 	ret = &pc.RspHeader{}
 	setRspHeader(ret)
-	err = s.db.updateUserInfoMongoDB(userBasicInfo)
+	err = s.db.updateUserInfoMongoDB(userInfo)
 	if err == nil {
-		err = s.db.updateUserInfoRedis(userBasicInfo)
+		err = s.db.updateUserInfoRedis(userInfo)
 	}
 
 	if err != nil {
@@ -132,7 +132,7 @@ func (s *server) UserRegister(ctx context.Context, request *proto.DB_UserRegiste
 		log.Info(ret.Result.Msg)
 		return
 	}
-	ret.Info, err = s.db.queryUserBasicInfo(&proto.DB_UserKey{Email: email})
+	ret.Info, err = s.db.queryUserInfo(&proto.DB_UserKey{Email: email})
 	// user already existed
 	if ret.Info.Usn != 0 {
 		// email already registered
@@ -190,7 +190,7 @@ func (s *server) UserLogin(ctx context.Context, request *proto.DB_UserLoginReque
 	}
 
 	// query user
-	ret.Info, err = s.db.queryUserBasicInfo(&proto.DB_UserKey{Email: request.GetInfo().GetEmail()})
+	ret.Info, err = s.db.queryUserInfo(&proto.DB_UserKey{Email: request.GetInfo().GetEmail()})
 	if err != nil {
 		ret.Result.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		ret.Info = nil
