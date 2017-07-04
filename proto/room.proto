@@ -9,6 +9,12 @@ enum RoomType {
     ROOM_PRIVATE  = 2;
 }
 
+enum BillingMode {
+    BILLING_RESERVED = 0;
+    BILLING_TIME     = 1;
+    BILLING_ROUND    = 2;
+}
+
 enum GameMode {
     GAME_MODE_RESERVED = 0;
     GAME_MODE_RACE     = 1; /// Qiang dizhu mode
@@ -26,28 +32,42 @@ enum EnterRoomResult {
 
 enum CreateRoomResult {
     CREATE_ROOM_OK                = 0;
-    CREATE_ROOM_INVALID_PASSWORD  = 1;
-    CREATE_ROOM_INVALID_PARAM     = 2;
-    CREATE_ROOM_INSUFFICIENT_CARD = 3;
+    CREATE_ROOM_INVALID_PARAM     = 1; // password, title, desc etc
+    CREATE_ROOM_INSUFFICIENT_CARD = 2;
+    CREATE_ROOM_ALREADY_EXIST     = 3; // user has a unfinished room
+}
+
+enum ExitRoomOption {
+    EXIT_ROOM_DEFAULT = 0;
+    EXIT_ROOM_DISMISS = 1; // Only available for room owner
+}
+
+enum ExitRoomResult {
+    EXIT_ROOM_OK      = 0;
+    EXIT_ROOM_INVALID = 1;
 }
 
 message RoomInfo {
-    fixed64  id               = 1;  // room id
-    fixed64  owner            = 2;  // room owner's usn
-    RoomType room_type        = 3;  //
-    GameMode game_mode        = 4;  //
-    string   title            = 5;  // room title
-    string   desc             = 6;  // room description
-    fixed64  since            = 7;  // create time
-    bool     observable       = 8;  // is observation enabled
-    int32    boom_limit       = 9;  // how many bombs can a player have at most
-    int32    total_rounds     = 10; //
-    int32    left_rounds      = 11; //
-    int32    call_time        = 12; // seconds, how long can players call for landlord
-    int32    hand_time        = 13; // seconds, how long can a player think before plays a hand
-    repeated fixed64 players  = 14; // player usn list
-    bool             secure   = 15; // is this room has secure information
-    common.Location  location = 16; /// Room create location information
+    fixed64     id             = 1; // room id
+    fixed64     owner          = 2; // room owner's usn
+    RoomType    room_type      = 3; //
+    GameMode    game_mode      = 4; //
+    BillingMode bill_mode      = 5;
+    string      title          = 6;  // room title
+    string      desc           = 7;  // room description
+    fixed64     since          = 8;  // create time
+    bool        observable     = 9;  // is observation enabled
+    int32       boom_limit     = 10; // how many bombs can a game have
+    int32       total_duration = 11; // BILLING_TIME
+    int32       left_duration  = 12;
+    int32       total_rounds   = 13; // BILLING_ROUND
+    int32       left_rounds    = 14; //
+    int32       call_time      = 15; // seconds, how long can players call for landlord
+    int32       hand_time      = 16; // seconds, how long can a player think before plays a hand
+    repeated fixed64 players   = 17; // player usn list
+    bool             secure    = 18; // is this room has secure information
+    common.Location  location  = 19; /// Room create location information
+    // 低分, 时长
 }
 
 message C2SEnterRoomReq {
@@ -73,4 +93,12 @@ message C2SCreateRoomReq {
 
 message S2CCreateRoomRsp {
     common.RspHeader header = 1;
+}
+
+message C2SExitRoomReq {
+    ExitRoomOption option = 1;
+}
+
+message S2CExitRoomRsp {
+  RspHeader header = 1; // Status code see ExitRoomResult
 }
