@@ -58,16 +58,31 @@ message RoomInfo {
     fixed64     since          = 8;  // create time
     bool        observable     = 9;  // is observation enabled
     int32       boom_limit     = 10; // how many bombs can a game have
-    int32       total_duration = 11; // BILLING_TIME
-    int32       left_duration  = 12;
-    int32       total_rounds   = 13; // BILLING_ROUND
-    int32       left_rounds    = 14; //
-    int32       call_time      = 15; // seconds, how long can players call for landlord
-    int32       hand_time      = 16; // seconds, how long can a player think before plays a hand
-    repeated fixed64 players   = 17; // player usn list
-    bool             secure    = 18; // is this room has secure information
-    common.Location  location  = 19; /// Room create location information
-    // 低分, 时长
+    int32       base_point     = 11; //
+    int32       total_duration = 12; // BILLING_TIME
+    int32       left_duration  = 13;
+    int32       total_rounds   = 14; // BILLING_ROUND
+    int32       left_rounds    = 15; //
+    int32       call_time      = 16; // seconds, how long can players call for landlord
+    int32       hand_time      = 17; // seconds, how long can a player think before plays a hand
+    repeated fixed64 players   = 18; // player usn list
+    bool             secure    = 19; // is this room has secure information
+    common.Location  location  = 20; /// Room create location information
+    // 底分, 时长
+}
+
+message RoomConfigElement {
+    int32 id         = 1; //
+    int32 card_count = 2;
+    int32 duration   = 3;
+    int32 rounds     = 4;
+}
+
+message C2SGetRoomConfigReq {}
+
+message S2CGetRoomConfigRsp {
+    common.RspHeader header             = 1;
+    repeated RoomConfigElement elements = 2;
 }
 
 message C2SEnterRoomReq {
@@ -81,14 +96,15 @@ message S2CEnterRoomRsp {
 }
 
 message C2SCreateRoomReq {
-    int32           card_num   = 1;
-    string          password   = 2;
-    string          title      = 3;
-    string          desc       = 4;
-    bool            observable = 5;
-    int32           boom_limit = 6;
-    bool            secure     = 7;
-    common.Location location   = 8;
+    BillingMode     billing_mode = 1;
+    int32           card_num     = 2;
+    string          password     = 3;
+    string          title        = 4;
+    string          desc         = 5;
+    bool            observable   = 6;
+    int32           boom_limit   = 7;
+    bool            secure       = 8;
+    common.Location location     = 9;
 }
 
 message S2CCreateRoomRsp {
@@ -100,5 +116,5 @@ message C2SExitRoomReq {
 }
 
 message S2CExitRoomRsp {
-  RspHeader header = 1; // Status code see ExitRoomResult
+    common.RspHeader header = 1; // Status code see ExitRoomResult
 }
