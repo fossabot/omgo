@@ -1,0 +1,102 @@
+syntax = "proto3";
+package proto.hall;
+import "common.proto";
+option go_package = "github.com/master-g/omgo/proto/pb/hall";
+
+enum RoomType {
+    ROOM_RESERVED = 0;
+    ROOM_NORMAL   = 1;
+    ROOM_PRIVATE  = 2;
+}
+
+enum BillingMode {
+    BILLING_RESERVED = 0;
+    BILLING_TIME     = 1;
+    BILLING_ROUND    = 2;
+}
+
+enum GameMode {
+    GAME_MODE_RESERVED = 0;
+    GAME_MODE_RACE     = 1; /// Qiang dizhu mode
+    GAME_MODE_CALL     = 2; /// Jiao fen mode
+}
+
+enum EnterRoomResult {
+    ENTER_ROOM_OK                  = 0;
+    ENTER_ROOM_INSUFFICIENT_CREDIT = 1;
+    ENTER_ROOM_WRONG_PASSWORD      = 2;
+    ENTER_ROOM_NOT_EXIST           = 3;
+    ENTER_ROOM_FULL                = 4;
+    ENTER_ROOM_FAIL_NO_OBSERVE     = 5;
+}
+
+enum CreateRoomResult {
+    CREATE_ROOM_OK                = 0;
+    CREATE_ROOM_INVALID_PARAM     = 1; // password, title, desc etc
+    CREATE_ROOM_INSUFFICIENT_CARD = 2;
+    CREATE_ROOM_ALREADY_EXIST     = 3; // user has a unfinished room
+}
+
+message RoomInfo {
+    fixed64     id             = 1; // room id
+    fixed64     owner          = 2; // room owner's usn
+    RoomType    room_type      = 3; //
+    GameMode    game_mode      = 4; //
+    BillingMode bill_mode      = 5;
+    string      title          = 6;  // room title
+    string      desc           = 7;  // room description
+    fixed64     since          = 8;  // create time
+    bool        observable     = 9;  // is observation enabled
+    int32       boom_limit     = 10; // how many bombs can a game have
+    int32       base_point     = 11; //
+    int32       total_duration = 12; // BILLING_TIME
+    int32       left_duration  = 13;
+    int32       total_rounds   = 14; // BILLING_ROUND
+    int32       left_rounds    = 15; //
+    int32       call_time      = 16; // seconds, how long can players call for landlord
+    int32       hand_time      = 17; // seconds, how long can a player think before plays a hand
+    repeated fixed64 players   = 18; // player usn list
+    bool             secure    = 19; // is this room has secure information
+    common.Location  location  = 20; /// Room create location information
+    // 底分, 时长
+}
+
+message RoomConfigElement {
+    int32 id         = 1; //
+    int32 card_count = 2;
+    int32 duration   = 3;
+    int32 rounds     = 4;
+}
+
+message C2SGetRoomConfigReq {}
+
+message S2CGetRoomConfigRsp {
+    common.RspHeader header             = 1;
+    repeated RoomConfigElement elements = 2;
+}
+
+message C2SEnterRoomReq {
+    RoomType type     = 1;
+    fixed64  room_id  = 2;
+    string   password = 3;
+}
+
+message S2CEnterRoomRsp {
+    common.RspHeader header = 1;
+}
+
+message C2SCreateRoomReq {
+    BillingMode     billing_mode = 1;
+    int32           card_num     = 2;
+    string          password     = 3;
+    string          title        = 4;
+    string          desc         = 5;
+    bool            observable   = 6;
+    int32           boom_limit   = 7;
+    bool            secure       = 8;
+    common.Location location     = 9;
+}
+
+message S2CCreateRoomRsp {
+    common.RspHeader header = 1;
+}

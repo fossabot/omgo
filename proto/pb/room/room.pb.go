@@ -8,14 +8,6 @@ It is generated from these files:
 	room.proto
 
 It has these top-level messages:
-	RoomInfo
-	RoomConfigElement
-	C2SGetRoomConfigReq
-	S2CGetRoomConfigRsp
-	C2SEnterRoomReq
-	S2CEnterRoomRsp
-	C2SCreateRoomReq
-	S2CCreateRoomRsp
 	C2SExitRoomReq
 	S2CExitRoomRsp
 */
@@ -37,138 +29,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-type RoomType int32
-
-const (
-	RoomType_ROOM_RESERVED RoomType = 0
-	RoomType_ROOM_NORMAL   RoomType = 1
-	RoomType_ROOM_PRIVATE  RoomType = 2
-)
-
-var RoomType_name = map[int32]string{
-	0: "ROOM_RESERVED",
-	1: "ROOM_NORMAL",
-	2: "ROOM_PRIVATE",
-}
-var RoomType_value = map[string]int32{
-	"ROOM_RESERVED": 0,
-	"ROOM_NORMAL":   1,
-	"ROOM_PRIVATE":  2,
-}
-
-func (x RoomType) String() string {
-	return proto.EnumName(RoomType_name, int32(x))
-}
-func (RoomType) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
-
-type BillingMode int32
-
-const (
-	BillingMode_BILLING_RESERVED BillingMode = 0
-	BillingMode_BILLING_TIME     BillingMode = 1
-	BillingMode_BILLING_ROUND    BillingMode = 2
-)
-
-var BillingMode_name = map[int32]string{
-	0: "BILLING_RESERVED",
-	1: "BILLING_TIME",
-	2: "BILLING_ROUND",
-}
-var BillingMode_value = map[string]int32{
-	"BILLING_RESERVED": 0,
-	"BILLING_TIME":     1,
-	"BILLING_ROUND":    2,
-}
-
-func (x BillingMode) String() string {
-	return proto.EnumName(BillingMode_name, int32(x))
-}
-func (BillingMode) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
-
-type GameMode int32
-
-const (
-	GameMode_GAME_MODE_RESERVED GameMode = 0
-	GameMode_GAME_MODE_RACE     GameMode = 1
-	GameMode_GAME_MODE_CALL     GameMode = 2
-)
-
-var GameMode_name = map[int32]string{
-	0: "GAME_MODE_RESERVED",
-	1: "GAME_MODE_RACE",
-	2: "GAME_MODE_CALL",
-}
-var GameMode_value = map[string]int32{
-	"GAME_MODE_RESERVED": 0,
-	"GAME_MODE_RACE":     1,
-	"GAME_MODE_CALL":     2,
-}
-
-func (x GameMode) String() string {
-	return proto.EnumName(GameMode_name, int32(x))
-}
-func (GameMode) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
-
-type EnterRoomResult int32
-
-const (
-	EnterRoomResult_ENTER_ROOM_OK                  EnterRoomResult = 0
-	EnterRoomResult_ENTER_ROOM_INSUFFICIENT_CREDIT EnterRoomResult = 1
-	EnterRoomResult_ENTER_ROOM_WRONG_PASSWORD      EnterRoomResult = 2
-	EnterRoomResult_ENTER_ROOM_NOT_EXIST           EnterRoomResult = 3
-	EnterRoomResult_ENTER_ROOM_FULL                EnterRoomResult = 4
-	EnterRoomResult_ENTER_ROOM_FAIL_NO_OBSERVE     EnterRoomResult = 5
-)
-
-var EnterRoomResult_name = map[int32]string{
-	0: "ENTER_ROOM_OK",
-	1: "ENTER_ROOM_INSUFFICIENT_CREDIT",
-	2: "ENTER_ROOM_WRONG_PASSWORD",
-	3: "ENTER_ROOM_NOT_EXIST",
-	4: "ENTER_ROOM_FULL",
-	5: "ENTER_ROOM_FAIL_NO_OBSERVE",
-}
-var EnterRoomResult_value = map[string]int32{
-	"ENTER_ROOM_OK":                  0,
-	"ENTER_ROOM_INSUFFICIENT_CREDIT": 1,
-	"ENTER_ROOM_WRONG_PASSWORD":      2,
-	"ENTER_ROOM_NOT_EXIST":           3,
-	"ENTER_ROOM_FULL":                4,
-	"ENTER_ROOM_FAIL_NO_OBSERVE":     5,
-}
-
-func (x EnterRoomResult) String() string {
-	return proto.EnumName(EnterRoomResult_name, int32(x))
-}
-func (EnterRoomResult) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
-
-type CreateRoomResult int32
-
-const (
-	CreateRoomResult_CREATE_ROOM_OK                CreateRoomResult = 0
-	CreateRoomResult_CREATE_ROOM_INVALID_PARAM     CreateRoomResult = 1
-	CreateRoomResult_CREATE_ROOM_INSUFFICIENT_CARD CreateRoomResult = 2
-	CreateRoomResult_CREATE_ROOM_ALREADY_EXIST     CreateRoomResult = 3
-)
-
-var CreateRoomResult_name = map[int32]string{
-	0: "CREATE_ROOM_OK",
-	1: "CREATE_ROOM_INVALID_PARAM",
-	2: "CREATE_ROOM_INSUFFICIENT_CARD",
-	3: "CREATE_ROOM_ALREADY_EXIST",
-}
-var CreateRoomResult_value = map[string]int32{
-	"CREATE_ROOM_OK":                0,
-	"CREATE_ROOM_INVALID_PARAM":     1,
-	"CREATE_ROOM_INSUFFICIENT_CARD": 2,
-	"CREATE_ROOM_ALREADY_EXIST":     3,
-}
-
-func (x CreateRoomResult) String() string {
-	return proto.EnumName(CreateRoomResult_name, int32(x))
-}
-func (CreateRoomResult) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
-
 type ExitRoomOption int32
 
 const (
@@ -188,7 +48,7 @@ var ExitRoomOption_value = map[string]int32{
 func (x ExitRoomOption) String() string {
 	return proto.EnumName(ExitRoomOption_name, int32(x))
 }
-func (ExitRoomOption) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
+func (ExitRoomOption) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
 type ExitRoomResult int32
 
@@ -209,391 +69,7 @@ var ExitRoomResult_value = map[string]int32{
 func (x ExitRoomResult) String() string {
 	return proto.EnumName(ExitRoomResult_name, int32(x))
 }
-func (ExitRoomResult) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{6} }
-
-type RoomInfo struct {
-	Id            uint64                 `protobuf:"fixed64,1,opt,name=id" json:"id,omitempty"`
-	Owner         uint64                 `protobuf:"fixed64,2,opt,name=owner" json:"owner,omitempty"`
-	RoomType      RoomType               `protobuf:"varint,3,opt,name=room_type,json=roomType,enum=proto.room.RoomType" json:"room_type"`
-	GameMode      GameMode               `protobuf:"varint,4,opt,name=game_mode,json=gameMode,enum=proto.room.GameMode" json:"game_mode"`
-	BillMode      BillingMode            `protobuf:"varint,5,opt,name=bill_mode,json=billMode,enum=proto.room.BillingMode" json:"bill_mode"`
-	Title         string                 `protobuf:"bytes,6,opt,name=title" json:"title,omitempty"`
-	Desc          string                 `protobuf:"bytes,7,opt,name=desc" json:"desc,omitempty"`
-	Since         uint64                 `protobuf:"fixed64,8,opt,name=since" json:"since,omitempty"`
-	Observable    bool                   `protobuf:"varint,9,opt,name=observable" json:"observable"`
-	BoomLimit     int32                  `protobuf:"varint,10,opt,name=boom_limit,json=boomLimit" json:"boom_limit"`
-	BasePoint     int32                  `protobuf:"varint,11,opt,name=base_point,json=basePoint" json:"base_point"`
-	TotalDuration int32                  `protobuf:"varint,12,opt,name=total_duration,json=totalDuration" json:"total_duration"`
-	LeftDuration  int32                  `protobuf:"varint,13,opt,name=left_duration,json=leftDuration" json:"left_duration"`
-	TotalRounds   int32                  `protobuf:"varint,14,opt,name=total_rounds,json=totalRounds" json:"total_rounds"`
-	LeftRounds    int32                  `protobuf:"varint,15,opt,name=left_rounds,json=leftRounds" json:"left_rounds"`
-	CallTime      int32                  `protobuf:"varint,16,opt,name=call_time,json=callTime" json:"call_time"`
-	HandTime      int32                  `protobuf:"varint,17,opt,name=hand_time,json=handTime" json:"hand_time"`
-	Players       []uint64               `protobuf:"fixed64,18,rep,packed,name=players" json:"players,omitempty"`
-	Secure        bool                   `protobuf:"varint,19,opt,name=secure" json:"secure"`
-	Location      *proto_common.Location `protobuf:"bytes,20,opt,name=location" json:"location,omitempty"`
-}
-
-func (m *RoomInfo) Reset()                    { *m = RoomInfo{} }
-func (m *RoomInfo) String() string            { return proto.CompactTextString(m) }
-func (*RoomInfo) ProtoMessage()               {}
-func (*RoomInfo) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
-
-func (m *RoomInfo) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-func (m *RoomInfo) GetOwner() uint64 {
-	if m != nil {
-		return m.Owner
-	}
-	return 0
-}
-
-func (m *RoomInfo) GetRoomType() RoomType {
-	if m != nil {
-		return m.RoomType
-	}
-	return RoomType_ROOM_RESERVED
-}
-
-func (m *RoomInfo) GetGameMode() GameMode {
-	if m != nil {
-		return m.GameMode
-	}
-	return GameMode_GAME_MODE_RESERVED
-}
-
-func (m *RoomInfo) GetBillMode() BillingMode {
-	if m != nil {
-		return m.BillMode
-	}
-	return BillingMode_BILLING_RESERVED
-}
-
-func (m *RoomInfo) GetTitle() string {
-	if m != nil {
-		return m.Title
-	}
-	return ""
-}
-
-func (m *RoomInfo) GetDesc() string {
-	if m != nil {
-		return m.Desc
-	}
-	return ""
-}
-
-func (m *RoomInfo) GetSince() uint64 {
-	if m != nil {
-		return m.Since
-	}
-	return 0
-}
-
-func (m *RoomInfo) GetObservable() bool {
-	if m != nil {
-		return m.Observable
-	}
-	return false
-}
-
-func (m *RoomInfo) GetBoomLimit() int32 {
-	if m != nil {
-		return m.BoomLimit
-	}
-	return 0
-}
-
-func (m *RoomInfo) GetBasePoint() int32 {
-	if m != nil {
-		return m.BasePoint
-	}
-	return 0
-}
-
-func (m *RoomInfo) GetTotalDuration() int32 {
-	if m != nil {
-		return m.TotalDuration
-	}
-	return 0
-}
-
-func (m *RoomInfo) GetLeftDuration() int32 {
-	if m != nil {
-		return m.LeftDuration
-	}
-	return 0
-}
-
-func (m *RoomInfo) GetTotalRounds() int32 {
-	if m != nil {
-		return m.TotalRounds
-	}
-	return 0
-}
-
-func (m *RoomInfo) GetLeftRounds() int32 {
-	if m != nil {
-		return m.LeftRounds
-	}
-	return 0
-}
-
-func (m *RoomInfo) GetCallTime() int32 {
-	if m != nil {
-		return m.CallTime
-	}
-	return 0
-}
-
-func (m *RoomInfo) GetHandTime() int32 {
-	if m != nil {
-		return m.HandTime
-	}
-	return 0
-}
-
-func (m *RoomInfo) GetPlayers() []uint64 {
-	if m != nil {
-		return m.Players
-	}
-	return nil
-}
-
-func (m *RoomInfo) GetSecure() bool {
-	if m != nil {
-		return m.Secure
-	}
-	return false
-}
-
-func (m *RoomInfo) GetLocation() *proto_common.Location {
-	if m != nil {
-		return m.Location
-	}
-	return nil
-}
-
-type RoomConfigElement struct {
-	Id        int32 `protobuf:"varint,1,opt,name=id" json:"id"`
-	CardCount int32 `protobuf:"varint,2,opt,name=card_count,json=cardCount" json:"card_count"`
-	Duration  int32 `protobuf:"varint,3,opt,name=duration" json:"duration"`
-	Rounds    int32 `protobuf:"varint,4,opt,name=rounds" json:"rounds"`
-}
-
-func (m *RoomConfigElement) Reset()                    { *m = RoomConfigElement{} }
-func (m *RoomConfigElement) String() string            { return proto.CompactTextString(m) }
-func (*RoomConfigElement) ProtoMessage()               {}
-func (*RoomConfigElement) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
-
-func (m *RoomConfigElement) GetId() int32 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
-func (m *RoomConfigElement) GetCardCount() int32 {
-	if m != nil {
-		return m.CardCount
-	}
-	return 0
-}
-
-func (m *RoomConfigElement) GetDuration() int32 {
-	if m != nil {
-		return m.Duration
-	}
-	return 0
-}
-
-func (m *RoomConfigElement) GetRounds() int32 {
-	if m != nil {
-		return m.Rounds
-	}
-	return 0
-}
-
-type C2SGetRoomConfigReq struct {
-}
-
-func (m *C2SGetRoomConfigReq) Reset()                    { *m = C2SGetRoomConfigReq{} }
-func (m *C2SGetRoomConfigReq) String() string            { return proto.CompactTextString(m) }
-func (*C2SGetRoomConfigReq) ProtoMessage()               {}
-func (*C2SGetRoomConfigReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
-
-type S2CGetRoomConfigRsp struct {
-	Header   *proto_common.RspHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
-	Elements []*RoomConfigElement    `protobuf:"bytes,2,rep,name=elements" json:"elements,omitempty"`
-}
-
-func (m *S2CGetRoomConfigRsp) Reset()                    { *m = S2CGetRoomConfigRsp{} }
-func (m *S2CGetRoomConfigRsp) String() string            { return proto.CompactTextString(m) }
-func (*S2CGetRoomConfigRsp) ProtoMessage()               {}
-func (*S2CGetRoomConfigRsp) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
-
-func (m *S2CGetRoomConfigRsp) GetHeader() *proto_common.RspHeader {
-	if m != nil {
-		return m.Header
-	}
-	return nil
-}
-
-func (m *S2CGetRoomConfigRsp) GetElements() []*RoomConfigElement {
-	if m != nil {
-		return m.Elements
-	}
-	return nil
-}
-
-type C2SEnterRoomReq struct {
-	Type     RoomType `protobuf:"varint,1,opt,name=type,enum=proto.room.RoomType" json:"type"`
-	RoomId   uint64   `protobuf:"fixed64,2,opt,name=room_id,json=roomId" json:"room_id,omitempty"`
-	Password string   `protobuf:"bytes,3,opt,name=password" json:"password,omitempty"`
-}
-
-func (m *C2SEnterRoomReq) Reset()                    { *m = C2SEnterRoomReq{} }
-func (m *C2SEnterRoomReq) String() string            { return proto.CompactTextString(m) }
-func (*C2SEnterRoomReq) ProtoMessage()               {}
-func (*C2SEnterRoomReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
-
-func (m *C2SEnterRoomReq) GetType() RoomType {
-	if m != nil {
-		return m.Type
-	}
-	return RoomType_ROOM_RESERVED
-}
-
-func (m *C2SEnterRoomReq) GetRoomId() uint64 {
-	if m != nil {
-		return m.RoomId
-	}
-	return 0
-}
-
-func (m *C2SEnterRoomReq) GetPassword() string {
-	if m != nil {
-		return m.Password
-	}
-	return ""
-}
-
-type S2CEnterRoomRsp struct {
-	Header *proto_common.RspHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
-}
-
-func (m *S2CEnterRoomRsp) Reset()                    { *m = S2CEnterRoomRsp{} }
-func (m *S2CEnterRoomRsp) String() string            { return proto.CompactTextString(m) }
-func (*S2CEnterRoomRsp) ProtoMessage()               {}
-func (*S2CEnterRoomRsp) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
-
-func (m *S2CEnterRoomRsp) GetHeader() *proto_common.RspHeader {
-	if m != nil {
-		return m.Header
-	}
-	return nil
-}
-
-type C2SCreateRoomReq struct {
-	BillingMode BillingMode            `protobuf:"varint,1,opt,name=billing_mode,json=billingMode,enum=proto.room.BillingMode" json:"billing_mode"`
-	CardNum     int32                  `protobuf:"varint,2,opt,name=card_num,json=cardNum" json:"card_num"`
-	Password    string                 `protobuf:"bytes,3,opt,name=password" json:"password,omitempty"`
-	Title       string                 `protobuf:"bytes,4,opt,name=title" json:"title,omitempty"`
-	Desc        string                 `protobuf:"bytes,5,opt,name=desc" json:"desc,omitempty"`
-	Observable  bool                   `protobuf:"varint,6,opt,name=observable" json:"observable"`
-	BoomLimit   int32                  `protobuf:"varint,7,opt,name=boom_limit,json=boomLimit" json:"boom_limit"`
-	Secure      bool                   `protobuf:"varint,8,opt,name=secure" json:"secure"`
-	Location    *proto_common.Location `protobuf:"bytes,9,opt,name=location" json:"location,omitempty"`
-}
-
-func (m *C2SCreateRoomReq) Reset()                    { *m = C2SCreateRoomReq{} }
-func (m *C2SCreateRoomReq) String() string            { return proto.CompactTextString(m) }
-func (*C2SCreateRoomReq) ProtoMessage()               {}
-func (*C2SCreateRoomReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{6} }
-
-func (m *C2SCreateRoomReq) GetBillingMode() BillingMode {
-	if m != nil {
-		return m.BillingMode
-	}
-	return BillingMode_BILLING_RESERVED
-}
-
-func (m *C2SCreateRoomReq) GetCardNum() int32 {
-	if m != nil {
-		return m.CardNum
-	}
-	return 0
-}
-
-func (m *C2SCreateRoomReq) GetPassword() string {
-	if m != nil {
-		return m.Password
-	}
-	return ""
-}
-
-func (m *C2SCreateRoomReq) GetTitle() string {
-	if m != nil {
-		return m.Title
-	}
-	return ""
-}
-
-func (m *C2SCreateRoomReq) GetDesc() string {
-	if m != nil {
-		return m.Desc
-	}
-	return ""
-}
-
-func (m *C2SCreateRoomReq) GetObservable() bool {
-	if m != nil {
-		return m.Observable
-	}
-	return false
-}
-
-func (m *C2SCreateRoomReq) GetBoomLimit() int32 {
-	if m != nil {
-		return m.BoomLimit
-	}
-	return 0
-}
-
-func (m *C2SCreateRoomReq) GetSecure() bool {
-	if m != nil {
-		return m.Secure
-	}
-	return false
-}
-
-func (m *C2SCreateRoomReq) GetLocation() *proto_common.Location {
-	if m != nil {
-		return m.Location
-	}
-	return nil
-}
-
-type S2CCreateRoomRsp struct {
-	Header *proto_common.RspHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
-}
-
-func (m *S2CCreateRoomRsp) Reset()                    { *m = S2CCreateRoomRsp{} }
-func (m *S2CCreateRoomRsp) String() string            { return proto.CompactTextString(m) }
-func (*S2CCreateRoomRsp) ProtoMessage()               {}
-func (*S2CCreateRoomRsp) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
-
-func (m *S2CCreateRoomRsp) GetHeader() *proto_common.RspHeader {
-	if m != nil {
-		return m.Header
-	}
-	return nil
-}
+func (ExitRoomResult) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
 type C2SExitRoomReq struct {
 	Option ExitRoomOption `protobuf:"varint,1,opt,name=option,enum=proto.room.ExitRoomOption" json:"option"`
@@ -602,7 +78,7 @@ type C2SExitRoomReq struct {
 func (m *C2SExitRoomReq) Reset()                    { *m = C2SExitRoomReq{} }
 func (m *C2SExitRoomReq) String() string            { return proto.CompactTextString(m) }
 func (*C2SExitRoomReq) ProtoMessage()               {}
-func (*C2SExitRoomReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
+func (*C2SExitRoomReq) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
 func (m *C2SExitRoomReq) GetOption() ExitRoomOption {
 	if m != nil {
@@ -618,7 +94,7 @@ type S2CExitRoomRsp struct {
 func (m *S2CExitRoomRsp) Reset()                    { *m = S2CExitRoomRsp{} }
 func (m *S2CExitRoomRsp) String() string            { return proto.CompactTextString(m) }
 func (*S2CExitRoomRsp) ProtoMessage()               {}
-func (*S2CExitRoomRsp) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
+func (*S2CExitRoomRsp) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
 func (m *S2CExitRoomRsp) GetHeader() *proto_common.RspHeader {
 	if m != nil {
@@ -628,21 +104,8 @@ func (m *S2CExitRoomRsp) GetHeader() *proto_common.RspHeader {
 }
 
 func init() {
-	proto.RegisterType((*RoomInfo)(nil), "proto.room.RoomInfo")
-	proto.RegisterType((*RoomConfigElement)(nil), "proto.room.RoomConfigElement")
-	proto.RegisterType((*C2SGetRoomConfigReq)(nil), "proto.room.C2SGetRoomConfigReq")
-	proto.RegisterType((*S2CGetRoomConfigRsp)(nil), "proto.room.S2CGetRoomConfigRsp")
-	proto.RegisterType((*C2SEnterRoomReq)(nil), "proto.room.C2SEnterRoomReq")
-	proto.RegisterType((*S2CEnterRoomRsp)(nil), "proto.room.S2CEnterRoomRsp")
-	proto.RegisterType((*C2SCreateRoomReq)(nil), "proto.room.C2SCreateRoomReq")
-	proto.RegisterType((*S2CCreateRoomRsp)(nil), "proto.room.S2CCreateRoomRsp")
 	proto.RegisterType((*C2SExitRoomReq)(nil), "proto.room.C2SExitRoomReq")
 	proto.RegisterType((*S2CExitRoomRsp)(nil), "proto.room.S2CExitRoomRsp")
-	proto.RegisterEnum("proto.room.RoomType", RoomType_name, RoomType_value)
-	proto.RegisterEnum("proto.room.BillingMode", BillingMode_name, BillingMode_value)
-	proto.RegisterEnum("proto.room.GameMode", GameMode_name, GameMode_value)
-	proto.RegisterEnum("proto.room.EnterRoomResult", EnterRoomResult_name, EnterRoomResult_value)
-	proto.RegisterEnum("proto.room.CreateRoomResult", CreateRoomResult_name, CreateRoomResult_value)
 	proto.RegisterEnum("proto.room.ExitRoomOption", ExitRoomOption_name, ExitRoomOption_value)
 	proto.RegisterEnum("proto.room.ExitRoomResult", ExitRoomResult_name, ExitRoomResult_value)
 }
@@ -650,75 +113,21 @@ func init() {
 func init() { proto.RegisterFile("room.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 1107 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x55, 0x51, 0x8f, 0xda, 0x46,
-	0x10, 0x8e, 0x39, 0xe0, 0xcc, 0xc0, 0xc1, 0xde, 0x1e, 0x49, 0x9c, 0xab, 0x48, 0x09, 0x55, 0x2b,
-	0x84, 0xd4, 0x43, 0xa5, 0x7d, 0x49, 0x1f, 0xaa, 0xfa, 0x8c, 0xef, 0xe2, 0xd6, 0xe0, 0xd3, 0xda,
-	0x97, 0xa4, 0x7d, 0xb1, 0x0c, 0xde, 0x10, 0x4b, 0xb6, 0x97, 0xd8, 0x26, 0x69, 0x1e, 0xfb, 0xd4,
-	0xff, 0xd0, 0x1f, 0xd2, 0x87, 0xfe, 0xba, 0x6a, 0xd7, 0x06, 0xcc, 0xb5, 0x4d, 0xab, 0x3c, 0xc1,
-	0x7c, 0xf3, 0xcd, 0xec, 0x7c, 0xb3, 0x33, 0x6b, 0x80, 0x84, 0xb1, 0xe8, 0x62, 0x9d, 0xb0, 0x8c,
-	0x61, 0x10, 0x3f, 0x17, 0x1c, 0x39, 0x6f, 0x2d, 0x59, 0x14, 0xb1, 0x38, 0xf7, 0x0c, 0x7e, 0xaf,
-	0x81, 0x4c, 0x18, 0x8b, 0x8c, 0xf8, 0x15, 0xc3, 0x6d, 0xa8, 0x04, 0xbe, 0x22, 0xf5, 0xa5, 0x61,
-	0x9d, 0x54, 0x02, 0x1f, 0x77, 0xa1, 0xc6, 0xde, 0xc5, 0x34, 0x51, 0x2a, 0x02, 0xca, 0x0d, 0xfc,
-	0x15, 0x34, 0x78, 0x22, 0x37, 0x7b, 0xbf, 0xa6, 0xca, 0x51, 0x5f, 0x1a, 0xb6, 0x27, 0xdd, 0x8b,
-	0xfd, 0x01, 0x17, 0x3c, 0x9d, 0xf3, 0x7e, 0x4d, 0x89, 0x9c, 0x14, 0xff, 0x78, 0xc8, 0xca, 0x8b,
-	0xa8, 0x1b, 0x31, 0x9f, 0x2a, 0xd5, 0xbf, 0x87, 0x5c, 0x7b, 0x11, 0x9d, 0x31, 0x9f, 0x12, 0x79,
-	0x55, 0xfc, 0xc3, 0xdf, 0x40, 0x63, 0x11, 0x84, 0x61, 0x1e, 0x52, 0x13, 0x21, 0x0f, 0xcb, 0x21,
-	0x97, 0x41, 0x18, 0x06, 0xf1, 0x2a, 0x8f, 0xe2, 0x4c, 0x11, 0xd5, 0x85, 0x5a, 0x16, 0x64, 0x21,
-	0x55, 0xea, 0x7d, 0x69, 0xd8, 0x20, 0xb9, 0x81, 0x31, 0x54, 0x7d, 0x9a, 0x2e, 0x95, 0x63, 0x01,
-	0x8a, 0xff, 0x9c, 0x99, 0x06, 0xf1, 0x92, 0x2a, 0x72, 0xae, 0x4d, 0x18, 0xf8, 0x31, 0x00, 0x5b,
-	0xa4, 0x34, 0x79, 0xeb, 0x2d, 0x42, 0xaa, 0x34, 0xfa, 0xd2, 0x50, 0x26, 0x25, 0x04, 0xf7, 0x00,
-	0x16, 0x5c, 0x7b, 0x18, 0x44, 0x41, 0xa6, 0x40, 0x5f, 0x1a, 0xd6, 0x48, 0x83, 0x23, 0x26, 0x07,
-	0x84, 0xdb, 0x4b, 0xa9, 0xbb, 0x66, 0x41, 0x9c, 0x29, 0xcd, 0xc2, 0xed, 0xa5, 0xf4, 0x86, 0x03,
-	0xf8, 0x73, 0x68, 0x67, 0x2c, 0xf3, 0x42, 0xd7, 0xdf, 0x24, 0x5e, 0x16, 0xb0, 0x58, 0x69, 0x09,
-	0xca, 0x89, 0x40, 0xa7, 0x05, 0x88, 0x3f, 0x83, 0x93, 0x90, 0xbe, 0xca, 0xf6, 0xac, 0x13, 0xc1,
-	0x6a, 0x71, 0x70, 0x47, 0x7a, 0x02, 0xad, 0x3c, 0x57, 0xc2, 0x36, 0xb1, 0x9f, 0x2a, 0x6d, 0xc1,
-	0x69, 0x0a, 0x8c, 0x08, 0x08, 0x7f, 0x0a, 0x4d, 0x91, 0xa7, 0x60, 0x74, 0x04, 0x03, 0x38, 0x54,
-	0x10, 0x3e, 0x81, 0xc6, 0xd2, 0x0b, 0x43, 0x37, 0x0b, 0x22, 0xaa, 0x20, 0xe1, 0x96, 0x39, 0xe0,
-	0x04, 0x11, 0xe5, 0xce, 0xd7, 0x5e, 0xec, 0xe7, 0xce, 0xd3, 0xdc, 0xc9, 0x01, 0xe1, 0x54, 0xe0,
-	0x78, 0x1d, 0x7a, 0xef, 0x69, 0x92, 0x2a, 0xb8, 0x7f, 0x34, 0xac, 0x93, 0xad, 0x89, 0x1f, 0x40,
-	0x3d, 0xa5, 0xcb, 0x4d, 0x42, 0x95, 0x33, 0xd1, 0xbd, 0xc2, 0xc2, 0x13, 0x90, 0x43, 0xb6, 0xcc,
-	0xf5, 0x74, 0xfb, 0xd2, 0xb0, 0x39, 0x79, 0x50, 0x5c, 0x67, 0x31, 0x8f, 0x66, 0xe1, 0x25, 0x3b,
-	0xde, 0xe0, 0x2d, 0x9c, 0xf2, 0x61, 0xd2, 0x58, 0xfc, 0x2a, 0x58, 0xe9, 0x21, 0x8d, 0x68, 0x9c,
-	0x95, 0x86, 0xb4, 0x26, 0x86, 0xb4, 0x07, 0xb0, 0xf4, 0x12, 0xdf, 0x5d, 0xb2, 0x4d, 0x9c, 0x89,
-	0x49, 0xad, 0x91, 0x06, 0x47, 0x34, 0x0e, 0xe0, 0x73, 0x90, 0x77, 0x7d, 0x3c, 0xca, 0x55, 0x6c,
-	0x6d, 0x5e, 0x6b, 0xd1, 0x9b, 0xaa, 0xf0, 0x14, 0xd6, 0xe0, 0x3e, 0x9c, 0x69, 0x13, 0xfb, 0x9a,
-	0x66, 0xfb, 0xd3, 0x09, 0x7d, 0x33, 0xf8, 0x55, 0x82, 0x33, 0x7b, 0xa2, 0x1d, 0xe2, 0xe9, 0x1a,
-	0x8f, 0xa1, 0xfe, 0x9a, 0x7a, 0x3e, 0x4d, 0x44, 0x55, 0xcd, 0xdd, 0x9c, 0x16, 0xc2, 0x48, 0xba,
-	0x7e, 0x26, 0xdc, 0xa4, 0xa0, 0xe1, 0xa7, 0x20, 0xd3, 0x5c, 0x4d, 0xaa, 0x54, 0xfa, 0x47, 0xc3,
-	0xe6, 0xa4, 0x77, 0x77, 0x81, 0x0e, 0x34, 0x93, 0x1d, 0x7d, 0xb0, 0x86, 0x8e, 0x36, 0xb1, 0xf5,
-	0x38, 0xa3, 0x09, 0xa7, 0x11, 0xfa, 0x06, 0x0f, 0xa1, 0x2a, 0x56, 0x51, 0xfa, 0xc0, 0x2a, 0x0a,
-	0x06, 0x7e, 0x08, 0xc7, 0x62, 0x73, 0x03, 0xbf, 0xd8, 0xe8, 0x3a, 0x37, 0x0d, 0x9f, 0x37, 0x69,
-	0xed, 0xa5, 0xe9, 0x3b, 0x96, 0xf8, 0xa2, 0x49, 0x0d, 0xb2, 0xb3, 0x07, 0x97, 0xd0, 0xb1, 0x27,
-	0xda, 0xfe, 0xc4, 0x8f, 0x10, 0x3c, 0xf8, 0xb3, 0x02, 0x48, 0x9b, 0xd8, 0x5a, 0x42, 0xbd, 0x8c,
-	0x6e, 0xeb, 0xfe, 0x16, 0x5a, 0x8b, 0x7c, 0x89, 0xf3, 0x25, 0x97, 0x3e, 0xbc, 0xe4, 0xcd, 0xc5,
-	0xde, 0xc0, 0x8f, 0x40, 0x16, 0x97, 0x1e, 0x6f, 0xa2, 0xe2, 0xca, 0x8f, 0xb9, 0x3d, 0xdf, 0x44,
-	0x1f, 0xd2, 0xb2, 0x7f, 0x1e, 0xaa, 0xff, 0xf4, 0x3c, 0xd4, 0x4a, 0xcf, 0xc3, 0xe1, 0x43, 0x50,
-	0xff, 0x8f, 0x87, 0xe0, 0xf8, 0xee, 0x43, 0xb0, 0xdf, 0x02, 0xf9, 0x5f, 0xb7, 0xa0, 0xf1, 0x3f,
-	0xb7, 0x40, 0x03, 0x64, 0x4f, 0xb4, 0x52, 0xef, 0x3e, 0xe6, 0x06, 0xa6, 0xd0, 0xe6, 0x73, 0xf3,
-	0x4b, 0x90, 0x6d, 0xdb, 0x3f, 0x81, 0x3a, 0x5b, 0x8b, 0x42, 0xf2, 0xc6, 0x9f, 0x97, 0x1b, 0xbf,
-	0x25, 0x5a, 0x82, 0x41, 0x0a, 0xe6, 0x40, 0x85, 0x36, 0x9f, 0x85, 0x6d, 0x96, 0x8f, 0x28, 0x64,
-	0xf4, 0x7d, 0xfe, 0xbd, 0x11, 0x9f, 0x85, 0x53, 0x38, 0x21, 0x96, 0x35, 0x73, 0x89, 0x6e, 0xeb,
-	0xe4, 0xb9, 0x3e, 0x45, 0xf7, 0x70, 0x07, 0x9a, 0x02, 0x9a, 0x5b, 0x64, 0xa6, 0x9a, 0x48, 0xc2,
-	0x08, 0x5a, 0x02, 0xb8, 0x21, 0xc6, 0x73, 0xd5, 0xd1, 0x51, 0x65, 0xf4, 0x0c, 0x9a, 0xa5, 0xb9,
-	0xc0, 0x5d, 0x40, 0x97, 0x86, 0x69, 0x1a, 0xf3, 0xeb, 0x72, 0x1e, 0x04, 0xad, 0x2d, 0xea, 0x18,
-	0x33, 0x1d, 0x49, 0xfc, 0xb0, 0x1d, 0xcf, 0xba, 0x9d, 0x4f, 0x51, 0x65, 0xf4, 0x03, 0xc8, 0xdb,
-	0x2f, 0x0f, 0x7e, 0x00, 0xf8, 0x5a, 0x9d, 0xe9, 0xee, 0xcc, 0x9a, 0xea, 0xe5, 0x44, 0x18, 0xda,
-	0x25, 0x5c, 0xd5, 0x78, 0xaa, 0x03, 0x4c, 0x53, 0x4d, 0x13, 0x55, 0x46, 0x7f, 0x48, 0xd0, 0x29,
-	0xad, 0x65, 0xba, 0x09, 0x33, 0x7e, 0xa4, 0x3e, 0x77, 0x74, 0xe2, 0x0a, 0x05, 0xd6, 0x8f, 0xe8,
-	0x1e, 0x1e, 0xc0, 0xe3, 0x12, 0x64, 0xcc, 0xed, 0xdb, 0xab, 0x2b, 0x43, 0x33, 0xf4, 0xb9, 0xe3,
-	0x6a, 0x44, 0x9f, 0x1a, 0x0e, 0x92, 0x70, 0x0f, 0x1e, 0x95, 0x38, 0x2f, 0x88, 0x35, 0xbf, 0x76,
-	0x6f, 0x54, 0xdb, 0x7e, 0x61, 0x91, 0x29, 0xaa, 0x60, 0x05, 0xba, 0x25, 0xf7, 0xdc, 0x72, 0x5c,
-	0xfd, 0xa5, 0x61, 0x3b, 0xe8, 0x08, 0x9f, 0x41, 0xa7, 0xe4, 0xb9, 0xba, 0x35, 0x4d, 0x54, 0xc5,
-	0x8f, 0xe1, 0xbc, 0x0c, 0xaa, 0x86, 0xe9, 0xce, 0x2d, 0xd7, 0xba, 0x14, 0x0a, 0x51, 0x6d, 0xf4,
-	0x9b, 0x04, 0xa8, 0xbc, 0x98, 0xa2, 0x72, 0x0c, 0x6d, 0x8d, 0xe8, 0xaa, 0xa3, 0x97, 0x4a, 0xef,
-	0xc1, 0xa3, 0x32, 0x66, 0xcc, 0x9f, 0xab, 0xa6, 0x31, 0x75, 0x6f, 0x54, 0xa2, 0xce, 0x90, 0x84,
-	0x9f, 0x40, 0xef, 0xd0, 0x5d, 0x96, 0xa6, 0x8a, 0xca, 0xef, 0x64, 0x50, 0x4d, 0xa2, 0xab, 0xd3,
-	0x9f, 0xb6, 0xe5, 0x8f, 0xbe, 0x83, 0xf6, 0xe1, 0xdc, 0xe1, 0xfb, 0x70, 0xaa, 0xbf, 0x34, 0x9c,
-	0x9c, 0x3e, 0xd5, 0xaf, 0xd4, 0x5b, 0xd3, 0x41, 0xf7, 0xee, 0xc0, 0x86, 0x3d, 0x33, 0x6c, 0x1b,
-	0x49, 0xa3, 0xa7, 0xfb, 0xf8, 0x42, 0x06, 0x82, 0xd6, 0x9e, 0x28, 0x44, 0x1c, 0x84, 0x16, 0x12,
-	0x90, 0x74, 0x39, 0xfc, 0xf9, 0x8b, 0x55, 0x90, 0xbd, 0xde, 0x2c, 0xf8, 0xe0, 0x8e, 0x23, 0x2f,
-	0xcd, 0x68, 0xf2, 0xe5, 0x6a, 0xcc, 0xa2, 0x15, 0x1b, 0x8b, 0x81, 0x1e, 0xaf, 0x17, 0x63, 0xbe,
-	0x19, 0x8b, 0xba, 0x30, 0xbf, 0xfe, 0x2b, 0x00, 0x00, 0xff, 0xff, 0x45, 0xb7, 0x2a, 0x53, 0x5f,
-	0x09, 0x00, 0x00,
+	// 248 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x5c, 0x8f, 0xc1, 0x4b, 0xc3, 0x30,
+	0x14, 0xc6, 0xed, 0xa5, 0x87, 0xe7, 0x28, 0x35, 0x20, 0xca, 0x4e, 0xb2, 0x83, 0x8c, 0x81, 0x0d,
+	0xc4, 0x93, 0x17, 0xa1, 0xae, 0x15, 0x83, 0x9b, 0x85, 0x64, 0x8a, 0x78, 0x19, 0xab, 0x86, 0xae,
+	0x60, 0xf6, 0x62, 0x9b, 0x81, 0x7f, 0xbe, 0x34, 0x46, 0xcb, 0x7a, 0x0a, 0x79, 0xef, 0xf7, 0xfd,
+	0xf2, 0x05, 0xa0, 0x41, 0xd4, 0x89, 0x69, 0xd0, 0x22, 0x01, 0x77, 0x24, 0xdd, 0x64, 0x3c, 0x7a,
+	0x47, 0xad, 0x71, 0xf7, 0xbb, 0x99, 0x64, 0x10, 0xcd, 0x99, 0xcc, 0xbf, 0x6b, 0x2b, 0x10, 0xb5,
+	0x50, 0x5f, 0x84, 0x41, 0x88, 0xc6, 0xd6, 0xb8, 0x3b, 0x0f, 0x2e, 0x82, 0x69, 0xc4, 0xc6, 0x49,
+	0x1f, 0x4e, 0xfe, 0xc0, 0xc2, 0x11, 0xc2, 0x93, 0x93, 0x14, 0x22, 0xc9, 0xe6, 0xff, 0x96, 0xd6,
+	0x10, 0x0a, 0xe1, 0x56, 0x6d, 0x3e, 0x54, 0xe3, 0x2c, 0xc7, 0xec, 0xcc, 0x5b, 0xfc, 0xe3, 0xa2,
+	0x35, 0x0f, 0x6e, 0x2d, 0x3c, 0x36, 0xbb, 0x85, 0xe8, 0x50, 0x4e, 0x4e, 0xe1, 0x24, 0x7f, 0xe5,
+	0xab, 0xb5, 0x28, 0x8a, 0xe5, 0x3a, 0xcb, 0xef, 0xd3, 0xe7, 0xc5, 0x2a, 0x3e, 0x1a, 0x8c, 0xb9,
+	0x5c, 0x72, 0x29, 0xe3, 0x60, 0x76, 0xd3, 0xe7, 0x85, 0x6a, 0xf7, 0x9f, 0x96, 0xc4, 0x30, 0xea,
+	0xc1, 0xe2, 0x71, 0x18, 0xe5, 0x4f, 0x2f, 0xe9, 0x82, 0x67, 0x71, 0x70, 0x37, 0x7d, 0xbb, 0xac,
+	0x6a, 0xbb, 0xdd, 0x97, 0x5d, 0x3b, 0xaa, 0x37, 0xad, 0x55, 0xcd, 0x55, 0x45, 0x51, 0x57, 0x48,
+	0x5d, 0x6b, 0x6a, 0x4a, 0xda, 0x7d, 0xbf, 0x0c, 0xdd, 0xf5, 0xfa, 0x27, 0x00, 0x00, 0xff, 0xff,
+	0xbc, 0x66, 0x22, 0x80, 0x5c, 0x01, 0x00, 0x00,
 }

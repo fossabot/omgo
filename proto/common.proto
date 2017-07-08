@@ -6,7 +6,8 @@ option go_package = "github.com/master-g/omgo/proto/pb/common";
 /// S -> C : even
 /// C -> S : odd
 enum Cmd {
-    RESERVED       = 0;
+    RESERVED = 0;
+    /// Common Commands, handle by agent
     HEART_BEAT_REQ = 0x1;    /// C->S heartbeat request
     HEART_BEAT_RSP = 0x2;    /// S->C heartbeat response
     KICK_NOTIFY    = 0x4;    /// S->C kick notification
@@ -20,7 +21,19 @@ enum Cmd {
     PING_REQ       = 0x1001; /// C->S ping request
     PING_RSP       = 0x1002; /// S->C ping response
 
+    /// Hall Commands, handle by agent
+    ROOM_CONFIG_REQ = 0x2001; /// C->S get room config request
+    ROOM_CONFIG_RSP = 0x2002; /// S->C get room config response
+    CREATE_ROOM_REQ = 0x2003; /// C->S create room request
+    CREATE_ROOM_RSP = 0x2004; /// S->C create room response
+    ENTER_ROOM_REQ  = 0x2005; /// C->S enter room request
+    ENTER_ROOM_RSP  = 0x2006; /// S->C enter room response
+
     CMD_COMMON_END = 0x10000;
+
+    /// Room Commands, handle by game
+    EXIT_ROOM_REQ = 0x10007; /// C->S exit room request
+    EXIT_ROOM_RSP = 0x10008; /// S->C exit room response
 }
 
 enum ResultCode {
