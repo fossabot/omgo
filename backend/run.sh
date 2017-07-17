@@ -5,8 +5,8 @@ cd ./snowflake/
 sh ./run.sh
 cd ..
 
-# DB mongodb
-cd ./db/mongodb/
+# DB mysql
+cd ./db/mysql/
 sh ./run.sh
 cd ..
 
