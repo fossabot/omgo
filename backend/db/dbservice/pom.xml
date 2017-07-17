@@ -42,9 +42,34 @@
       <artifactId>vertx-unit</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>3.3.0</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/io.vertx/vertx-grpc -->
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-grpc</artifactId>
+      <version>${vertx.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>
+
+    <extensions>
+      <!-- os version -->
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>1.4.1.Final</version>
+      </extension>
+    </extensions>
+
     <pluginManagement>
       <plugins>
         <plugin>
@@ -58,6 +83,7 @@
       </plugins>
     </pluginManagement>
 
+    <!-- maven -->
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -89,6 +115,41 @@
         </executions>
       </plugin>
 
+
+      <!-- grpc -->
+      <plugin>
+        <groupId>org.xolstice.maven.plugins</groupId>
+        <artifactId>protobuf-maven-plugin</artifactId>
+        <version>0.5.0</version>
+        <configuration>
+          <protocArtifact>com.google.protobuf:protoc:3.3.0:exe:${os.detected.classifier}</protocArtifact>
+          <pluginId>grpc-java</pluginId>
+          <pluginArtifact>io.vertx:protoc-gen-grpc-java:1.3.0:exe:${os.detected.classifier}</pluginArtifact>
+        </configuration>
+        <executions>
+          <execution>
+            <id>compile</id>
+            <configuration>
+              <outputDirectory>${project.basedir}/src/main/java</outputDirectory>
+              <clearOutputDirectory>false</clearOutputDirectory>
+            </configuration>
+            <goals>
+              <goal>compile</goal>
+              <goal>compile-custom</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>test-compile</id>
+            <goals>
+              <goal>test-compile</goal>
+              <goal>test-compile-custom</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+
+      <!-- vert.x launcher -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>

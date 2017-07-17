@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package proto;
+
+import "common.proto";
+
+// Database service definition
+service DBService {
+    // query user info
+    rpc UserQuery(DB.UserKey) returns (DB.UserQueryResponse);
+
+    // update user info
+    rpc UserUpdateInfo(proto.common.UserInfo) returns (proto.common.RspHeader);
+
+    // register
+    rpc UserRegister(DB.UserRegisterRequest) returns (DB.UserRegisterResponse);
+
+    // login
+    rpc UserLogin(DB.UserLoginRequest) returns (DB.UserLoginResponse);
+
+    // logout
+    rpc UserLogout(DB.UserLogoutRequest) returns (proto.common.RspHeader);
+
+    // verify token
+    rpc UserExtraInfoQuery(DB.UserKey) returns (DB.UserExtraInfo);
+}
+
+message DB {
+    // user query key
+    message UserKey {
+        fixed64 usn   = 1;
+        uint64  uid   = 2;
+        string  email = 3;
+    }
+    // user extra information
+    message UserExtraInfo {
+        fixed64 usn    = 1; // user serial number
+        bytes   secret = 2; // password hash
+        string  token  = 3; // access token
+    }
+    message UserQueryResponse {
+        proto.common.RspHeader result = 1;
+        proto.common.UserInfo  info   = 2;
+    }
+    message UserRegisterRequest {
+        proto.common.UserInfo info   = 1;
+        bytes                 secret = 2;
+    }
+    message UserRegisterResponse {
+        proto.common.RspHeader result = 1;
+        proto.common.UserInfo  info   = 2;
+        string                 token  = 3;
+    }
+    message UserLoginRequest {
+        proto.common.UserInfo info   = 1;
+        bytes                 secret = 2;
+    }
+    message UserLoginResponse {
+        proto.common.RspHeader result = 1;
+        proto.common.UserInfo  info   = 2;
+        string                 token  = 3;
+    }
+    message UserLogoutRequest {
+        uint64 usn   = 1;
+        string token = 2;
+    }
+}
