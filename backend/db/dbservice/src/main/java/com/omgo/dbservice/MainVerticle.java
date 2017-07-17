@@ -1,4 +1,4 @@
-package io.vertx.starter;
+package com.omgo.dbservice;
 
 import io.vertx.core.AbstractVerticle;
 

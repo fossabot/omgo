@@ -25,12 +25,13 @@ _testmain.go
 *.test
 *.prof
 
+*.iml
+
 # Executables
 
 client/cli/cli
 backend/agent/agent
 backend/auth/auth
-backend/db/dbservice/dbservice
 backend/game/game
 backend/reception/reception
 backend/snowflake/snowflake
