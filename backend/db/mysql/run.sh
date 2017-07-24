@@ -15,6 +15,7 @@ docker rm -f ${SID}
 docker run -d --name ${SID} ${NETHOST} \
   -p 3306:3306 \
   -v ${PWD}/db:/var/lib/mysql \
+  -v ${PWD}/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d \
   -e MYSQL_USER=mysql \
   -e MYSQL_PASSWORD=mysql \
   -e MYSQL_DATABASE=sample \
