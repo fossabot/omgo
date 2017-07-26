@@ -1,0 +1,19 @@
+{
+    "rpc.host": "localhost",
+    "rpc.port": 60001,
+
+    "sql.host": "localhost",
+    "sql.port": 3306,
+    "sql.maxPoolSize": 10,
+    "sql.username": "driver",
+    "sql.password": "mysql",
+    "sql.database": "master",
+    "sql.charset": "UTF-8",
+    "sql.queryTimeout": 10000,
+
+    "redis.host": "localhost",
+    "redis.port": 6379,
+    "redis.encoding": "UTF-8",
+    "redis.tcpKeepAlive": true,
+    "redis.tcpNoDelay": true
+}
