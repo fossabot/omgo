@@ -1,12 +1,11 @@
 package com.omgo.dbservice;
 
 import com.omgo.dbservice.driver.MySQLDriver;
-import com.omgo.dbservice.driver.RedisDriver;
+import com.omgo.dbservice.driver.Utils;
 import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import io.vertx.ext.sql.SQLClient;
-import io.vertx.ext.sql.SQLConnection;
+import io.vertx.redis.RedisClient;
 import proto.DBServiceGrpc;
 import proto.Db;
 import proto.common.Common;
@@ -21,16 +20,29 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(DBServiceGrpcImpl.class);
 
     private MySQLDriver mySQLDriver;
-    private RedisDriver redisDriver;
+    private RedisClient redisClient;
 
-    public DBServiceGrpcImpl(MySQLDriver sqlDriver, RedisDriver redisDriver) {
+    public DBServiceGrpcImpl(MySQLDriver sqlDriver, RedisClient redisClient) {
         this.mySQLDriver = sqlDriver;
-        this.redisDriver = redisDriver;
+        this.redisClient = redisClient;
     }
 
     @Override
     public void userQuery(Db.DB.UserKey request, Future<Db.DB.UserQueryResponse> response) {
         super.userQuery(request, response);
+
+        long usn = request.getUsn();
+        // Valid usn, find in redis first
+        if (usn != 0) {
+            redisClient.hgetall(Utils.getRedisKey(usn), res -> {
+                if (res.succeeded()) {
+                    res.result();
+
+                } else {
+                    LOGGER.error(res.cause());
+                }
+            });
+        }
     }
 
     @Override
