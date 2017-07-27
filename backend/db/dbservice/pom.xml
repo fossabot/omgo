@@ -33,6 +33,13 @@
             <artifactId>vertx-core</artifactId>
         </dependency>
 
+        <!-- RxJava -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-rx-java</artifactId>
+            <version>${vertx.version}</version>
+        </dependency>
+
         <!-- test -->
         <dependency>
             <groupId>junit</groupId>

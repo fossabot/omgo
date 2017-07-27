@@ -1,10 +1,12 @@
 package com.omgo.dbservice;
 
-import com.omgo.dbservice.driver.MySQLDriver;
 import com.omgo.dbservice.driver.Utils;
+import com.omgo.dbservice.model.ModelConverter;
 import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import io.vertx.ext.sql.SQLClient;
+import io.vertx.ext.sql.SQLConnection;
 import io.vertx.redis.RedisClient;
 import proto.DBServiceGrpc;
 import proto.Db;
@@ -19,11 +21,11 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DBServiceGrpcImpl.class);
 
-    private MySQLDriver mySQLDriver;
+    private SQLClient sqlClient;
     private RedisClient redisClient;
 
-    public DBServiceGrpcImpl(MySQLDriver sqlDriver, RedisClient redisClient) {
-        this.mySQLDriver = sqlDriver;
+    public DBServiceGrpcImpl(SQLClient sqlClient, RedisClient redisClient) {
+        this.sqlClient = sqlClient;
         this.redisClient = redisClient;
     }
 
@@ -32,17 +34,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         super.userQuery(request, response);
 
         long usn = request.getUsn();
-        // Valid usn, find in redis first
-        if (usn != 0) {
-            redisClient.hgetall(Utils.getRedisKey(usn), res -> {
-                if (res.succeeded()) {
-                    res.result();
 
-                } else {
-                    LOGGER.error(res.cause());
-                }
-            });
-        }
     }
 
     @Override
@@ -68,5 +60,37 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
     @Override
     public void userExtraInfoQuery(Db.DB.UserKey request, Future<Db.DB.UserExtraInfo> response) {
         super.userExtraInfoQuery(request, response);
+    }
+
+    private Future<Common.UserInfo> queryUserInfoRedis(long usn) {
+        Future<Common.UserInfo> future = Future.future();
+
+        if (usn == 0L) {
+            future.fail("invalid usn");
+        } else {
+            redisClient.hgetall(Utils.getRedisKey(usn), res -> {
+                if (res.succeeded()) {
+                    future.complete(ModelConverter.json2UserInfo(res.result()));
+                } else {
+                    future.fail(res.cause());
+                }
+            });
+        }
+
+        return future;
+    }
+
+    private Future<Common.UserInfo> queryUserInfoSQL(Db.DB.UserKey userKey) {
+        Future<Common.UserInfo> future = Future.future();
+        sqlClient.getConnection(connRes -> {
+            if (connRes.succeeded()) {
+                SQLConnection connection = connRes.result();
+                
+            } else {
+                future.fail(connRes.cause());
+            }
+        });
+
+        return future;
     }
 }

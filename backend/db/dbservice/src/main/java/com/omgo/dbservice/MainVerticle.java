@@ -1,6 +1,5 @@
 package com.omgo.dbservice;
 
-import com.omgo.dbservice.driver.MySQLDriver;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -23,11 +22,9 @@ public class MainVerticle extends AbstractVerticle {
         String rpcHost = config().getString("rpc.host", "localhost");
         int rpcPort = config().getInteger("rpc.port", 60001);
 
-        MySQLDriver sqlDriver = new MySQLDriver(createSQLClient());
-
         VertxServer rpcServer = VertxServerBuilder
             .forAddress(vertx, rpcHost, rpcPort)
-            .addService(new DBServiceGrpcImpl(sqlDriver, createRedisClient()))
+            .addService(new DBServiceGrpcImpl(createSQLClient(), createRedisClient()))
             .build();
 
         // Start is asynchronous
