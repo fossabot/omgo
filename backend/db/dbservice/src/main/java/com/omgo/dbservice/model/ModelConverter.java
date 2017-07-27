@@ -1,5 +1,6 @@
 package com.omgo.dbservice.model;
 
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import proto.common.Common;
 

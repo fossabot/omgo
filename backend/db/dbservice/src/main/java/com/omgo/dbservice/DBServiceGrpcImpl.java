@@ -1,8 +1,11 @@
 package com.omgo.dbservice;
 
-import com.omgo.dbservice.driver.Utils;
+import com.omgo.dbservice.model.SQLConstant;
+import com.omgo.dbservice.model.Utils;
 import com.omgo.dbservice.model.ModelConverter;
 import io.vertx.core.Future;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.sql.SQLClient;
@@ -11,6 +14,8 @@ import io.vertx.redis.RedisClient;
 import proto.DBServiceGrpc;
 import proto.Db;
 import proto.common.Common;
+
+import java.util.List;
 
 /**
  * Database gRPC service implementation
@@ -82,14 +87,47 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
 
     private Future<Common.UserInfo> queryUserInfoSQL(Db.DB.UserKey userKey) {
         Future<Common.UserInfo> future = Future.future();
-        sqlClient.getConnection(connRes -> {
-            if (connRes.succeeded()) {
-                SQLConnection connection = connRes.result();
-                
-            } else {
-                future.fail(connRes.cause());
-            }
-        });
+
+        long usn = userKey.getUsn();
+        long uid = userKey.getUid();
+        String email = userKey.getEmail();
+
+        if (usn == 0L && uid == 0L && Utils.isEmptyString(email)) {
+            future.fail("invalid query key");
+        } else {
+            sqlClient.getConnection(connRes -> {
+                if (connRes.succeeded()) {
+                    SQLConnection connection = connRes.result();
+
+                    String query = "";
+                    JsonArray params = new JsonArray();
+                    if (usn != 0L) {
+                        params.add(usn);
+                        query = SQLConstant.QUERY_WITH_USN;
+                    } else if (uid != 0L) {
+                        params.add(uid);
+                        query = SQLConstant.QUERY_WITH_UID;
+                    } else if (!Utils.isEmptyString(email)) {
+                        params.add(email);
+                        query = SQLConstant.QUERY_WITH_EMAIL;
+                    }
+
+                    connection.queryWithParams(query, params, queryRes -> {
+                       if (queryRes.succeeded()) {
+                            List<JsonObject> results = queryRes.result().getRows();
+                            future.complete(ModelConverter.json2UserInfo(results.get(0)));
+                       } else {
+                           future.fail(queryRes.cause());
+                       }
+
+                       connection.close();
+                    });
+
+                } else {
+                    future.fail(connRes.cause());
+                }
+            });
+        }
 
         return future;
     }
