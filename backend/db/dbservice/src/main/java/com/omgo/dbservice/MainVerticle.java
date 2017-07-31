@@ -1,6 +1,7 @@
 package com.omgo.dbservice;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -12,6 +13,7 @@ import io.vertx.redis.RedisClient;
 import io.vertx.redis.RedisOptions;
 
 import java.io.IOException;
+import java.util.Random;
 
 public class MainVerticle extends AbstractVerticle {
 
@@ -33,6 +35,8 @@ public class MainVerticle extends AbstractVerticle {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+//        testCompose();
     }
 
     private SQLClient createSQLClient() {
@@ -81,4 +85,41 @@ public class MainVerticle extends AbstractVerticle {
         return RedisClient.create(vertx, redisConfig);
     }
 
+    private Random random = new Random();
+
+    private Future<String> queryRedis() {
+        Future<String> future = Future.future();
+        if (random.nextBoolean()) {
+            future.complete("redis ok");
+        } else {
+            future.fail("shit happens");
+        }
+        return future;
+    }
+
+    private Future<String> queryMySql() {
+        Future<String> future = Future.future();
+        if (random.nextBoolean()) {
+            future.complete("mysql ok");
+        } else {
+            future.fail("mysql fuck up");
+        }
+        return future;
+    }
+
+    private void testCompose() {
+        Future<String> futureRedis = queryRedis();
+        futureRedis.compose(
+            s1 -> {
+                LOGGER.info(s1);
+            },
+            queryMySql().setHandler(res -> {
+                if (res.succeeded()) {
+                    LOGGER.info(res.result());
+                } else {
+                    LOGGER.info(res.cause());
+                }
+            })
+        );
+    }
 }
