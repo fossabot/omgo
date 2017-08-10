@@ -2,11 +2,14 @@ package com.omgo.dbservice;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import io.vertx.ext.asyncsql.MySQLClient;
+import io.vertx.ext.jdbc.JDBCClient;
+import io.vertx.ext.sql.ResultSet;
 import io.vertx.ext.sql.SQLClient;
+import io.vertx.ext.sql.SQLConnection;
 import io.vertx.grpc.VertxServer;
 import io.vertx.grpc.VertxServerBuilder;
 import io.vertx.redis.RedisClient;
@@ -24,9 +27,11 @@ public class MainVerticle extends AbstractVerticle {
         String rpcHost = config().getString("rpc.host", "localhost");
         int rpcPort = config().getInteger("rpc.port", 60001);
 
+        SQLClient client = createSQLClient();
+
         VertxServer rpcServer = VertxServerBuilder
             .forAddress(vertx, rpcHost, rpcPort)
-            .addService(new DBServiceGrpcImpl(createSQLClient(), createRedisClient()))
+            .addService(new DBServiceGrpcImpl(client, createRedisClient()))
             .build();
 
         // Start is asynchronous
@@ -36,32 +41,46 @@ public class MainVerticle extends AbstractVerticle {
             e.printStackTrace();
         }
 
+        testMySQL(client);
+
 //        testCompose();
     }
 
     private SQLClient createSQLClient() {
-        String host = config().getString("sql.host", "localhost");
-        int port = config().getInteger("sql.port", 3306);
+        String url = config().getString("sql.url", "jdbc:mysql://localhost:3306/master");
         int maxPoolSize = config().getInteger("sql.maxPoolSize", 10);
         String username = config().getString("sql.username", "driver");
         String password = config().getString("sql.password", "mysql");
         String database = config().getString("sql.database", "master");
         String charset = config().getString("sql.charset", "UTF-8");
-        int queryTimeout = config().getInteger("sql.queryTimeout", 10000);
+
+        JsonObject dataSourceProperty = new JsonObject()
+            .put("databaseName", database)
+            .put("cachePrepStmts", true)
+            .put("prepStmtCacheSize", 250)
+            .put("prepStmtCacheSqlLimit", 2048)
+            .put("useServerPrepStmts", true)
+            .put("useLocalSessionState", true)
+            .put("useLocalTransactionState", true)
+            .put("rewriteBatchedStatements", true)
+            .put("cacheResultSetMetadata", true)
+            .put("cacheServerConfiguration", true)
+            .put("elideSetAutoCommits", true)
+            .put("maintainTimeStats", false);
 
         JsonObject mySQLConnectionConfig = new JsonObject()
-            .put("host", host)
-            .put("port", port)
+            .put("provider_class", "io.vertx.ext.jdbc.spi.impl.HikariCPDataSourceProvider")
+            .put("driverClassName", "com.mysql.jdbc.Driver")
+            .put("jdbcUrl", url)
             .put("maxPoolSize", maxPoolSize)
             .put("username", username)
             .put("password", password)
-            .put("database", database)
             .put("charset", charset)
-            .put("queryTimeout", queryTimeout);
+            .put("datasource", dataSourceProperty);
 
         LOGGER.info(mySQLConnectionConfig);
 
-        return MySQLClient.createNonShared(vertx, mySQLConnectionConfig);
+        return JDBCClient.createShared(vertx, mySQLConnectionConfig);
     }
 
     private RedisClient createRedisClient() {
@@ -121,5 +140,24 @@ public class MainVerticle extends AbstractVerticle {
                 }
             })
         );
+    }
+
+    private void testMySQL(SQLClient client) {
+        client.getConnection(res -> {
+            if (res.succeeded()) {
+                SQLConnection connection = res.result();
+                connection.queryWithParams("SELECT * FROM user WHERE usn=?", new JsonArray().add(1234), dbRes -> {
+                    if (dbRes.succeeded()) {
+                        ResultSet rs = dbRes.result();
+                        JsonObject row = rs.getRows().get(0);
+                        LOGGER.info(row);
+                    } else {
+                        LOGGER.error(dbRes.cause());
+                    }
+                });
+            } else {
+                LOGGER.error(res.cause());
+            }
+        });
     }
 }

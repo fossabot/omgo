@@ -80,7 +80,6 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
     public void userRegister(Db.DB.UserRegisterRequest request, Future<Db.DB.UserRegisterResponse> response) {
         LOGGER.info("userRegister", request);
 
-        request.get
         String email = "";
         if (request.getInfo() != null) {
             email = request.getInfo().getEmail();

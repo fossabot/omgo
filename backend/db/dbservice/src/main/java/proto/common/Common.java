@@ -1653,47 +1653,48 @@ public final class Common {
 
     /**
      * <pre>
+     *&#47; avatar url
+     * </pre>
+     *
+     * <code>string avatar = 3;</code>
+     */
+    java.lang.String getAvatar();
+    /**
+     * <pre>
+     *&#47; avatar url
+     * </pre>
+     *
+     * <code>string avatar = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getAvatarBytes();
+
+    /**
+     * <pre>
      *&#47; EPOCH
      * </pre>
      *
-     * <code>fixed64 birthday = 3;</code>
+     * <code>fixed64 birthday = 4;</code>
      */
     long getBirthday();
 
     /**
      * <pre>
-     *&#47; gender
+     *&#47; country / region
      * </pre>
      *
-     * <code>.proto.common.Gender gender = 4;</code>
+     * <code>string country = 5;</code>
      */
-    int getGenderValue();
+    java.lang.String getCountry();
     /**
      * <pre>
-     *&#47; gender
+     *&#47; country / region
      * </pre>
      *
-     * <code>.proto.common.Gender gender = 4;</code>
-     */
-    proto.common.Common.Gender getGender();
-
-    /**
-     * <pre>
-     *&#47; name
-     * </pre>
-     *
-     * <code>string nickname = 5;</code>
-     */
-    java.lang.String getNickname();
-    /**
-     * <pre>
-     *&#47; name
-     * </pre>
-     *
-     * <code>string nickname = 5;</code>
+     * <code>string country = 5;</code>
      */
     com.google.protobuf.ByteString
-        getNicknameBytes();
+        getCountryBytes();
 
     /**
      * <pre>
@@ -1715,55 +1716,27 @@ public final class Common {
 
     /**
      * <pre>
-     *&#47; avatar url
+     *&#47; gender
      * </pre>
      *
-     * <code>string avatar = 7;</code>
+     * <code>.proto.common.Gender gender = 7;</code>
      */
-    java.lang.String getAvatar();
+    int getGenderValue();
     /**
      * <pre>
-     *&#47; avatar url
+     *&#47; gender
      * </pre>
      *
-     * <code>string avatar = 7;</code>
+     * <code>.proto.common.Gender gender = 7;</code>
      */
-    com.google.protobuf.ByteString
-        getAvatarBytes();
-
-    /**
-     * <pre>
-     *&#47; country / region
-     * </pre>
-     *
-     * <code>string country = 8;</code>
-     */
-    java.lang.String getCountry();
-    /**
-     * <pre>
-     *&#47; country / region
-     * </pre>
-     *
-     * <code>string country = 8;</code>
-     */
-    com.google.protobuf.ByteString
-        getCountryBytes();
-
-    /**
-     * <pre>
-     *&#47; register timestamp
-     * </pre>
-     *
-     * <code>fixed64 since = 9;</code>
-     */
-    long getSince();
+    proto.common.Common.Gender getGender();
 
     /**
      * <pre>
      *&#47; last login timestamp
      * </pre>
      *
-     * <code>fixed64 last_login = 10;</code>
+     * <code>fixed64 last_login = 8;</code>
      */
     long getLastLogin();
 
@@ -1772,9 +1745,36 @@ public final class Common {
      *&#47; login count
      * </pre>
      *
-     * <code>int32 login_count = 11;</code>
+     * <code>int32 login_count = 9;</code>
      */
     int getLoginCount();
+
+    /**
+     * <pre>
+     *&#47; name
+     * </pre>
+     *
+     * <code>string nickname = 10;</code>
+     */
+    java.lang.String getNickname();
+    /**
+     * <pre>
+     *&#47; name
+     * </pre>
+     *
+     * <code>string nickname = 10;</code>
+     */
+    com.google.protobuf.ByteString
+        getNicknameBytes();
+
+    /**
+     * <pre>
+     *&#47; register timestamp
+     * </pre>
+     *
+     * <code>fixed64 since = 11;</code>
+     */
+    long getSince();
   }
   /**
    * <pre>
@@ -1794,15 +1794,15 @@ public final class Common {
     private UserInfo() {
       usn_ = 0L;
       uid_ = 0L;
-      birthday_ = 0L;
-      gender_ = 0;
-      nickname_ = "";
-      email_ = "";
       avatar_ = "";
+      birthday_ = 0L;
       country_ = "";
-      since_ = 0L;
+      email_ = "";
+      gender_ = 0;
       lastLogin_ = 0L;
       loginCount_ = 0;
+      nickname_ = "";
+      since_ = 0L;
     }
 
     @java.lang.Override
@@ -1840,21 +1840,21 @@ public final class Common {
               uid_ = input.readUInt64();
               break;
             }
-            case 25: {
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
 
-              birthday_ = input.readFixed64();
+              avatar_ = s;
               break;
             }
-            case 32: {
-              int rawValue = input.readEnum();
+            case 33: {
 
-              gender_ = rawValue;
+              birthday_ = input.readFixed64();
               break;
             }
             case 42: {
               java.lang.String s = input.readStringRequireUtf8();
 
-              nickname_ = s;
+              country_ = s;
               break;
             }
             case 50: {
@@ -1863,31 +1863,31 @@ public final class Common {
               email_ = s;
               break;
             }
-            case 58: {
-              java.lang.String s = input.readStringRequireUtf8();
+            case 56: {
+              int rawValue = input.readEnum();
 
-              avatar_ = s;
+              gender_ = rawValue;
               break;
             }
-            case 66: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              country_ = s;
-              break;
-            }
-            case 73: {
-
-              since_ = input.readFixed64();
-              break;
-            }
-            case 81: {
+            case 65: {
 
               lastLogin_ = input.readFixed64();
               break;
             }
-            case 88: {
+            case 72: {
 
               loginCount_ = input.readInt32();
+              break;
+            }
+            case 82: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              nickname_ = s;
+              break;
+            }
+            case 89: {
+
+              since_ = input.readFixed64();
               break;
             }
           }
@@ -1939,79 +1939,97 @@ public final class Common {
       return uid_;
     }
 
-    public static final int BIRTHDAY_FIELD_NUMBER = 3;
-    private long birthday_;
+    public static final int AVATAR_FIELD_NUMBER = 3;
+    private volatile java.lang.Object avatar_;
     /**
      * <pre>
-     *&#47; EPOCH
+     *&#47; avatar url
      * </pre>
      *
-     * <code>fixed64 birthday = 3;</code>
+     * <code>string avatar = 3;</code>
      */
-    public long getBirthday() {
-      return birthday_;
-    }
-
-    public static final int GENDER_FIELD_NUMBER = 4;
-    private int gender_;
-    /**
-     * <pre>
-     *&#47; gender
-     * </pre>
-     *
-     * <code>.proto.common.Gender gender = 4;</code>
-     */
-    public int getGenderValue() {
-      return gender_;
-    }
-    /**
-     * <pre>
-     *&#47; gender
-     * </pre>
-     *
-     * <code>.proto.common.Gender gender = 4;</code>
-     */
-    public proto.common.Common.Gender getGender() {
-      proto.common.Common.Gender result = proto.common.Common.Gender.valueOf(gender_);
-      return result == null ? proto.common.Common.Gender.UNRECOGNIZED : result;
-    }
-
-    public static final int NICKNAME_FIELD_NUMBER = 5;
-    private volatile java.lang.Object nickname_;
-    /**
-     * <pre>
-     *&#47; name
-     * </pre>
-     *
-     * <code>string nickname = 5;</code>
-     */
-    public java.lang.String getNickname() {
-      java.lang.Object ref = nickname_;
+    public java.lang.String getAvatar() {
+      java.lang.Object ref = avatar_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        nickname_ = s;
+        avatar_ = s;
         return s;
       }
     }
     /**
      * <pre>
-     *&#47; name
+     *&#47; avatar url
      * </pre>
      *
-     * <code>string nickname = 5;</code>
+     * <code>string avatar = 3;</code>
      */
     public com.google.protobuf.ByteString
-        getNicknameBytes() {
-      java.lang.Object ref = nickname_;
+        getAvatarBytes() {
+      java.lang.Object ref = avatar_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        nickname_ = b;
+        avatar_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int BIRTHDAY_FIELD_NUMBER = 4;
+    private long birthday_;
+    /**
+     * <pre>
+     *&#47; EPOCH
+     * </pre>
+     *
+     * <code>fixed64 birthday = 4;</code>
+     */
+    public long getBirthday() {
+      return birthday_;
+    }
+
+    public static final int COUNTRY_FIELD_NUMBER = 5;
+    private volatile java.lang.Object country_;
+    /**
+     * <pre>
+     *&#47; country / region
+     * </pre>
+     *
+     * <code>string country = 5;</code>
+     */
+    public java.lang.String getCountry() {
+      java.lang.Object ref = country_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        country_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     *&#47; country / region
+     * </pre>
+     *
+     * <code>string country = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getCountryBytes() {
+      java.lang.Object ref = country_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        country_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -2060,127 +2078,109 @@ public final class Common {
       }
     }
 
-    public static final int AVATAR_FIELD_NUMBER = 7;
-    private volatile java.lang.Object avatar_;
+    public static final int GENDER_FIELD_NUMBER = 7;
+    private int gender_;
     /**
      * <pre>
-     *&#47; avatar url
+     *&#47; gender
      * </pre>
      *
-     * <code>string avatar = 7;</code>
+     * <code>.proto.common.Gender gender = 7;</code>
      */
-    public java.lang.String getAvatar() {
-      java.lang.Object ref = avatar_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        avatar_ = s;
-        return s;
-      }
+    public int getGenderValue() {
+      return gender_;
     }
     /**
      * <pre>
-     *&#47; avatar url
+     *&#47; gender
      * </pre>
      *
-     * <code>string avatar = 7;</code>
+     * <code>.proto.common.Gender gender = 7;</code>
      */
-    public com.google.protobuf.ByteString
-        getAvatarBytes() {
-      java.lang.Object ref = avatar_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        avatar_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public proto.common.Common.Gender getGender() {
+      proto.common.Common.Gender result = proto.common.Common.Gender.valueOf(gender_);
+      return result == null ? proto.common.Common.Gender.UNRECOGNIZED : result;
     }
 
-    public static final int COUNTRY_FIELD_NUMBER = 8;
-    private volatile java.lang.Object country_;
-    /**
-     * <pre>
-     *&#47; country / region
-     * </pre>
-     *
-     * <code>string country = 8;</code>
-     */
-    public java.lang.String getCountry() {
-      java.lang.Object ref = country_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        country_ = s;
-        return s;
-      }
-    }
-    /**
-     * <pre>
-     *&#47; country / region
-     * </pre>
-     *
-     * <code>string country = 8;</code>
-     */
-    public com.google.protobuf.ByteString
-        getCountryBytes() {
-      java.lang.Object ref = country_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        country_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int SINCE_FIELD_NUMBER = 9;
-    private long since_;
-    /**
-     * <pre>
-     *&#47; register timestamp
-     * </pre>
-     *
-     * <code>fixed64 since = 9;</code>
-     */
-    public long getSince() {
-      return since_;
-    }
-
-    public static final int LAST_LOGIN_FIELD_NUMBER = 10;
+    public static final int LAST_LOGIN_FIELD_NUMBER = 8;
     private long lastLogin_;
     /**
      * <pre>
      *&#47; last login timestamp
      * </pre>
      *
-     * <code>fixed64 last_login = 10;</code>
+     * <code>fixed64 last_login = 8;</code>
      */
     public long getLastLogin() {
       return lastLogin_;
     }
 
-    public static final int LOGIN_COUNT_FIELD_NUMBER = 11;
+    public static final int LOGIN_COUNT_FIELD_NUMBER = 9;
     private int loginCount_;
     /**
      * <pre>
      *&#47; login count
      * </pre>
      *
-     * <code>int32 login_count = 11;</code>
+     * <code>int32 login_count = 9;</code>
      */
     public int getLoginCount() {
       return loginCount_;
+    }
+
+    public static final int NICKNAME_FIELD_NUMBER = 10;
+    private volatile java.lang.Object nickname_;
+    /**
+     * <pre>
+     *&#47; name
+     * </pre>
+     *
+     * <code>string nickname = 10;</code>
+     */
+    public java.lang.String getNickname() {
+      java.lang.Object ref = nickname_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        nickname_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     *&#47; name
+     * </pre>
+     *
+     * <code>string nickname = 10;</code>
+     */
+    public com.google.protobuf.ByteString
+        getNicknameBytes() {
+      java.lang.Object ref = nickname_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        nickname_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int SINCE_FIELD_NUMBER = 11;
+    private long since_;
+    /**
+     * <pre>
+     *&#47; register timestamp
+     * </pre>
+     *
+     * <code>fixed64 since = 11;</code>
+     */
+    public long getSince() {
+      return since_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -2201,32 +2201,32 @@ public final class Common {
       if (uid_ != 0L) {
         output.writeUInt64(2, uid_);
       }
+      if (!getAvatarBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, avatar_);
+      }
       if (birthday_ != 0L) {
-        output.writeFixed64(3, birthday_);
+        output.writeFixed64(4, birthday_);
       }
-      if (gender_ != proto.common.Common.Gender.GENDER_UNKNOWN.getNumber()) {
-        output.writeEnum(4, gender_);
-      }
-      if (!getNicknameBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, nickname_);
+      if (!getCountryBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, country_);
       }
       if (!getEmailBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 6, email_);
       }
-      if (!getAvatarBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 7, avatar_);
-      }
-      if (!getCountryBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 8, country_);
-      }
-      if (since_ != 0L) {
-        output.writeFixed64(9, since_);
+      if (gender_ != proto.common.Common.Gender.GENDER_UNKNOWN.getNumber()) {
+        output.writeEnum(7, gender_);
       }
       if (lastLogin_ != 0L) {
-        output.writeFixed64(10, lastLogin_);
+        output.writeFixed64(8, lastLogin_);
       }
       if (loginCount_ != 0) {
-        output.writeInt32(11, loginCount_);
+        output.writeInt32(9, loginCount_);
+      }
+      if (!getNicknameBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 10, nickname_);
+      }
+      if (since_ != 0L) {
+        output.writeFixed64(11, since_);
       }
     }
 
@@ -2243,37 +2243,37 @@ public final class Common {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(2, uid_);
       }
+      if (!getAvatarBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, avatar_);
+      }
       if (birthday_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFixed64Size(3, birthday_);
+          .computeFixed64Size(4, birthday_);
       }
-      if (gender_ != proto.common.Common.Gender.GENDER_UNKNOWN.getNumber()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(4, gender_);
-      }
-      if (!getNicknameBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, nickname_);
+      if (!getCountryBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, country_);
       }
       if (!getEmailBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, email_);
       }
-      if (!getAvatarBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, avatar_);
-      }
-      if (!getCountryBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(8, country_);
-      }
-      if (since_ != 0L) {
+      if (gender_ != proto.common.Common.Gender.GENDER_UNKNOWN.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFixed64Size(9, since_);
+          .computeEnumSize(7, gender_);
       }
       if (lastLogin_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFixed64Size(10, lastLogin_);
+          .computeFixed64Size(8, lastLogin_);
       }
       if (loginCount_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(11, loginCount_);
+          .computeInt32Size(9, loginCount_);
+      }
+      if (!getNicknameBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(10, nickname_);
+      }
+      if (since_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFixed64Size(11, since_);
       }
       memoizedSize = size;
       return size;
@@ -2295,23 +2295,23 @@ public final class Common {
           == other.getUsn());
       result = result && (getUid()
           == other.getUid());
-      result = result && (getBirthday()
-          == other.getBirthday());
-      result = result && gender_ == other.gender_;
-      result = result && getNickname()
-          .equals(other.getNickname());
-      result = result && getEmail()
-          .equals(other.getEmail());
       result = result && getAvatar()
           .equals(other.getAvatar());
+      result = result && (getBirthday()
+          == other.getBirthday());
       result = result && getCountry()
           .equals(other.getCountry());
-      result = result && (getSince()
-          == other.getSince());
+      result = result && getEmail()
+          .equals(other.getEmail());
+      result = result && gender_ == other.gender_;
       result = result && (getLastLogin()
           == other.getLastLogin());
       result = result && (getLoginCount()
           == other.getLoginCount());
+      result = result && getNickname()
+          .equals(other.getNickname());
+      result = result && (getSince()
+          == other.getSince());
       return result;
     }
 
@@ -2328,27 +2328,27 @@ public final class Common {
       hash = (37 * hash) + UID_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getUid());
+      hash = (37 * hash) + AVATAR_FIELD_NUMBER;
+      hash = (53 * hash) + getAvatar().hashCode();
       hash = (37 * hash) + BIRTHDAY_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getBirthday());
-      hash = (37 * hash) + GENDER_FIELD_NUMBER;
-      hash = (53 * hash) + gender_;
-      hash = (37 * hash) + NICKNAME_FIELD_NUMBER;
-      hash = (53 * hash) + getNickname().hashCode();
-      hash = (37 * hash) + EMAIL_FIELD_NUMBER;
-      hash = (53 * hash) + getEmail().hashCode();
-      hash = (37 * hash) + AVATAR_FIELD_NUMBER;
-      hash = (53 * hash) + getAvatar().hashCode();
       hash = (37 * hash) + COUNTRY_FIELD_NUMBER;
       hash = (53 * hash) + getCountry().hashCode();
-      hash = (37 * hash) + SINCE_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          getSince());
+      hash = (37 * hash) + EMAIL_FIELD_NUMBER;
+      hash = (53 * hash) + getEmail().hashCode();
+      hash = (37 * hash) + GENDER_FIELD_NUMBER;
+      hash = (53 * hash) + gender_;
       hash = (37 * hash) + LAST_LOGIN_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getLastLogin());
       hash = (37 * hash) + LOGIN_COUNT_FIELD_NUMBER;
       hash = (53 * hash) + getLoginCount();
+      hash = (37 * hash) + NICKNAME_FIELD_NUMBER;
+      hash = (53 * hash) + getNickname().hashCode();
+      hash = (37 * hash) + SINCE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getSince());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -2486,23 +2486,23 @@ public final class Common {
 
         uid_ = 0L;
 
-        birthday_ = 0L;
-
-        gender_ = 0;
-
-        nickname_ = "";
-
-        email_ = "";
-
         avatar_ = "";
+
+        birthday_ = 0L;
 
         country_ = "";
 
-        since_ = 0L;
+        email_ = "";
+
+        gender_ = 0;
 
         lastLogin_ = 0L;
 
         loginCount_ = 0;
+
+        nickname_ = "";
+
+        since_ = 0L;
 
         return this;
       }
@@ -2528,15 +2528,15 @@ public final class Common {
         proto.common.Common.UserInfo result = new proto.common.Common.UserInfo(this);
         result.usn_ = usn_;
         result.uid_ = uid_;
-        result.birthday_ = birthday_;
-        result.gender_ = gender_;
-        result.nickname_ = nickname_;
-        result.email_ = email_;
         result.avatar_ = avatar_;
+        result.birthday_ = birthday_;
         result.country_ = country_;
-        result.since_ = since_;
+        result.email_ = email_;
+        result.gender_ = gender_;
         result.lastLogin_ = lastLogin_;
         result.loginCount_ = loginCount_;
+        result.nickname_ = nickname_;
+        result.since_ = since_;
         onBuilt();
         return result;
       }
@@ -2584,36 +2584,36 @@ public final class Common {
         if (other.getUid() != 0L) {
           setUid(other.getUid());
         }
+        if (!other.getAvatar().isEmpty()) {
+          avatar_ = other.avatar_;
+          onChanged();
+        }
         if (other.getBirthday() != 0L) {
           setBirthday(other.getBirthday());
         }
-        if (other.gender_ != 0) {
-          setGenderValue(other.getGenderValue());
-        }
-        if (!other.getNickname().isEmpty()) {
-          nickname_ = other.nickname_;
+        if (!other.getCountry().isEmpty()) {
+          country_ = other.country_;
           onChanged();
         }
         if (!other.getEmail().isEmpty()) {
           email_ = other.email_;
           onChanged();
         }
-        if (!other.getAvatar().isEmpty()) {
-          avatar_ = other.avatar_;
-          onChanged();
-        }
-        if (!other.getCountry().isEmpty()) {
-          country_ = other.country_;
-          onChanged();
-        }
-        if (other.getSince() != 0L) {
-          setSince(other.getSince());
+        if (other.gender_ != 0) {
+          setGenderValue(other.getGenderValue());
         }
         if (other.getLastLogin() != 0L) {
           setLastLogin(other.getLastLogin());
         }
         if (other.getLoginCount() != 0) {
           setLoginCount(other.getLoginCount());
+        }
+        if (!other.getNickname().isEmpty()) {
+          nickname_ = other.nickname_;
+          onChanged();
+        }
+        if (other.getSince() != 0L) {
+          setSince(other.getSince());
         }
         onChanged();
         return this;
@@ -2717,13 +2717,102 @@ public final class Common {
         return this;
       }
 
+      private java.lang.Object avatar_ = "";
+      /**
+       * <pre>
+       *&#47; avatar url
+       * </pre>
+       *
+       * <code>string avatar = 3;</code>
+       */
+      public java.lang.String getAvatar() {
+        java.lang.Object ref = avatar_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          avatar_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <pre>
+       *&#47; avatar url
+       * </pre>
+       *
+       * <code>string avatar = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getAvatarBytes() {
+        java.lang.Object ref = avatar_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          avatar_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       *&#47; avatar url
+       * </pre>
+       *
+       * <code>string avatar = 3;</code>
+       */
+      public Builder setAvatar(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        avatar_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; avatar url
+       * </pre>
+       *
+       * <code>string avatar = 3;</code>
+       */
+      public Builder clearAvatar() {
+        
+        avatar_ = getDefaultInstance().getAvatar();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; avatar url
+       * </pre>
+       *
+       * <code>string avatar = 3;</code>
+       */
+      public Builder setAvatarBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        avatar_ = value;
+        onChanged();
+        return this;
+      }
+
       private long birthday_ ;
       /**
        * <pre>
        *&#47; EPOCH
        * </pre>
        *
-       * <code>fixed64 birthday = 3;</code>
+       * <code>fixed64 birthday = 4;</code>
        */
       public long getBirthday() {
         return birthday_;
@@ -2733,7 +2822,7 @@ public final class Common {
        *&#47; EPOCH
        * </pre>
        *
-       * <code>fixed64 birthday = 3;</code>
+       * <code>fixed64 birthday = 4;</code>
        */
       public Builder setBirthday(long value) {
         
@@ -2746,7 +2835,7 @@ public final class Common {
        *&#47; EPOCH
        * </pre>
        *
-       * <code>fixed64 birthday = 3;</code>
+       * <code>fixed64 birthday = 4;</code>
        */
       public Builder clearBirthday() {
         
@@ -2755,85 +2844,21 @@ public final class Common {
         return this;
       }
 
-      private int gender_ = 0;
+      private java.lang.Object country_ = "";
       /**
        * <pre>
-       *&#47; gender
+       *&#47; country / region
        * </pre>
        *
-       * <code>.proto.common.Gender gender = 4;</code>
+       * <code>string country = 5;</code>
        */
-      public int getGenderValue() {
-        return gender_;
-      }
-      /**
-       * <pre>
-       *&#47; gender
-       * </pre>
-       *
-       * <code>.proto.common.Gender gender = 4;</code>
-       */
-      public Builder setGenderValue(int value) {
-        gender_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <pre>
-       *&#47; gender
-       * </pre>
-       *
-       * <code>.proto.common.Gender gender = 4;</code>
-       */
-      public proto.common.Common.Gender getGender() {
-        proto.common.Common.Gender result = proto.common.Common.Gender.valueOf(gender_);
-        return result == null ? proto.common.Common.Gender.UNRECOGNIZED : result;
-      }
-      /**
-       * <pre>
-       *&#47; gender
-       * </pre>
-       *
-       * <code>.proto.common.Gender gender = 4;</code>
-       */
-      public Builder setGender(proto.common.Common.Gender value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        
-        gender_ = value.getNumber();
-        onChanged();
-        return this;
-      }
-      /**
-       * <pre>
-       *&#47; gender
-       * </pre>
-       *
-       * <code>.proto.common.Gender gender = 4;</code>
-       */
-      public Builder clearGender() {
-        
-        gender_ = 0;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object nickname_ = "";
-      /**
-       * <pre>
-       *&#47; name
-       * </pre>
-       *
-       * <code>string nickname = 5;</code>
-       */
-      public java.lang.String getNickname() {
-        java.lang.Object ref = nickname_;
+      public java.lang.String getCountry() {
+        java.lang.Object ref = country_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          nickname_ = s;
+          country_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
@@ -2841,19 +2866,19 @@ public final class Common {
       }
       /**
        * <pre>
-       *&#47; name
+       *&#47; country / region
        * </pre>
        *
-       * <code>string nickname = 5;</code>
+       * <code>string country = 5;</code>
        */
       public com.google.protobuf.ByteString
-          getNicknameBytes() {
-        java.lang.Object ref = nickname_;
+          getCountryBytes() {
+        java.lang.Object ref = country_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          nickname_ = b;
+          country_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
@@ -2861,49 +2886,49 @@ public final class Common {
       }
       /**
        * <pre>
-       *&#47; name
+       *&#47; country / region
        * </pre>
        *
-       * <code>string nickname = 5;</code>
+       * <code>string country = 5;</code>
        */
-      public Builder setNickname(
+      public Builder setCountry(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   
-        nickname_ = value;
+        country_ = value;
         onChanged();
         return this;
       }
       /**
        * <pre>
-       *&#47; name
+       *&#47; country / region
        * </pre>
        *
-       * <code>string nickname = 5;</code>
+       * <code>string country = 5;</code>
        */
-      public Builder clearNickname() {
+      public Builder clearCountry() {
         
-        nickname_ = getDefaultInstance().getNickname();
+        country_ = getDefaultInstance().getCountry();
         onChanged();
         return this;
       }
       /**
        * <pre>
-       *&#47; name
+       *&#47; country / region
        * </pre>
        *
-       * <code>string nickname = 5;</code>
+       * <code>string country = 5;</code>
        */
-      public Builder setNicknameBytes(
+      public Builder setCountryBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
         
-        nickname_ = value;
+        country_ = value;
         onChanged();
         return this;
       }
@@ -2997,218 +3022,66 @@ public final class Common {
         return this;
       }
 
-      private java.lang.Object avatar_ = "";
+      private int gender_ = 0;
       /**
        * <pre>
-       *&#47; avatar url
+       *&#47; gender
        * </pre>
        *
-       * <code>string avatar = 7;</code>
+       * <code>.proto.common.Gender gender = 7;</code>
        */
-      public java.lang.String getAvatar() {
-        java.lang.Object ref = avatar_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          avatar_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
+      public int getGenderValue() {
+        return gender_;
       }
       /**
        * <pre>
-       *&#47; avatar url
+       *&#47; gender
        * </pre>
        *
-       * <code>string avatar = 7;</code>
+       * <code>.proto.common.Gender gender = 7;</code>
        */
-      public com.google.protobuf.ByteString
-          getAvatarBytes() {
-        java.lang.Object ref = avatar_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          avatar_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
+      public Builder setGenderValue(int value) {
+        gender_ = value;
+        onChanged();
+        return this;
       }
       /**
        * <pre>
-       *&#47; avatar url
+       *&#47; gender
        * </pre>
        *
-       * <code>string avatar = 7;</code>
+       * <code>.proto.common.Gender gender = 7;</code>
        */
-      public Builder setAvatar(
-          java.lang.String value) {
+      public proto.common.Common.Gender getGender() {
+        proto.common.Common.Gender result = proto.common.Common.Gender.valueOf(gender_);
+        return result == null ? proto.common.Common.Gender.UNRECOGNIZED : result;
+      }
+      /**
+       * <pre>
+       *&#47; gender
+       * </pre>
+       *
+       * <code>.proto.common.Gender gender = 7;</code>
+       */
+      public Builder setGender(proto.common.Common.Gender value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        avatar_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <pre>
-       *&#47; avatar url
-       * </pre>
-       *
-       * <code>string avatar = 7;</code>
-       */
-      public Builder clearAvatar() {
-        
-        avatar_ = getDefaultInstance().getAvatar();
-        onChanged();
-        return this;
-      }
-      /**
-       * <pre>
-       *&#47; avatar url
-       * </pre>
-       *
-       * <code>string avatar = 7;</code>
-       */
-      public Builder setAvatarBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        avatar_ = value;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object country_ = "";
-      /**
-       * <pre>
-       *&#47; country / region
-       * </pre>
-       *
-       * <code>string country = 8;</code>
-       */
-      public java.lang.String getCountry() {
-        java.lang.Object ref = country_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          country_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
+          throw new NullPointerException();
         }
-      }
-      /**
-       * <pre>
-       *&#47; country / region
-       * </pre>
-       *
-       * <code>string country = 8;</code>
-       */
-      public com.google.protobuf.ByteString
-          getCountryBytes() {
-        java.lang.Object ref = country_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          country_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <pre>
-       *&#47; country / region
-       * </pre>
-       *
-       * <code>string country = 8;</code>
-       */
-      public Builder setCountry(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        country_ = value;
+        
+        gender_ = value.getNumber();
         onChanged();
         return this;
       }
       /**
        * <pre>
-       *&#47; country / region
+       *&#47; gender
        * </pre>
        *
-       * <code>string country = 8;</code>
+       * <code>.proto.common.Gender gender = 7;</code>
        */
-      public Builder clearCountry() {
+      public Builder clearGender() {
         
-        country_ = getDefaultInstance().getCountry();
-        onChanged();
-        return this;
-      }
-      /**
-       * <pre>
-       *&#47; country / region
-       * </pre>
-       *
-       * <code>string country = 8;</code>
-       */
-      public Builder setCountryBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        country_ = value;
-        onChanged();
-        return this;
-      }
-
-      private long since_ ;
-      /**
-       * <pre>
-       *&#47; register timestamp
-       * </pre>
-       *
-       * <code>fixed64 since = 9;</code>
-       */
-      public long getSince() {
-        return since_;
-      }
-      /**
-       * <pre>
-       *&#47; register timestamp
-       * </pre>
-       *
-       * <code>fixed64 since = 9;</code>
-       */
-      public Builder setSince(long value) {
-        
-        since_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <pre>
-       *&#47; register timestamp
-       * </pre>
-       *
-       * <code>fixed64 since = 9;</code>
-       */
-      public Builder clearSince() {
-        
-        since_ = 0L;
+        gender_ = 0;
         onChanged();
         return this;
       }
@@ -3219,7 +3092,7 @@ public final class Common {
        *&#47; last login timestamp
        * </pre>
        *
-       * <code>fixed64 last_login = 10;</code>
+       * <code>fixed64 last_login = 8;</code>
        */
       public long getLastLogin() {
         return lastLogin_;
@@ -3229,7 +3102,7 @@ public final class Common {
        *&#47; last login timestamp
        * </pre>
        *
-       * <code>fixed64 last_login = 10;</code>
+       * <code>fixed64 last_login = 8;</code>
        */
       public Builder setLastLogin(long value) {
         
@@ -3242,7 +3115,7 @@ public final class Common {
        *&#47; last login timestamp
        * </pre>
        *
-       * <code>fixed64 last_login = 10;</code>
+       * <code>fixed64 last_login = 8;</code>
        */
       public Builder clearLastLogin() {
         
@@ -3257,7 +3130,7 @@ public final class Common {
        *&#47; login count
        * </pre>
        *
-       * <code>int32 login_count = 11;</code>
+       * <code>int32 login_count = 9;</code>
        */
       public int getLoginCount() {
         return loginCount_;
@@ -3267,7 +3140,7 @@ public final class Common {
        *&#47; login count
        * </pre>
        *
-       * <code>int32 login_count = 11;</code>
+       * <code>int32 login_count = 9;</code>
        */
       public Builder setLoginCount(int value) {
         
@@ -3280,11 +3153,138 @@ public final class Common {
        *&#47; login count
        * </pre>
        *
-       * <code>int32 login_count = 11;</code>
+       * <code>int32 login_count = 9;</code>
        */
       public Builder clearLoginCount() {
         
         loginCount_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object nickname_ = "";
+      /**
+       * <pre>
+       *&#47; name
+       * </pre>
+       *
+       * <code>string nickname = 10;</code>
+       */
+      public java.lang.String getNickname() {
+        java.lang.Object ref = nickname_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          nickname_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <pre>
+       *&#47; name
+       * </pre>
+       *
+       * <code>string nickname = 10;</code>
+       */
+      public com.google.protobuf.ByteString
+          getNicknameBytes() {
+        java.lang.Object ref = nickname_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          nickname_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       *&#47; name
+       * </pre>
+       *
+       * <code>string nickname = 10;</code>
+       */
+      public Builder setNickname(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        nickname_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; name
+       * </pre>
+       *
+       * <code>string nickname = 10;</code>
+       */
+      public Builder clearNickname() {
+        
+        nickname_ = getDefaultInstance().getNickname();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; name
+       * </pre>
+       *
+       * <code>string nickname = 10;</code>
+       */
+      public Builder setNicknameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        nickname_ = value;
+        onChanged();
+        return this;
+      }
+
+      private long since_ ;
+      /**
+       * <pre>
+       *&#47; register timestamp
+       * </pre>
+       *
+       * <code>fixed64 since = 11;</code>
+       */
+      public long getSince() {
+        return since_;
+      }
+      /**
+       * <pre>
+       *&#47; register timestamp
+       * </pre>
+       *
+       * <code>fixed64 since = 11;</code>
+       */
+      public Builder setSince(long value) {
+        
+        since_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; register timestamp
+       * </pre>
+       *
+       * <code>fixed64 since = 11;</code>
+       */
+      public Builder clearSince() {
+        
+        since_ = 0L;
         onChanged();
         return this;
       }
@@ -10322,11 +10322,11 @@ public final class Common {
       "\n\014common.proto\022\014proto.common\";\n\tRspHeade" +
       "r\022\016\n\006status\030\001 \001(\005\022\021\n\ttimestamp\030\002 \001(\006\022\013\n\003" +
       "msg\030\003 \001(\t\"\326\001\n\010UserInfo\022\013\n\003usn\030\001 \001(\006\022\013\n\003u" +
-      "id\030\002 \001(\004\022\020\n\010birthday\030\003 \001(\006\022$\n\006gender\030\004 \001" +
-      "(\0162\024.proto.common.Gender\022\020\n\010nickname\030\005 \001" +
-      "(\t\022\r\n\005email\030\006 \001(\t\022\016\n\006avatar\030\007 \001(\t\022\017\n\007cou" +
-      "ntry\030\010 \001(\t\022\r\n\005since\030\t \001(\006\022\022\n\nlast_login\030" +
-      "\n \001(\006\022\023\n\013login_count\030\013 \001(\005\"@\n\010Location\022\021" +
+      "id\030\002 \001(\004\022\016\n\006avatar\030\003 \001(\t\022\020\n\010birthday\030\004 \001" +
+      "(\006\022\017\n\007country\030\005 \001(\t\022\r\n\005email\030\006 \001(\t\022$\n\006ge" +
+      "nder\030\007 \001(\0162\024.proto.common.Gender\022\022\n\nlast" +
+      "_login\030\010 \001(\006\022\023\n\013login_count\030\t \001(\005\022\020\n\010nic" +
+      "kname\030\n \001(\t\022\r\n\005since\030\013 \001(\006\"@\n\010Location\022\021" +
       "\n\tlongitude\030\001 \001(\t\022\020\n\010latitude\030\002 \001(\t\022\017\n\007a" +
       "ddress\030\003 \001(\t\"C\n\rNetworkConfig\022\n\n\002id\030\001 \001(",
       "\005\022\014\n\004desc\030\002 \001(\t\022\n\n\002ip\030\003 \001(\t\022\014\n\004port\030\004 \001(" +
@@ -10389,7 +10389,7 @@ public final class Common {
     internal_static_proto_common_UserInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_proto_common_UserInfo_descriptor,
-        new java.lang.String[] { "Usn", "Uid", "Birthday", "Gender", "Nickname", "Email", "Avatar", "Country", "Since", "LastLogin", "LoginCount", });
+        new java.lang.String[] { "Usn", "Uid", "Avatar", "Birthday", "Country", "Email", "Gender", "LastLogin", "LoginCount", "Nickname", "Since", });
     internal_static_proto_common_Location_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_proto_common_Location_fieldAccessorTable = new

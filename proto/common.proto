@@ -62,15 +62,15 @@ enum Gender {
 message UserInfo {
     fixed64 usn         = 1;  /// user serial no. internal only
     uint64  uid         = 2;  /// id
-    fixed64 birthday    = 3;  /// EPOCH
-    Gender  gender      = 4;  /// gender
-    string  nickname    = 5;  /// name
+    string  avatar      = 3;  /// avatar url
+    fixed64 birthday    = 4;  /// EPOCH
+    string  country     = 5;  /// country / region
     string  email       = 6;  /// email address
-    string  avatar      = 7;  /// avatar url
-    string  country     = 8;  /// country / region
-    fixed64 since       = 9;  /// register timestamp
-    fixed64 last_login  = 10; /// last login timestamp
-    int32   login_count = 11; /// login count
+    Gender  gender      = 7;  /// gender
+    fixed64 last_login  = 8;  /// last login timestamp
+    int32   login_count = 9;  /// login count
+    string  nickname    = 10; /// name
+    fixed64 since       = 11; /// register timestamp
 }
 
 message Location {
