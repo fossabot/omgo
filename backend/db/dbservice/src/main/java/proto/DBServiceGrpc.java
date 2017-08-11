@@ -61,58 +61,58 @@ public final class DBServiceGrpc {
   // Static method descriptors that strictly reflect the proto.
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
   public static final io.grpc.MethodDescriptor<proto.Db.DB.UserKey,
-      proto.Db.DB.UserQueryResponse> METHOD_USER_QUERY =
+      proto.common.Common.UserInfo> METHOD_USER_QUERY =
       io.grpc.MethodDescriptor.create(
           io.grpc.MethodDescriptor.MethodType.UNARY,
           generateFullMethodName(
               "proto.DBService", "UserQuery"),
           io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.UserKey.getDefaultInstance()),
-          io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.UserQueryResponse.getDefaultInstance()));
+          io.grpc.protobuf.ProtoUtils.marshaller(proto.common.Common.UserInfo.getDefaultInstance()));
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
   public static final io.grpc.MethodDescriptor<proto.common.Common.UserInfo,
-      proto.common.Common.RspHeader> METHOD_USER_UPDATE_INFO =
+      proto.Db.DB.NullValue> METHOD_USER_UPDATE_INFO =
       io.grpc.MethodDescriptor.create(
           io.grpc.MethodDescriptor.MethodType.UNARY,
           generateFullMethodName(
               "proto.DBService", "UserUpdateInfo"),
           io.grpc.protobuf.ProtoUtils.marshaller(proto.common.Common.UserInfo.getDefaultInstance()),
-          io.grpc.protobuf.ProtoUtils.marshaller(proto.common.Common.RspHeader.getDefaultInstance()));
+          io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.NullValue.getDefaultInstance()));
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  public static final io.grpc.MethodDescriptor<proto.Db.DB.UserRegisterRequest,
-      proto.Db.DB.UserRegisterResponse> METHOD_USER_REGISTER =
+  public static final io.grpc.MethodDescriptor<proto.Db.DB.UserExtendInfo,
+      proto.Db.DB.UserExtendInfo> METHOD_USER_REGISTER =
       io.grpc.MethodDescriptor.create(
           io.grpc.MethodDescriptor.MethodType.UNARY,
           generateFullMethodName(
               "proto.DBService", "UserRegister"),
-          io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.UserRegisterRequest.getDefaultInstance()),
-          io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.UserRegisterResponse.getDefaultInstance()));
+          io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.UserExtendInfo.getDefaultInstance()),
+          io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.UserExtendInfo.getDefaultInstance()));
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  public static final io.grpc.MethodDescriptor<proto.Db.DB.UserLoginRequest,
-      proto.Db.DB.UserLoginResponse> METHOD_USER_LOGIN =
+  public static final io.grpc.MethodDescriptor<proto.Db.DB.UserExtendInfo,
+      proto.Db.DB.UserExtendInfo> METHOD_USER_LOGIN =
       io.grpc.MethodDescriptor.create(
           io.grpc.MethodDescriptor.MethodType.UNARY,
           generateFullMethodName(
               "proto.DBService", "UserLogin"),
-          io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.UserLoginRequest.getDefaultInstance()),
-          io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.UserLoginResponse.getDefaultInstance()));
+          io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.UserExtendInfo.getDefaultInstance()),
+          io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.UserExtendInfo.getDefaultInstance()));
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
   public static final io.grpc.MethodDescriptor<proto.Db.DB.UserLogoutRequest,
-      proto.common.Common.RspHeader> METHOD_USER_LOGOUT =
+      proto.Db.DB.NullValue> METHOD_USER_LOGOUT =
       io.grpc.MethodDescriptor.create(
           io.grpc.MethodDescriptor.MethodType.UNARY,
           generateFullMethodName(
               "proto.DBService", "UserLogout"),
           io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.UserLogoutRequest.getDefaultInstance()),
-          io.grpc.protobuf.ProtoUtils.marshaller(proto.common.Common.RspHeader.getDefaultInstance()));
+          io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.NullValue.getDefaultInstance()));
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
   public static final io.grpc.MethodDescriptor<proto.Db.DB.UserKey,
-      proto.Db.DB.UserExtraInfo> METHOD_USER_EXTRA_INFO_QUERY =
+      proto.Db.DB.UserExtendInfo> METHOD_USER_EXTRA_INFO_QUERY =
       io.grpc.MethodDescriptor.create(
           io.grpc.MethodDescriptor.MethodType.UNARY,
           generateFullMethodName(
               "proto.DBService", "UserExtraInfoQuery"),
           io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.UserKey.getDefaultInstance()),
-          io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.UserExtraInfo.getDefaultInstance()));
+          io.grpc.protobuf.ProtoUtils.marshaller(proto.Db.DB.UserExtendInfo.getDefaultInstance()));
 
   /**
    * Creates a new async stub that supports all call types for the service
@@ -157,7 +157,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userQuery(proto.Db.DB.UserKey request,
-        io.grpc.stub.StreamObserver<proto.Db.DB.UserQueryResponse> responseObserver) {
+        io.grpc.stub.StreamObserver<proto.common.Common.UserInfo> responseObserver) {
       asyncUnimplementedUnaryCall(METHOD_USER_QUERY, responseObserver);
     }
 
@@ -167,7 +167,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userUpdateInfo(proto.common.Common.UserInfo request,
-        io.grpc.stub.StreamObserver<proto.common.Common.RspHeader> responseObserver) {
+        io.grpc.stub.StreamObserver<proto.Db.DB.NullValue> responseObserver) {
       asyncUnimplementedUnaryCall(METHOD_USER_UPDATE_INFO, responseObserver);
     }
 
@@ -176,8 +176,8 @@ public final class DBServiceGrpc {
      * register
      * </pre>
      */
-    public void userRegister(proto.Db.DB.UserRegisterRequest request,
-        io.grpc.stub.StreamObserver<proto.Db.DB.UserRegisterResponse> responseObserver) {
+    public void userRegister(proto.Db.DB.UserExtendInfo request,
+        io.grpc.stub.StreamObserver<proto.Db.DB.UserExtendInfo> responseObserver) {
       asyncUnimplementedUnaryCall(METHOD_USER_REGISTER, responseObserver);
     }
 
@@ -186,8 +186,8 @@ public final class DBServiceGrpc {
      * login
      * </pre>
      */
-    public void userLogin(proto.Db.DB.UserLoginRequest request,
-        io.grpc.stub.StreamObserver<proto.Db.DB.UserLoginResponse> responseObserver) {
+    public void userLogin(proto.Db.DB.UserExtendInfo request,
+        io.grpc.stub.StreamObserver<proto.Db.DB.UserExtendInfo> responseObserver) {
       asyncUnimplementedUnaryCall(METHOD_USER_LOGIN, responseObserver);
     }
 
@@ -197,7 +197,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userLogout(proto.Db.DB.UserLogoutRequest request,
-        io.grpc.stub.StreamObserver<proto.common.Common.RspHeader> responseObserver) {
+        io.grpc.stub.StreamObserver<proto.Db.DB.NullValue> responseObserver) {
       asyncUnimplementedUnaryCall(METHOD_USER_LOGOUT, responseObserver);
     }
 
@@ -207,7 +207,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userExtraInfoQuery(proto.Db.DB.UserKey request,
-        io.grpc.stub.StreamObserver<proto.Db.DB.UserExtraInfo> responseObserver) {
+        io.grpc.stub.StreamObserver<proto.Db.DB.UserExtendInfo> responseObserver) {
       asyncUnimplementedUnaryCall(METHOD_USER_EXTRA_INFO_QUERY, responseObserver);
     }
 
@@ -218,42 +218,42 @@ public final class DBServiceGrpc {
             asyncUnaryCall(
               new MethodHandlers<
                 proto.Db.DB.UserKey,
-                proto.Db.DB.UserQueryResponse>(
+                proto.common.Common.UserInfo>(
                   this, METHODID_USER_QUERY)))
           .addMethod(
             METHOD_USER_UPDATE_INFO,
             asyncUnaryCall(
               new MethodHandlers<
                 proto.common.Common.UserInfo,
-                proto.common.Common.RspHeader>(
+                proto.Db.DB.NullValue>(
                   this, METHODID_USER_UPDATE_INFO)))
           .addMethod(
             METHOD_USER_REGISTER,
             asyncUnaryCall(
               new MethodHandlers<
-                proto.Db.DB.UserRegisterRequest,
-                proto.Db.DB.UserRegisterResponse>(
+                proto.Db.DB.UserExtendInfo,
+                proto.Db.DB.UserExtendInfo>(
                   this, METHODID_USER_REGISTER)))
           .addMethod(
             METHOD_USER_LOGIN,
             asyncUnaryCall(
               new MethodHandlers<
-                proto.Db.DB.UserLoginRequest,
-                proto.Db.DB.UserLoginResponse>(
+                proto.Db.DB.UserExtendInfo,
+                proto.Db.DB.UserExtendInfo>(
                   this, METHODID_USER_LOGIN)))
           .addMethod(
             METHOD_USER_LOGOUT,
             asyncUnaryCall(
               new MethodHandlers<
                 proto.Db.DB.UserLogoutRequest,
-                proto.common.Common.RspHeader>(
+                proto.Db.DB.NullValue>(
                   this, METHODID_USER_LOGOUT)))
           .addMethod(
             METHOD_USER_EXTRA_INFO_QUERY,
             asyncUnaryCall(
               new MethodHandlers<
                 proto.Db.DB.UserKey,
-                proto.Db.DB.UserExtraInfo>(
+                proto.Db.DB.UserExtendInfo>(
                   this, METHODID_USER_EXTRA_INFO_QUERY)))
           .build();
     }
@@ -286,7 +286,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userQuery(proto.Db.DB.UserKey request,
-        io.grpc.stub.StreamObserver<proto.Db.DB.UserQueryResponse> responseObserver) {
+        io.grpc.stub.StreamObserver<proto.common.Common.UserInfo> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_USER_QUERY, getCallOptions()), request, responseObserver);
     }
@@ -297,7 +297,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userUpdateInfo(proto.common.Common.UserInfo request,
-        io.grpc.stub.StreamObserver<proto.common.Common.RspHeader> responseObserver) {
+        io.grpc.stub.StreamObserver<proto.Db.DB.NullValue> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_USER_UPDATE_INFO, getCallOptions()), request, responseObserver);
     }
@@ -307,8 +307,8 @@ public final class DBServiceGrpc {
      * register
      * </pre>
      */
-    public void userRegister(proto.Db.DB.UserRegisterRequest request,
-        io.grpc.stub.StreamObserver<proto.Db.DB.UserRegisterResponse> responseObserver) {
+    public void userRegister(proto.Db.DB.UserExtendInfo request,
+        io.grpc.stub.StreamObserver<proto.Db.DB.UserExtendInfo> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_USER_REGISTER, getCallOptions()), request, responseObserver);
     }
@@ -318,8 +318,8 @@ public final class DBServiceGrpc {
      * login
      * </pre>
      */
-    public void userLogin(proto.Db.DB.UserLoginRequest request,
-        io.grpc.stub.StreamObserver<proto.Db.DB.UserLoginResponse> responseObserver) {
+    public void userLogin(proto.Db.DB.UserExtendInfo request,
+        io.grpc.stub.StreamObserver<proto.Db.DB.UserExtendInfo> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_USER_LOGIN, getCallOptions()), request, responseObserver);
     }
@@ -330,7 +330,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userLogout(proto.Db.DB.UserLogoutRequest request,
-        io.grpc.stub.StreamObserver<proto.common.Common.RspHeader> responseObserver) {
+        io.grpc.stub.StreamObserver<proto.Db.DB.NullValue> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_USER_LOGOUT, getCallOptions()), request, responseObserver);
     }
@@ -341,7 +341,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userExtraInfoQuery(proto.Db.DB.UserKey request,
-        io.grpc.stub.StreamObserver<proto.Db.DB.UserExtraInfo> responseObserver) {
+        io.grpc.stub.StreamObserver<proto.Db.DB.UserExtendInfo> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_USER_EXTRA_INFO_QUERY, getCallOptions()), request, responseObserver);
     }
@@ -373,7 +373,7 @@ public final class DBServiceGrpc {
      * query user info
      * </pre>
      */
-    public proto.Db.DB.UserQueryResponse userQuery(proto.Db.DB.UserKey request) {
+    public proto.common.Common.UserInfo userQuery(proto.Db.DB.UserKey request) {
       return blockingUnaryCall(
           getChannel(), METHOD_USER_QUERY, getCallOptions(), request);
     }
@@ -383,7 +383,7 @@ public final class DBServiceGrpc {
      * update user info
      * </pre>
      */
-    public proto.common.Common.RspHeader userUpdateInfo(proto.common.Common.UserInfo request) {
+    public proto.Db.DB.NullValue userUpdateInfo(proto.common.Common.UserInfo request) {
       return blockingUnaryCall(
           getChannel(), METHOD_USER_UPDATE_INFO, getCallOptions(), request);
     }
@@ -393,7 +393,7 @@ public final class DBServiceGrpc {
      * register
      * </pre>
      */
-    public proto.Db.DB.UserRegisterResponse userRegister(proto.Db.DB.UserRegisterRequest request) {
+    public proto.Db.DB.UserExtendInfo userRegister(proto.Db.DB.UserExtendInfo request) {
       return blockingUnaryCall(
           getChannel(), METHOD_USER_REGISTER, getCallOptions(), request);
     }
@@ -403,7 +403,7 @@ public final class DBServiceGrpc {
      * login
      * </pre>
      */
-    public proto.Db.DB.UserLoginResponse userLogin(proto.Db.DB.UserLoginRequest request) {
+    public proto.Db.DB.UserExtendInfo userLogin(proto.Db.DB.UserExtendInfo request) {
       return blockingUnaryCall(
           getChannel(), METHOD_USER_LOGIN, getCallOptions(), request);
     }
@@ -413,7 +413,7 @@ public final class DBServiceGrpc {
      * logout
      * </pre>
      */
-    public proto.common.Common.RspHeader userLogout(proto.Db.DB.UserLogoutRequest request) {
+    public proto.Db.DB.NullValue userLogout(proto.Db.DB.UserLogoutRequest request) {
       return blockingUnaryCall(
           getChannel(), METHOD_USER_LOGOUT, getCallOptions(), request);
     }
@@ -423,7 +423,7 @@ public final class DBServiceGrpc {
      * verify token
      * </pre>
      */
-    public proto.Db.DB.UserExtraInfo userExtraInfoQuery(proto.Db.DB.UserKey request) {
+    public proto.Db.DB.UserExtendInfo userExtraInfoQuery(proto.Db.DB.UserKey request) {
       return blockingUnaryCall(
           getChannel(), METHOD_USER_EXTRA_INFO_QUERY, getCallOptions(), request);
     }
@@ -455,7 +455,7 @@ public final class DBServiceGrpc {
      * query user info
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<proto.Db.DB.UserQueryResponse> userQuery(
+    public com.google.common.util.concurrent.ListenableFuture<proto.common.Common.UserInfo> userQuery(
         proto.Db.DB.UserKey request) {
       return futureUnaryCall(
           getChannel().newCall(METHOD_USER_QUERY, getCallOptions()), request);
@@ -466,7 +466,7 @@ public final class DBServiceGrpc {
      * update user info
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<proto.common.Common.RspHeader> userUpdateInfo(
+    public com.google.common.util.concurrent.ListenableFuture<proto.Db.DB.NullValue> userUpdateInfo(
         proto.common.Common.UserInfo request) {
       return futureUnaryCall(
           getChannel().newCall(METHOD_USER_UPDATE_INFO, getCallOptions()), request);
@@ -477,8 +477,8 @@ public final class DBServiceGrpc {
      * register
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<proto.Db.DB.UserRegisterResponse> userRegister(
-        proto.Db.DB.UserRegisterRequest request) {
+    public com.google.common.util.concurrent.ListenableFuture<proto.Db.DB.UserExtendInfo> userRegister(
+        proto.Db.DB.UserExtendInfo request) {
       return futureUnaryCall(
           getChannel().newCall(METHOD_USER_REGISTER, getCallOptions()), request);
     }
@@ -488,8 +488,8 @@ public final class DBServiceGrpc {
      * login
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<proto.Db.DB.UserLoginResponse> userLogin(
-        proto.Db.DB.UserLoginRequest request) {
+    public com.google.common.util.concurrent.ListenableFuture<proto.Db.DB.UserExtendInfo> userLogin(
+        proto.Db.DB.UserExtendInfo request) {
       return futureUnaryCall(
           getChannel().newCall(METHOD_USER_LOGIN, getCallOptions()), request);
     }
@@ -499,7 +499,7 @@ public final class DBServiceGrpc {
      * logout
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<proto.common.Common.RspHeader> userLogout(
+    public com.google.common.util.concurrent.ListenableFuture<proto.Db.DB.NullValue> userLogout(
         proto.Db.DB.UserLogoutRequest request) {
       return futureUnaryCall(
           getChannel().newCall(METHOD_USER_LOGOUT, getCallOptions()), request);
@@ -510,7 +510,7 @@ public final class DBServiceGrpc {
      * verify token
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<proto.Db.DB.UserExtraInfo> userExtraInfoQuery(
+    public com.google.common.util.concurrent.ListenableFuture<proto.Db.DB.UserExtendInfo> userExtraInfoQuery(
         proto.Db.DB.UserKey request) {
       return futureUnaryCall(
           getChannel().newCall(METHOD_USER_EXTRA_INFO_QUERY, getCallOptions()), request);
@@ -530,7 +530,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userQuery(proto.Db.DB.UserKey request,
-        io.vertx.core.Future<proto.Db.DB.UserQueryResponse> response) {
+        io.vertx.core.Future<proto.common.Common.UserInfo> response) {
       asyncUnimplementedUnaryCall(METHOD_USER_QUERY, DBServiceGrpc.toObserver(response.completer()));
     }
 
@@ -540,7 +540,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userUpdateInfo(proto.common.Common.UserInfo request,
-        io.vertx.core.Future<proto.common.Common.RspHeader> response) {
+        io.vertx.core.Future<proto.Db.DB.NullValue> response) {
       asyncUnimplementedUnaryCall(METHOD_USER_UPDATE_INFO, DBServiceGrpc.toObserver(response.completer()));
     }
 
@@ -549,8 +549,8 @@ public final class DBServiceGrpc {
      * register
      * </pre>
      */
-    public void userRegister(proto.Db.DB.UserRegisterRequest request,
-        io.vertx.core.Future<proto.Db.DB.UserRegisterResponse> response) {
+    public void userRegister(proto.Db.DB.UserExtendInfo request,
+        io.vertx.core.Future<proto.Db.DB.UserExtendInfo> response) {
       asyncUnimplementedUnaryCall(METHOD_USER_REGISTER, DBServiceGrpc.toObserver(response.completer()));
     }
 
@@ -559,8 +559,8 @@ public final class DBServiceGrpc {
      * login
      * </pre>
      */
-    public void userLogin(proto.Db.DB.UserLoginRequest request,
-        io.vertx.core.Future<proto.Db.DB.UserLoginResponse> response) {
+    public void userLogin(proto.Db.DB.UserExtendInfo request,
+        io.vertx.core.Future<proto.Db.DB.UserExtendInfo> response) {
       asyncUnimplementedUnaryCall(METHOD_USER_LOGIN, DBServiceGrpc.toObserver(response.completer()));
     }
 
@@ -570,7 +570,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userLogout(proto.Db.DB.UserLogoutRequest request,
-        io.vertx.core.Future<proto.common.Common.RspHeader> response) {
+        io.vertx.core.Future<proto.Db.DB.NullValue> response) {
       asyncUnimplementedUnaryCall(METHOD_USER_LOGOUT, DBServiceGrpc.toObserver(response.completer()));
     }
 
@@ -580,7 +580,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userExtraInfoQuery(proto.Db.DB.UserKey request,
-        io.vertx.core.Future<proto.Db.DB.UserExtraInfo> response) {
+        io.vertx.core.Future<proto.Db.DB.UserExtendInfo> response) {
       asyncUnimplementedUnaryCall(METHOD_USER_EXTRA_INFO_QUERY, DBServiceGrpc.toObserver(response.completer()));
     }
 
@@ -591,42 +591,42 @@ public final class DBServiceGrpc {
             asyncUnaryCall(
               new VertxMethodHandlers<
                 proto.Db.DB.UserKey,
-                proto.Db.DB.UserQueryResponse>(
+                proto.common.Common.UserInfo>(
                   this, METHODID_USER_QUERY)))
           .addMethod(
             METHOD_USER_UPDATE_INFO,
             asyncUnaryCall(
               new VertxMethodHandlers<
                 proto.common.Common.UserInfo,
-                proto.common.Common.RspHeader>(
+                proto.Db.DB.NullValue>(
                   this, METHODID_USER_UPDATE_INFO)))
           .addMethod(
             METHOD_USER_REGISTER,
             asyncUnaryCall(
               new VertxMethodHandlers<
-                proto.Db.DB.UserRegisterRequest,
-                proto.Db.DB.UserRegisterResponse>(
+                proto.Db.DB.UserExtendInfo,
+                proto.Db.DB.UserExtendInfo>(
                   this, METHODID_USER_REGISTER)))
           .addMethod(
             METHOD_USER_LOGIN,
             asyncUnaryCall(
               new VertxMethodHandlers<
-                proto.Db.DB.UserLoginRequest,
-                proto.Db.DB.UserLoginResponse>(
+                proto.Db.DB.UserExtendInfo,
+                proto.Db.DB.UserExtendInfo>(
                   this, METHODID_USER_LOGIN)))
           .addMethod(
             METHOD_USER_LOGOUT,
             asyncUnaryCall(
               new VertxMethodHandlers<
                 proto.Db.DB.UserLogoutRequest,
-                proto.common.Common.RspHeader>(
+                proto.Db.DB.NullValue>(
                   this, METHODID_USER_LOGOUT)))
           .addMethod(
             METHOD_USER_EXTRA_INFO_QUERY,
             asyncUnaryCall(
               new VertxMethodHandlers<
                 proto.Db.DB.UserKey,
-                proto.Db.DB.UserExtraInfo>(
+                proto.Db.DB.UserExtendInfo>(
                   this, METHODID_USER_EXTRA_INFO_QUERY)))
           .build();
     }
@@ -659,7 +659,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userQuery(proto.Db.DB.UserKey request,
-        io.vertx.core.Handler<io.vertx.core.AsyncResult<proto.Db.DB.UserQueryResponse>> response) {
+        io.vertx.core.Handler<io.vertx.core.AsyncResult<proto.common.Common.UserInfo>> response) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_USER_QUERY, getCallOptions()), request, DBServiceGrpc.toObserver(response));
     }
@@ -670,7 +670,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userUpdateInfo(proto.common.Common.UserInfo request,
-        io.vertx.core.Handler<io.vertx.core.AsyncResult<proto.common.Common.RspHeader>> response) {
+        io.vertx.core.Handler<io.vertx.core.AsyncResult<proto.Db.DB.NullValue>> response) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_USER_UPDATE_INFO, getCallOptions()), request, DBServiceGrpc.toObserver(response));
     }
@@ -680,8 +680,8 @@ public final class DBServiceGrpc {
      * register
      * </pre>
      */
-    public void userRegister(proto.Db.DB.UserRegisterRequest request,
-        io.vertx.core.Handler<io.vertx.core.AsyncResult<proto.Db.DB.UserRegisterResponse>> response) {
+    public void userRegister(proto.Db.DB.UserExtendInfo request,
+        io.vertx.core.Handler<io.vertx.core.AsyncResult<proto.Db.DB.UserExtendInfo>> response) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_USER_REGISTER, getCallOptions()), request, DBServiceGrpc.toObserver(response));
     }
@@ -691,8 +691,8 @@ public final class DBServiceGrpc {
      * login
      * </pre>
      */
-    public void userLogin(proto.Db.DB.UserLoginRequest request,
-        io.vertx.core.Handler<io.vertx.core.AsyncResult<proto.Db.DB.UserLoginResponse>> response) {
+    public void userLogin(proto.Db.DB.UserExtendInfo request,
+        io.vertx.core.Handler<io.vertx.core.AsyncResult<proto.Db.DB.UserExtendInfo>> response) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_USER_LOGIN, getCallOptions()), request, DBServiceGrpc.toObserver(response));
     }
@@ -703,7 +703,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userLogout(proto.Db.DB.UserLogoutRequest request,
-        io.vertx.core.Handler<io.vertx.core.AsyncResult<proto.common.Common.RspHeader>> response) {
+        io.vertx.core.Handler<io.vertx.core.AsyncResult<proto.Db.DB.NullValue>> response) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_USER_LOGOUT, getCallOptions()), request, DBServiceGrpc.toObserver(response));
     }
@@ -714,7 +714,7 @@ public final class DBServiceGrpc {
      * </pre>
      */
     public void userExtraInfoQuery(proto.Db.DB.UserKey request,
-        io.vertx.core.Handler<io.vertx.core.AsyncResult<proto.Db.DB.UserExtraInfo>> response) {
+        io.vertx.core.Handler<io.vertx.core.AsyncResult<proto.Db.DB.UserExtendInfo>> response) {
       asyncUnaryCall(
           getChannel().newCall(METHOD_USER_EXTRA_INFO_QUERY, getCallOptions()), request, DBServiceGrpc.toObserver(response));
     }
@@ -746,27 +746,27 @@ public final class DBServiceGrpc {
       switch (methodId) {
         case METHODID_USER_QUERY:
           serviceImpl.userQuery((proto.Db.DB.UserKey) request,
-              (io.grpc.stub.StreamObserver<proto.Db.DB.UserQueryResponse>) responseObserver);
+              (io.grpc.stub.StreamObserver<proto.common.Common.UserInfo>) responseObserver);
           break;
         case METHODID_USER_UPDATE_INFO:
           serviceImpl.userUpdateInfo((proto.common.Common.UserInfo) request,
-              (io.grpc.stub.StreamObserver<proto.common.Common.RspHeader>) responseObserver);
+              (io.grpc.stub.StreamObserver<proto.Db.DB.NullValue>) responseObserver);
           break;
         case METHODID_USER_REGISTER:
-          serviceImpl.userRegister((proto.Db.DB.UserRegisterRequest) request,
-              (io.grpc.stub.StreamObserver<proto.Db.DB.UserRegisterResponse>) responseObserver);
+          serviceImpl.userRegister((proto.Db.DB.UserExtendInfo) request,
+              (io.grpc.stub.StreamObserver<proto.Db.DB.UserExtendInfo>) responseObserver);
           break;
         case METHODID_USER_LOGIN:
-          serviceImpl.userLogin((proto.Db.DB.UserLoginRequest) request,
-              (io.grpc.stub.StreamObserver<proto.Db.DB.UserLoginResponse>) responseObserver);
+          serviceImpl.userLogin((proto.Db.DB.UserExtendInfo) request,
+              (io.grpc.stub.StreamObserver<proto.Db.DB.UserExtendInfo>) responseObserver);
           break;
         case METHODID_USER_LOGOUT:
           serviceImpl.userLogout((proto.Db.DB.UserLogoutRequest) request,
-              (io.grpc.stub.StreamObserver<proto.common.Common.RspHeader>) responseObserver);
+              (io.grpc.stub.StreamObserver<proto.Db.DB.NullValue>) responseObserver);
           break;
         case METHODID_USER_EXTRA_INFO_QUERY:
           serviceImpl.userExtraInfoQuery((proto.Db.DB.UserKey) request,
-              (io.grpc.stub.StreamObserver<proto.Db.DB.UserExtraInfo>) responseObserver);
+              (io.grpc.stub.StreamObserver<proto.Db.DB.UserExtendInfo>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -803,9 +803,9 @@ public final class DBServiceGrpc {
       switch (methodId) {
         case METHODID_USER_QUERY:
           serviceImpl.userQuery((proto.Db.DB.UserKey) request,
-              (io.vertx.core.Future<proto.Db.DB.UserQueryResponse>) io.vertx.core.Future.<proto.Db.DB.UserQueryResponse>future().setHandler(ar -> {
+              (io.vertx.core.Future<proto.common.Common.UserInfo>) io.vertx.core.Future.<proto.common.Common.UserInfo>future().setHandler(ar -> {
                 if (ar.succeeded()) {
-                  ((io.grpc.stub.StreamObserver<proto.Db.DB.UserQueryResponse>) responseObserver).onNext(ar.result());
+                  ((io.grpc.stub.StreamObserver<proto.common.Common.UserInfo>) responseObserver).onNext(ar.result());
                   responseObserver.onCompleted();
                 } else {
                   responseObserver.onError(ar.cause());
@@ -814,9 +814,9 @@ public final class DBServiceGrpc {
           break;
         case METHODID_USER_UPDATE_INFO:
           serviceImpl.userUpdateInfo((proto.common.Common.UserInfo) request,
-              (io.vertx.core.Future<proto.common.Common.RspHeader>) io.vertx.core.Future.<proto.common.Common.RspHeader>future().setHandler(ar -> {
+              (io.vertx.core.Future<proto.Db.DB.NullValue>) io.vertx.core.Future.<proto.Db.DB.NullValue>future().setHandler(ar -> {
                 if (ar.succeeded()) {
-                  ((io.grpc.stub.StreamObserver<proto.common.Common.RspHeader>) responseObserver).onNext(ar.result());
+                  ((io.grpc.stub.StreamObserver<proto.Db.DB.NullValue>) responseObserver).onNext(ar.result());
                   responseObserver.onCompleted();
                 } else {
                   responseObserver.onError(ar.cause());
@@ -824,10 +824,10 @@ public final class DBServiceGrpc {
               }));
           break;
         case METHODID_USER_REGISTER:
-          serviceImpl.userRegister((proto.Db.DB.UserRegisterRequest) request,
-              (io.vertx.core.Future<proto.Db.DB.UserRegisterResponse>) io.vertx.core.Future.<proto.Db.DB.UserRegisterResponse>future().setHandler(ar -> {
+          serviceImpl.userRegister((proto.Db.DB.UserExtendInfo) request,
+              (io.vertx.core.Future<proto.Db.DB.UserExtendInfo>) io.vertx.core.Future.<proto.Db.DB.UserExtendInfo>future().setHandler(ar -> {
                 if (ar.succeeded()) {
-                  ((io.grpc.stub.StreamObserver<proto.Db.DB.UserRegisterResponse>) responseObserver).onNext(ar.result());
+                  ((io.grpc.stub.StreamObserver<proto.Db.DB.UserExtendInfo>) responseObserver).onNext(ar.result());
                   responseObserver.onCompleted();
                 } else {
                   responseObserver.onError(ar.cause());
@@ -835,10 +835,10 @@ public final class DBServiceGrpc {
               }));
           break;
         case METHODID_USER_LOGIN:
-          serviceImpl.userLogin((proto.Db.DB.UserLoginRequest) request,
-              (io.vertx.core.Future<proto.Db.DB.UserLoginResponse>) io.vertx.core.Future.<proto.Db.DB.UserLoginResponse>future().setHandler(ar -> {
+          serviceImpl.userLogin((proto.Db.DB.UserExtendInfo) request,
+              (io.vertx.core.Future<proto.Db.DB.UserExtendInfo>) io.vertx.core.Future.<proto.Db.DB.UserExtendInfo>future().setHandler(ar -> {
                 if (ar.succeeded()) {
-                  ((io.grpc.stub.StreamObserver<proto.Db.DB.UserLoginResponse>) responseObserver).onNext(ar.result());
+                  ((io.grpc.stub.StreamObserver<proto.Db.DB.UserExtendInfo>) responseObserver).onNext(ar.result());
                   responseObserver.onCompleted();
                 } else {
                   responseObserver.onError(ar.cause());
@@ -847,9 +847,9 @@ public final class DBServiceGrpc {
           break;
         case METHODID_USER_LOGOUT:
           serviceImpl.userLogout((proto.Db.DB.UserLogoutRequest) request,
-              (io.vertx.core.Future<proto.common.Common.RspHeader>) io.vertx.core.Future.<proto.common.Common.RspHeader>future().setHandler(ar -> {
+              (io.vertx.core.Future<proto.Db.DB.NullValue>) io.vertx.core.Future.<proto.Db.DB.NullValue>future().setHandler(ar -> {
                 if (ar.succeeded()) {
-                  ((io.grpc.stub.StreamObserver<proto.common.Common.RspHeader>) responseObserver).onNext(ar.result());
+                  ((io.grpc.stub.StreamObserver<proto.Db.DB.NullValue>) responseObserver).onNext(ar.result());
                   responseObserver.onCompleted();
                 } else {
                   responseObserver.onError(ar.cause());
@@ -858,9 +858,9 @@ public final class DBServiceGrpc {
           break;
         case METHODID_USER_EXTRA_INFO_QUERY:
           serviceImpl.userExtraInfoQuery((proto.Db.DB.UserKey) request,
-              (io.vertx.core.Future<proto.Db.DB.UserExtraInfo>) io.vertx.core.Future.<proto.Db.DB.UserExtraInfo>future().setHandler(ar -> {
+              (io.vertx.core.Future<proto.Db.DB.UserExtendInfo>) io.vertx.core.Future.<proto.Db.DB.UserExtendInfo>future().setHandler(ar -> {
                 if (ar.succeeded()) {
-                  ((io.grpc.stub.StreamObserver<proto.Db.DB.UserExtraInfo>) responseObserver).onNext(ar.result());
+                  ((io.grpc.stub.StreamObserver<proto.Db.DB.UserExtendInfo>) responseObserver).onNext(ar.result());
                   responseObserver.onCompleted();
                 } else {
                   responseObserver.onError(ar.cause());

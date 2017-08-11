@@ -7,59 +7,40 @@ import "common.proto";
 // Database service definition
 service DBService {
     // query user info
-    rpc UserQuery(DB.UserKey) returns (DB.UserQueryResponse);
+    rpc UserQuery(DB.UserKey) returns (proto.common.UserInfo);
 
     // update user info
-    rpc UserUpdateInfo(proto.common.UserInfo) returns (proto.common.RspHeader);
+    rpc UserUpdateInfo(proto.common.UserInfo) returns (DB.NullValue);
 
     // register
-    rpc UserRegister(DB.UserRegisterRequest) returns (DB.UserRegisterResponse);
+    rpc UserRegister(DB.UserExtendInfo) returns (DB.UserExtendInfo);
 
     // login
-    rpc UserLogin(DB.UserLoginRequest) returns (DB.UserLoginResponse);
+    rpc UserLogin(DB.UserExtendInfo) returns (DB.UserExtendInfo);
 
     // logout
-    rpc UserLogout(DB.UserLogoutRequest) returns (proto.common.RspHeader);
+    rpc UserLogout(DB.UserLogoutRequest) returns (DB.NullValue);
 
     // verify token
-    rpc UserExtraInfoQuery(DB.UserKey) returns (DB.UserExtraInfo);
+    rpc UserExtraInfoQuery(DB.UserKey) returns (DB.UserExtendInfo);
 }
 
 message DB {
+    message NullValue {}
+
     // user query key
     message UserKey {
         fixed64 usn   = 1;
         uint64  uid   = 2;
         string  email = 3;
     }
-    // user extra information
-    message UserExtraInfo {
-        fixed64 usn    = 1; // user serial number
-        bytes   secret = 2; // password hash
-        string  token  = 3; // access token
-    }
-    message UserQueryResponse {
-        proto.common.RspHeader result = 1;
-        proto.common.UserInfo  info   = 2;
-    }
-    message UserRegisterRequest {
+
+    message UserExtendInfo {
         proto.common.UserInfo info   = 1;
-        bytes                 secret = 2;
+        string                secret = 2; // password hash
+        string                token  = 3;
     }
-    message UserRegisterResponse {
-        proto.common.RspHeader result = 1;
-        proto.common.UserInfo  info   = 2;
-        string                 token  = 3;
-    }
-    message UserLoginRequest {
-        proto.common.UserInfo info   = 1;
-        bytes                 secret = 2;
-    }
-    message UserLoginResponse {
-        proto.common.RspHeader result = 1;
-        proto.common.UserInfo  info   = 2;
-        string                 token  = 3;
-    }
+
     message UserLogoutRequest {
         uint64 usn   = 1;
         string token = 2;

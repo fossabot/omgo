@@ -12,6 +12,10 @@ public class Utils {
         return String.format("%s:%d", ModelConstant.KEY_USER, usn);
     }
 
+    public static String getRedisExtraKey(long usn) {
+        return String.format("%s:%d", ModelConstant.KEY_USER_EXTRA, usn);
+    }
+
     public static boolean isEmptyString(String s) {
         return s == null || s.equals("");
     }

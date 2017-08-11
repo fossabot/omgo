@@ -10,7 +10,7 @@ service DBService {
     rpc UserQuery(DB.UserKey) returns (proto.common.UserInfo);
 
     // update user info
-    rpc UserUpdateInfo(proto.common.UserInfo) returns (int32);
+    rpc UserUpdateInfo(proto.common.UserInfo) returns (DB.NullValue);
 
     // register
     rpc UserRegister(DB.UserExtendInfo) returns (DB.UserExtendInfo);
@@ -19,13 +19,15 @@ service DBService {
     rpc UserLogin(DB.UserExtendInfo) returns (DB.UserExtendInfo);
 
     // logout
-    rpc UserLogout(DB.UserLogoutRequest) returns (int32);
+    rpc UserLogout(DB.UserLogoutRequest) returns (DB.NullValue);
 
     // verify token
     rpc UserExtraInfoQuery(DB.UserKey) returns (DB.UserExtendInfo);
 }
 
 message DB {
+    message NullValue {}
+
     // user query key
     message UserKey {
         fixed64 usn   = 1;

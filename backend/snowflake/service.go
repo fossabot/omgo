@@ -19,6 +19,7 @@ const (
 	envMachineID   = "MACHINE_ID" // Specific machine id
 	pathETCD       = "/seqs/"
 	uuidKey        = "/seqs/snowflake-uuid"
+	userIdKey      = "/seqs/userid"
 	reduction      = 100  // Max reduction delay millisecond
 	concurrentETCD = 128  // Max concurrent connections to ETCD
 	uuidQueueSize  = 1024 // UUID process queue
@@ -111,7 +112,7 @@ func (s *server) Next(ctx context.Context, in *pb.Snowflake_Key) (*pb.Snowflake_
 		prevValue, err := strconv.Atoi(resp.Node.Value)
 		if err != nil {
 			log.Error(err)
-			return nil, errors.New("marlformed value")
+			return nil, errors.New("malformed value")
 		}
 		prevIndex := resp.Node.ModifiedIndex
 
@@ -122,6 +123,38 @@ func (s *server) Next(ctx context.Context, in *pb.Snowflake_Key) (*pb.Snowflake_
 			continue
 		}
 		return &pb.Snowflake_Value{Value: int64(prevValue + 1)}, nil
+	}
+}
+
+// Generate an user id
+func (s *server) GetUserID(ctx context.Context, key *pb.Snowflake_Key) (*pb.Snowflake_UUID, error) {
+	client := <-s.clientPool
+	defer func() { s.clientPool <- client }()
+	for {
+		// Get the key
+		resp, err := client.Get(context.Background(), userIdKey, nil)
+		if err != nil {
+			log.Error(err)
+			return nil, fmt.Errorf("key:%v not exists, need to create first", userIdKey)
+		}
+
+		// Get prevValue & prevIndex
+		prevValue, err := strconv.Atoi(resp.Node.Value)
+		if err != nil {
+			log.Error(err)
+			return nil, errors.New("malformed value")
+		}
+		prevIndex := resp.Node.ModifiedIndex
+
+		currentValue := uint64(prevValue + rand.Intn(2048) + 1)
+
+		// CompareAndSwap
+		resp, err = client.Set(context.Background(), userIdKey, fmt.Sprint(currentValue), &etcd.SetOptions{PrevIndex: prevIndex})
+		if err != nil {
+			casDelay()
+			continue
+		}
+		return &pb.Snowflake_UUID{Uuid: currentValue}, nil
 	}
 }
 

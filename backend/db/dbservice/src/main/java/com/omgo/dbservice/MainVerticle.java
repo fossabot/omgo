@@ -16,6 +16,7 @@ import io.vertx.redis.RedisClient;
 import io.vertx.redis.RedisOptions;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 
 public class MainVerticle extends AbstractVerticle {
@@ -27,11 +28,9 @@ public class MainVerticle extends AbstractVerticle {
         String rpcHost = config().getString("rpc.host", "localhost");
         int rpcPort = config().getInteger("rpc.port", 60001);
 
-        SQLClient client = createSQLClient();
-
         VertxServer rpcServer = VertxServerBuilder
             .forAddress(vertx, rpcHost, rpcPort)
-            .addService(new DBServiceGrpcImpl(client, createRedisClient()))
+            .addService(new DBServiceGrpcImpl(createSQLClient(), createRedisClient()))
             .build();
 
         // Start is asynchronous
@@ -40,10 +39,6 @@ public class MainVerticle extends AbstractVerticle {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        testMySQL(client);
-
-//        testCompose();
     }
 
     private SQLClient createSQLClient() {
@@ -51,11 +46,15 @@ public class MainVerticle extends AbstractVerticle {
         int maxPoolSize = config().getInteger("sql.maxPoolSize", 10);
         String username = config().getString("sql.username", "driver");
         String password = config().getString("sql.password", "mysql");
+        String host = config().getString("sql.host", "localhost");
+        int port = config().getInteger("sql.port", 3306);
         String database = config().getString("sql.database", "master");
         String charset = config().getString("sql.charset", "UTF-8");
 
         JsonObject dataSourceProperty = new JsonObject()
             .put("databaseName", database)
+            .put("portNumber", port)
+            .put("serverName", host)
             .put("cachePrepStmts", true)
             .put("prepStmtCacheSize", 250)
             .put("prepStmtCacheSqlLimit", 2048)
@@ -70,12 +69,13 @@ public class MainVerticle extends AbstractVerticle {
 
         JsonObject mySQLConnectionConfig = new JsonObject()
             .put("provider_class", "io.vertx.ext.jdbc.spi.impl.HikariCPDataSourceProvider")
-            .put("driverClassName", "com.mysql.jdbc.Driver")
+            .put("driverClassName", "com.mysql.cj.jdbc.Driver")
             .put("jdbcUrl", url)
             .put("maxPoolSize", maxPoolSize)
             .put("username", username)
             .put("password", password)
             .put("charset", charset)
+//            .put("initializationFailFast", false)
             .put("datasource", dataSourceProperty);
 
         LOGGER.info(mySQLConnectionConfig);
@@ -140,24 +140,5 @@ public class MainVerticle extends AbstractVerticle {
                 }
             })
         );
-    }
-
-    private void testMySQL(SQLClient client) {
-        client.getConnection(res -> {
-            if (res.succeeded()) {
-                SQLConnection connection = res.result();
-                connection.queryWithParams("SELECT * FROM user WHERE usn=?", new JsonArray().add(1234), dbRes -> {
-                    if (dbRes.succeeded()) {
-                        ResultSet rs = dbRes.result();
-                        JsonObject row = rs.getRows().get(0);
-                        LOGGER.info(row);
-                    } else {
-                        LOGGER.error(dbRes.cause());
-                    }
-                });
-            } else {
-                LOGGER.error(res.cause());
-            }
-        });
     }
 }

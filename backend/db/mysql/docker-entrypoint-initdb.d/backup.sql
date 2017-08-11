@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 5.7.18, for osx10.12 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.19, for osx10.12 (x86_64)
 --
 -- Host: 127.0.0.1    Database: mysql
 -- ------------------------------------------------------
@@ -92,7 +92,7 @@ CREATE TABLE `db` (
 
 LOCK TABLES `db` WRITE;
 /*!40000 ALTER TABLE `db` DISABLE KEYS */;
-INSERT INTO `db` VALUES ('localhost','sys','mysql.sys','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','Y'),('%','sample','mysql','Y','Y','Y','Y','Y','Y','N','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y'),('localhost','master','driver','Y','Y','Y','Y','Y','Y','N','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y');
+INSERT INTO `db` VALUES ('localhost','sys','mysql.sys','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','Y'),('%','sample','mysql','Y','Y','Y','Y','Y','Y','N','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y'),('%','master','driver','Y','Y','Y','Y','Y','Y','N','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y');
 /*!40000 ALTER TABLE `db` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -190,30 +190,6 @@ CREATE TABLE `func` (
 LOCK TABLES `func` WRITE;
 /*!40000 ALTER TABLE `func` DISABLE KEYS */;
 /*!40000 ALTER TABLE `func` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `gtid_executed`
---
-
-DROP TABLE IF EXISTS `gtid_executed`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `gtid_executed` (
-  `source_uuid` char(36) NOT NULL COMMENT 'uuid of the source where the transaction was originally executed.',
-  `interval_start` bigint(20) NOT NULL COMMENT 'First number of interval.',
-  `interval_end` bigint(20) NOT NULL COMMENT 'Last number of interval.',
-  PRIMARY KEY (`source_uuid`,`interval_start`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `gtid_executed`
---
-
-LOCK TABLES `gtid_executed` WRITE;
-/*!40000 ALTER TABLE `gtid_executed` DISABLE KEYS */;
-/*!40000 ALTER TABLE `gtid_executed` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -347,7 +323,7 @@ CREATE TABLE `innodb_index_stats` (
 
 LOCK TABLES `innodb_index_stats` WRITE;
 /*!40000 ALTER TABLE `innodb_index_stats` DISABLE KEYS */;
-INSERT INTO `innodb_index_stats` VALUES ('master','user','PRIMARY','2017-07-24 12:28:51','n_diff_pfx01',0,1,'usn'),('master','user','PRIMARY','2017-07-24 12:28:51','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','PRIMARY','2017-07-24 12:28:51','size',1,NULL,'Number of pages in the index'),('master','user','user_uid_uindex','2017-07-24 12:28:51','n_diff_pfx01',0,1,'uid'),('master','user','user_uid_uindex','2017-07-24 12:28:51','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','user_uid_uindex','2017-07-24 12:28:51','size',1,NULL,'Number of pages in the index'),('master','user','user_usn_uindex','2017-07-24 12:28:51','n_diff_pfx01',0,1,'usn'),('master','user','user_usn_uindex','2017-07-24 12:28:51','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','user_usn_uindex','2017-07-24 12:28:51','size',1,NULL,'Number of pages in the index'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_diff_pfx01',0,1,'source_uuid'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_diff_pfx02',0,1,'source_uuid,interval_start'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','size',1,NULL,'Number of pages in the index'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','n_diff_pfx01',2,1,'variable'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','size',1,NULL,'Number of pages in the index');
+INSERT INTO `innodb_index_stats` VALUES ('master','user','PRIMARY','2017-07-24 15:44:38','n_diff_pfx01',0,1,'usn'),('master','user','PRIMARY','2017-07-24 15:44:38','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','PRIMARY','2017-07-24 15:44:38','size',1,NULL,'Number of pages in the index'),('master','user','user_uid_uindex','2017-07-24 15:44:38','n_diff_pfx01',0,1,'uid'),('master','user','user_uid_uindex','2017-07-24 15:44:38','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','user_uid_uindex','2017-07-24 15:44:38','size',1,NULL,'Number of pages in the index'),('master','user','user_usn_uindex','2017-07-24 15:44:38','n_diff_pfx01',0,1,'usn'),('master','user','user_usn_uindex','2017-07-24 15:44:38','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','user_usn_uindex','2017-07-24 15:44:38','size',1,NULL,'Number of pages in the index'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_diff_pfx01',0,1,'source_uuid'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_diff_pfx02',0,1,'source_uuid,interval_start'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','size',1,NULL,'Number of pages in the index'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','n_diff_pfx01',2,1,'variable'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','size',1,NULL,'Number of pages in the index');
 /*!40000 ALTER TABLE `innodb_index_stats` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -375,7 +351,7 @@ CREATE TABLE `innodb_table_stats` (
 
 LOCK TABLES `innodb_table_stats` WRITE;
 /*!40000 ALTER TABLE `innodb_table_stats` DISABLE KEYS */;
-INSERT INTO `innodb_table_stats` VALUES ('master','user','2017-07-24 12:28:51',0,1,2),('mysql','gtid_executed','2017-07-21 09:55:23',0,1,0),('sys','sys_config','2017-07-21 09:55:24',2,1,0);
+INSERT INTO `innodb_table_stats` VALUES ('master','user','2017-07-24 15:44:38',0,1,2),('mysql','gtid_executed','2017-07-21 09:55:23',0,1,0),('sys','sys_config','2017-07-21 09:55:24',2,1,0);
 /*!40000 ALTER TABLE `innodb_table_stats` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -597,10 +573,9 @@ UNLOCK TABLES;
 -- Table structure for table `slave_master_info`
 --
 
-DROP TABLE IF EXISTS `slave_master_info`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `slave_master_info` (
+CREATE TABLE IF NOT EXISTS `slave_master_info` (
   `Number_of_lines` int(10) unsigned NOT NULL COMMENT 'Number of lines in the file.',
   `Master_log_name` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'The name of the master binary log currently being read from the master.',
   `Master_log_pos` bigint(20) unsigned NOT NULL COMMENT 'The master log position of the last read event.',
@@ -631,22 +606,12 @@ CREATE TABLE `slave_master_info` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `slave_master_info`
---
-
-LOCK TABLES `slave_master_info` WRITE;
-/*!40000 ALTER TABLE `slave_master_info` DISABLE KEYS */;
-/*!40000 ALTER TABLE `slave_master_info` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `slave_relay_log_info`
 --
 
-DROP TABLE IF EXISTS `slave_relay_log_info`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `slave_relay_log_info` (
+CREATE TABLE IF NOT EXISTS `slave_relay_log_info` (
   `Number_of_lines` int(10) unsigned NOT NULL COMMENT 'Number of lines in the file or rows in the table. Used to version table definitions.',
   `Relay_log_name` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'The name of the current relay log file.',
   `Relay_log_pos` bigint(20) unsigned NOT NULL COMMENT 'The relay log position of the last executed event.',
@@ -659,15 +624,6 @@ CREATE TABLE `slave_relay_log_info` (
   PRIMARY KEY (`Channel_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 STATS_PERSISTENT=0 COMMENT='Relay Log Information';
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `slave_relay_log_info`
---
-
-LOCK TABLES `slave_relay_log_info` WRITE;
-/*!40000 ALTER TABLE `slave_relay_log_info` DISABLE KEYS */;
-/*!40000 ALTER TABLE `slave_relay_log_info` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `slave_worker_info`
@@ -922,7 +878,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('localhost','root','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','','','','',0,0,0,0,'mysql_native_password','*90BA3AC0BFDE07AE334CA523CB27167AE33825B9','N','2017-07-21 09:55:30',NULL,'N'),('localhost','mysql.sys','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','','','','',0,0,0,0,'mysql_native_password','*THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE','N','2017-07-21 09:55:24',NULL,'Y'),('%','root','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','','','','',0,0,0,0,'mysql_native_password','*90BA3AC0BFDE07AE334CA523CB27167AE33825B9','N','2017-07-21 09:55:30',NULL,'N'),('%','mysql','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','','','','',0,0,0,0,'mysql_native_password','*E74858DB86EBA20BC33D0AECAE8A8108C56B17FA','N','2017-07-21 09:55:30',NULL,'N'),('localhost','driver','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','','','','',0,0,0,0,'mysql_native_password','*E74858DB86EBA20BC33D0AECAE8A8108C56B17FA','N','2017-07-21 10:01:43',NULL,'N');
+INSERT INTO `user` VALUES ('localhost','root','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','','','','',0,0,0,0,'mysql_native_password','*90BA3AC0BFDE07AE334CA523CB27167AE33825B9','N','2017-07-21 09:55:30',NULL,'N'),('localhost','mysql.sys','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','','','','',0,0,0,0,'mysql_native_password','*THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE','N','2017-07-21 09:55:24',NULL,'Y'),('%','root','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','Y','','','','',0,0,0,0,'mysql_native_password','*90BA3AC0BFDE07AE334CA523CB27167AE33825B9','N','2017-07-21 09:55:30',NULL,'N'),('%','mysql','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','','','','',0,0,0,0,'mysql_native_password','*E74858DB86EBA20BC33D0AECAE8A8108C56B17FA','N','2017-07-21 09:55:30',NULL,'N'),('%','driver','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','','','','',0,0,0,0,'mysql_native_password','*E74858DB86EBA20BC33D0AECAE8A8108C56B17FA','N','2017-08-11 02:03:43',NULL,'N');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1015,6 +971,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES (1234567,1234,'gravatar.com/avatar/fddd805f5195dab1951784d2a6b69448','1986-11-01 18:13:18','CN','dearunclexiao@qq.com',2,'2017-08-10 18:14:19',1,'mg',NULL,NULL,'2017-08-10 18:15:05');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1031,4 +988,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-07-24 23:44:02
+-- Dump completed on 2017-08-11 10:04:18

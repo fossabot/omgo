@@ -41,6 +41,14 @@ func (m *DB) String() string            { return proto1.CompactTextString(m) }
 func (*DB) ProtoMessage()               {}
 func (*DB) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
+type DB_NullValue struct {
+}
+
+func (m *DB_NullValue) Reset()                    { *m = DB_NullValue{} }
+func (m *DB_NullValue) String() string            { return proto1.CompactTextString(m) }
+func (*DB_NullValue) ProtoMessage()               {}
+func (*DB_NullValue) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 0} }
+
 // user query key
 type DB_UserKey struct {
 	Usn   uint64 `protobuf:"fixed64,1,opt,name=usn" json:"usn,omitempty"`
@@ -51,7 +59,7 @@ type DB_UserKey struct {
 func (m *DB_UserKey) Reset()                    { *m = DB_UserKey{} }
 func (m *DB_UserKey) String() string            { return proto1.CompactTextString(m) }
 func (*DB_UserKey) ProtoMessage()               {}
-func (*DB_UserKey) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 0} }
+func (*DB_UserKey) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 1} }
 
 func (m *DB_UserKey) GetUsn() uint64 {
 	if m != nil {
@@ -74,169 +82,32 @@ func (m *DB_UserKey) GetEmail() string {
 	return ""
 }
 
-// user extra information
-type DB_UserExtraInfo struct {
-	Usn    uint64 `protobuf:"fixed64,1,opt,name=usn" json:"usn,omitempty"`
-	Secret []byte `protobuf:"bytes,2,opt,name=secret,proto3" json:"secret,omitempty"`
-	Token  string `protobuf:"bytes,3,opt,name=token" json:"token,omitempty"`
+type DB_UserExtendInfo struct {
+	Info   *proto_common.UserInfo `protobuf:"bytes,1,opt,name=info" json:"info,omitempty"`
+	Secret string                 `protobuf:"bytes,2,opt,name=secret" json:"secret,omitempty"`
+	Token  string                 `protobuf:"bytes,3,opt,name=token" json:"token,omitempty"`
 }
 
-func (m *DB_UserExtraInfo) Reset()                    { *m = DB_UserExtraInfo{} }
-func (m *DB_UserExtraInfo) String() string            { return proto1.CompactTextString(m) }
-func (*DB_UserExtraInfo) ProtoMessage()               {}
-func (*DB_UserExtraInfo) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 1} }
+func (m *DB_UserExtendInfo) Reset()                    { *m = DB_UserExtendInfo{} }
+func (m *DB_UserExtendInfo) String() string            { return proto1.CompactTextString(m) }
+func (*DB_UserExtendInfo) ProtoMessage()               {}
+func (*DB_UserExtendInfo) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 2} }
 
-func (m *DB_UserExtraInfo) GetUsn() uint64 {
+func (m *DB_UserExtendInfo) GetInfo() *proto_common.UserInfo {
 	if m != nil {
-		return m.Usn
-	}
-	return 0
-}
-
-func (m *DB_UserExtraInfo) GetSecret() []byte {
-	if m != nil {
-		return m.Secret
+		return m.Info
 	}
 	return nil
 }
 
-func (m *DB_UserExtraInfo) GetToken() string {
+func (m *DB_UserExtendInfo) GetSecret() string {
 	if m != nil {
-		return m.Token
+		return m.Secret
 	}
 	return ""
 }
 
-type DB_UserQueryResponse struct {
-	Result *proto_common.RspHeader `protobuf:"bytes,1,opt,name=result" json:"result,omitempty"`
-	Info   *proto_common.UserInfo  `protobuf:"bytes,2,opt,name=info" json:"info,omitempty"`
-}
-
-func (m *DB_UserQueryResponse) Reset()                    { *m = DB_UserQueryResponse{} }
-func (m *DB_UserQueryResponse) String() string            { return proto1.CompactTextString(m) }
-func (*DB_UserQueryResponse) ProtoMessage()               {}
-func (*DB_UserQueryResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 2} }
-
-func (m *DB_UserQueryResponse) GetResult() *proto_common.RspHeader {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-func (m *DB_UserQueryResponse) GetInfo() *proto_common.UserInfo {
-	if m != nil {
-		return m.Info
-	}
-	return nil
-}
-
-type DB_UserRegisterRequest struct {
-	Info   *proto_common.UserInfo `protobuf:"bytes,1,opt,name=info" json:"info,omitempty"`
-	Secret []byte                 `protobuf:"bytes,2,opt,name=secret,proto3" json:"secret,omitempty"`
-}
-
-func (m *DB_UserRegisterRequest) Reset()                    { *m = DB_UserRegisterRequest{} }
-func (m *DB_UserRegisterRequest) String() string            { return proto1.CompactTextString(m) }
-func (*DB_UserRegisterRequest) ProtoMessage()               {}
-func (*DB_UserRegisterRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 3} }
-
-func (m *DB_UserRegisterRequest) GetInfo() *proto_common.UserInfo {
-	if m != nil {
-		return m.Info
-	}
-	return nil
-}
-
-func (m *DB_UserRegisterRequest) GetSecret() []byte {
-	if m != nil {
-		return m.Secret
-	}
-	return nil
-}
-
-type DB_UserRegisterResponse struct {
-	Result *proto_common.RspHeader `protobuf:"bytes,1,opt,name=result" json:"result,omitempty"`
-	Info   *proto_common.UserInfo  `protobuf:"bytes,2,opt,name=info" json:"info,omitempty"`
-	Token  string                  `protobuf:"bytes,3,opt,name=token" json:"token,omitempty"`
-}
-
-func (m *DB_UserRegisterResponse) Reset()                    { *m = DB_UserRegisterResponse{} }
-func (m *DB_UserRegisterResponse) String() string            { return proto1.CompactTextString(m) }
-func (*DB_UserRegisterResponse) ProtoMessage()               {}
-func (*DB_UserRegisterResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 4} }
-
-func (m *DB_UserRegisterResponse) GetResult() *proto_common.RspHeader {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-func (m *DB_UserRegisterResponse) GetInfo() *proto_common.UserInfo {
-	if m != nil {
-		return m.Info
-	}
-	return nil
-}
-
-func (m *DB_UserRegisterResponse) GetToken() string {
-	if m != nil {
-		return m.Token
-	}
-	return ""
-}
-
-type DB_UserLoginRequest struct {
-	Info   *proto_common.UserInfo `protobuf:"bytes,1,opt,name=info" json:"info,omitempty"`
-	Secret []byte                 `protobuf:"bytes,2,opt,name=secret,proto3" json:"secret,omitempty"`
-}
-
-func (m *DB_UserLoginRequest) Reset()                    { *m = DB_UserLoginRequest{} }
-func (m *DB_UserLoginRequest) String() string            { return proto1.CompactTextString(m) }
-func (*DB_UserLoginRequest) ProtoMessage()               {}
-func (*DB_UserLoginRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 5} }
-
-func (m *DB_UserLoginRequest) GetInfo() *proto_common.UserInfo {
-	if m != nil {
-		return m.Info
-	}
-	return nil
-}
-
-func (m *DB_UserLoginRequest) GetSecret() []byte {
-	if m != nil {
-		return m.Secret
-	}
-	return nil
-}
-
-type DB_UserLoginResponse struct {
-	Result *proto_common.RspHeader `protobuf:"bytes,1,opt,name=result" json:"result,omitempty"`
-	Info   *proto_common.UserInfo  `protobuf:"bytes,2,opt,name=info" json:"info,omitempty"`
-	Token  string                  `protobuf:"bytes,3,opt,name=token" json:"token,omitempty"`
-}
-
-func (m *DB_UserLoginResponse) Reset()                    { *m = DB_UserLoginResponse{} }
-func (m *DB_UserLoginResponse) String() string            { return proto1.CompactTextString(m) }
-func (*DB_UserLoginResponse) ProtoMessage()               {}
-func (*DB_UserLoginResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 6} }
-
-func (m *DB_UserLoginResponse) GetResult() *proto_common.RspHeader {
-	if m != nil {
-		return m.Result
-	}
-	return nil
-}
-
-func (m *DB_UserLoginResponse) GetInfo() *proto_common.UserInfo {
-	if m != nil {
-		return m.Info
-	}
-	return nil
-}
-
-func (m *DB_UserLoginResponse) GetToken() string {
+func (m *DB_UserExtendInfo) GetToken() string {
 	if m != nil {
 		return m.Token
 	}
@@ -251,7 +122,7 @@ type DB_UserLogoutRequest struct {
 func (m *DB_UserLogoutRequest) Reset()                    { *m = DB_UserLogoutRequest{} }
 func (m *DB_UserLogoutRequest) String() string            { return proto1.CompactTextString(m) }
 func (*DB_UserLogoutRequest) ProtoMessage()               {}
-func (*DB_UserLogoutRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 7} }
+func (*DB_UserLogoutRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 3} }
 
 func (m *DB_UserLogoutRequest) GetUsn() uint64 {
 	if m != nil {
@@ -269,13 +140,9 @@ func (m *DB_UserLogoutRequest) GetToken() string {
 
 func init() {
 	proto1.RegisterType((*DB)(nil), "proto.DB")
+	proto1.RegisterType((*DB_NullValue)(nil), "proto.DB.NullValue")
 	proto1.RegisterType((*DB_UserKey)(nil), "proto.DB.UserKey")
-	proto1.RegisterType((*DB_UserExtraInfo)(nil), "proto.DB.UserExtraInfo")
-	proto1.RegisterType((*DB_UserQueryResponse)(nil), "proto.DB.UserQueryResponse")
-	proto1.RegisterType((*DB_UserRegisterRequest)(nil), "proto.DB.UserRegisterRequest")
-	proto1.RegisterType((*DB_UserRegisterResponse)(nil), "proto.DB.UserRegisterResponse")
-	proto1.RegisterType((*DB_UserLoginRequest)(nil), "proto.DB.UserLoginRequest")
-	proto1.RegisterType((*DB_UserLoginResponse)(nil), "proto.DB.UserLoginResponse")
+	proto1.RegisterType((*DB_UserExtendInfo)(nil), "proto.DB.UserExtendInfo")
 	proto1.RegisterType((*DB_UserLogoutRequest)(nil), "proto.DB.UserLogoutRequest")
 }
 
@@ -291,17 +158,17 @@ const _ = grpc.SupportPackageIsVersion4
 
 type DBServiceClient interface {
 	// query user info
-	UserQuery(ctx context.Context, in *DB_UserKey, opts ...grpc.CallOption) (*DB_UserQueryResponse, error)
+	UserQuery(ctx context.Context, in *DB_UserKey, opts ...grpc.CallOption) (*proto_common.UserInfo, error)
 	// update user info
-	UserUpdateInfo(ctx context.Context, in *proto_common.UserInfo, opts ...grpc.CallOption) (*proto_common.RspHeader, error)
+	UserUpdateInfo(ctx context.Context, in *proto_common.UserInfo, opts ...grpc.CallOption) (*DB_NullValue, error)
 	// register
-	UserRegister(ctx context.Context, in *DB_UserRegisterRequest, opts ...grpc.CallOption) (*DB_UserRegisterResponse, error)
+	UserRegister(ctx context.Context, in *DB_UserExtendInfo, opts ...grpc.CallOption) (*DB_UserExtendInfo, error)
 	// login
-	UserLogin(ctx context.Context, in *DB_UserLoginRequest, opts ...grpc.CallOption) (*DB_UserLoginResponse, error)
+	UserLogin(ctx context.Context, in *DB_UserExtendInfo, opts ...grpc.CallOption) (*DB_UserExtendInfo, error)
 	// logout
-	UserLogout(ctx context.Context, in *DB_UserLogoutRequest, opts ...grpc.CallOption) (*proto_common.RspHeader, error)
+	UserLogout(ctx context.Context, in *DB_UserLogoutRequest, opts ...grpc.CallOption) (*DB_NullValue, error)
 	// verify token
-	UserExtraInfoQuery(ctx context.Context, in *DB_UserKey, opts ...grpc.CallOption) (*DB_UserExtraInfo, error)
+	UserExtraInfoQuery(ctx context.Context, in *DB_UserKey, opts ...grpc.CallOption) (*DB_UserExtendInfo, error)
 }
 
 type dBServiceClient struct {
@@ -312,8 +179,8 @@ func NewDBServiceClient(cc *grpc.ClientConn) DBServiceClient {
 	return &dBServiceClient{cc}
 }
 
-func (c *dBServiceClient) UserQuery(ctx context.Context, in *DB_UserKey, opts ...grpc.CallOption) (*DB_UserQueryResponse, error) {
-	out := new(DB_UserQueryResponse)
+func (c *dBServiceClient) UserQuery(ctx context.Context, in *DB_UserKey, opts ...grpc.CallOption) (*proto_common.UserInfo, error) {
+	out := new(proto_common.UserInfo)
 	err := grpc.Invoke(ctx, "/proto.DBService/UserQuery", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -321,8 +188,8 @@ func (c *dBServiceClient) UserQuery(ctx context.Context, in *DB_UserKey, opts ..
 	return out, nil
 }
 
-func (c *dBServiceClient) UserUpdateInfo(ctx context.Context, in *proto_common.UserInfo, opts ...grpc.CallOption) (*proto_common.RspHeader, error) {
-	out := new(proto_common.RspHeader)
+func (c *dBServiceClient) UserUpdateInfo(ctx context.Context, in *proto_common.UserInfo, opts ...grpc.CallOption) (*DB_NullValue, error) {
+	out := new(DB_NullValue)
 	err := grpc.Invoke(ctx, "/proto.DBService/UserUpdateInfo", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -330,8 +197,8 @@ func (c *dBServiceClient) UserUpdateInfo(ctx context.Context, in *proto_common.U
 	return out, nil
 }
 
-func (c *dBServiceClient) UserRegister(ctx context.Context, in *DB_UserRegisterRequest, opts ...grpc.CallOption) (*DB_UserRegisterResponse, error) {
-	out := new(DB_UserRegisterResponse)
+func (c *dBServiceClient) UserRegister(ctx context.Context, in *DB_UserExtendInfo, opts ...grpc.CallOption) (*DB_UserExtendInfo, error) {
+	out := new(DB_UserExtendInfo)
 	err := grpc.Invoke(ctx, "/proto.DBService/UserRegister", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -339,8 +206,8 @@ func (c *dBServiceClient) UserRegister(ctx context.Context, in *DB_UserRegisterR
 	return out, nil
 }
 
-func (c *dBServiceClient) UserLogin(ctx context.Context, in *DB_UserLoginRequest, opts ...grpc.CallOption) (*DB_UserLoginResponse, error) {
-	out := new(DB_UserLoginResponse)
+func (c *dBServiceClient) UserLogin(ctx context.Context, in *DB_UserExtendInfo, opts ...grpc.CallOption) (*DB_UserExtendInfo, error) {
+	out := new(DB_UserExtendInfo)
 	err := grpc.Invoke(ctx, "/proto.DBService/UserLogin", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -348,8 +215,8 @@ func (c *dBServiceClient) UserLogin(ctx context.Context, in *DB_UserLoginRequest
 	return out, nil
 }
 
-func (c *dBServiceClient) UserLogout(ctx context.Context, in *DB_UserLogoutRequest, opts ...grpc.CallOption) (*proto_common.RspHeader, error) {
-	out := new(proto_common.RspHeader)
+func (c *dBServiceClient) UserLogout(ctx context.Context, in *DB_UserLogoutRequest, opts ...grpc.CallOption) (*DB_NullValue, error) {
+	out := new(DB_NullValue)
 	err := grpc.Invoke(ctx, "/proto.DBService/UserLogout", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -357,8 +224,8 @@ func (c *dBServiceClient) UserLogout(ctx context.Context, in *DB_UserLogoutReque
 	return out, nil
 }
 
-func (c *dBServiceClient) UserExtraInfoQuery(ctx context.Context, in *DB_UserKey, opts ...grpc.CallOption) (*DB_UserExtraInfo, error) {
-	out := new(DB_UserExtraInfo)
+func (c *dBServiceClient) UserExtraInfoQuery(ctx context.Context, in *DB_UserKey, opts ...grpc.CallOption) (*DB_UserExtendInfo, error) {
+	out := new(DB_UserExtendInfo)
 	err := grpc.Invoke(ctx, "/proto.DBService/UserExtraInfoQuery", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
@@ -370,17 +237,17 @@ func (c *dBServiceClient) UserExtraInfoQuery(ctx context.Context, in *DB_UserKey
 
 type DBServiceServer interface {
 	// query user info
-	UserQuery(context.Context, *DB_UserKey) (*DB_UserQueryResponse, error)
+	UserQuery(context.Context, *DB_UserKey) (*proto_common.UserInfo, error)
 	// update user info
-	UserUpdateInfo(context.Context, *proto_common.UserInfo) (*proto_common.RspHeader, error)
+	UserUpdateInfo(context.Context, *proto_common.UserInfo) (*DB_NullValue, error)
 	// register
-	UserRegister(context.Context, *DB_UserRegisterRequest) (*DB_UserRegisterResponse, error)
+	UserRegister(context.Context, *DB_UserExtendInfo) (*DB_UserExtendInfo, error)
 	// login
-	UserLogin(context.Context, *DB_UserLoginRequest) (*DB_UserLoginResponse, error)
+	UserLogin(context.Context, *DB_UserExtendInfo) (*DB_UserExtendInfo, error)
 	// logout
-	UserLogout(context.Context, *DB_UserLogoutRequest) (*proto_common.RspHeader, error)
+	UserLogout(context.Context, *DB_UserLogoutRequest) (*DB_NullValue, error)
 	// verify token
-	UserExtraInfoQuery(context.Context, *DB_UserKey) (*DB_UserExtraInfo, error)
+	UserExtraInfoQuery(context.Context, *DB_UserKey) (*DB_UserExtendInfo, error)
 }
 
 func RegisterDBServiceServer(s *grpc.Server, srv DBServiceServer) {
@@ -424,7 +291,7 @@ func _DBService_UserUpdateInfo_Handler(srv interface{}, ctx context.Context, dec
 }
 
 func _DBService_UserRegister_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DB_UserRegisterRequest)
+	in := new(DB_UserExtendInfo)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -436,13 +303,13 @@ func _DBService_UserRegister_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/proto.DBService/UserRegister",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DBServiceServer).UserRegister(ctx, req.(*DB_UserRegisterRequest))
+		return srv.(DBServiceServer).UserRegister(ctx, req.(*DB_UserExtendInfo))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _DBService_UserLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DB_UserLoginRequest)
+	in := new(DB_UserExtendInfo)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -454,7 +321,7 @@ func _DBService_UserLogin_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/proto.DBService/UserLogin",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DBServiceServer).UserLogin(ctx, req.(*DB_UserLoginRequest))
+		return srv.(DBServiceServer).UserLogin(ctx, req.(*DB_UserExtendInfo))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -531,32 +398,27 @@ var _DBService_serviceDesc = grpc.ServiceDesc{
 func init() { proto1.RegisterFile("db.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 423 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x54, 0x4d, 0x8f, 0xd3, 0x30,
-	0x14, 0x54, 0xfa, 0x11, 0xe8, 0x6b, 0x41, 0xad, 0xa9, 0xda, 0xca, 0x08, 0x54, 0x71, 0xaa, 0x38,
-	0x14, 0xa9, 0x1c, 0x7b, 0x81, 0x10, 0x24, 0x10, 0x20, 0x84, 0x51, 0x91, 0x38, 0xa6, 0xcd, 0x6b,
-	0x15, 0xd1, 0xc6, 0xc1, 0x76, 0x10, 0xfd, 0x03, 0x2b, 0xed, 0x71, 0xff, 0xc4, 0xfe, 0xce, 0x95,
-	0x9d, 0x34, 0x8d, 0xbb, 0x1b, 0xed, 0x65, 0xb5, 0x7b, 0xb2, 0x3d, 0x19, 0x8f, 0xdf, 0x3c, 0x8f,
-	0x03, 0x8f, 0xc3, 0xe5, 0x34, 0x11, 0x5c, 0x71, 0xd2, 0x34, 0x03, 0xed, 0xac, 0xf8, 0x6e, 0xc7,
-	0xe3, 0x0c, 0x7c, 0x75, 0xe1, 0x42, 0xcd, 0xf7, 0xe8, 0x07, 0x78, 0xb4, 0x90, 0x28, 0xbe, 0xe0,
-	0x9e, 0x74, 0xa1, 0x9e, 0xca, 0x78, 0xe4, 0x8c, 0x9d, 0x89, 0xcb, 0xf4, 0xd4, 0x20, 0x51, 0x38,
-	0xaa, 0x8d, 0x9d, 0x49, 0x83, 0xe9, 0x29, 0xe9, 0x43, 0x13, 0x77, 0x41, 0xb4, 0x1d, 0xd5, 0xc7,
-	0xce, 0xa4, 0xc5, 0xb2, 0x05, 0xfd, 0x0e, 0x4f, 0xb4, 0xc8, 0xc7, 0xff, 0x4a, 0x04, 0x9f, 0xe3,
-	0x35, 0xbf, 0x41, 0x6a, 0x00, 0xae, 0xc4, 0x95, 0x40, 0x65, 0xd4, 0x3a, 0x2c, 0x5f, 0x69, 0x41,
-	0xc5, 0xff, 0x60, 0x7c, 0x10, 0x34, 0x0b, 0x9a, 0x40, 0x4f, 0x0b, 0xfe, 0x48, 0x51, 0xec, 0x19,
-	0xca, 0x84, 0xc7, 0x12, 0xc9, 0x1b, 0x70, 0x05, 0xca, 0x74, 0xab, 0x8c, 0x6e, 0x7b, 0x36, 0xcc,
-	0x9c, 0x4c, 0x73, 0x5b, 0x4c, 0x26, 0x9f, 0x30, 0x08, 0x51, 0xb0, 0x9c, 0x46, 0x5e, 0x43, 0x23,
-	0x8a, 0xd7, 0xdc, 0x9c, 0xd8, 0x9e, 0x0d, 0x6c, 0xba, 0xd6, 0xd7, 0xb5, 0x32, 0xc3, 0xa1, 0xbf,
-	0xe1, 0x99, 0x46, 0x18, 0x6e, 0x22, 0xa9, 0xf4, 0xf8, 0x37, 0x45, 0x79, 0x94, 0x70, 0x6e, 0x97,
-	0xa8, 0xb2, 0x48, 0xcf, 0x1d, 0xe8, 0xdb, 0xda, 0xf7, 0x60, 0xa8, 0xa2, 0xb1, 0xbf, 0xa0, 0xab,
-	0x79, 0x5f, 0xf9, 0x26, 0x8a, 0xef, 0xd2, 0xe3, 0x99, 0x93, 0xdd, 0x58, 0x2e, 0xfc, 0x70, 0x06,
-	0xe7, 0x45, 0x1d, 0x3c, 0x55, 0x07, 0x87, 0xa5, 0x38, 0x36, 0xb2, 0x38, 0x16, 0x9b, 0x6b, 0xa5,
-	0xcd, 0xb3, 0xcb, 0x3a, 0xb4, 0x7c, 0xef, 0x27, 0x8a, 0x7f, 0xd1, 0x0a, 0xc9, 0x1c, 0x5a, 0x45,
-	0x08, 0x49, 0x2f, 0xaf, 0xc5, 0xf7, 0xa6, 0xf9, 0x7b, 0xa1, 0xcf, 0x6d, 0xc8, 0x0e, 0xeb, 0x7b,
-	0x78, 0xaa, 0xc1, 0x45, 0x12, 0x06, 0x0a, 0xcd, 0x9b, 0xa8, 0x70, 0x43, 0xab, 0x9a, 0x42, 0xbe,
-	0x41, 0xa7, 0x1c, 0x1b, 0xf2, 0xc2, 0x3e, 0xef, 0x24, 0xaa, 0xf4, 0x65, 0xd5, 0xe7, 0xbc, 0x22,
-	0x3f, 0xb3, 0x63, 0x6e, 0x88, 0x50, 0x9b, 0x5c, 0xce, 0xc3, 0xa9, 0x2f, 0xfb, 0x4a, 0x3d, 0x80,
-	0x63, 0x7f, 0xc9, 0x75, 0xea, 0xb1, 0xeb, 0xd5, 0xc6, 0xde, 0x01, 0xb1, 0x7e, 0x17, 0x95, 0x1d,
-	0x1e, 0xda, 0x50, 0xb1, 0x61, 0xe9, 0x1a, 0xfc, 0xed, 0x55, 0x00, 0x00, 0x00, 0xff, 0xff, 0xe6,
-	0x28, 0x3a, 0x77, 0xe4, 0x04, 0x00, 0x00,
+	// 338 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x90, 0x4d, 0x4b, 0x3b, 0x31,
+	0x10, 0xc6, 0xd9, 0xbe, 0xfd, 0xff, 0x3b, 0x2d, 0x62, 0x47, 0x29, 0x4b, 0xbc, 0x14, 0x4f, 0xc5,
+	0x43, 0x0f, 0x15, 0xbc, 0x88, 0x8a, 0x6b, 0x3d, 0x88, 0x45, 0x30, 0x52, 0xef, 0xdb, 0xee, 0xb4,
+	0xac, 0x6e, 0x93, 0x9a, 0xcd, 0x8a, 0xfd, 0x0a, 0x7e, 0x69, 0x25, 0xc9, 0xda, 0x17, 0x70, 0x2f,
+	0x9e, 0x92, 0x99, 0x3c, 0xf3, 0xcc, 0x2f, 0x0f, 0xfc, 0x8f, 0x27, 0xfd, 0xa5, 0x92, 0x5a, 0x62,
+	0xdd, 0x1e, 0xac, 0x35, 0x95, 0x8b, 0x85, 0x14, 0xae, 0x79, 0xfc, 0xe5, 0x41, 0x65, 0x18, 0xb2,
+	0x26, 0xf8, 0x0f, 0x79, 0x9a, 0x3e, 0x47, 0x69, 0x4e, 0xec, 0x06, 0xfe, 0x8d, 0x33, 0x52, 0xf7,
+	0xb4, 0xc2, 0x7d, 0xa8, 0xe6, 0x99, 0x08, 0xbc, 0xae, 0xd7, 0x6b, 0x70, 0x73, 0xb5, 0x9d, 0x24,
+	0x0e, 0x2a, 0x5d, 0xaf, 0x57, 0xe3, 0xe6, 0x8a, 0x87, 0x50, 0xa7, 0x45, 0x94, 0xa4, 0x41, 0xb5,
+	0xeb, 0xf5, 0x7c, 0xee, 0x0a, 0xf6, 0x02, 0x7b, 0xc6, 0xe4, 0xf6, 0x43, 0x93, 0x88, 0xef, 0xc4,
+	0x4c, 0xe2, 0x09, 0xd4, 0x12, 0x31, 0x93, 0xd6, 0xac, 0x39, 0xe8, 0x38, 0x80, 0x7e, 0x41, 0x63,
+	0xb4, 0x46, 0xc5, 0xad, 0x06, 0x3b, 0xd0, 0xc8, 0x68, 0xaa, 0x48, 0xdb, 0x45, 0x3e, 0x2f, 0x2a,
+	0xb3, 0x4b, 0xcb, 0x57, 0x12, 0x3f, 0xbb, 0x6c, 0xc1, 0xce, 0xa1, 0x6d, 0xe6, 0x47, 0x72, 0x2e,
+	0x73, 0xcd, 0xe9, 0x2d, 0xa7, 0x4c, 0x6f, 0xa3, 0xd7, 0x1c, 0xfa, 0x7a, 0xb8, 0xb2, 0x35, 0x3c,
+	0xf8, 0xac, 0x82, 0x3f, 0x0c, 0x9f, 0x48, 0xbd, 0x27, 0x53, 0xc2, 0x33, 0xf0, 0x8d, 0xd5, 0x63,
+	0x4e, 0x6a, 0x85, 0xed, 0x82, 0x71, 0x18, 0xf6, 0x8b, 0x40, 0x58, 0x09, 0x36, 0x5e, 0xb8, 0xef,
+	0x8e, 0x97, 0x71, 0xa4, 0xc9, 0x76, 0x4a, 0x94, 0xec, 0x60, 0x63, 0xba, 0x8e, 0x1c, 0x43, 0x68,
+	0x19, 0x01, 0xa7, 0x79, 0x92, 0x69, 0x52, 0x18, 0xec, 0x6e, 0xde, 0xa4, 0xc8, 0x4a, 0x5f, 0xf0,
+	0xca, 0xa1, 0x8f, 0xe4, 0x3c, 0x11, 0x7f, 0x32, 0xb8, 0x04, 0xd8, 0xc4, 0x88, 0x47, 0xbb, 0xba,
+	0x9d, 0x70, 0x7f, 0xff, 0xc4, 0x35, 0x60, 0xe1, 0xa8, 0x22, 0x63, 0x58, 0x1a, 0x62, 0x29, 0xc2,
+	0xa4, 0x61, 0x1f, 0x4e, 0xbf, 0x03, 0x00, 0x00, 0xff, 0xff, 0xda, 0x64, 0x3b, 0x8b, 0xb6, 0x02,
+	0x00, 0x00,
 }
