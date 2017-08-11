@@ -58,6 +58,47 @@ func BenchmarkSnowflake(b *testing.B) {
 	}
 }
 
+func TestSnowflakeNext2(t *testing.T) {
+	// Setup a connection to the server.
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	if err != nil {
+		t.Fatalf("could not connect to server: %v", err)
+	}
+	defer conn.Close()
+	c := pb.NewSnowflakeServiceClient(conn)
+
+	// Contact the server and print out its response.
+	r, err := c.Next2(context.Background(), &pb.Snowflake_Param{Name: testKey, Step: 100})
+	if err != nil {
+		t.Fatalf("could not get next value: %v", err)
+	}
+	t.Log(r.Value)
+
+	r, err = c.Next2(context.Background(), &pb.Snowflake_Param{Name: testKey})
+	if err != nil {
+		t.Fatalf("could not get next value: %v", err)
+	}
+	t.Log(r.Value)
+}
+
+func BenchmarkSnowflakeNext2(b *testing.B) {
+	// Setup a connection to the server.
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	if err != nil {
+		b.Fatalf("could not connect to server: %v", err)
+	}
+	defer conn.Close()
+	c := pb.NewSnowflakeServiceClient(conn)
+
+	for i := 0; i < b.N; i++ {
+		// Contact the server and print out its response.
+		_, err := c.Next2(context.Background(), &pb.Snowflake_Param{Name: testKey})
+		if err != nil {
+			b.Fatalf("Could not get next value: %v", err)
+		}
+	}
+}
+
 func TestSnowflakeUUID(t *testing.T) {
 	// Setup a connection to the server.
 	conn, err := grpc.Dial(address, grpc.WithInsecure())

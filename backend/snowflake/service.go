@@ -19,7 +19,6 @@ const (
 	envMachineID   = "MACHINE_ID" // Specific machine id
 	pathETCD       = "/seqs/"
 	uuidKey        = "/seqs/snowflake-uuid"
-	userIdKey      = "/seqs/userid"
 	reduction      = 100  // Max reduction delay millisecond
 	concurrentETCD = 128  // Max concurrent connections to ETCD
 	uuidQueueSize  = 1024 // UUID process queue
@@ -127,7 +126,7 @@ func (s *server) Next(ctx context.Context, in *pb.Snowflake_Key) (*pb.Snowflake_
 }
 
 // Generate an user id
-func (s *server) Next2(ctx context.Context, param *pb.Snowflake_Param) (*pb.Snowflake_UUID, error) {
+func (s *server) Next2(ctx context.Context, param *pb.Snowflake_Param) (*pb.Snowflake_Value, error) {
 	client := <-s.clientPool
 	defer func() { s.clientPool <- client }()
 	key := pathETCD + param.GetName()
@@ -160,7 +159,7 @@ func (s *server) Next2(ctx context.Context, param *pb.Snowflake_Param) (*pb.Snow
 			casDelay()
 			continue
 		}
-		return &pb.Snowflake_UUID{Uuid: currentValue}, nil
+		return &pb.Snowflake_Value{Value: currentValue}, nil
 	}
 }
 

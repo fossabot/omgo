@@ -1,5 +1,6 @@
 package com.omgo.dbservice;
 
+import io.grpc.ManagedChannel;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
@@ -10,10 +11,13 @@ import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.sql.ResultSet;
 import io.vertx.ext.sql.SQLClient;
 import io.vertx.ext.sql.SQLConnection;
+import io.vertx.grpc.VertxChannelBuilder;
 import io.vertx.grpc.VertxServer;
 import io.vertx.grpc.VertxServerBuilder;
 import io.vertx.redis.RedisClient;
 import io.vertx.redis.RedisOptions;
+import proto.SnowflakeOuterClass;
+import proto.SnowflakeServiceGrpc;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,6 +43,8 @@ public class MainVerticle extends AbstractVerticle {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        testGRPC();
     }
 
     private SQLClient createSQLClient() {
@@ -140,5 +146,27 @@ public class MainVerticle extends AbstractVerticle {
                 }
             })
         );
+    }
+
+    private void testGRPC() {
+        ManagedChannel channel = VertxChannelBuilder
+            .forAddress(vertx, "localhost", 40001)
+            .build();
+
+        SnowflakeServiceGrpc.SnowflakeServiceVertxStub stub = SnowflakeServiceGrpc.newVertxStub(channel);
+
+        SnowflakeOuterClass.Snowflake.Param param = SnowflakeOuterClass.Snowflake.Param.newBuilder()
+            .setName("userid")
+            .setStep(1000)
+            .build();
+
+        stub.next2(param, res -> {
+            if (res.succeeded()) {
+                SnowflakeOuterClass.Snowflake.Value value = res.result();
+                LOGGER.info(value.getValue());
+            } else {
+                LOGGER.error(res.cause());
+            }
+        });
     }
 }

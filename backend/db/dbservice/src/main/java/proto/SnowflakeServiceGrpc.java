@@ -78,14 +78,14 @@ public final class SnowflakeServiceGrpc {
           io.grpc.protobuf.ProtoUtils.marshaller(proto.SnowflakeOuterClass.Snowflake.NullRequest.getDefaultInstance()),
           io.grpc.protobuf.ProtoUtils.marshaller(proto.SnowflakeOuterClass.Snowflake.UUID.getDefaultInstance()));
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  public static final io.grpc.MethodDescriptor<proto.SnowflakeOuterClass.Snowflake.Key,
-      proto.SnowflakeOuterClass.Snowflake.UUID> METHOD_GET_USER_ID =
+  public static final io.grpc.MethodDescriptor<proto.SnowflakeOuterClass.Snowflake.Param,
+      proto.SnowflakeOuterClass.Snowflake.Value> METHOD_NEXT2 =
       io.grpc.MethodDescriptor.create(
           io.grpc.MethodDescriptor.MethodType.UNARY,
           generateFullMethodName(
-              "proto.SnowflakeService", "GetUserID"),
-          io.grpc.protobuf.ProtoUtils.marshaller(proto.SnowflakeOuterClass.Snowflake.Key.getDefaultInstance()),
-          io.grpc.protobuf.ProtoUtils.marshaller(proto.SnowflakeOuterClass.Snowflake.UUID.getDefaultInstance()));
+              "proto.SnowflakeService", "Next2"),
+          io.grpc.protobuf.ProtoUtils.marshaller(proto.SnowflakeOuterClass.Snowflake.Param.getDefaultInstance()),
+          io.grpc.protobuf.ProtoUtils.marshaller(proto.SnowflakeOuterClass.Snowflake.Value.getDefaultInstance()));
 
   /**
    * Creates a new async stub that supports all call types for the service
@@ -146,12 +146,12 @@ public final class SnowflakeServiceGrpc {
 
     /**
      * <pre>
-     * User ID generate
+     * Next with random step
      * </pre>
      */
-    public void getUserID(proto.SnowflakeOuterClass.Snowflake.Key request,
-        io.grpc.stub.StreamObserver<proto.SnowflakeOuterClass.Snowflake.UUID> responseObserver) {
-      asyncUnimplementedUnaryCall(METHOD_GET_USER_ID, responseObserver);
+    public void next2(proto.SnowflakeOuterClass.Snowflake.Param request,
+        io.grpc.stub.StreamObserver<proto.SnowflakeOuterClass.Snowflake.Value> responseObserver) {
+      asyncUnimplementedUnaryCall(METHOD_NEXT2, responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
@@ -171,12 +171,12 @@ public final class SnowflakeServiceGrpc {
                 proto.SnowflakeOuterClass.Snowflake.UUID>(
                   this, METHODID_GET_UUID)))
           .addMethod(
-            METHOD_GET_USER_ID,
+            METHOD_NEXT2,
             asyncUnaryCall(
               new MethodHandlers<
-                proto.SnowflakeOuterClass.Snowflake.Key,
-                proto.SnowflakeOuterClass.Snowflake.UUID>(
-                  this, METHODID_GET_USER_ID)))
+                proto.SnowflakeOuterClass.Snowflake.Param,
+                proto.SnowflakeOuterClass.Snowflake.Value>(
+                  this, METHODID_NEXT2)))
           .build();
     }
   }
@@ -226,13 +226,13 @@ public final class SnowflakeServiceGrpc {
 
     /**
      * <pre>
-     * User ID generate
+     * Next with random step
      * </pre>
      */
-    public void getUserID(proto.SnowflakeOuterClass.Snowflake.Key request,
-        io.grpc.stub.StreamObserver<proto.SnowflakeOuterClass.Snowflake.UUID> responseObserver) {
+    public void next2(proto.SnowflakeOuterClass.Snowflake.Param request,
+        io.grpc.stub.StreamObserver<proto.SnowflakeOuterClass.Snowflake.Value> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(METHOD_GET_USER_ID, getCallOptions()), request, responseObserver);
+          getChannel().newCall(METHOD_NEXT2, getCallOptions()), request, responseObserver);
     }
   }
 
@@ -279,12 +279,12 @@ public final class SnowflakeServiceGrpc {
 
     /**
      * <pre>
-     * User ID generate
+     * Next with random step
      * </pre>
      */
-    public proto.SnowflakeOuterClass.Snowflake.UUID getUserID(proto.SnowflakeOuterClass.Snowflake.Key request) {
+    public proto.SnowflakeOuterClass.Snowflake.Value next2(proto.SnowflakeOuterClass.Snowflake.Param request) {
       return blockingUnaryCall(
-          getChannel(), METHOD_GET_USER_ID, getCallOptions(), request);
+          getChannel(), METHOD_NEXT2, getCallOptions(), request);
     }
   }
 
@@ -333,13 +333,13 @@ public final class SnowflakeServiceGrpc {
 
     /**
      * <pre>
-     * User ID generate
+     * Next with random step
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<proto.SnowflakeOuterClass.Snowflake.UUID> getUserID(
-        proto.SnowflakeOuterClass.Snowflake.Key request) {
+    public com.google.common.util.concurrent.ListenableFuture<proto.SnowflakeOuterClass.Snowflake.Value> next2(
+        proto.SnowflakeOuterClass.Snowflake.Param request) {
       return futureUnaryCall(
-          getChannel().newCall(METHOD_GET_USER_ID, getCallOptions()), request);
+          getChannel().newCall(METHOD_NEXT2, getCallOptions()), request);
     }
   }
 
@@ -372,12 +372,12 @@ public final class SnowflakeServiceGrpc {
 
     /**
      * <pre>
-     * User ID generate
+     * Next with random step
      * </pre>
      */
-    public void getUserID(proto.SnowflakeOuterClass.Snowflake.Key request,
-        io.vertx.core.Future<proto.SnowflakeOuterClass.Snowflake.UUID> response) {
-      asyncUnimplementedUnaryCall(METHOD_GET_USER_ID, SnowflakeServiceGrpc.toObserver(response.completer()));
+    public void next2(proto.SnowflakeOuterClass.Snowflake.Param request,
+        io.vertx.core.Future<proto.SnowflakeOuterClass.Snowflake.Value> response) {
+      asyncUnimplementedUnaryCall(METHOD_NEXT2, SnowflakeServiceGrpc.toObserver(response.completer()));
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
@@ -397,12 +397,12 @@ public final class SnowflakeServiceGrpc {
                 proto.SnowflakeOuterClass.Snowflake.UUID>(
                   this, METHODID_GET_UUID)))
           .addMethod(
-            METHOD_GET_USER_ID,
+            METHOD_NEXT2,
             asyncUnaryCall(
               new VertxMethodHandlers<
-                proto.SnowflakeOuterClass.Snowflake.Key,
-                proto.SnowflakeOuterClass.Snowflake.UUID>(
-                  this, METHODID_GET_USER_ID)))
+                proto.SnowflakeOuterClass.Snowflake.Param,
+                proto.SnowflakeOuterClass.Snowflake.Value>(
+                  this, METHODID_NEXT2)))
           .build();
     }
   }
@@ -452,19 +452,19 @@ public final class SnowflakeServiceGrpc {
 
     /**
      * <pre>
-     * User ID generate
+     * Next with random step
      * </pre>
      */
-    public void getUserID(proto.SnowflakeOuterClass.Snowflake.Key request,
-        io.vertx.core.Handler<io.vertx.core.AsyncResult<proto.SnowflakeOuterClass.Snowflake.UUID>> response) {
+    public void next2(proto.SnowflakeOuterClass.Snowflake.Param request,
+        io.vertx.core.Handler<io.vertx.core.AsyncResult<proto.SnowflakeOuterClass.Snowflake.Value>> response) {
       asyncUnaryCall(
-          getChannel().newCall(METHOD_GET_USER_ID, getCallOptions()), request, SnowflakeServiceGrpc.toObserver(response));
+          getChannel().newCall(METHOD_NEXT2, getCallOptions()), request, SnowflakeServiceGrpc.toObserver(response));
     }
   }
 
   private static final int METHODID_NEXT = 0;
   private static final int METHODID_GET_UUID = 1;
-  private static final int METHODID_GET_USER_ID = 2;
+  private static final int METHODID_NEXT2 = 2;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -491,9 +491,9 @@ public final class SnowflakeServiceGrpc {
           serviceImpl.getUUID((proto.SnowflakeOuterClass.Snowflake.NullRequest) request,
               (io.grpc.stub.StreamObserver<proto.SnowflakeOuterClass.Snowflake.UUID>) responseObserver);
           break;
-        case METHODID_GET_USER_ID:
-          serviceImpl.getUserID((proto.SnowflakeOuterClass.Snowflake.Key) request,
-              (io.grpc.stub.StreamObserver<proto.SnowflakeOuterClass.Snowflake.UUID>) responseObserver);
+        case METHODID_NEXT2:
+          serviceImpl.next2((proto.SnowflakeOuterClass.Snowflake.Param) request,
+              (io.grpc.stub.StreamObserver<proto.SnowflakeOuterClass.Snowflake.Value>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -550,11 +550,11 @@ public final class SnowflakeServiceGrpc {
                 }
               }));
           break;
-        case METHODID_GET_USER_ID:
-          serviceImpl.getUserID((proto.SnowflakeOuterClass.Snowflake.Key) request,
-              (io.vertx.core.Future<proto.SnowflakeOuterClass.Snowflake.UUID>) io.vertx.core.Future.<proto.SnowflakeOuterClass.Snowflake.UUID>future().setHandler(ar -> {
+        case METHODID_NEXT2:
+          serviceImpl.next2((proto.SnowflakeOuterClass.Snowflake.Param) request,
+              (io.vertx.core.Future<proto.SnowflakeOuterClass.Snowflake.Value>) io.vertx.core.Future.<proto.SnowflakeOuterClass.Snowflake.Value>future().setHandler(ar -> {
                 if (ar.succeeded()) {
-                  ((io.grpc.stub.StreamObserver<proto.SnowflakeOuterClass.Snowflake.UUID>) responseObserver).onNext(ar.result());
+                  ((io.grpc.stub.StreamObserver<proto.SnowflakeOuterClass.Snowflake.Value>) responseObserver).onNext(ar.result());
                   responseObserver.onCompleted();
                 } else {
                   responseObserver.onError(ar.cause());
@@ -596,7 +596,7 @@ public final class SnowflakeServiceGrpc {
               .setSchemaDescriptor(new SnowflakeServiceDescriptorSupplier())
               .addMethod(METHOD_NEXT)
               .addMethod(METHOD_GET_UUID)
-              .addMethod(METHOD_GET_USER_ID)
+              .addMethod(METHOD_NEXT2)
               .build();
         }
       }

@@ -48,8 +48,8 @@
 			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
 			"origin": "github.com/master-g/omgo/utils/vendor/github.com/davecgh/go-spew/spew",
 			"path": "github.com/davecgh/go-spew/spew",
-			"revision": "80d97d25c11a12a174e94a3b42b358f35c7a9427",
-			"revisionTime": "2017-08-11T12:13:00Z"
+			"revision": "a3b3060e027e15f99a8edd4686460a65de4b0151",
+			"revisionTime": "2017-08-11T12:18:43Z"
 		},
 		{
 			"checksumSHA1": "qlPUeFabwF4RKAOF1H+yBFU1Veg=",
@@ -67,26 +67,26 @@
 			"checksumSHA1": "7hln62oZPZmyqEmgXaybf9WxQ7A=",
 			"origin": "github.com/master-g/omgo/utils/vendor/github.com/maruel/panicparse/stack",
 			"path": "github.com/maruel/panicparse/stack",
-			"revision": "80d97d25c11a12a174e94a3b42b358f35c7a9427",
-			"revisionTime": "2017-08-11T12:13:00Z"
+			"revision": "a3b3060e027e15f99a8edd4686460a65de4b0151",
+			"revisionTime": "2017-08-11T12:18:43Z"
 		},
 		{
 			"checksumSHA1": "EEujmrfp58TOs/cFI50UJ8yzRVo=",
 			"path": "github.com/master-g/omgo/etcdclient",
-			"revision": "80d97d25c11a12a174e94a3b42b358f35c7a9427",
-			"revisionTime": "2017-08-11T12:13:00Z"
+			"revision": "a3b3060e027e15f99a8edd4686460a65de4b0151",
+			"revisionTime": "2017-08-11T12:18:43Z"
 		},
 		{
-			"checksumSHA1": "zFx2IzZ3GI06g4SX50mb8Q4tmYs=",
+			"checksumSHA1": "UiSXEfHLJ72bAFS1ieRs1b2phkg=",
 			"path": "github.com/master-g/omgo/proto/grpc/snowflake",
-			"revision": "80d97d25c11a12a174e94a3b42b358f35c7a9427",
-			"revisionTime": "2017-08-11T12:13:00Z"
+			"revision": "a3b3060e027e15f99a8edd4686460a65de4b0151",
+			"revisionTime": "2017-08-11T12:18:43Z"
 		},
 		{
 			"checksumSHA1": "2z8kr6ar+EmHwI5L/EepHHnJ+Bg=",
 			"path": "github.com/master-g/omgo/utils",
-			"revision": "80d97d25c11a12a174e94a3b42b358f35c7a9427",
-			"revisionTime": "2017-08-11T12:13:00Z"
+			"revision": "a3b3060e027e15f99a8edd4686460a65de4b0151",
+			"revisionTime": "2017-08-11T12:18:43Z"
 		},
 		{
 			"checksumSHA1": "MxLnUmfrP+r5HfCZM29+WPKebn8=",
