@@ -6,7 +6,7 @@ package proto;
 service SnowflakeService {
     rpc Next(Snowflake.Key) returns (Snowflake.Value);           // Generate next serial number
     rpc GetUUID(Snowflake.NullRequest) returns (Snowflake.UUID); // UUID generator
-    rpc Next2(Snowflake.Param) returns (Snowflake.UUID);         // Next with random step
+    rpc Next2(Snowflake.Param) returns (Snowflake.Value);        // Next with random step
 }
 
 message Snowflake {

@@ -127,15 +127,16 @@ func (s *server) Next(ctx context.Context, in *pb.Snowflake_Key) (*pb.Snowflake_
 }
 
 // Generate an user id
-func (s *server) GetUserID(ctx context.Context, key *pb.Snowflake_Key) (*pb.Snowflake_UUID, error) {
+func (s *server) Next2(ctx context.Context, param *pb.Snowflake_Param) (*pb.Snowflake_UUID, error) {
 	client := <-s.clientPool
 	defer func() { s.clientPool <- client }()
+	key := pathETCD + param.GetName()
 	for {
 		// Get the key
-		resp, err := client.Get(context.Background(), userIdKey, nil)
+		resp, err := client.Get(context.Background(), key, nil)
 		if err != nil {
 			log.Error(err)
-			return nil, fmt.Errorf("key:%v not exists, need to create first", userIdKey)
+			return nil, fmt.Errorf("key:%v not exists, need to create first", key)
 		}
 
 		// Get prevValue & prevIndex
@@ -146,10 +147,15 @@ func (s *server) GetUserID(ctx context.Context, key *pb.Snowflake_Key) (*pb.Snow
 		}
 		prevIndex := resp.Node.ModifiedIndex
 
-		currentValue := uint64(prevValue + rand.Intn(2048) + 1)
+		currentValue := int64(0)
+		if param.Step != 0 {
+			currentValue = int64(prevValue) + param.Step
+		} else {
+			currentValue = int64(prevValue + rand.Intn(2048) + 1)
+		}
 
 		// CompareAndSwap
-		resp, err = client.Set(context.Background(), userIdKey, fmt.Sprint(currentValue), &etcd.SetOptions{PrevIndex: prevIndex})
+		resp, err = client.Set(context.Background(), key, fmt.Sprint(currentValue), &etcd.SetOptions{PrevIndex: prevIndex})
 		if err != nil {
 			casDelay()
 			continue
