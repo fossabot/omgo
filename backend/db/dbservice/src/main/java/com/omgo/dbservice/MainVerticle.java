@@ -151,6 +151,7 @@ public class MainVerticle extends AbstractVerticle {
     private void testGRPC() {
         ManagedChannel channel = VertxChannelBuilder
             .forAddress(vertx, "localhost", 40001)
+            .usePlaintext(true)
             .build();
 
         SnowflakeServiceGrpc.SnowflakeServiceVertxStub stub = SnowflakeServiceGrpc.newVertxStub(channel);
