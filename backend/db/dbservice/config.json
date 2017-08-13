@@ -2,6 +2,8 @@
     "rpc.host": "localhost",
     "rpc.port": 60001,
 
+    "etcd.host": "http://localhost:2379",
+
     "sql.host": "localhost",
     "sql.port": 3306,
     "sql.url": "jdbc:mysql://localhost:3306/master?characterEncoding=UTF-8&useSSL=false",

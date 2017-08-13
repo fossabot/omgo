@@ -1,16 +1,18 @@
 package com.omgo.dbservice;
 
+import com.coreos.jetcd.KV;
+import com.coreos.jetcd.data.ByteSequence;
+import com.coreos.jetcd.data.KeyValue;
+import com.coreos.jetcd.kv.GetResponse;
+import com.coreos.jetcd.kv.PutResponse;
 import io.grpc.ManagedChannel;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.jdbc.JDBCClient;
-import io.vertx.ext.sql.ResultSet;
 import io.vertx.ext.sql.SQLClient;
-import io.vertx.ext.sql.SQLConnection;
 import io.vertx.grpc.VertxChannelBuilder;
 import io.vertx.grpc.VertxServer;
 import io.vertx.grpc.VertxServerBuilder;
@@ -22,6 +24,7 @@ import proto.SnowflakeServiceGrpc;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
 public class MainVerticle extends AbstractVerticle {
 
@@ -44,7 +47,15 @@ public class MainVerticle extends AbstractVerticle {
             e.printStackTrace();
         }
 
-        testGRPC();
+//        testGRPC();
+
+        testETCD();
+
+//        vertx.executeBlocking(future -> {
+//            future.complete(testETCD());
+//        }, res -> {
+//            LOGGER.info("result is: ", res.result());
+//        });
     }
 
     private SQLClient createSQLClient() {
@@ -149,6 +160,7 @@ public class MainVerticle extends AbstractVerticle {
     }
 
     private void testGRPC() {
+
         ManagedChannel channel = VertxChannelBuilder
             .forAddress(vertx, "localhost", 40001)
             .usePlaintext(true)
@@ -169,5 +181,32 @@ public class MainVerticle extends AbstractVerticle {
                 LOGGER.error(res.cause());
             }
         });
+    }
+
+    private String testETCD() {
+        String host = config().getString("etcd.host", "http://localhost:2379");
+        LOGGER.info("etcd host:" + host);
+        EtcdUtils.init(host);
+        ByteSequence key = ByteSequence.fromString("/holyshit");
+
+        KV kvClient = EtcdUtils.getKVClient();
+        if (kvClient != null) {
+            try {
+                kvClient.put(key, ByteSequence.fromString("motherfucker")).get();
+
+                CompletableFuture<GetResponse> getFuture = kvClient.get(key);
+                GetResponse response = getFuture.get();
+                List<KeyValue> results = response.getKvs();
+                for (KeyValue kv : results) {
+                    String snHost = kv.getValue().toStringUtf8();
+                    LOGGER.info(snHost);
+                }
+                return results.get(0).getValue().toStringUtf8();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return "";
     }
 }
