@@ -5,6 +5,7 @@ import com.coreos.jetcd.data.ByteSequence;
 import com.coreos.jetcd.data.KeyValue;
 import com.coreos.jetcd.kv.GetResponse;
 import com.coreos.jetcd.kv.PutResponse;
+import com.coreos.jetcd.options.GetOption;
 import io.grpc.ManagedChannel;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -187,14 +188,14 @@ public class MainVerticle extends AbstractVerticle {
         String host = config().getString("etcd.host", "http://localhost:2379");
         LOGGER.info("etcd host:" + host);
         EtcdUtils.init(host);
-        ByteSequence key = ByteSequence.fromString("/holyshit");
+        ByteSequence key = ByteSequence.fromString("/holyshit/ass/punk");
 
         KV kvClient = EtcdUtils.getKVClient();
         if (kvClient != null) {
             try {
                 kvClient.put(key, ByteSequence.fromString("motherfucker")).get();
 
-                CompletableFuture<GetResponse> getFuture = kvClient.get(key);
+                CompletableFuture<GetResponse> getFuture = kvClient.get(ByteSequence.fromString("/holyshit/ass/punk"));
                 GetResponse response = getFuture.get();
                 List<KeyValue> results = response.getKvs();
                 for (KeyValue kv : results) {

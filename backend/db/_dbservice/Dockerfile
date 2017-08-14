@@ -1,4 +1,4 @@
-FROM golang:1.8.1
+FROM golang:1.8
 WORKDIR /go/src/
 COPY . /go/src/github.com/master-g/omgo/backend/db/dbservice
 RUN go install -v github.com/master-g/omgo/backend/db/dbservice
