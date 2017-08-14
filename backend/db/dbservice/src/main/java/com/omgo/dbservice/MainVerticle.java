@@ -188,14 +188,16 @@ public class MainVerticle extends AbstractVerticle {
         String host = config().getString("etcd.host", "http://localhost:2379");
         LOGGER.info("etcd host:" + host);
         EtcdUtils.init(host);
-        ByteSequence key = ByteSequence.fromString("/holyshit/ass/punk");
+        ByteSequence key = ByteSequence.fromString("holyshit");
 
         KV kvClient = EtcdUtils.getKVClient();
         if (kvClient != null) {
             try {
-                kvClient.put(key, ByteSequence.fromString("motherfucker")).get();
+//                kvClient.put(key, ByteSequence.fromString("motherfucker")).get();
 
-                CompletableFuture<GetResponse> getFuture = kvClient.get(ByteSequence.fromString("/holyshit/ass/punk"));
+                ByteSequence endKey = ByteSequence.fromBytes(new byte[]{0x00});
+                LOGGER.info(endKey);
+                CompletableFuture<GetResponse> getFuture = kvClient.get(ByteSequence.fromString("holyshit"), GetOption.newBuilder().withRange(endKey).build());
                 GetResponse response = getFuture.get();
                 List<KeyValue> results = response.getKvs();
                 for (KeyValue kv : results) {
