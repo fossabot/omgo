@@ -51,6 +51,13 @@
 			"revisionTime": "2017-06-13T22:42:24Z"
 		},
 		{
+			"checksumSHA1": "VHULZdEZKBxJvlZnlhX7Ug19lgY=",
+			"origin": "github.com/master-g/omgo/services/vendor/github.com/sirupsen/logrus",
+			"path": "github.com/sirupsen/logrus",
+			"revision": "85b1699d505667d13f8ac4478c1debbf85d6c5de",
+			"revisionTime": "2017-06-08T22:14:41Z"
+		},
+		{
 			"checksumSHA1": "Y+HGqEkYM15ir+J93MEaHdyFy0c=",
 			"path": "golang.org/x/net/context",
 			"revision": "ddf80d0970594e2e4cccf5a98861cad3d9eaa4cd",
