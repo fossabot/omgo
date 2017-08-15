@@ -188,12 +188,12 @@ public class MainVerticle extends AbstractVerticle {
         String host = config().getString("etcd.host", "http://localhost:2379");
         LOGGER.info("etcd host:" + host);
         EtcdUtils.init(host);
-        ByteSequence key = ByteSequence.fromString("holyshit");
+        ByteSequence key = ByteSequence.fromString("root/service_4/sub1");
 
         KV kvClient = EtcdUtils.getKVClient();
         if (kvClient != null) {
             try {
-//                kvClient.put(key, ByteSequence.fromString("motherfucker")).get();
+                kvClient.put(key, ByteSequence.fromString("s4_1")).get();
 
                 ByteSequence endKey = ByteSequence.fromBytes(new byte[]{0x00});
                 LOGGER.info(endKey);

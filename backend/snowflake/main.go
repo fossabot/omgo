@@ -16,6 +16,11 @@ import (
 
 const (
 	defaultETCD = "http://127.0.0.1:2379"
+	defaultSID  = "snowflake-0"
+)
+
+var (
+	sid = ""
 )
 
 func main() {
@@ -38,6 +43,13 @@ func main() {
 				Usage:   "etcd server address, if multiple hosts, -e host1 -e host2 ...",
 				Value:   cli.NewStringSlice(defaultETCD),
 			},
+			&cli.StringFlag{
+				Aliases:     []string{"s"},
+				DefaultText: "sid",
+				Name:        "sid",
+				Usage:       "service id",
+				Value:       defaultSID,
+			},
 		},
 		Name:    "snowflake",
 		Usage:   "Twitter's UUID generator snowflake in golang",
@@ -45,6 +57,7 @@ func main() {
 		Action: func(c *cli.Context) error {
 			port := c.Int("port")
 			etcdHosts := c.StringSlice("etcd")
+			sid = c.String("sid")
 			log.Infof("start snowflake with etcd hosts:%v", etcdHosts)
 			startSnowflake(etcdHosts, port)
 			return nil

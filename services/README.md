@@ -4,24 +4,13 @@ service management
 
 ## Usage
 
-1. create a service root directory on ETCD
+1. setup ETCD v3 environment
 
-```
-http://YOUR-ETCD-HOST/v2/keys/backends/
-```
+2. add services to ETCD like
 
-2. create sub directory for each kind of service
-
-```
-http://YOUR-ETCD-HOST/v2/keys/backends/agent
-http://YOUR-ETCD-HOST/v2/keys/backends/game
-http://YOUR-ETCD-HOST/v2/keys/backends/snowflake
-```
-
-3. add your service to these sub directories
-
-```
-curl -L -X PUT http://YOUR-ETCD-HOST/v2/keys/backends/agent/agent-001 -d value="127.0.0.1:27015"
+```plain
+Key: {service-root}/{service-type}/{service-id}
+Value: 127.0.0.1:40001
 ```
 
 Then you can init services
