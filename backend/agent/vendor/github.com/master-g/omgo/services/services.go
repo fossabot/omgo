@@ -1,16 +1,16 @@
-package services
+package main
 
 import (
-	"os"
+	"github.com/coreos/etcd/clientv3"
+	"google.golang.org/grpc"
+	"sync"
+	"time"
+
+	"context"
+	log "github.com/sirupsen/logrus"
 	"path/filepath"
 	"strings"
-	"sync"
 	"sync/atomic"
-
-	log "github.com/Sirupsen/logrus"
-	etcdclient "github.com/coreos/etcd/client"
-	"golang.org/x/net/context"
-	"google.golang.org/grpc"
 )
 
 // single connection
@@ -25,27 +25,27 @@ type service struct {
 	idx     uint32
 }
 
-// all service
+// all services
 type servicePool struct {
 	sync.RWMutex
 	root          string
 	names         map[string]bool
 	services      map[string]*service
 	namesProvided bool
-	etcdClient    etcdclient.Client
 	callbacks     map[string][]chan string
+	etcdCfg       clientv3.Config
 }
 
 var (
-	defaultPool servicePool
-	once        sync.Once
-	pathSep     string
+	defaultPool    servicePool
+	once           sync.Once
+	pathSep        = "/"
+	defaultTimeout = 5 * time.Second
 )
 
-// Init service pool with given service root on etcd hosts
-// host[i] root/services[j]
+// Init service pool with given service root on ETCD hosts
+// {root}/{services}/{service-endpoints}
 func Init(root string, hosts, services []string) {
-	pathSep = string(os.PathSeparator)
 	once.Do(func() {
 		defaultPool.init(root, hosts, services)
 	})
@@ -53,19 +53,13 @@ func Init(root string, hosts, services []string) {
 
 func (p *servicePool) init(root string, hosts, services []string) {
 	// init etcd client
-	cfg := etcdclient.Config{
-		Endpoints: hosts,
-		Transport: etcdclient.DefaultTransport,
+	p.etcdCfg = clientv3.Config{
+		Endpoints:   hosts,
+		DialTimeout: defaultTimeout,
 	}
-	etcdcli, err := etcdclient.New(cfg)
-	if err != nil {
-		log.Panic(err)
-		os.Exit(-1)
-	}
-	p.etcdClient = etcdcli
-	p.root = pathSep + root
 
 	// init
+	p.root = root
 	p.services = make(map[string]*service)
 	p.names = make(map[string]bool)
 
@@ -86,88 +80,81 @@ func (p *servicePool) init(root string, hosts, services []string) {
 
 // connect to all services
 func (p *servicePool) connectAll(directory string) {
-	keyAPI := etcdclient.NewKeysAPI(p.etcdClient)
-	// get the keys under directory
-	log.Println("connecting services under:", directory)
-	resp, err := keyAPI.Get(context.Background(), directory, &etcdclient.GetOptions{Recursive: true})
+	// get etcd v3 client
+	cli, err := clientv3.New(p.etcdCfg)
 	if err != nil {
-		log.Println(err)
-		return
+		log.Fatal(err)
 	}
+	defer cli.Close()
 
-	// validation
-	if !resp.Node.Dir {
-		log.Println("not a directory")
-		return
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
+	resp, err := cli.Get(ctx, directory, clientv3.WithFromKey())
+	cancel()
+	if err != nil {
+		log.Fatal(err)
 	}
-
-	for _, node := range resp.Node.Nodes {
-		if node.Dir {
-			for _, service := range node.Nodes {
-				p.addService(service.Key, service.Value)
-			}
-		}
+	for _, v := range resp.Kvs {
+		p.addService(string(v.Key), string(v.Value))
 	}
 	log.Println("services added")
 
 	go p.watcher()
 }
 
-// watcher for data change in etcd directory
+// watcher for data change in ETCD
 func (p *servicePool) watcher() {
-	keyAPI := etcdclient.NewKeysAPI(p.etcdClient)
-	w := keyAPI.Watcher(p.root, &etcdclient.WatcherOptions{Recursive: true})
-	for {
-		resp, err := w.Next(context.Background())
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		if resp.Node.Dir {
-			continue
-		}
+	cli, err := clientv3.New(p.etcdCfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cli.Close()
 
-		switch resp.Action {
-		case "set", "create", "update", "compareAndSwap":
-			p.addService(resp.Node.Key, resp.Node.Value)
-		case "delete":
-			p.removeService(resp.PrevNode.Key)
+	rch := cli.Watch(context.Background(), p.root, clientv3.WithFromKey())
+	for wresp := range rch {
+		for _, ev := range wresp.Events {
+			log.Printf("%s %q : %q\n", ev.Type, ev.Kv.Key, ev.Kv.Value)
+			switch ev.Type {
+			case clientv3.EventTypePut:
+				p.addService(string(ev.Kv.Key), string(ev.Kv.Value))
+			case clientv3.EventTypeDelete:
+				p.removeService(string(ev.Kv.Key))
+			}
 		}
 	}
 }
 
 // add a service
-func (p *servicePool) addService(key, value string) {
+func (p *servicePool) addService(servicePath, address string) {
 	p.Lock()
 	defer p.Unlock()
 	// name check
-	serviceName := filepath.Dir(key)
-	if p.namesProvided && !p.names[serviceName] {
+	serviceKind := filepath.Dir(servicePath)
+	if p.namesProvided && !p.names[serviceKind] {
 		return
 	}
 
 	// try new service kind init
-	if p.services[serviceName] == nil {
-		p.services[serviceName] = &service{}
+	if p.services[serviceKind] == nil {
+		p.services[serviceKind] = &service{}
 	}
 
-	// create service connection
-	service := p.services[serviceName]
-	if conn, err := grpc.Dial(value, grpc.WithBlock(), grpc.WithInsecure()); err == nil {
-		service.clients = append(service.clients, client{key, conn})
-		log.Println("service added:", key, "-->", value)
-		for k := range p.callbacks[serviceName] {
+	// create service connections
+	service := p.services[serviceKind]
+	if conn, err := grpc.Dial(address, grpc.WithBlock(), grpc.WithInsecure()); err == nil {
+		service.clients = append(service.clients, client{servicePath, conn})
+		log.Println("service added:", servicePath, "-->", address)
+		for k := range p.callbacks[serviceKind] {
 			select {
-			case p.callbacks[serviceName][k] <- key:
+			case p.callbacks[serviceKind][k] <- servicePath:
 			default:
 			}
 		}
 	} else {
-		log.Println("did not connect:", key, "-->", value, "error:", err)
+		log.Println("did not connect:", servicePath, "-->", address, "error:", err)
 	}
 }
 
-// remove a service
+// remove service
 func (p *servicePool) removeService(key string) {
 	p.Lock()
 	defer p.Unlock()
@@ -195,12 +182,11 @@ func (p *servicePool) removeService(key string) {
 	}
 }
 
-// getServiceWithID returns a specific key for a service
+// getServiceWithID returns a connection to a specific service with the id given
 // eg:
-// path:/backends/snowflake, id:s1
-//
+// path: backends/snowflake, id: s1
 // the full canonical path for this service is :
-// /backends/snowflake/s1
+// backends/snowflake/s1
 func (p *servicePool) getServiceWithID(path, id string) *grpc.ClientConn {
 	p.RLock()
 	defer p.RUnlock()
@@ -213,9 +199,9 @@ func (p *servicePool) getServiceWithID(path, id string) *grpc.ClientConn {
 		return nil
 	}
 
-	fullpath := string(path) + pathSep + id
+	fullPath := string(path) + pathSep + id
 	for k := range service.clients {
-		if service.clients[k].key == fullpath {
+		if service.clients[k].key == fullPath {
 			return service.clients[k].conn
 		}
 	}
@@ -223,7 +209,7 @@ func (p *servicePool) getServiceWithID(path, id string) *grpc.ClientConn {
 	return nil
 }
 
-// getService get a service in round-robin style
+// getService returns a service in round-robin style
 func (p *servicePool) getService(path string) (conn *grpc.ClientConn, key string) {
 	p.RLock()
 	defer p.RUnlock()
@@ -241,6 +227,7 @@ func (p *servicePool) getService(path string) (conn *grpc.ClientConn, key string
 	return service.clients[idx].conn, service.clients[idx].key
 }
 
+// registerCallback will add callback to specific service when its added or removed
 func (p *servicePool) registerCallback(path string, callback chan string) {
 	p.Lock()
 	defer p.Unlock()
@@ -255,6 +242,23 @@ func (p *servicePool) registerCallback(path string, callback chan string) {
 		}
 	}
 	log.Println("register callback on:", path)
+}
+
+func (p *servicePool) registerService(path, address string) {
+	// get etcd v3 client
+	cli, err := clientv3.New(p.etcdCfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cli.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
+	_, err = cli.Put(ctx, path, address)
+	cancel()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Infof("service %v --> %v registered", path, address)
 }
 
 // GetService finds gRPC service with path in service pool
@@ -277,4 +281,8 @@ func GetServiceWithID(path, id string) *grpc.ClientConn {
 // RegisterCallback register callback at give path, once changes are made, callbacks will be invoke
 func RegisterCallback(path string, callback chan string) {
 	defaultPool.registerCallback(defaultPool.root+pathSep+path, callback)
+}
+
+func RegisterService(path string, address string) {
+	defaultPool.registerService(path, address)
 }
