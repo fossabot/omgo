@@ -52,7 +52,6 @@
 		},
 		{
 			"checksumSHA1": "VHULZdEZKBxJvlZnlhX7Ug19lgY=",
-			"origin": "github.com/master-g/omgo/services/vendor/github.com/sirupsen/logrus",
 			"path": "github.com/sirupsen/logrus",
 			"revision": "85b1699d505667d13f8ac4478c1debbf85d6c5de",
 			"revisionTime": "2017-06-08T22:14:41Z"

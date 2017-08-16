@@ -45,12 +45,15 @@ docker run --rm -d ${NETHOST} -p ${SERVICE_PORT}:${SERVICE_PORT} \
     -p ${SERVICE_PORT} \
     -e http://${IPADDR}:2379
 
+
+# Deprecated for ETCD v3
+
 # register service
-curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/backends/${SERVICE_NAME}/${SNOWFLAKE_SID} -d value=${IPADDR}:${SERVICE_PORT}
+#curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/backends/${SERVICE_NAME}/${SNOWFLAKE_SID} -d value=${IPADDR}:${SERVICE_PORT}
 
 # init etcd variables
-curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/seqs/test_key -d value="0"
-curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/seqs/snowflake-uuid -d value="0"
+#curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/seqs/test_key -d value="0"
+#curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/seqs/snowflake-uuid -d value="0"
 
 # DANGER !!! THIS WILL RESET USER ID !!!
-curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/seqs/userid -d value="10000"
+#curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/seqs/userid -d value="10000"

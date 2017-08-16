@@ -189,7 +189,7 @@ public class MainVerticle extends AbstractVerticle {
         String host = config().getString("etcd.host", "http://localhost:2379");
         LOGGER.info("etcd host:" + host);
         EtcdUtils.init(host);
-        ByteSequence key = ByteSequence.fromString("backends/snowflake");
+        ByteSequence key = ByteSequence.fromString("root/");
 
         KV kvClient = EtcdUtils.getKVClient();
         if (kvClient != null) {
@@ -197,10 +197,9 @@ public class MainVerticle extends AbstractVerticle {
                 // kvClient.put(key, ByteSequence.fromString("s4_1")).get();
 
                 byte[] keyBytes = key.getBytes();
-                byte[] endKeyBytes = Arrays.copyOf(keyBytes, keyBytes.length + 1);
-                endKeyBytes[keyBytes.length] = 0x00;
-
-                ByteSequence endKey = ByteSequence.fromBytes(new byte[]{0x00});
+                byte[] endKeyBytes = Arrays.copyOf(keyBytes, keyBytes.length);
+                endKeyBytes[endKeyBytes.length -1]++;
+                ByteSequence endKey = ByteSequence.fromBytes(endKeyBytes);
 
                 LOGGER.info(endKey);
                 CompletableFuture<GetResponse> getFuture = kvClient.get(key, GetOption.newBuilder().withRange(endKey).build());
