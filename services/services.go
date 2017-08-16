@@ -258,7 +258,7 @@ func (p *servicePool) registerService(path, address string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Infof("service %v --> %v registered", path, address)
+	log.Infof("key: %v ,value: %v put", path, address)
 }
 
 // GetService finds gRPC service with path in service pool
@@ -283,6 +283,6 @@ func RegisterCallback(path string, callback chan string) {
 	defaultPool.registerCallback(defaultPool.root+pathSep+path, callback)
 }
 
-func RegisterService(path string, address string) {
+func ETCDPut(path string, address string) {
 	defaultPool.registerService(path, address)
 }
