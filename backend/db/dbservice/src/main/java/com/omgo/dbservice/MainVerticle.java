@@ -23,6 +23,7 @@ import proto.SnowflakeOuterClass;
 import proto.SnowflakeServiceGrpc;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -188,21 +189,27 @@ public class MainVerticle extends AbstractVerticle {
         String host = config().getString("etcd.host", "http://localhost:2379");
         LOGGER.info("etcd host:" + host);
         EtcdUtils.init(host);
-        ByteSequence key = ByteSequence.fromString("root/service_4/sub1");
+        ByteSequence key = ByteSequence.fromString("backends/snowflake");
 
         KV kvClient = EtcdUtils.getKVClient();
         if (kvClient != null) {
             try {
-                kvClient.put(key, ByteSequence.fromString("s4_1")).get();
+                // kvClient.put(key, ByteSequence.fromString("s4_1")).get();
+
+                byte[] keyBytes = key.getBytes();
+                byte[] endKeyBytes = Arrays.copyOf(keyBytes, keyBytes.length + 1);
+                endKeyBytes[keyBytes.length] = 0x00;
 
                 ByteSequence endKey = ByteSequence.fromBytes(new byte[]{0x00});
+
                 LOGGER.info(endKey);
-                CompletableFuture<GetResponse> getFuture = kvClient.get(ByteSequence.fromString("holyshit"), GetOption.newBuilder().withRange(endKey).build());
+                CompletableFuture<GetResponse> getFuture = kvClient.get(key, GetOption.newBuilder().withRange(endKey).build());
                 GetResponse response = getFuture.get();
                 List<KeyValue> results = response.getKvs();
                 for (KeyValue kv : results) {
                     String snHost = kv.getValue().toStringUtf8();
-                    LOGGER.info(snHost);
+                    String snKey = kv.getKey().toStringUtf8();
+                    LOGGER.info(String.format("%s %s", snKey, snHost));
                 }
                 return results.get(0).getValue().toStringUtf8();
             } catch (Exception e) {

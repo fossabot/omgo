@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"math/rand"
 	"os"
@@ -9,19 +8,19 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	etcd "github.com/coreos/etcd/client"
-	"github.com/master-g/omgo/etcdclient"
+	"github.com/coreos/etcd/clientv3"
 	pb "github.com/master-g/omgo/proto/grpc/snowflake"
 	"golang.org/x/net/context"
 )
 
 const (
 	envMachineID   = "MACHINE_ID" // Specific machine id
-	pathETCD       = "/seqs/"
-	uuidKey        = "/seqs/snowflake-uuid"
+	pathETCD       = "seqs/"
+	uuidKey        = "seqs/snowflake-uuid"
 	reduction      = 100  // Max reduction delay millisecond
 	concurrentETCD = 128  // Max concurrent connections to ETCD
 	uuidQueueSize  = 1024 // UUID process queue
+	requestTimeout = 5 * time.Second
 )
 
 const (
@@ -32,17 +31,30 @@ const (
 
 type server struct {
 	machineID  uint64 // 10-bit machine id
-	clientPool chan etcd.KeysAPI
+	clientPool chan *clientv3.Client
 	chProc     chan chan uint64
 }
 
-func (s *server) init() {
-	s.clientPool = make(chan etcd.KeysAPI, concurrentETCD)
+var (
+	etcdCfg clientv3.Config
+)
+
+func (s *server) init(endpoints []string) {
+	etcdCfg = clientv3.Config{
+		Endpoints:   endpoints,
+		DialTimeout: requestTimeout,
+	}
+
+	s.clientPool = make(chan *clientv3.Client, concurrentETCD)
 	s.chProc = make(chan chan uint64, uuidQueueSize)
 
 	// Init client pool
 	for i := 0; i < concurrentETCD; i++ {
-		s.clientPool <- etcdclient.KeysAPI()
+		cli, err := clientv3.New(etcdCfg)
+		if err != nil {
+			log.Fatal(err)
+		}
+		s.clientPool <- cli
 	}
 
 	// Check if user specified machine id is set
@@ -67,22 +79,36 @@ func (s *server) initMachineID() {
 
 	for {
 		// Get the key
-		resp, err := client.Get(context.Background(), uuidKey, nil)
+		ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+		resp, err := client.Get(ctx, uuidKey)
+		cancel()
 		if err != nil {
 			log.Panic(err)
 			os.Exit(-1)
 		}
 
+		if len(resp.Kvs) == 0 {
+			log.Panic("uuid key missing")
+			os.Exit(-1)
+		}
+
+		kv := resp.Kvs[0]
 		// Get prevValue & prevIndex
-		prevValue, err := strconv.Atoi(resp.Node.Value)
+		prevValue, err := strconv.Atoi(string(kv.Value))
 		if err != nil {
 			log.Panic(err)
 			os.Exit(-1)
 		}
-		prevIndex := resp.Node.ModifiedIndex
 
 		// CompareAndSwap
-		resp, err = client.Set(context.Background(), uuidKey, fmt.Sprint(prevValue+1), &etcd.SetOptions{PrevIndex: prevIndex})
+		_, err = clientv3.NewKV(client).Txn(context.Background()).If(
+			clientv3.Compare(clientv3.ModRevision(uuidKey), "=", kv.ModRevision),
+		).Then(
+			clientv3.OpPut(uuidKey, fmt.Sprint(prevValue+1)),
+			clientv3.OpGet(uuidKey),
+		).Commit()
+
+		// newer version exist
 		if err != nil {
 			casDelay()
 			continue
@@ -101,26 +127,41 @@ func (s *server) Next(ctx context.Context, in *pb.Snowflake_Key) (*pb.Snowflake_
 	key := pathETCD + in.GetName()
 	for {
 		// Get the key
-		resp, err := client.Get(context.Background(), key, nil)
+		ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+		resp, err := client.Get(ctx, key)
+		cancel()
 		if err != nil {
-			log.Error(err)
-			return nil, fmt.Errorf("key:%v not exists, need to create first", key)
+			log.Panic(err)
+			os.Exit(-1)
 		}
 
-		// Get prevValue & prevIndex
-		prevValue, err := strconv.Atoi(resp.Node.Value)
-		if err != nil {
-			log.Error(err)
-			return nil, errors.New("malformed value")
+		if len(resp.Kvs) == 0 {
+			log.Panic("uuid key missing")
+			os.Exit(-1)
 		}
-		prevIndex := resp.Node.ModifiedIndex
+
+		kv := resp.Kvs[0]
+		// Get prevValue & prevIndex
+		prevValue, err := strconv.Atoi(string(kv.Value))
+		if err != nil {
+			log.Panic(err)
+			os.Exit(-1)
+		}
 
 		// CompareAndSwap
-		resp, err = client.Set(context.Background(), key, fmt.Sprint(prevValue+1), &etcd.SetOptions{PrevIndex: prevIndex})
+		_, err = clientv3.NewKV(client).Txn(context.Background()).If(
+			clientv3.Compare(clientv3.ModRevision(key), "=", kv.ModRevision),
+		).Then(
+			clientv3.OpPut(key, fmt.Sprint(prevValue+1)),
+			clientv3.OpGet(key),
+		).Commit()
+
+		// newer version exist
 		if err != nil {
 			casDelay()
 			continue
 		}
+
 		return &pb.Snowflake_Value{Value: int64(prevValue + 1)}, nil
 	}
 }
@@ -132,19 +173,26 @@ func (s *server) Next2(ctx context.Context, param *pb.Snowflake_Param) (*pb.Snow
 	key := pathETCD + param.GetName()
 	for {
 		// Get the key
-		resp, err := client.Get(context.Background(), key, nil)
+		ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+		resp, err := client.Get(ctx, key)
+		cancel()
 		if err != nil {
-			log.Error(err)
-			return nil, fmt.Errorf("key:%v not exists, need to create first", key)
+			log.Panic(err)
+			os.Exit(-1)
 		}
 
-		// Get prevValue & prevIndex
-		prevValue, err := strconv.Atoi(resp.Node.Value)
-		if err != nil {
-			log.Error(err)
-			return nil, errors.New("malformed value")
+		if len(resp.Kvs) == 0 {
+			log.Panic("uuid key missing")
+			os.Exit(-1)
 		}
-		prevIndex := resp.Node.ModifiedIndex
+
+		kv := resp.Kvs[0]
+		// Get prevValue & prevIndex
+		prevValue, err := strconv.Atoi(string(kv.Value))
+		if err != nil {
+			log.Panic(err)
+			os.Exit(-1)
+		}
 
 		currentValue := int64(0)
 		if param.Step != 0 {
@@ -154,11 +202,19 @@ func (s *server) Next2(ctx context.Context, param *pb.Snowflake_Param) (*pb.Snow
 		}
 
 		// CompareAndSwap
-		resp, err = client.Set(context.Background(), key, fmt.Sprint(currentValue), &etcd.SetOptions{PrevIndex: prevIndex})
+		_, err = clientv3.NewKV(client).Txn(context.Background()).If(
+			clientv3.Compare(clientv3.ModRevision(key), "=", kv.ModRevision),
+		).Then(
+			clientv3.OpPut(key, fmt.Sprint(currentValue)),
+			clientv3.OpGet(key),
+		).Commit()
+
+		// newer version exist
 		if err != nil {
 			casDelay()
 			continue
 		}
+
 		return &pb.Snowflake_Value{Value: currentValue}, nil
 	}
 }
@@ -216,7 +272,7 @@ func (s *server) waitMilliseconds(lastTs int64) int64 {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// random delay
+// CompareAndSwap delay
 func casDelay() {
 	<-time.After(time.Duration(rand.Int63n(reduction)) * time.Millisecond)
 }

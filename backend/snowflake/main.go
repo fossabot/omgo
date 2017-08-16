@@ -6,21 +6,20 @@ import (
 	"os"
 	"sort"
 
+	"context"
 	log "github.com/Sirupsen/logrus"
-	"github.com/master-g/omgo/etcdclient"
+	"github.com/coreos/etcd/clientv3"
 	pb "github.com/master-g/omgo/proto/grpc/snowflake"
 	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc"
 	"gopkg.in/urfave/cli.v2"
+	"time"
 )
 
 const (
 	defaultETCD = "http://127.0.0.1:2379"
-	defaultSID  = "snowflake-0"
-)
-
-var (
-	sid = ""
+	defaultSID  = "backends/snowflake/snowflake-0"
+	defaultHOST = "127.0.0.1:40001"
 )
 
 func main() {
@@ -44,11 +43,14 @@ func main() {
 				Value:   cli.NewStringSlice(defaultETCD),
 			},
 			&cli.StringFlag{
-				Aliases:     []string{"s"},
-				DefaultText: "sid",
-				Name:        "sid",
-				Usage:       "service id",
-				Value:       defaultSID,
+				DefaultText: defaultSID,
+				Name:        "service-key",
+				Usage:       "service key",
+			},
+			&cli.StringFlag{
+				DefaultText: defaultHOST,
+				Name:        "service-host",
+				Usage:       "service host",
 			},
 		},
 		Name:    "snowflake",
@@ -57,8 +59,12 @@ func main() {
 		Action: func(c *cli.Context) error {
 			port := c.Int("port")
 			etcdHosts := c.StringSlice("etcd")
-			sid = c.String("sid")
+			key := c.String("service-key")
+			host := c.String("service-host")
 			log.Infof("start snowflake with etcd hosts:%v", etcdHosts)
+			log.Infof("service key:%v host:%v", key, host)
+
+			setupETCD(etcdHosts, key, host)
 			startSnowflake(etcdHosts, port)
 			return nil
 		},
@@ -68,10 +74,41 @@ func main() {
 	app.Run(os.Args)
 }
 
-func startSnowflake(endpoints []string, port int) {
-	// etcd client
-	etcdclient.Init(endpoints)
+func setupETCD(endpoints []string, key, host string) {
+	etcdCli, err := clientv3.New(clientv3.Config{
+		Endpoints:   endpoints,
+		DialTimeout: time.Second * 5,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer etcdCli.Close()
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	_, err = etcdCli.Put(ctx, key, host)
+	cancel()
+	if err != nil {
+		log.Error(err)
+	}
+
+	casPut(etcdCli, "seqs/snowflake-uuid", "0")
+	casPut(etcdCli, "seqs/test_key", "0")
+	casPut(etcdCli, "seqs/userid", "10000")
+}
+
+func casPut(client *clientv3.Client, key, value string) {
+	_, err := clientv3.NewKV(client).Txn(context.Background()).If(
+		clientv3.Compare(clientv3.ModRevision(key), "=", 0),
+	).Then(
+		clientv3.OpPut(key, value),
+	).Commit()
+
+	if err != nil {
+		log.Error(err)
+	}
+}
+
+func startSnowflake(endpoints []string, port int) {
 	// listen
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
@@ -83,7 +120,7 @@ func startSnowflake(endpoints []string, port int) {
 	// register service
 	s := grpc.NewServer()
 	instance := &server{}
-	instance.init()
+	instance.init(endpoints)
 	pb.RegisterSnowflakeServiceServer(s, instance)
 
 	// start service

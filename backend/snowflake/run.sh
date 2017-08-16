@@ -3,6 +3,7 @@
 IPADDR=127.0.0.1
 LOCALHOST=127.0.0.1
 SERVICE_NAME=snowflake
+SERVICE_PORT=40001
 SNOWFLAKE_SID=snowflake-0
 ETCD_SID=etcd0
 NETHOST=--net=host
@@ -33,17 +34,19 @@ docker run --rm -d ${NETHOST} -p 2379:2379 -p 2380:2380 \
 # Snowflake
 docker rm -f ${SNOWFLAKE_SID}
 docker build --no-cache --rm=true -t ${SERVICE_NAME} .
-docker run --rm -d ${NETHOST} -p 40001:40001 \
+docker run --rm -d ${NETHOST} -p ${SERVICE_PORT}:${SERVICE_PORT} \
     --name ${SNOWFLAKE_SID} \
     -e SERVICE_ID=${SNOWFLAKE_SID} \
     -e MACHINE_ID=1 \
     --entrypoint /go/bin/${SERVICE_NAME} \
     ${SERVICE_NAME} \
-    -p 40001 \
+    --service-key backends/${SERVICE_NAME}/${SNOWFLAKE_SID} \
+    --service-host ${IPADDR}:${SERVICE_PORT} \
+    -p ${SERVICE_PORT} \
     -e http://${IPADDR}:2379
 
 # register service
-curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/backends/${SERVICE_NAME}/${SNOWFLAKE_SID} -d value=${IPADDR}:40001
+curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/backends/${SERVICE_NAME}/${SNOWFLAKE_SID} -d value=${IPADDR}:${SERVICE_PORT}
 
 # init etcd variables
 curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/seqs/test_key -d value="0"
