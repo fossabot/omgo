@@ -290,6 +290,7 @@ func RegisterCallback(path string, callback chan string) {
 	defaultPool.registerCallback(defaultPool.root+pathSep+path, callback)
 }
 
+// ETCDPut put a key-value pair to etcd
 func ETCDPut(path string, address string) {
 	defaultPool.registerService(path, address)
 }

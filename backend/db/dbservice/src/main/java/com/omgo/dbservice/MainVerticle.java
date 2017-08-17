@@ -4,8 +4,8 @@ import com.coreos.jetcd.KV;
 import com.coreos.jetcd.data.ByteSequence;
 import com.coreos.jetcd.data.KeyValue;
 import com.coreos.jetcd.kv.GetResponse;
-import com.coreos.jetcd.kv.PutResponse;
 import com.coreos.jetcd.options.GetOption;
+import com.omgo.dbservice.etcd.Services;
 import io.grpc.ManagedChannel;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -23,7 +23,6 @@ import proto.SnowflakeOuterClass;
 import proto.SnowflakeServiceGrpc;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -94,7 +93,6 @@ public class MainVerticle extends AbstractVerticle {
             .put("username", username)
             .put("password", password)
             .put("charset", charset)
-//            .put("initializationFailFast", false)
             .put("datasource", dataSourceProperty);
 
         LOGGER.info(mySQLConnectionConfig);
@@ -188,20 +186,14 @@ public class MainVerticle extends AbstractVerticle {
     private String testETCD() {
         String host = config().getString("etcd.host", "http://localhost:2379");
         LOGGER.info("etcd host:" + host);
-        EtcdUtils.init(host);
+        Services.getInstance().init(host);
         ByteSequence key = ByteSequence.fromString("root/");
 
-        KV kvClient = EtcdUtils.getKVClient();
+        KV kvClient = Services.getInstance().getKVClient();
         if (kvClient != null) {
             try {
-                // kvClient.put(key, ByteSequence.fromString("s4_1")).get();
+                ByteSequence endKey = Services.getRangeKey("root/");
 
-                byte[] keyBytes = key.getBytes();
-                byte[] endKeyBytes = Arrays.copyOf(keyBytes, keyBytes.length);
-                endKeyBytes[endKeyBytes.length -1]++;
-                ByteSequence endKey = ByteSequence.fromBytes(endKeyBytes);
-
-                LOGGER.info(endKey);
                 CompletableFuture<GetResponse> getFuture = kvClient.get(key, GetOption.newBuilder().withRange(endKey).build());
                 GetResponse response = getFuture.get();
                 List<KeyValue> results = response.getKvs();
