@@ -23,6 +23,7 @@ import proto.SnowflakeOuterClass;
 import proto.SnowflakeServiceGrpc;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -50,7 +51,7 @@ public class MainVerticle extends AbstractVerticle {
 
 //        testGRPC();
 
-        testETCD();
+        testService();
 
 //        vertx.executeBlocking(future -> {
 //            future.complete(testETCD());
@@ -209,5 +210,38 @@ public class MainVerticle extends AbstractVerticle {
         }
 
         return "";
+    }
+
+    private void testService() {
+        String host = config().getString("etcd.host", "http://localhost:2379");
+        LOGGER.info("etcd host:" + host);
+        Services.getInstance().init(host);
+
+        List<String> serviceNames = new ArrayList<>();
+        serviceNames.add("snowflake");
+
+        Services.ServicePool servicePool = Services.getInstance().createServicePool(vertx,"backends", serviceNames);
+        LOGGER.info("service pool created");
+
+        ManagedChannel channel = servicePool.getChannel("backends/snowflake");
+        if (channel != null) {
+            SnowflakeServiceGrpc.SnowflakeServiceVertxStub stub = SnowflakeServiceGrpc.newVertxStub(channel);
+
+            SnowflakeOuterClass.Snowflake.Param param = SnowflakeOuterClass.Snowflake.Param.newBuilder()
+                .setName("userid")
+                .setStep(1000)
+                .build();
+
+            stub.next2(param, res -> {
+                if (res.succeeded()) {
+                    SnowflakeOuterClass.Snowflake.Value value = res.result();
+                    LOGGER.info(value.getValue());
+                } else {
+                    LOGGER.error(res.cause());
+                }
+            });
+        } else {
+            LOGGER.error("unable to find channel to snowflake");
+        }
     }
 }
