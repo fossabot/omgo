@@ -2,7 +2,7 @@
     "rpc.host": "localhost",
     "rpc.port": 60001,
 
-    "etcd.host": "http://localhost:2379",
+    "etcd.host": ["http://localhost:2379"],
 
     "sql.host": "localhost",
     "sql.port": 3306,

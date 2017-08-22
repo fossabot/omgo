@@ -11,5 +11,5 @@ java \
   $LAUNCHER $VERTX_CMD $VERTICLE \
   --redeploy="src/main/**/*" --on-redeploy="$CMD" \
   --launcher-class=$LAUNCHER \
-  -conf config.json \
+  -conf src/main/resources/config.json \
   $@

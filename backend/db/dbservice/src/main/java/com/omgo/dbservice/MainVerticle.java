@@ -9,6 +9,7 @@ import com.omgo.dbservice.etcd.Services;
 import io.grpc.ManagedChannel;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -213,9 +214,15 @@ public class MainVerticle extends AbstractVerticle {
     }
 
     private void testService() {
-        String host = config().getString("etcd.host", "http://localhost:2379");
-        LOGGER.info("etcd host:" + host);
-        Services.getInstance().init(host);
+        List<String> endpoints = new ArrayList<>();
+        JsonArray endpointsJA = config().getJsonArray("etcd.host", new JsonArray().add("http://localhost:2379"));
+        for (int i = 0; i < endpointsJA.size(); i++) {
+            String endpoint = endpointsJA.getString(i);
+            endpoints.add(endpoint);
+        }
+
+        LOGGER.info("etcd host:" + endpoints);
+        Services.getInstance().init(endpoints);
 
         List<String> serviceNames = new ArrayList<>();
         serviceNames.add("snowflake");

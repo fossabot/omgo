@@ -97,6 +97,11 @@ public class Services {
         return ByteSequence.fromBytes(endKeyBytes);
     }
 
+    /**
+     * get etcd key-value client
+     *
+     * @return
+     */
     public KV getKVClient() {
         if (client != null) {
             return client.getKVClient();
@@ -105,6 +110,11 @@ public class Services {
         return null;
     }
 
+    /**
+     * get etcd watch client
+     *
+     * @return
+     */
     public Watch getWatchClient() {
         if (client != null) {
             client.getWatchClient();
@@ -112,35 +122,65 @@ public class Services {
         return null;
     }
 
+    /**
+     * get dir part from a path
+     * getDir(root/service/name) = root/service
+     *
+     * @param path
+     * @return
+     */
     public static String getDir(String path) {
         Path fullPath = Paths.get(path);
         return fullPath.getParent().toString();
     }
 
+    /**
+     * get default service pool
+     *
+     * @return
+     */
     public ServicePool getServicePool() {
         return servicePool;
     }
 
+    /**
+     * create service pool
+     * after creation, service pool will connect to all service under 'root' given by names
+     *
+     * @param vertx    Vertx instance
+     * @param root     service root ('roots', 'backends', etc.)
+     * @param services service names ('snowflake', 'agent', 'game', etc.)
+     * @return
+     */
     public ServicePool createServicePool(Vertx vertx, String root, List<String> services) {
         if (servicePool != null) {
             LOGGER.warn("service pool already exist");
             return servicePool;
         }
 
-        servicePool = ServicePool.create(vertx, root, services);
+        servicePool = ServicePool.newBuilder().setRoot(root).setVertx(vertx).addServices(services).build();
         return servicePool;
     }
 
 
     // Private classes
 
+    /**
+     * Service client
+     */
     private static class ServiceClient {
+        // service key, root + '/' + service name, for example 'root/snowflake/sn-0'
         String key;
+        // managed channel for creating grpc stub
         ManagedChannel channel;
     }
 
+    /**
+     * Service
+     */
     private static class Service {
         List<ServiceClient> clients;
+        // atomic index for round-robin
         AtomicInteger idx;
 
         protected Service() {
@@ -149,11 +189,23 @@ public class Services {
         }
     }
 
+    /**
+     * Service pool
+     */
     public static class ServicePool {
+        // vertx instance
         Vertx vertx;
+
+        // etcd root ('root', 'backends', etc.)
         String root;
+
+        // service names that will be connect and watched
+        // ('root/snowflake', 'backends/agent', etc.)
         Set<String> names;
+
+        // services
         Map<String, Service> services;
+
         boolean namesProvided;
 
         public ServicePool() {
@@ -163,32 +215,73 @@ public class Services {
             namesProvided = false;
         }
 
-        public static ServicePool create(Vertx vertx, String root, List<String> services) {
-            ServicePool pool = new ServicePool();
-            pool.vertx = vertx;
-            pool.root = root;
-            if (services != null && services.size() > 0) {
-                pool.namesProvided = true;
-            }
-
-            for (String serviceName : services) {
-                String name = root + "/" + serviceName;
-                pool.names.add(name);
-            }
-            LOGGER.info("all service names:", pool.names);
-
-            pool.connectAll(root);
-
-            return pool;
+        public static Builder newBuilder() {
+            return new Builder();
         }
 
-        public void connectAll(String directory) {
+        /**
+         * Service pool builder
+         */
+        public static final class Builder {
+            protected Vertx vertx;
+            protected String root;
+            protected List<String> names = new ArrayList<>();
+
+            public Builder setVertx(Vertx vertx) {
+                this.vertx = vertx;
+                return this;
+            }
+
+            public Builder setRoot(String root) {
+                this.root = root;
+                return this;
+            }
+
+            public Builder addService(String name) {
+                this.names.add(name);
+                return this;
+            }
+
+            public Builder addServices(List<String> nameList) {
+                this.names.addAll(nameList);
+                return this;
+            }
+
+            public ServicePool build() {
+                ServicePool pool = new ServicePool();
+                pool.vertx = vertx;
+                pool.root = root;
+                if (names != null && names.size() > 0) {
+                    pool.namesProvided = true;
+
+                    for (String serviceName : names) {
+                        String name = root + "/" + serviceName;
+                        pool.names.add(name);
+                    }
+                    LOGGER.info("all service names:" + pool.names);
+                } else {
+                    LOGGER.info("no service name provided");
+                }
+
+                pool.connectAll(root);
+
+                return pool;
+            }
+        }
+
+        /**
+         * connect all services under root
+         * after adding the services, a watcher will be created to watch the root
+         *
+         * @param root
+         */
+        public void connectAll(String root) {
             KV client = Services.getInstance().getKVClient();
             if (client != null) {
                 try {
-                    ByteSequence endKey = Services.getRangeKey(directory);
+                    ByteSequence endKey = Services.getRangeKey(root);
 
-                    ByteSequence key = ByteSequence.fromString(directory);
+                    ByteSequence key = ByteSequence.fromString(root);
 
                     CompletableFuture<GetResponse> getFuture = client.get(key, GetOption.newBuilder().withRange(endKey).build());
                     GetResponse response = getFuture.get();
@@ -199,7 +292,7 @@ public class Services {
                         addService(snKey, snHost);
                     }
                     LOGGER.info("services added");
-                    startWatcher();
+                    startWatcher(root);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -207,16 +300,27 @@ public class Services {
             }
         }
 
-        private void startWatcher() {
+        /**
+         * start etcd watcher in vertx blocking style
+         *
+         * @param root
+         */
+        private void startWatcher(String root) {
             LOGGER.info("start watching");
             vertx.executeBlocking(future -> {
-                watcher();
+                watcher(root);
                 future.complete();
             }, res -> {
                 LOGGER.info("watch complete");
             });
         }
 
+        /**
+         * add a service to pool
+         *
+         * @param servicePath full path of the service ('roots/snowflake/sn-0', 'backends/agent/a-0', etc.)
+         * @param address     grpc address(ip:port) of the service ('127.0.0.1:8888', 'localhost:443', etc.)
+         */
         public void addService(String servicePath, String address) {
             LOGGER.info("adding " + servicePath + " @ " + address);
 
@@ -261,11 +365,16 @@ public class Services {
             eb.publish(EVENT_SERVICE_ADD, servicePath);
         }
 
-        public void watcher() {
+        /**
+         * etcd watcher
+         *
+         * @param root
+         */
+        public void watcher(String root) {
             Watch watch = Services.getInstance().getWatchClient();
             if (watch != null) {
-                ByteSequence key = ByteSequence.fromString("backends/");
-                ByteSequence endKey = Services.getRangeKey("backends/");
+                ByteSequence key = ByteSequence.fromString(root);
+                ByteSequence endKey = Services.getRangeKey(root);
                 Watch.Watcher watcher = watch.watch(key, WatchOption.newBuilder().withRange(endKey).build());
 
                 try {
@@ -304,6 +413,11 @@ public class Services {
             }
         }
 
+        /**
+         * remove a kind of service from pool
+         *
+         * @param fullPath
+         */
         public void removeService(String fullPath) {
             String serviceKind = getDir(fullPath);
             if (namesProvided && !names.contains(serviceKind)) {

@@ -220,6 +220,8 @@
                     <arguments>
                         <argument>run</argument>
                         <argument>${main.verticle}</argument>
+                        <argument>-conf</argument>
+                        <argument>${project.build.outputDirectory}/config.json</argument>
                     </arguments>
                 </configuration>
             </plugin>
