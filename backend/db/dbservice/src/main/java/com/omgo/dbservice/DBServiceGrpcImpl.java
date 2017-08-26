@@ -1,7 +1,10 @@
 package com.omgo.dbservice;
 
+import com.omgo.dbservice.etcd.Services;
+import com.omgo.dbservice.model.ModelConstant;
 import com.omgo.dbservice.model.ModelConverter;
 import com.omgo.dbservice.model.Utils;
+import io.grpc.ManagedChannel;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonArray;
@@ -13,10 +16,15 @@ import io.vertx.ext.sql.SQLConnection;
 import io.vertx.redis.RedisClient;
 import proto.DBServiceGrpc;
 import proto.Db;
+import proto.SnowflakeOuterClass;
+import proto.SnowflakeServiceGrpc;
 import proto.common.Common;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Database gRPC service implementation
@@ -119,19 +127,36 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
             response.fail("invalid nickname");
         }
 
-        Db.DB.UserExtendInfo.Builder extendInfo = Db.DB.UserExtendInfo.newBuilder();
+        Db.DB.UserExtendInfo.Builder extendInfoBuilder = Db.DB.UserExtendInfo.newBuilder();
+        Common.UserInfo.Builder userInfoBuilder = Common.UserInfo.newBuilder();
 
         // check if user with email already exist
         Db.DB.UserKey userKey = Db.DB.UserKey.newBuilder()
             .setEmail(email)
             .build();
 
+        // get user id
+        Future<Long> snowflakeFuture = generateUniqueUserId();
+
         Future<Common.UserInfo> sqlFuture = queryUserInfoSQL(userKey);
         sqlFuture.setHandler(sqlRes -> {
             if (sqlRes.succeeded()) {
+                LOGGER.error("register failed, user with email:" + email + " already existed");
                 response.fail("email has already been registered");
             } else {
-
+                snowflakeFuture.setHandler(res -> {
+                   if (res.succeeded()) {
+                       // user id
+                       long userId = res.result();
+                       byte[] rawToken = new byte[32];
+                       Random random = new Random(System.currentTimeMillis());
+                       random.nextBytes(rawToken);
+                       String token = Base64.getEncoder().encodeToString(rawToken);
+                        // TODO
+                   } else {
+                       response.fail(res.cause());
+                   }
+                });
             }
         });
 
@@ -151,6 +176,53 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
     @Override
     public void userExtraInfoQuery(Db.DB.UserKey request, Future<Db.DB.UserExtendInfo> response) {
         super.userExtraInfoQuery(request, response);
+    }
+
+    /**
+     * get a unique user id from snowflake service
+     * a random step (1 ~ 1000) will be added to snowflake's userid
+     * this step is guarantee to be even, so the userid will always be odd
+     *
+     * @return
+     */
+    private Future<Long> generateUniqueUserId() {
+        Future<Long> future = Future.future();
+
+        Services.ServicePool servicePool = Services.getInstance().getServicePool();
+        if (servicePool == null) {
+            future.fail("service pool not initialized");
+            return future;
+        }
+
+        ManagedChannel channel = servicePool.getChannel(servicePool.getServicePath(Services.SERVICE_SNOWFLAKE));
+        if (channel == null) {
+            future.fail("service not found: snowflake");
+            return future;
+        }
+
+        // make a random user id increase step, and make sure increment is even
+        // so the user id maintain odd
+        long randomStep = ThreadLocalRandom.current().nextLong(1, 1000);
+        if (randomStep % 2 != 0) {
+            randomStep++;
+        }
+
+        SnowflakeServiceGrpc.SnowflakeServiceVertxStub stub = SnowflakeServiceGrpc.newVertxStub(channel);
+        SnowflakeOuterClass.Snowflake.Param param = SnowflakeOuterClass.Snowflake.Param.newBuilder()
+            .setName("userid")
+            .setStep(randomStep)
+            .build();
+
+        stub.next2(param, res -> {
+            if (res.succeeded()) {
+                SnowflakeOuterClass.Snowflake.Value value = res.result();
+                future.complete(value.getValue());
+            } else {
+                future.fail(res.cause());
+            }
+        });
+
+        return future;
     }
 
 
@@ -332,6 +404,72 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                         });
                     } else {
                         future.fail(sqlRes.cause());
+                    }
+                });
+            } else {
+                future.fail(res.cause());
+            }
+        });
+
+        return future;
+    }
+
+    private Future<JsonObject> insertUserInfoSQL(JsonObject userJson) {
+        Future<JsonObject> future = Future.future();
+
+        String SQL_INSERT = "INSERT INTO user (";
+        String SQL_VALUES = "";
+
+        List<String> VALUE_KEYS = new ArrayList<>();
+        VALUE_KEYS.add(ModelConverter.KEY_UID);
+        VALUE_KEYS.add(ModelConverter.KEY_AVATAR);
+        VALUE_KEYS.add(ModelConverter.KEY_BIRTHDAY);
+        VALUE_KEYS.add(ModelConverter.KEY_COUNTRY);
+        VALUE_KEYS.add(ModelConverter.KEY_EMAIL);
+        VALUE_KEYS.add(ModelConverter.KEY_GENDER);
+        VALUE_KEYS.add(ModelConverter.KEY_LAST_LOGIN);
+        VALUE_KEYS.add(ModelConverter.KEY_LOGIN_COUNT);
+        VALUE_KEYS.add(ModelConverter.KEY_NICKNAME);
+        VALUE_KEYS.add(ModelConverter.KEY_SALT);
+        VALUE_KEYS.add(ModelConverter.KEY_SECRET);
+        VALUE_KEYS.add(ModelConverter.KEY_SINCE);
+
+        SQL_INSERT += String.join(",", VALUE_KEYS) + ") VALUES (";
+
+        final long uid = userJson.getLong(ModelConverter.KEY_UID);
+        SQL_INSERT += userJson.getLong(ModelConverter.KEY_UID) + ",";
+        SQL_INSERT += userJson.getString(ModelConverter.KEY_AVATAR) + ",";
+        SQL_INSERT += userJson.getLong(ModelConverter.KEY_BIRTHDAY) + ",";
+        SQL_INSERT += userJson.getString(ModelConverter.KEY_COUNTRY) + ",";
+        SQL_INSERT += userJson.getString(ModelConverter.KEY_EMAIL) + ",";
+        SQL_INSERT += userJson.getInteger(ModelConverter.KEY_GENDER) + ",";
+        SQL_INSERT += userJson.getLong(ModelConverter.KEY_LAST_LOGIN) + ",";
+        SQL_INSERT += userJson.getLong(ModelConverter.KEY_LOGIN_COUNT) + ",";
+        SQL_INSERT += userJson.getString(ModelConverter.KEY_NICKNAME) + ",";
+        SQL_INSERT += userJson.getString(ModelConverter.KEY_SALT) + ",";
+        SQL_INSERT += userJson.getString(ModelConverter.KEY_SECRET) + ",";
+        SQL_INSERT += userJson.getLong(ModelConverter.KEY_SINCE) + ")";
+
+        // insert
+        String finalSQL_INSERT = SQL_INSERT;
+        sqlClient.getConnection(res -> {
+            if (res.succeeded()) {
+                SQLConnection connection = res.result();
+                connection.execute(finalSQL_INSERT, insertRes -> {
+                    if (insertRes.succeeded()) {
+                        connection.query("SELECT * FROM user WHERE uid=" + uid, queryRes -> {
+                           if (queryRes.succeeded()) {
+                               if (queryRes.result() != null && queryRes.result().getRows().size() > 0) {
+                                   future.complete(queryRes.result().getRows().get(0));
+                               } else {
+                                   future.fail("query error");
+                               }
+                           } else {
+                               future.fail(queryRes.cause());
+                           }
+                        });
+                    } else {
+                        future.fail(insertRes.cause());
                     }
                 });
             } else {

@@ -19,6 +19,8 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.grpc.VertxChannelBuilder;
 
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -34,6 +36,9 @@ public class Services {
     // etcd watcher events
     public static final String EVENT_SERVICE_ADD = "service.add";
     public static final String EVENT_SERVICE_REMOVE = "service.remove";
+
+    // service name
+    public static final String SERVICE_SNOWFLAKE = "snowflake";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MainVerticle.class);
 
@@ -95,6 +100,43 @@ public class Services {
         endKeyBytes[endKeyBytes.length - 1]++;
 
         return ByteSequence.fromBytes(endKeyBytes);
+    }
+
+    /**
+     * generate service full path by concat them with '/'
+     *
+     * @param args
+     * @return
+     */
+    public static String generatePath(Object... args) {
+        List<String> comps = new ArrayList<>();
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] != null) {
+                comps.add(args[i].toString());
+            }
+        }
+
+        return String.join("/", comps);
+    }
+
+    /**
+     * get local ip address and concat with port
+     *
+     * @param port
+     * @return
+     */
+    public static String getLocalAddress(int port) {
+        String ip = "";
+        try {
+            final DatagramSocket socket = new DatagramSocket();
+            socket.connect(InetAddress.getByName("8.8.8.8"), 80);
+            ip = socket.getLocalAddress().getHostAddress();
+            ip += ":" + String.valueOf(port);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return ip;
     }
 
     /**
@@ -213,6 +255,10 @@ public class Services {
             names = new HashSet<>();
             services = new HashMap<>();
             namesProvided = false;
+        }
+
+        public String getServicePath(String serviceName) {
+            return generatePath(root, serviceName);
         }
 
         public static Builder newBuilder() {
@@ -479,11 +525,13 @@ public class Services {
             CompletableFuture<PutResponse> putFuture = kvClient.put(key, value);
             try {
                 PutResponse putResponse = putFuture.get();
-                LOGGER.info(String.format("service %s @ %s added", fullPath, address));
+                LOGGER.info(String.format("service %s @ %s registered", fullPath, address));
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                LOGGER.error("error while register service for interrupt");
             } catch (ExecutionException e) {
                 e.printStackTrace();
+                LOGGER.error("error while register service for exception");
             }
             kvClient.close();
         }

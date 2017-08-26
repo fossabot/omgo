@@ -50,17 +50,14 @@ public class MainVerticle extends AbstractVerticle {
             e.printStackTrace();
         }
 
-//        testGRPC();
-
-        testService();
-
-//        vertx.executeBlocking(future -> {
-//            future.complete(testETCD());
-//        }, res -> {
-//            LOGGER.info("result is: ", res.result());
-//        });
+        setupServices();
     }
 
+    /**
+     * create and setup SQL client
+     *
+     * @return
+     */
     private SQLClient createSQLClient() {
         String url = config().getString("sql.url", "jdbc:mysql://localhost:3306/master");
         int maxPoolSize = config().getInteger("sql.maxPoolSize", 10);
@@ -102,6 +99,11 @@ public class MainVerticle extends AbstractVerticle {
         return JDBCClient.createShared(vertx, mySQLConnectionConfig);
     }
 
+    /**
+     * create and setup redis client
+     *
+     * @return
+     */
     private RedisClient createRedisClient() {
         String host = config().getString("redis.host", "localhost");
         int port = config().getInteger("redis.port", 6379);
@@ -121,6 +123,44 @@ public class MainVerticle extends AbstractVerticle {
         LOGGER.info(redisConfig);
 
         return RedisClient.create(vertx, redisConfig);
+    }
+
+    /**
+     * setup service pool
+     */
+    private void setupServices() {
+        List<String> endpoints = new ArrayList<>();
+        JsonArray endpointsJA = config().getJsonArray("etcd.host", new JsonArray().add("http://localhost:2379"));
+        for (int i = 0; i < endpointsJA.size(); i++) {
+            String endpoint = endpointsJA.getString(i);
+            endpoints.add(endpoint);
+        }
+
+        LOGGER.info("etcd host:" + endpoints);
+        Services.getInstance().init(endpoints);
+
+        String root = config().getString("service.root", "backends");
+        String selfKind = config().getString("service.kind", "dbservice");
+        String selfName = config().getString("service.self", "dbs-0");
+        int selfPort = config().getInteger("service.port", 60001);
+
+        LOGGER.info("service root:" + root);
+
+        List<String> serviceNames = new ArrayList<>();
+        JsonArray namesJA = config().getJsonArray("service.names", new JsonArray().add("snowflake"));
+        for (int i = 0; i < namesJA.size(); i++) {
+            String name = namesJA.getString(i);
+            serviceNames.add(name);
+        }
+
+        LOGGER.info("service names:" + serviceNames);
+
+        Services.ServicePool servicePool = Services.getInstance().createServicePool(vertx,root, serviceNames);
+        LOGGER.info("service pool created");
+
+        // register self to etcd as service
+        servicePool.registerService(Services.generatePath(root, selfKind, selfName), Services.getLocalAddress(selfPort));
+        LOGGER.info("service registered");
     }
 
     private Random random = new Random();
@@ -239,11 +279,15 @@ public class MainVerticle extends AbstractVerticle {
                 .setStep(1000)
                 .build();
 
+            Future<Long> snowflakeFuture = Future.future();
+
             stub.next2(param, res -> {
                 if (res.succeeded()) {
                     SnowflakeOuterClass.Snowflake.Value value = res.result();
+                    snowflakeFuture.complete(value.getValue());
                     LOGGER.info(value.getValue());
                 } else {
+                    snowflakeFuture.fail(res.cause());
                     LOGGER.error(res.cause());
                 }
             });

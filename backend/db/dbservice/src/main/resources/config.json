@@ -2,6 +2,12 @@
     "rpc.host": "localhost",
     "rpc.port": 60001,
 
+    "service.root": "backends",
+    "service.kind": "dbservice",
+    "service.self": "dbs-0",
+    "service.port": 60001,
+    "service.names": ["snowflake"],
+
     "etcd.host": ["http://localhost:2379"],
 
     "sql.host": "localhost",
