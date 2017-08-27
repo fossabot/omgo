@@ -1,7 +1,6 @@
 package com.omgo.dbservice;
 
 import com.omgo.dbservice.etcd.Services;
-import com.omgo.dbservice.model.ModelConstant;
 import com.omgo.dbservice.model.ModelConverter;
 import com.omgo.dbservice.model.Utils;
 import io.grpc.ManagedChannel;
@@ -21,9 +20,7 @@ import proto.SnowflakeServiceGrpc;
 import proto.common.Common;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -49,7 +46,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
 
     @Override
     public void userQuery(Db.DB.UserKey request, Future<Common.UserInfo> response) {
-        LOGGER.info("userQuery", request);
+        LOGGER.info("userQuery:" + request);
 
         // query success handler
         Handler<Common.UserInfo> successHandler = response::complete;
@@ -58,14 +55,15 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         Future<Common.UserInfo> redisFuture = queryUserInfoRedis(request.getUsn());
         redisFuture.setHandler(res -> {
             if (res.succeeded()) {
-                LOGGER.info("redis hit for user:%d", res.result().getUsn());
+                LOGGER.info(String.format("redis hit for user:%d", res.result().getUsn()));
                 successHandler.handle(res.result());
             } else {
                 Future<Common.UserInfo> mysqlFuture = queryUserInfoSQL(request);
                 mysqlFuture.setHandler(sqlRes -> {
                     if (sqlRes.succeeded()) {
                         // update redis
-                        Future<Common.UserInfo> updateRedisFuture = updateUserInfoRedis(sqlRes.result());
+                        Common.UserInfo userInfo = sqlRes.result();
+                        Future<JsonObject> updateRedisFuture = updateUserInfoRedis(ModelConverter.userInfo2Json(userInfo));
                         updateRedisFuture.setHandler(updateRedisRes -> {
                             if (updateRedisRes.failed()) {
                                 LOGGER.info(updateRedisRes.cause());
@@ -83,12 +81,13 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
 
     @Override
     public void userUpdateInfo(Common.UserInfo request, Future<Db.DB.NullValue> response) {
-        LOGGER.info("userUpdate", request);
+        LOGGER.info("userUpdate:" + request);
 
         Future<Common.UserInfo> updateSQLFuture = updateUserInfoSQL(request);
         updateSQLFuture.setHandler(res -> {
             if (res.succeeded()) {
-                Future<Common.UserInfo> redisFuture = updateUserInfoRedis(res.result());
+                Common.UserInfo userInfo = res.result();
+                Future<JsonObject> redisFuture = updateUserInfoRedis(ModelConverter.userInfo2Json(userInfo));
                 redisFuture.setHandler(redisRes -> {
                     if (redisRes.succeeded()) {
                         Common.RspHeader header = Common.RspHeader.newBuilder()
@@ -96,12 +95,12 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                             .build();
                         response.complete(Db.DB.NullValue.newBuilder().build());
                     } else {
-                        LOGGER.error("update user info redis failed:", redisRes.cause());
+                        LOGGER.error("update user info redis failed:" + redisRes.cause());
                         response.fail("user update redis failed");
                     }
                 });
             } else {
-                LOGGER.error("update user info failed:", res.cause());
+                LOGGER.error("update user info failed:" + res.cause());
                 response.fail("user update failed");
             }
         });
@@ -127,6 +126,11 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
             response.fail("invalid nickname");
         }
 
+        String secret = request.getSecret();
+        if (Utils.isEmptyString(secret) || secret.length() < AccountUtils.PASSWORD_MIN_LEN) {
+            response.fail("invalid password");
+        }
+
         Db.DB.UserExtendInfo.Builder extendInfoBuilder = Db.DB.UserExtendInfo.newBuilder();
         Common.UserInfo.Builder userInfoBuilder = Common.UserInfo.newBuilder();
 
@@ -139,23 +143,56 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         Future<Long> snowflakeFuture = generateUniqueUserId();
 
         Future<Common.UserInfo> sqlFuture = queryUserInfoSQL(userKey);
+        // insert into mysql
         sqlFuture.setHandler(sqlRes -> {
+            // email already exist
             if (sqlRes.succeeded()) {
                 LOGGER.error("register failed, user with email:" + email + " already existed");
                 response.fail("email has already been registered");
             } else {
+                // generate user id
                 snowflakeFuture.setHandler(res -> {
-                   if (res.succeeded()) {
-                       // user id
-                       long userId = res.result();
-                       byte[] rawToken = new byte[32];
-                       Random random = new Random(System.currentTimeMillis());
-                       random.nextBytes(rawToken);
-                       String token = Base64.getEncoder().encodeToString(rawToken);
-                        // TODO
-                   } else {
-                       response.fail(res.cause());
-                   }
+                    if (res.succeeded()) {
+                        // user id
+                        long userId = res.result();
+                        byte[] saltRaw = AccountUtils.getSalt();
+                        byte[] tokenRaw = AccountUtils.getToken(saltRaw);
+                        String salt = AccountUtils.base64(saltRaw);
+                        String token = AccountUtils.base64(tokenRaw);
+                        JsonObject jsonObject = ModelConverter.userInfo2Json(userInfo);
+                        jsonObject.put(ModelConverter.KEY_TOKEN, token);
+                        jsonObject.put(ModelConverter.KEY_SALT, salt);
+                        jsonObject.put(ModelConverter.KEY_SECRET, secret);
+
+                        Future<JsonObject> insertFuture = insertUserInfoSQL(jsonObject);
+                        // actual insert
+                        insertFuture.setHandler(insertRes -> {
+                            if (insertRes.succeeded()) {
+                                JsonObject resultJson = insertRes.result();
+                                resultJson.put(ModelConverter.KEY_TOKEN, token);
+                                Future<JsonObject> redisFuture = updateUserInfoRedis(resultJson);
+                                redisFuture.setHandler(redisRes -> {
+                                    if (redisRes.succeeded()) {
+                                        // gRPC response
+                                        Common.UserInfo finalUserInfo = ModelConverter.json2UserInfo(resultJson);
+                                        extendInfoBuilder.setInfo(finalUserInfo)
+                                            .setToken(token)
+                                            .setSecret(secret);
+                                        response.complete(extendInfoBuilder.build());
+                                    } else {
+                                        LOGGER.error("update userInfo redis failed:" + redisRes.cause());
+                                        response.fail(redisRes.cause());
+                                    }
+                                });
+                            } else {
+                                LOGGER.error(insertRes.cause());
+                                response.fail(insertRes.cause());
+                            }
+                        });
+
+                    } else {
+                        response.fail(res.cause());
+                    }
                 });
             }
         });
@@ -310,17 +347,18 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
     /**
      * Update user info in redis
      *
-     * @param userInfo
+     * @param userInfoJson
      * @return Future
      */
-    private Future<Common.UserInfo> updateUserInfoRedis(Common.UserInfo userInfo) {
-        Future<Common.UserInfo> future = Future.future();
-        if (userInfo == null) {
+    private Future<JsonObject> updateUserInfoRedis(JsonObject userInfoJson) {
+        Future<JsonObject> future = Future.future();
+        if (userInfoJson == null) {
             future.fail("invalid userinfo(null)");
         } else {
-            redisClient.hmset(Utils.getRedisKey(userInfo.getUsn()), ModelConverter.userInfo2Json(userInfo), res -> {
+            long usn = userInfoJson.getLong(ModelConverter.KEY_USN);
+            redisClient.hmset(Utils.getRedisKey(usn), userInfoJson, res -> {
                 if (res.succeeded()) {
-                    future.complete(userInfo);
+                    future.complete(userInfoJson);
                 } else {
                     future.fail(res.cause());
                 }
@@ -414,6 +452,12 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         return future;
     }
 
+    /**
+     * Insert userInfo to SQL
+     *
+     * @param userJson
+     * @return
+     */
     private Future<JsonObject> insertUserInfoSQL(JsonObject userJson) {
         Future<JsonObject> future = Future.future();
 
@@ -458,15 +502,15 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                 connection.execute(finalSQL_INSERT, insertRes -> {
                     if (insertRes.succeeded()) {
                         connection.query("SELECT * FROM user WHERE uid=" + uid, queryRes -> {
-                           if (queryRes.succeeded()) {
-                               if (queryRes.result() != null && queryRes.result().getRows().size() > 0) {
-                                   future.complete(queryRes.result().getRows().get(0));
-                               } else {
-                                   future.fail("query error");
-                               }
-                           } else {
-                               future.fail(queryRes.cause());
-                           }
+                            if (queryRes.succeeded()) {
+                                if (queryRes.result() != null && queryRes.result().getRows().size() > 0) {
+                                    future.complete(queryRes.result().getRows().get(0));
+                                } else {
+                                    future.fail("query error");
+                                }
+                            } else {
+                                future.fail(queryRes.cause());
+                            }
                         });
                     } else {
                         future.fail(insertRes.cause());

@@ -16,6 +16,7 @@ public class ModelConverter {
     public static final String KEY_SALT = "salt";
     public static final String KEY_SECRET = "secret";
     public static final String KEY_SINCE = "since";
+    public static final String KEY_TOKEN = "token";
     public static final String KEY_UID = "uid";
     public static final String KEY_USN = "usn";
 
