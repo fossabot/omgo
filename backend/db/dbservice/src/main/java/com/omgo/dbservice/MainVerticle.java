@@ -35,6 +35,8 @@ public class MainVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
+        LOGGER.info("version:" + config().getString("info.version"));
+
         String rpcHost = config().getString("rpc.host", "localhost");
         int rpcPort = config().getInteger("rpc.port", 60001);
 

@@ -18,3 +18,8 @@ Then you can init services
 ```go
 services.Init("backends", ["127.0.0.1:2379"], ["snowflake", "game"])
 ```
+
+## TODO
+
+add circuit breaker
+add unregister service

@@ -43,6 +43,13 @@ var (
 	defaultTimeout = 5 * time.Second
 )
 
+func getRangeKey(key string) string {
+	rangeKey := make([]byte, len([]byte(key)))
+	copy(rangeKey[:], key)
+	rangeKey[len(rangeKey)-1]++
+	return string(rangeKey)
+}
+
 // Init service pool with given service root on ETCD hosts
 // {root}/{services}/{service-endpoints}
 func Init(root string, hosts, services []string) {
@@ -88,7 +95,7 @@ func (p *servicePool) connectAll(directory string) {
 	defer cli.Close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
-	resp, err := cli.Get(ctx, directory, clientv3.WithFromKey())
+	resp, err := cli.Get(ctx, directory, clientv3.WithRange(getRangeKey(directory)))
 	cancel()
 	if err != nil {
 		log.Fatal(err)
@@ -109,7 +116,7 @@ func (p *servicePool) watcher() {
 	}
 	defer cli.Close()
 
-	rch := cli.Watch(context.Background(), p.root, clientv3.WithFromKey())
+	rch := cli.Watch(context.Background(), p.root, clientv3.WithRange(getRangeKey(p.root)))
 	for wresp := range rch {
 		for _, ev := range wresp.Events {
 			log.Printf("%s %q : %q\n", ev.Type, ev.Kv.Key, ev.Kv.Value)
@@ -283,6 +290,7 @@ func RegisterCallback(path string, callback chan string) {
 	defaultPool.registerCallback(defaultPool.root+pathSep+path, callback)
 }
 
+// ETCDPut put a key-value pair to etcd
 func ETCDPut(path string, address string) {
 	defaultPool.registerService(path, address)
 }

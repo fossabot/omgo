@@ -1,4 +1,6 @@
 {
+    "info.version": "v0.0.1",
+
     "rpc.host": "localhost",
     "rpc.port": 60001,
 
