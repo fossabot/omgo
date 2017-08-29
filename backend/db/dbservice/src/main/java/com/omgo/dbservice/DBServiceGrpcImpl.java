@@ -113,22 +113,29 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         Common.UserInfo userInfo = request.getInfo();
         if (userInfo == null) {
             response.fail("invalid user info(null)");
+            LOGGER.error("invalid user info(null)");
             return;
         }
 
         String email = userInfo.getEmail();
         if (!Utils.isValidEmailAddress(email)) {
             response.fail("invalid email address");
+            LOGGER.error("invalid email address");
+            return;
         }
 
         String nickname = userInfo.getNickname();
         if (Utils.isEmptyString(nickname)) {
             response.fail("invalid nickname");
+            LOGGER.error("invalid nickname");
+            return;
         }
 
         String secret = request.getSecret();
         if (Utils.isEmptyString(secret) || secret.length() < AccountUtils.PASSWORD_MIN_LEN) {
             response.fail("invalid password");
+            LOGGER.error("invalid password");
+            return;
         }
 
         Db.DB.UserExtendInfo.Builder extendInfoBuilder = Db.DB.UserExtendInfo.newBuilder();
@@ -149,6 +156,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
             if (sqlRes.succeeded()) {
                 LOGGER.error("register failed, user with email:" + email + " already existed");
                 response.fail("email has already been registered");
+                return;
             } else {
                 // generate user id
                 snowflakeFuture.setHandler(res -> {
@@ -196,8 +204,6 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                 });
             }
         });
-
-        super.userRegister(request, response);
     }
 
     @Override
