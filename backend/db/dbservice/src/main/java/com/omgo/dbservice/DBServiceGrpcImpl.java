@@ -167,11 +167,12 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                         byte[] tokenRaw = AccountUtils.getToken(saltRaw);
                         String salt = AccountUtils.base64(saltRaw);
                         String token = AccountUtils.base64(tokenRaw);
+                        String saltedSecret = AccountUtils.saltedSecret(secret, salt);
                         JsonObject jsonObject = ModelConverter.userInfo2Json(userInfo);
                         jsonObject.put(ModelConverter.KEY_UID, userId);
                         jsonObject.put(ModelConverter.KEY_TOKEN, token);
                         jsonObject.put(ModelConverter.KEY_SALT, salt);
-                        jsonObject.put(ModelConverter.KEY_SECRET, secret);
+                        jsonObject.put(ModelConverter.KEY_SECRET, saltedSecret);
 
                         // TODO: 29/08/2017 secret add salt
 

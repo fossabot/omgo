@@ -10,6 +10,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/coreos/etcd/clientv3"
 	pb "github.com/master-g/omgo/proto/grpc/snowflake"
+	"github.com/master-g/omgo/services"
 	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc"
 	"gopkg.in/urfave/cli.v2"
@@ -65,6 +66,11 @@ func main() {
 			log.Infof("service key:%v host:%v", key, host)
 
 			setupETCD(etcdHosts, key, host)
+			// register self to etcd
+			serviceAddress := fmt.Sprintf("%s:%d", utils.GetLocalIP(), port)
+			services.ETCDPut(key, serviceAddress)
+			log.Infof("register to etcd: %v", serviceAddress)
+			// start snowflake service
 			startSnowflake(etcdHosts, port)
 			return nil
 		},

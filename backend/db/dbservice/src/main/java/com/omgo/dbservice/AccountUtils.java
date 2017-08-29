@@ -34,4 +34,18 @@ public final class AccountUtils {
     public static String base64(byte[] raw) {
         return Base64.getEncoder().encodeToString(raw);
     }
+
+    public static String saltedSecret(String secret, String salt) {
+        try {
+            String salted = secret + salt;
+            MessageDigest digestSHA1 = MessageDigest.getInstance("SHA-1");
+            digestSHA1.reset();
+            byte[] saltedRaw = digestSHA1.digest(salted.getBytes("UTF-8"));
+            return base64(saltedRaw);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }
