@@ -168,9 +168,12 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                         String salt = AccountUtils.base64(saltRaw);
                         String token = AccountUtils.base64(tokenRaw);
                         JsonObject jsonObject = ModelConverter.userInfo2Json(userInfo);
+                        jsonObject.put(ModelConverter.KEY_UID, userId);
                         jsonObject.put(ModelConverter.KEY_TOKEN, token);
                         jsonObject.put(ModelConverter.KEY_SALT, salt);
                         jsonObject.put(ModelConverter.KEY_SECRET, secret);
+
+                        // TODO: 29/08/2017 secret add salt
 
                         Future<JsonObject> insertFuture = insertUserInfoSQL(jsonObject);
                         // actual insert
@@ -467,47 +470,18 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
     private Future<JsonObject> insertUserInfoSQL(JsonObject userJson) {
         Future<JsonObject> future = Future.future();
 
-        String SQL_INSERT = "INSERT INTO user (";
-        String SQL_VALUES = "";
-
-        List<String> VALUE_KEYS = new ArrayList<>();
-        VALUE_KEYS.add(ModelConverter.KEY_UID);
-        VALUE_KEYS.add(ModelConverter.KEY_AVATAR);
-        VALUE_KEYS.add(ModelConverter.KEY_BIRTHDAY);
-        VALUE_KEYS.add(ModelConverter.KEY_COUNTRY);
-        VALUE_KEYS.add(ModelConverter.KEY_EMAIL);
-        VALUE_KEYS.add(ModelConverter.KEY_GENDER);
-        VALUE_KEYS.add(ModelConverter.KEY_LAST_LOGIN);
-        VALUE_KEYS.add(ModelConverter.KEY_LOGIN_COUNT);
-        VALUE_KEYS.add(ModelConverter.KEY_NICKNAME);
-        VALUE_KEYS.add(ModelConverter.KEY_SALT);
-        VALUE_KEYS.add(ModelConverter.KEY_SECRET);
-        VALUE_KEYS.add(ModelConverter.KEY_SINCE);
-
-        SQL_INSERT += String.join(",", VALUE_KEYS) + ") VALUES (";
-
-        final long uid = userJson.getLong(ModelConverter.KEY_UID);
-        SQL_INSERT += userJson.getLong(ModelConverter.KEY_UID) + ",";
-        SQL_INSERT += userJson.getString(ModelConverter.KEY_AVATAR) + ",";
-        SQL_INSERT += userJson.getLong(ModelConverter.KEY_BIRTHDAY) + ",";
-        SQL_INSERT += userJson.getString(ModelConverter.KEY_COUNTRY) + ",";
-        SQL_INSERT += userJson.getString(ModelConverter.KEY_EMAIL) + ",";
-        SQL_INSERT += userJson.getInteger(ModelConverter.KEY_GENDER) + ",";
-        SQL_INSERT += userJson.getLong(ModelConverter.KEY_LAST_LOGIN) + ",";
-        SQL_INSERT += userJson.getLong(ModelConverter.KEY_LOGIN_COUNT) + ",";
-        SQL_INSERT += userJson.getString(ModelConverter.KEY_NICKNAME) + ",";
-        SQL_INSERT += userJson.getString(ModelConverter.KEY_SALT) + ",";
-        SQL_INSERT += userJson.getString(ModelConverter.KEY_SECRET) + ",";
-        SQL_INSERT += userJson.getLong(ModelConverter.KEY_SINCE) + ")";
-
+        long uid = userJson.getLong(ModelConverter.KEY_UID);
+        // query
+        String queryQuery = ModelConverter.SQLQueryQueryUid(uid);
         // insert
-        String finalSQL_INSERT = SQL_INSERT;
+        String insertQuery = ModelConverter.SQLQueryInsert(userJson);
+        LOGGER.info(insertQuery);
         sqlClient.getConnection(res -> {
             if (res.succeeded()) {
                 SQLConnection connection = res.result();
-                connection.execute(finalSQL_INSERT, insertRes -> {
+                connection.execute(insertQuery, insertRes -> {
                     if (insertRes.succeeded()) {
-                        connection.query("SELECT * FROM user WHERE uid=" + uid, queryRes -> {
+                        connection.query(queryQuery, queryRes -> {
                             if (queryRes.succeeded()) {
                                 if (queryRes.result() != null && queryRes.result().getRows().size() > 0) {
                                     future.complete(queryRes.result().getRows().get(0));

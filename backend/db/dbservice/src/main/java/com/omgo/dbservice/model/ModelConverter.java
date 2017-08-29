@@ -4,14 +4,17 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import proto.common.Common;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ModelConverter {
     public static final String KEY_AVATAR = "avatar";
     public static final String KEY_BIRTHDAY = "birthday";
     public static final String KEY_COUNTRY = "country";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_GENDER = "gender";
-    public static final String KEY_LAST_LOGIN = "lastLogin";
-    public static final String KEY_LOGIN_COUNT = "loginCount";
+    public static final String KEY_LAST_LOGIN = "last_login";
+    public static final String KEY_LOGIN_COUNT = "login_count";
     public static final String KEY_NICKNAME = "nickname";
     public static final String KEY_SALT = "salt";
     public static final String KEY_SECRET = "secret";
@@ -19,6 +22,8 @@ public class ModelConverter {
     public static final String KEY_TOKEN = "token";
     public static final String KEY_UID = "uid";
     public static final String KEY_USN = "usn";
+
+    private static final String COMMA = "'";
 
     public static Common.RspHeader createRspHeader(String msg, int status, long timestamp) {
         return Common.RspHeader.newBuilder()
@@ -61,5 +66,46 @@ public class ModelConverter {
             .put(KEY_SINCE, userInfo.getSince())
             .put(KEY_UID, userInfo.getUid())
             .put(KEY_USN, userInfo.getUsn());
+    }
+
+    public static String SQLQueryQueryUid(long uid) {
+        return "SELECT * FROM user WHERE uid=" + uid;
+    }
+
+    public static String SQLQueryInsert(JsonObject jsonObject) {
+        String SQL_INSERT = "INSERT INTO user (";
+        String SQL_VALUES = "";
+
+        List<String> VALUE_KEYS = new ArrayList<>();
+        VALUE_KEYS.add(ModelConverter.KEY_UID);
+        VALUE_KEYS.add(ModelConverter.KEY_AVATAR);
+        VALUE_KEYS.add(ModelConverter.KEY_BIRTHDAY);
+        VALUE_KEYS.add(ModelConverter.KEY_COUNTRY);
+        VALUE_KEYS.add(ModelConverter.KEY_EMAIL);
+        VALUE_KEYS.add(ModelConverter.KEY_GENDER);
+        VALUE_KEYS.add(ModelConverter.KEY_LAST_LOGIN);
+        VALUE_KEYS.add(ModelConverter.KEY_LOGIN_COUNT);
+        VALUE_KEYS.add(ModelConverter.KEY_NICKNAME);
+        VALUE_KEYS.add(ModelConverter.KEY_SALT);
+        VALUE_KEYS.add(ModelConverter.KEY_SECRET);
+        VALUE_KEYS.add(ModelConverter.KEY_SINCE);
+
+        SQL_INSERT += String.join(",", VALUE_KEYS) + ") VALUES (";
+
+        final long uid = jsonObject.getLong(ModelConverter.KEY_UID);
+        SQL_INSERT += jsonObject.getLong(ModelConverter.KEY_UID) + ",";
+        SQL_INSERT += COMMA + jsonObject.getString(ModelConverter.KEY_AVATAR) + COMMA + ",";
+        SQL_INSERT += jsonObject.getLong(ModelConverter.KEY_BIRTHDAY) + ",";
+        SQL_INSERT += COMMA + jsonObject.getString(ModelConverter.KEY_COUNTRY) + COMMA + ",";
+        SQL_INSERT += COMMA + jsonObject.getString(ModelConverter.KEY_EMAIL) + COMMA + ",";
+        SQL_INSERT += jsonObject.getInteger(ModelConverter.KEY_GENDER) + ",";
+        SQL_INSERT += jsonObject.getLong(ModelConverter.KEY_LAST_LOGIN) + ",";
+        SQL_INSERT += jsonObject.getLong(ModelConverter.KEY_LOGIN_COUNT) + ",";
+        SQL_INSERT += COMMA + jsonObject.getString(ModelConverter.KEY_NICKNAME) + COMMA + ",";
+        SQL_INSERT += COMMA + jsonObject.getString(ModelConverter.KEY_SALT) + COMMA + ",";
+        SQL_INSERT += COMMA + jsonObject.getString(ModelConverter.KEY_SECRET) + COMMA + ",";
+        SQL_INSERT += jsonObject.getLong(ModelConverter.KEY_SINCE) + ")";
+
+        return SQL_INSERT;
     }
 }
