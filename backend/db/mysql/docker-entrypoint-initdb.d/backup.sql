@@ -2,7 +2,7 @@
 --
 -- Host: 127.0.0.1    Database: mysql
 -- ------------------------------------------------------
--- Server version	5.7.18
+-- Server version	5.7.19
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -323,7 +323,7 @@ CREATE TABLE `innodb_index_stats` (
 
 LOCK TABLES `innodb_index_stats` WRITE;
 /*!40000 ALTER TABLE `innodb_index_stats` DISABLE KEYS */;
-INSERT INTO `innodb_index_stats` VALUES ('master','user','PRIMARY','2017-08-26 17:28:35','n_diff_pfx01',0,1,'usn'),('master','user','PRIMARY','2017-08-26 17:28:35','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','PRIMARY','2017-08-26 17:28:35','size',1,NULL,'Number of pages in the index'),('master','user','user_uid_uindex','2017-08-26 17:28:35','n_diff_pfx01',0,1,'uid'),('master','user','user_uid_uindex','2017-08-26 17:28:35','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','user_uid_uindex','2017-08-26 17:28:35','size',1,NULL,'Number of pages in the index'),('master','user','user_usn_uindex','2017-08-26 17:28:35','n_diff_pfx01',0,1,'usn'),('master','user','user_usn_uindex','2017-08-26 17:28:35','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','user_usn_uindex','2017-08-26 17:28:35','size',1,NULL,'Number of pages in the index'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_diff_pfx01',0,1,'source_uuid'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_diff_pfx02',0,1,'source_uuid,interval_start'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','size',1,NULL,'Number of pages in the index'),('sample','ass','PRIMARY','2017-08-26 17:01:34','n_diff_pfx01',0,1,'id'),('sample','ass','PRIMARY','2017-08-26 17:01:34','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('sample','ass','PRIMARY','2017-08-26 17:01:34','size',1,NULL,'Number of pages in the index'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','n_diff_pfx01',2,1,'variable'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','size',1,NULL,'Number of pages in the index');
+INSERT INTO `innodb_index_stats` VALUES ('master','user','PRIMARY','2017-08-29 09:56:39','n_diff_pfx01',0,1,'usn'),('master','user','PRIMARY','2017-08-29 09:56:39','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','PRIMARY','2017-08-29 09:56:39','size',1,NULL,'Number of pages in the index'),('master','user','user_uid_uindex','2017-08-29 09:56:39','n_diff_pfx01',0,1,'uid'),('master','user','user_uid_uindex','2017-08-29 09:56:39','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','user_uid_uindex','2017-08-29 09:56:39','size',1,NULL,'Number of pages in the index'),('master','user','user_usn_uindex','2017-08-29 09:56:39','n_diff_pfx01',0,1,'usn'),('master','user','user_usn_uindex','2017-08-29 09:56:39','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','user_usn_uindex','2017-08-29 09:56:39','size',1,NULL,'Number of pages in the index'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_diff_pfx01',0,1,'source_uuid'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_diff_pfx02',0,1,'source_uuid,interval_start'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','size',1,NULL,'Number of pages in the index'),('sample','ass','PRIMARY','2017-08-26 17:01:34','n_diff_pfx01',0,1,'id'),('sample','ass','PRIMARY','2017-08-26 17:01:34','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('sample','ass','PRIMARY','2017-08-26 17:01:34','size',1,NULL,'Number of pages in the index'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','n_diff_pfx01',2,1,'variable'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','size',1,NULL,'Number of pages in the index');
 /*!40000 ALTER TABLE `innodb_index_stats` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -351,7 +351,7 @@ CREATE TABLE `innodb_table_stats` (
 
 LOCK TABLES `innodb_table_stats` WRITE;
 /*!40000 ALTER TABLE `innodb_table_stats` DISABLE KEYS */;
-INSERT INTO `innodb_table_stats` VALUES ('master','user','2017-08-26 17:28:35',0,1,2),('mysql','gtid_executed','2017-07-21 09:55:23',0,1,0),('sample','ass','2017-08-26 17:01:34',0,1,0),('sys','sys_config','2017-07-21 09:55:24',2,1,0);
+INSERT INTO `innodb_table_stats` VALUES ('master','user','2017-08-29 09:56:39',0,1,2),('mysql','gtid_executed','2017-07-21 09:55:23',0,1,0),('sample','ass','2017-08-26 17:01:34',0,1,0),('sys','sys_config','2017-07-21 09:55:24',2,1,0);
 /*!40000 ALTER TABLE `innodb_table_stats` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -952,7 +952,7 @@ CREATE TABLE `user` (
   `birthday` int(11) NOT NULL DEFAULT '0' COMMENT 'birthday EPOCH timestamp',
   `country` varchar(255) DEFAULT NULL,
   `email` varchar(255) NOT NULL,
-  `gendar` int(11) DEFAULT '0' COMMENT '0: unknown, 1: female, 2: male',
+  `gender` int(11) DEFAULT '0' COMMENT '0: unknown, 1: female, 2: male',
   `last_login` int(11) NOT NULL DEFAULT '0',
   `login_count` int(11) NOT NULL DEFAULT '0',
   `nickname` varchar(255) NOT NULL,
@@ -987,4 +987,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-08-27  1:28:51
+-- Dump completed on 2017-08-29 17:57:49
