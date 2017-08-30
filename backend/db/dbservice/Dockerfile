@@ -2,7 +2,7 @@
 FROM java:8-jre
 
 ENV VERTICLE_FILE omgo-dbservice-1.0-SNAPSHOT-fat.jar
-ENV CONFIG_FILE src/main/resources/config.json
+ENV CONFIG_FILE config.json
 
 # Set the location of the verticles
 ENV VERTICLE_HOME /usr/verticles
@@ -16,4 +16,4 @@ COPY $CONFIG_FILE $VERTICLE_HOME/
 # Launch the verticle
 WORKDIR $VERTICLE_HOME
 ENTRYPOINT ["sh", "-c"]
-CMD ["exec java -jar $VERTICLE_FILE -conf config.json"]
+CMD ["exec java -jar $VERTICLE_FILE -conf $CONFIG_FILE"]

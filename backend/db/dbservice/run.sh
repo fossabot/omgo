@@ -7,10 +7,13 @@ SID=dbs-0
 PORT=60001
 NETHOST=--net=host
 
+cp src/main/resources/config.json .
+
 case "$(uname -s)" in
    Darwin)
      IPADDR=$(ifconfig en0 | grep "inet " | cut -d " " -f2)
      NETHOST=''
+     sed -i '' 's/localhost/'${IPADDR}'/g' config.json
      ;;
 esac
 
