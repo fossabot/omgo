@@ -10,7 +10,6 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/coreos/etcd/clientv3"
 	pb "github.com/master-g/omgo/proto/grpc/snowflake"
-	"github.com/master-g/omgo/services"
 	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc"
 	"gopkg.in/urfave/cli.v2"
@@ -66,10 +65,6 @@ func main() {
 			log.Infof("service key:%v host:%v", key, host)
 
 			setupETCD(etcdHosts, key, host)
-			// register self to etcd
-			serviceAddress := fmt.Sprintf("%s:%d", utils.GetLocalIP(), port)
-			services.ETCDPut(key, serviceAddress)
-			log.Infof("register to etcd: %v", serviceAddress)
 			// start snowflake service
 			startSnowflake(etcdHosts, port)
 			return nil
@@ -81,6 +76,8 @@ func main() {
 }
 
 func setupETCD(endpoints []string, key, host string) {
+	// connect to etcd
+	log.Infof("connecting to ETCD: %v", endpoints)
 	etcdCli, err := clientv3.New(clientv3.Config{
 		Endpoints:   endpoints,
 		DialTimeout: time.Second * 5,
@@ -90,6 +87,8 @@ func setupETCD(endpoints []string, key, host string) {
 	}
 	defer etcdCli.Close()
 
+	// register snowflake to etcd
+	log.Infof("register self to ETCD : %v @ %v", key, host)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	_, err = etcdCli.Put(ctx, key, host)
 	cancel()
@@ -97,6 +96,7 @@ func setupETCD(endpoints []string, key, host string) {
 		log.Error(err)
 	}
 
+	// setup snowflake key-values on etcd
 	casPut(etcdCli, "seqs/snowflake-uuid", "0")
 	casPut(etcdCli, "seqs/test_key", "0")
 	casPut(etcdCli, "seqs/userid", "10000")
