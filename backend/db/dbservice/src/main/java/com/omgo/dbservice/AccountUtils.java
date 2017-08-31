@@ -1,5 +1,6 @@
 package com.omgo.dbservice;
 
+import com.omgo.dbservice.model.ModelConstant;
 import com.omgo.dbservice.model.Utils;
 
 import java.security.MessageDigest;
@@ -13,6 +14,10 @@ public final class AccountUtils {
     private static final String STRING_EMAIL_REGEX = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
     private static Random random = new Random(System.currentTimeMillis());
+
+    public static String getRedisKey(long usn) {
+        return String.format("%s:%d", ModelConstant.KEY_USER, usn);
+    }
 
     public static byte[] getSalt() {
         byte[] salt = new byte[32];

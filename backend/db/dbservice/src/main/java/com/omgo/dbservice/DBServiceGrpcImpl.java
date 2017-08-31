@@ -286,12 +286,76 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
 
     @Override
     public void userLogout(DB.UserLogoutRequest request, Future<DB.Result> response) {
-        super.userLogout(request, response);
+        LOGGER.info("userLogout: " + request);
+
+        long usn = request.getUsn();
+        String token = request.getToken();
+        if (usn == 0L) {
+            response.complete(DbProtoUtils.makeResult(DB.StatusCode.STATUS_INVALID_USN));
+            return;
+        }
+
+        if (Utils.isEmptyString(token)) {
+            response.complete(DbProtoUtils.makeResult(DB.StatusCode.STATUS_INVALID_TOKEN));
+            return;
+        }
+
+        Future<DB.UserExtendInfo> redisFuture = queryUserInfoRedis(usn);
+        redisFuture.setHandler(res -> {
+            if (res.failed()) {
+                response.complete(DbProtoUtils.makeResult(DB.StatusCode.STATUS_USER_NOT_FOUND));
+            } else {
+                DB.UserExtendInfo userExtendInfo = res.result();
+                if (!token.equals(userExtendInfo.getToken())) {
+                    response.complete(DbProtoUtils.makeResult(DB.StatusCode.STATUS_INVALID_TOKEN));
+                } else {
+                    Future<Void> delFuture = removeUserInfoRedis(usn);
+                    delFuture.setHandler(removeRes -> {
+                        if (removeRes.succeeded()) {
+                            response.complete(DbProtoUtils.makeResult(DB.StatusCode.STATUS_OK));
+                        } else {
+                            response.complete(DbProtoUtils.makeResult(DB.StatusCode.STATUS_INTERNAL_ERROR));
+                        }
+                    });
+                }
+            }
+        });
     }
 
     @Override
     public void userExtraInfoQuery(DB.UserKey request, Future<DB.UserOpResult> response) {
-        super.userExtraInfoQuery(request, response);
+        long usn = request.getUsn();
+        long uid = request.getUid();
+        String email = request.getEmail();
+
+        if (usn == 0L && (uid == 0L || Utils.isEmptyString(email))) {
+            response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_INVALID_PARAM));
+            return;
+        }
+
+        Future<DB.UserExtendInfo> redisQueryFuture = queryUserInfoRedis(usn);
+        if (usn != 0) {
+            redisQueryFuture.fail("invalid usn");
+        }
+
+        redisQueryFuture.setHandler(redisQueryRes -> {
+           if (redisQueryRes.succeeded()) {
+               response.complete(DbProtoUtils.makeUserOpOkResult(redisQueryRes.result()));
+           } else {
+               Future<JsonObject> mysqlFuture = queryUserInfoSQL(request);
+               mysqlFuture.setHandler(mysqlRes -> {
+                   if (mysqlRes.succeeded()) {
+                       JsonObject mysqlJson = mysqlRes.result();
+                       Common.UserInfo userInfo = ModelConverter.json2UserInfo(mysqlJson);
+                       String secret = mysqlJson.getString(ModelConverter.KEY_SECRET);
+                       DB.UserExtendInfo userExtendInfo = DbProtoUtils.makeUserExtendInfo(userInfo, secret, "");
+                       response.complete(DbProtoUtils.makeUserOpOkResult(userExtendInfo));
+                   } else {
+                       response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_USER_NOT_FOUND));
+                   }
+               });
+           }
+        });
     }
 
     /**
@@ -341,6 +405,27 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         return future;
     }
 
+    /**
+     * Remove user info from redis
+     *
+     * @param usn
+     * @return
+     */
+    private Future<Void> removeUserInfoRedis(long usn) {
+        Future<Void> future = Future.future();
+        if (usn == 0L) {
+            future.fail("invalid usn");
+        } else {
+            redisClient.del(AccountUtils.getRedisKey(usn), res -> {
+                if (res.succeeded()) {
+                    future.complete();
+                } else {
+                    future.fail(res.cause());
+                }
+            });
+        }
+        return future;
+    }
 
     /**
      * Query user info in redis
@@ -354,7 +439,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         if (usn == 0L) {
             future.fail("invalid usn");
         } else {
-            redisClient.hgetall(Utils.getRedisKey(usn), res -> {
+            redisClient.hgetall(AccountUtils.getRedisKey(usn), res -> {
                 if (res.succeeded()) {
                     JsonObject jsonObject = res.result();
                     String secret = jsonObject.getString(ModelConverter.KEY_SECRET);
@@ -438,7 +523,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
             future.fail("invalid userinfo(null)");
         } else {
             long usn = userInfoJson.getLong(ModelConverter.KEY_USN);
-            redisClient.hmset(Utils.getRedisKey(usn), userInfoJson, res -> {
+            redisClient.hmset(AccountUtils.getRedisKey(usn), userInfoJson, res -> {
                 if (res.succeeded()) {
                     future.complete(userInfoJson);
                 } else {
