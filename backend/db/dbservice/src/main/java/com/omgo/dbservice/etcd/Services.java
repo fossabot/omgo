@@ -368,8 +368,6 @@ public class Services {
          * @param address     grpc address(ip:port) of the service ('127.0.0.1:8888', 'localhost:443', etc.)
          */
         public void addService(String servicePath, String address) {
-            LOGGER.info("adding " + servicePath + " @ " + address);
-
             if (address == null || address.equals("")) {
                 LOGGER.error("invalid service address");
                 return;
@@ -389,6 +387,8 @@ public class Services {
             if (namesProvided && !names.contains(serviceKind)) {
                 return;
             }
+
+            LOGGER.info("adding " + servicePath + " @ " + address);
 
             // create try new service kind init
             if (!services.containsKey(serviceKind)) {

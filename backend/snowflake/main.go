@@ -64,7 +64,7 @@ func main() {
 			log.Infof("start snowflake with etcd hosts:%v", etcdHosts)
 			log.Infof("service key:%v host:%v", key, host)
 
-			setupETCD(etcdHosts, key, host)
+			setupETCD(etcdHosts, key, host, port)
 			// start snowflake service
 			startSnowflake(etcdHosts, port)
 			return nil
@@ -75,7 +75,7 @@ func main() {
 	app.Run(os.Args)
 }
 
-func setupETCD(endpoints []string, key, host string) {
+func setupETCD(endpoints []string, key, host string, port int) {
 	// connect to etcd
 	log.Infof("connecting to ETCD: %v", endpoints)
 	etcdCli, err := clientv3.New(clientv3.Config{
@@ -88,9 +88,9 @@ func setupETCD(endpoints []string, key, host string) {
 	defer etcdCli.Close()
 
 	// register snowflake to etcd
-	log.Infof("register self to ETCD : %v @ %v", key, host)
+	log.Infof("register self to ETCD : %v @ %v:%v", key, host, port)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	_, err = etcdCli.Put(ctx, key, host)
+	_, err = etcdCli.Put(ctx, key, fmt.Sprintf("%s:%d", host, port))
 	cancel()
 	if err != nil {
 		log.Error(err)

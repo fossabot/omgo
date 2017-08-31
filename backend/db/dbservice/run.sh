@@ -14,6 +14,7 @@ case "$(uname -s)" in
      IPADDR=$(ifconfig en0 | grep "inet " | cut -d " " -f2)
      NETHOST=''
      sed -i '' 's/localhost/'${IPADDR}'/g' config.json
+     sed -i '' 's/v0.0.1/v0.0.1-autogen/g' config.json
      ;;
 esac
 
@@ -22,7 +23,7 @@ mvn clean package
 
 docker rm -f ${SID}
 docker build --no-cache --rm=true -t ${SERVICE_NAME} .
-docker run --rm ${NETHOST} -p ${PORT}:${PORT} \
+docker run --rm -d ${NETHOST} -p ${PORT}:${PORT} \
     --name ${SID} \
     ${SERVICE_NAME} \
 

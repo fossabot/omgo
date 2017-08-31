@@ -79,22 +79,221 @@ public final class Db {
               proto.Db.DB.class, proto.Db.DB.Builder.class);
     }
 
-    public interface NullValueOrBuilder extends
-        // @@protoc_insertion_point(interface_extends:proto.DB.NullValue)
+    /**
+     * Protobuf enum {@code proto.DB.StatusCode}
+     */
+    public enum StatusCode
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <pre>
+       * no error
+       * </pre>
+       *
+       * <code>STATUS_OK = 0;</code>
+       */
+      STATUS_OK(0),
+      /**
+       * <code>STATUS_INVALID_USN = 101;</code>
+       */
+      STATUS_INVALID_USN(101),
+      /**
+       * <code>STATUS_INVALID_UID = 102;</code>
+       */
+      STATUS_INVALID_UID(102),
+      /**
+       * <code>STATUS_INVALID_EMAIL = 103;</code>
+       */
+      STATUS_INVALID_EMAIL(103),
+      /**
+       * <code>STATUS_INVALID_SECRET = 104;</code>
+       */
+      STATUS_INVALID_SECRET(104),
+      /**
+       * <code>STATUS_INVALID_TOKEN = 105;</code>
+       */
+      STATUS_INVALID_TOKEN(105),
+      /**
+       * <code>STATUS_USER_ALREADY_EXIST = 201;</code>
+       */
+      STATUS_USER_ALREADY_EXIST(201),
+      /**
+       * <code>STATUS_USER_NOT_FOUND = 202;</code>
+       */
+      STATUS_USER_NOT_FOUND(202),
+      /**
+       * <code>STATUS_INTERNAL_ERROR = 500;</code>
+       */
+      STATUS_INTERNAL_ERROR(500),
+      /**
+       * <code>STATUS_UNAVAILABLE = 503;</code>
+       */
+      STATUS_UNAVAILABLE(503),
+      UNRECOGNIZED(-1),
+      ;
+
+      /**
+       * <pre>
+       * no error
+       * </pre>
+       *
+       * <code>STATUS_OK = 0;</code>
+       */
+      public static final int STATUS_OK_VALUE = 0;
+      /**
+       * <code>STATUS_INVALID_USN = 101;</code>
+       */
+      public static final int STATUS_INVALID_USN_VALUE = 101;
+      /**
+       * <code>STATUS_INVALID_UID = 102;</code>
+       */
+      public static final int STATUS_INVALID_UID_VALUE = 102;
+      /**
+       * <code>STATUS_INVALID_EMAIL = 103;</code>
+       */
+      public static final int STATUS_INVALID_EMAIL_VALUE = 103;
+      /**
+       * <code>STATUS_INVALID_SECRET = 104;</code>
+       */
+      public static final int STATUS_INVALID_SECRET_VALUE = 104;
+      /**
+       * <code>STATUS_INVALID_TOKEN = 105;</code>
+       */
+      public static final int STATUS_INVALID_TOKEN_VALUE = 105;
+      /**
+       * <code>STATUS_USER_ALREADY_EXIST = 201;</code>
+       */
+      public static final int STATUS_USER_ALREADY_EXIST_VALUE = 201;
+      /**
+       * <code>STATUS_USER_NOT_FOUND = 202;</code>
+       */
+      public static final int STATUS_USER_NOT_FOUND_VALUE = 202;
+      /**
+       * <code>STATUS_INTERNAL_ERROR = 500;</code>
+       */
+      public static final int STATUS_INTERNAL_ERROR_VALUE = 500;
+      /**
+       * <code>STATUS_UNAVAILABLE = 503;</code>
+       */
+      public static final int STATUS_UNAVAILABLE_VALUE = 503;
+
+
+      public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
+        return value;
+      }
+
+      /**
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static StatusCode valueOf(int value) {
+        return forNumber(value);
+      }
+
+      public static StatusCode forNumber(int value) {
+        switch (value) {
+          case 0: return STATUS_OK;
+          case 101: return STATUS_INVALID_USN;
+          case 102: return STATUS_INVALID_UID;
+          case 103: return STATUS_INVALID_EMAIL;
+          case 104: return STATUS_INVALID_SECRET;
+          case 105: return STATUS_INVALID_TOKEN;
+          case 201: return STATUS_USER_ALREADY_EXIST;
+          case 202: return STATUS_USER_NOT_FOUND;
+          case 500: return STATUS_INTERNAL_ERROR;
+          case 503: return STATUS_UNAVAILABLE;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<StatusCode>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static final com.google.protobuf.Internal.EnumLiteMap<
+          StatusCode> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<StatusCode>() {
+              public StatusCode findValueByNumber(int number) {
+                return StatusCode.forNumber(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        return getDescriptor().getValues().get(ordinal());
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return proto.Db.DB.getDescriptor().getEnumTypes().get(0);
+      }
+
+      private static final StatusCode[] VALUES = values();
+
+      public static StatusCode valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        if (desc.getIndex() == -1) {
+          return UNRECOGNIZED;
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int value;
+
+      private StatusCode(int value) {
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:proto.DB.StatusCode)
+    }
+
+    public interface ResultOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:proto.DB.Result)
         com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>.proto.DB.StatusCode status = 1;</code>
+       */
+      int getStatusValue();
+      /**
+       * <code>.proto.DB.StatusCode status = 1;</code>
+       */
+      proto.Db.DB.StatusCode getStatus();
+
+      /**
+       * <code>string msg = 2;</code>
+       */
+      java.lang.String getMsg();
+      /**
+       * <code>string msg = 2;</code>
+       */
+      com.google.protobuf.ByteString
+          getMsgBytes();
     }
     /**
-     * Protobuf type {@code proto.DB.NullValue}
+     * Protobuf type {@code proto.DB.Result}
      */
-    public  static final class NullValue extends
+    public  static final class Result extends
         com.google.protobuf.GeneratedMessageV3 implements
-        // @@protoc_insertion_point(message_implements:proto.DB.NullValue)
-        NullValueOrBuilder {
-      // Use NullValue.newBuilder() to construct.
-      private NullValue(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        // @@protoc_insertion_point(message_implements:proto.DB.Result)
+        ResultOrBuilder {
+      // Use Result.newBuilder() to construct.
+      private Result(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
         super(builder);
       }
-      private NullValue() {
+      private Result() {
+        status_ = 0;
+        msg_ = "";
       }
 
       @java.lang.Override
@@ -102,11 +301,12 @@ public final class Db {
       getUnknownFields() {
         return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
       }
-      private NullValue(
+      private Result(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         this();
+        int mutable_bitField0_ = 0;
         try {
           boolean done = false;
           while (!done) {
@@ -119,6 +319,18 @@ public final class Db {
                 if (!input.skipField(tag)) {
                   done = true;
                 }
+                break;
+              }
+              case 8: {
+                int rawValue = input.readEnum();
+
+                status_ = rawValue;
+                break;
+              }
+              case 18: {
+                java.lang.String s = input.readStringRequireUtf8();
+
+                msg_ = s;
                 break;
               }
             }
@@ -134,14 +346,64 @@ public final class Db {
       }
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return proto.Db.internal_static_proto_DB_NullValue_descriptor;
+        return proto.Db.internal_static_proto_DB_Result_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return proto.Db.internal_static_proto_DB_NullValue_fieldAccessorTable
+        return proto.Db.internal_static_proto_DB_Result_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                proto.Db.DB.NullValue.class, proto.Db.DB.NullValue.Builder.class);
+                proto.Db.DB.Result.class, proto.Db.DB.Result.Builder.class);
+      }
+
+      public static final int STATUS_FIELD_NUMBER = 1;
+      private int status_;
+      /**
+       * <code>.proto.DB.StatusCode status = 1;</code>
+       */
+      public int getStatusValue() {
+        return status_;
+      }
+      /**
+       * <code>.proto.DB.StatusCode status = 1;</code>
+       */
+      public proto.Db.DB.StatusCode getStatus() {
+        proto.Db.DB.StatusCode result = proto.Db.DB.StatusCode.valueOf(status_);
+        return result == null ? proto.Db.DB.StatusCode.UNRECOGNIZED : result;
+      }
+
+      public static final int MSG_FIELD_NUMBER = 2;
+      private volatile java.lang.Object msg_;
+      /**
+       * <code>string msg = 2;</code>
+       */
+      public java.lang.String getMsg() {
+        java.lang.Object ref = msg_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          msg_ = s;
+          return s;
+        }
+      }
+      /**
+       * <code>string msg = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMsgBytes() {
+        java.lang.Object ref = msg_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          msg_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
       }
 
       private byte memoizedIsInitialized = -1;
@@ -156,6 +418,12 @@ public final class Db {
 
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
+        if (status_ != proto.Db.DB.StatusCode.STATUS_OK.getNumber()) {
+          output.writeEnum(1, status_);
+        }
+        if (!getMsgBytes().isEmpty()) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 2, msg_);
+        }
       }
 
       public int getSerializedSize() {
@@ -163,6 +431,13 @@ public final class Db {
         if (size != -1) return size;
 
         size = 0;
+        if (status_ != proto.Db.DB.StatusCode.STATUS_OK.getNumber()) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeEnumSize(1, status_);
+        }
+        if (!getMsgBytes().isEmpty()) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, msg_);
+        }
         memoizedSize = size;
         return size;
       }
@@ -173,12 +448,15 @@ public final class Db {
         if (obj == this) {
          return true;
         }
-        if (!(obj instanceof proto.Db.DB.NullValue)) {
+        if (!(obj instanceof proto.Db.DB.Result)) {
           return super.equals(obj);
         }
-        proto.Db.DB.NullValue other = (proto.Db.DB.NullValue) obj;
+        proto.Db.DB.Result other = (proto.Db.DB.Result) obj;
 
         boolean result = true;
+        result = result && status_ == other.status_;
+        result = result && getMsg()
+            .equals(other.getMsg());
         return result;
       }
 
@@ -189,74 +467,78 @@ public final class Db {
         }
         int hash = 41;
         hash = (19 * hash) + getDescriptor().hashCode();
+        hash = (37 * hash) + STATUS_FIELD_NUMBER;
+        hash = (53 * hash) + status_;
+        hash = (37 * hash) + MSG_FIELD_NUMBER;
+        hash = (53 * hash) + getMsg().hashCode();
         hash = (29 * hash) + unknownFields.hashCode();
         memoizedHashCode = hash;
         return hash;
       }
 
-      public static proto.Db.DB.NullValue parseFrom(
+      public static proto.Db.DB.Result parseFrom(
           java.nio.ByteBuffer data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static proto.Db.DB.NullValue parseFrom(
+      public static proto.Db.DB.Result parseFrom(
           java.nio.ByteBuffer data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static proto.Db.DB.NullValue parseFrom(
+      public static proto.Db.DB.Result parseFrom(
           com.google.protobuf.ByteString data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static proto.Db.DB.NullValue parseFrom(
+      public static proto.Db.DB.Result parseFrom(
           com.google.protobuf.ByteString data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static proto.Db.DB.NullValue parseFrom(byte[] data)
+      public static proto.Db.DB.Result parseFrom(byte[] data)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data);
       }
-      public static proto.Db.DB.NullValue parseFrom(
+      public static proto.Db.DB.Result parseFrom(
           byte[] data,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
         return PARSER.parseFrom(data, extensionRegistry);
       }
-      public static proto.Db.DB.NullValue parseFrom(java.io.InputStream input)
+      public static proto.Db.DB.Result parseFrom(java.io.InputStream input)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseWithIOException(PARSER, input);
       }
-      public static proto.Db.DB.NullValue parseFrom(
+      public static proto.Db.DB.Result parseFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseWithIOException(PARSER, input, extensionRegistry);
       }
-      public static proto.Db.DB.NullValue parseDelimitedFrom(java.io.InputStream input)
+      public static proto.Db.DB.Result parseDelimitedFrom(java.io.InputStream input)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseDelimitedWithIOException(PARSER, input);
       }
-      public static proto.Db.DB.NullValue parseDelimitedFrom(
+      public static proto.Db.DB.Result parseDelimitedFrom(
           java.io.InputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
       }
-      public static proto.Db.DB.NullValue parseFrom(
+      public static proto.Db.DB.Result parseFrom(
           com.google.protobuf.CodedInputStream input)
           throws java.io.IOException {
         return com.google.protobuf.GeneratedMessageV3
             .parseWithIOException(PARSER, input);
       }
-      public static proto.Db.DB.NullValue parseFrom(
+      public static proto.Db.DB.Result parseFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
@@ -268,7 +550,7 @@ public final class Db {
       public static Builder newBuilder() {
         return DEFAULT_INSTANCE.toBuilder();
       }
-      public static Builder newBuilder(proto.Db.DB.NullValue prototype) {
+      public static Builder newBuilder(proto.Db.DB.Result prototype) {
         return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
       }
       public Builder toBuilder() {
@@ -283,25 +565,25 @@ public final class Db {
         return builder;
       }
       /**
-       * Protobuf type {@code proto.DB.NullValue}
+       * Protobuf type {@code proto.DB.Result}
        */
       public static final class Builder extends
           com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-          // @@protoc_insertion_point(builder_implements:proto.DB.NullValue)
-          proto.Db.DB.NullValueOrBuilder {
+          // @@protoc_insertion_point(builder_implements:proto.DB.Result)
+          proto.Db.DB.ResultOrBuilder {
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
-          return proto.Db.internal_static_proto_DB_NullValue_descriptor;
+          return proto.Db.internal_static_proto_DB_Result_descriptor;
         }
 
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internalGetFieldAccessorTable() {
-          return proto.Db.internal_static_proto_DB_NullValue_fieldAccessorTable
+          return proto.Db.internal_static_proto_DB_Result_fieldAccessorTable
               .ensureFieldAccessorsInitialized(
-                  proto.Db.DB.NullValue.class, proto.Db.DB.NullValue.Builder.class);
+                  proto.Db.DB.Result.class, proto.Db.DB.Result.Builder.class);
         }
 
-        // Construct using proto.Db.DB.NullValue.newBuilder()
+        // Construct using proto.Db.DB.Result.newBuilder()
         private Builder() {
           maybeForceBuilderInitialization();
         }
@@ -318,28 +600,34 @@ public final class Db {
         }
         public Builder clear() {
           super.clear();
+          status_ = 0;
+
+          msg_ = "";
+
           return this;
         }
 
         public com.google.protobuf.Descriptors.Descriptor
             getDescriptorForType() {
-          return proto.Db.internal_static_proto_DB_NullValue_descriptor;
+          return proto.Db.internal_static_proto_DB_Result_descriptor;
         }
 
-        public proto.Db.DB.NullValue getDefaultInstanceForType() {
-          return proto.Db.DB.NullValue.getDefaultInstance();
+        public proto.Db.DB.Result getDefaultInstanceForType() {
+          return proto.Db.DB.Result.getDefaultInstance();
         }
 
-        public proto.Db.DB.NullValue build() {
-          proto.Db.DB.NullValue result = buildPartial();
+        public proto.Db.DB.Result build() {
+          proto.Db.DB.Result result = buildPartial();
           if (!result.isInitialized()) {
             throw newUninitializedMessageException(result);
           }
           return result;
         }
 
-        public proto.Db.DB.NullValue buildPartial() {
-          proto.Db.DB.NullValue result = new proto.Db.DB.NullValue(this);
+        public proto.Db.DB.Result buildPartial() {
+          proto.Db.DB.Result result = new proto.Db.DB.Result(this);
+          result.status_ = status_;
+          result.msg_ = msg_;
           onBuilt();
           return result;
         }
@@ -371,16 +659,23 @@ public final class Db {
           return (Builder) super.addRepeatedField(field, value);
         }
         public Builder mergeFrom(com.google.protobuf.Message other) {
-          if (other instanceof proto.Db.DB.NullValue) {
-            return mergeFrom((proto.Db.DB.NullValue)other);
+          if (other instanceof proto.Db.DB.Result) {
+            return mergeFrom((proto.Db.DB.Result)other);
           } else {
             super.mergeFrom(other);
             return this;
           }
         }
 
-        public Builder mergeFrom(proto.Db.DB.NullValue other) {
-          if (other == proto.Db.DB.NullValue.getDefaultInstance()) return this;
+        public Builder mergeFrom(proto.Db.DB.Result other) {
+          if (other == proto.Db.DB.Result.getDefaultInstance()) return this;
+          if (other.status_ != 0) {
+            setStatusValue(other.getStatusValue());
+          }
+          if (!other.getMsg().isEmpty()) {
+            msg_ = other.msg_;
+            onChanged();
+          }
           onChanged();
           return this;
         }
@@ -393,17 +688,130 @@ public final class Db {
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws java.io.IOException {
-          proto.Db.DB.NullValue parsedMessage = null;
+          proto.Db.DB.Result parsedMessage = null;
           try {
             parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
           } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            parsedMessage = (proto.Db.DB.NullValue) e.getUnfinishedMessage();
+            parsedMessage = (proto.Db.DB.Result) e.getUnfinishedMessage();
             throw e.unwrapIOException();
           } finally {
             if (parsedMessage != null) {
               mergeFrom(parsedMessage);
             }
           }
+          return this;
+        }
+
+        private int status_ = 0;
+        /**
+         * <code>.proto.DB.StatusCode status = 1;</code>
+         */
+        public int getStatusValue() {
+          return status_;
+        }
+        /**
+         * <code>.proto.DB.StatusCode status = 1;</code>
+         */
+        public Builder setStatusValue(int value) {
+          status_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>.proto.DB.StatusCode status = 1;</code>
+         */
+        public proto.Db.DB.StatusCode getStatus() {
+          proto.Db.DB.StatusCode result = proto.Db.DB.StatusCode.valueOf(status_);
+          return result == null ? proto.Db.DB.StatusCode.UNRECOGNIZED : result;
+        }
+        /**
+         * <code>.proto.DB.StatusCode status = 1;</code>
+         */
+        public Builder setStatus(proto.Db.DB.StatusCode value) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          
+          status_ = value.getNumber();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>.proto.DB.StatusCode status = 1;</code>
+         */
+        public Builder clearStatus() {
+          
+          status_ = 0;
+          onChanged();
+          return this;
+        }
+
+        private java.lang.Object msg_ = "";
+        /**
+         * <code>string msg = 2;</code>
+         */
+        public java.lang.String getMsg() {
+          java.lang.Object ref = msg_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            msg_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>string msg = 2;</code>
+         */
+        public com.google.protobuf.ByteString
+            getMsgBytes() {
+          java.lang.Object ref = msg_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            msg_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>string msg = 2;</code>
+         */
+        public Builder setMsg(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  
+          msg_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>string msg = 2;</code>
+         */
+        public Builder clearMsg() {
+          
+          msg_ = getDefaultInstance().getMsg();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>string msg = 2;</code>
+         */
+        public Builder setMsgBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+          
+          msg_ = value;
+          onChanged();
           return this;
         }
         public final Builder setUnknownFields(
@@ -417,39 +825,39 @@ public final class Db {
         }
 
 
-        // @@protoc_insertion_point(builder_scope:proto.DB.NullValue)
+        // @@protoc_insertion_point(builder_scope:proto.DB.Result)
       }
 
-      // @@protoc_insertion_point(class_scope:proto.DB.NullValue)
-      private static final proto.Db.DB.NullValue DEFAULT_INSTANCE;
+      // @@protoc_insertion_point(class_scope:proto.DB.Result)
+      private static final proto.Db.DB.Result DEFAULT_INSTANCE;
       static {
-        DEFAULT_INSTANCE = new proto.Db.DB.NullValue();
+        DEFAULT_INSTANCE = new proto.Db.DB.Result();
       }
 
-      public static proto.Db.DB.NullValue getDefaultInstance() {
+      public static proto.Db.DB.Result getDefaultInstance() {
         return DEFAULT_INSTANCE;
       }
 
-      private static final com.google.protobuf.Parser<NullValue>
-          PARSER = new com.google.protobuf.AbstractParser<NullValue>() {
-        public NullValue parsePartialFrom(
+      private static final com.google.protobuf.Parser<Result>
+          PARSER = new com.google.protobuf.AbstractParser<Result>() {
+        public Result parsePartialFrom(
             com.google.protobuf.CodedInputStream input,
             com.google.protobuf.ExtensionRegistryLite extensionRegistry)
             throws com.google.protobuf.InvalidProtocolBufferException {
-            return new NullValue(input, extensionRegistry);
+            return new Result(input, extensionRegistry);
         }
       };
 
-      public static com.google.protobuf.Parser<NullValue> parser() {
+      public static com.google.protobuf.Parser<Result> parser() {
         return PARSER;
       }
 
       @java.lang.Override
-      public com.google.protobuf.Parser<NullValue> getParserForType() {
+      public com.google.protobuf.Parser<Result> getParserForType() {
         return PARSER;
       }
 
-      public proto.Db.DB.NullValue getDefaultInstanceForType() {
+      public proto.Db.DB.Result getDefaultInstanceForType() {
         return DEFAULT_INSTANCE;
       }
 
@@ -2564,6 +2972,779 @@ public final class Db {
 
     }
 
+    public interface UserOpResultOrBuilder extends
+        // @@protoc_insertion_point(interface_extends:proto.DB.UserOpResult)
+        com.google.protobuf.MessageOrBuilder {
+
+      /**
+       * <code>.proto.DB.Result result = 1;</code>
+       */
+      boolean hasResult();
+      /**
+       * <code>.proto.DB.Result result = 1;</code>
+       */
+      proto.Db.DB.Result getResult();
+      /**
+       * <code>.proto.DB.Result result = 1;</code>
+       */
+      proto.Db.DB.ResultOrBuilder getResultOrBuilder();
+
+      /**
+       * <code>.proto.DB.UserExtendInfo userExtInfo = 2;</code>
+       */
+      boolean hasUserExtInfo();
+      /**
+       * <code>.proto.DB.UserExtendInfo userExtInfo = 2;</code>
+       */
+      proto.Db.DB.UserExtendInfo getUserExtInfo();
+      /**
+       * <code>.proto.DB.UserExtendInfo userExtInfo = 2;</code>
+       */
+      proto.Db.DB.UserExtendInfoOrBuilder getUserExtInfoOrBuilder();
+    }
+    /**
+     * <pre>
+     * user related operation result
+     * </pre>
+     *
+     * Protobuf type {@code proto.DB.UserOpResult}
+     */
+    public  static final class UserOpResult extends
+        com.google.protobuf.GeneratedMessageV3 implements
+        // @@protoc_insertion_point(message_implements:proto.DB.UserOpResult)
+        UserOpResultOrBuilder {
+      // Use UserOpResult.newBuilder() to construct.
+      private UserOpResult(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+        super(builder);
+      }
+      private UserOpResult() {
+      }
+
+      @java.lang.Override
+      public final com.google.protobuf.UnknownFieldSet
+      getUnknownFields() {
+        return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
+      }
+      private UserOpResult(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        this();
+        int mutable_bitField0_ = 0;
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              default: {
+                if (!input.skipField(tag)) {
+                  done = true;
+                }
+                break;
+              }
+              case 10: {
+                proto.Db.DB.Result.Builder subBuilder = null;
+                if (result_ != null) {
+                  subBuilder = result_.toBuilder();
+                }
+                result_ = input.readMessage(proto.Db.DB.Result.parser(), extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom(result_);
+                  result_ = subBuilder.buildPartial();
+                }
+
+                break;
+              }
+              case 18: {
+                proto.Db.DB.UserExtendInfo.Builder subBuilder = null;
+                if (userExtInfo_ != null) {
+                  subBuilder = userExtInfo_.toBuilder();
+                }
+                userExtInfo_ = input.readMessage(proto.Db.DB.UserExtendInfo.parser(), extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom(userExtInfo_);
+                  userExtInfo_ = subBuilder.buildPartial();
+                }
+
+                break;
+              }
+            }
+          }
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(this);
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(
+              e).setUnfinishedMessage(this);
+        } finally {
+          makeExtensionsImmutable();
+        }
+      }
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return proto.Db.internal_static_proto_DB_UserOpResult_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return proto.Db.internal_static_proto_DB_UserOpResult_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                proto.Db.DB.UserOpResult.class, proto.Db.DB.UserOpResult.Builder.class);
+      }
+
+      public static final int RESULT_FIELD_NUMBER = 1;
+      private proto.Db.DB.Result result_;
+      /**
+       * <code>.proto.DB.Result result = 1;</code>
+       */
+      public boolean hasResult() {
+        return result_ != null;
+      }
+      /**
+       * <code>.proto.DB.Result result = 1;</code>
+       */
+      public proto.Db.DB.Result getResult() {
+        return result_ == null ? proto.Db.DB.Result.getDefaultInstance() : result_;
+      }
+      /**
+       * <code>.proto.DB.Result result = 1;</code>
+       */
+      public proto.Db.DB.ResultOrBuilder getResultOrBuilder() {
+        return getResult();
+      }
+
+      public static final int USEREXTINFO_FIELD_NUMBER = 2;
+      private proto.Db.DB.UserExtendInfo userExtInfo_;
+      /**
+       * <code>.proto.DB.UserExtendInfo userExtInfo = 2;</code>
+       */
+      public boolean hasUserExtInfo() {
+        return userExtInfo_ != null;
+      }
+      /**
+       * <code>.proto.DB.UserExtendInfo userExtInfo = 2;</code>
+       */
+      public proto.Db.DB.UserExtendInfo getUserExtInfo() {
+        return userExtInfo_ == null ? proto.Db.DB.UserExtendInfo.getDefaultInstance() : userExtInfo_;
+      }
+      /**
+       * <code>.proto.DB.UserExtendInfo userExtInfo = 2;</code>
+       */
+      public proto.Db.DB.UserExtendInfoOrBuilder getUserExtInfoOrBuilder() {
+        return getUserExtInfo();
+      }
+
+      private byte memoizedIsInitialized = -1;
+      public final boolean isInitialized() {
+        byte isInitialized = memoizedIsInitialized;
+        if (isInitialized == 1) return true;
+        if (isInitialized == 0) return false;
+
+        memoizedIsInitialized = 1;
+        return true;
+      }
+
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (result_ != null) {
+          output.writeMessage(1, getResult());
+        }
+        if (userExtInfo_ != null) {
+          output.writeMessage(2, getUserExtInfo());
+        }
+      }
+
+      public int getSerializedSize() {
+        int size = memoizedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        if (result_ != null) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(1, getResult());
+        }
+        if (userExtInfo_ != null) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(2, getUserExtInfo());
+        }
+        memoizedSize = size;
+        return size;
+      }
+
+      private static final long serialVersionUID = 0L;
+      @java.lang.Override
+      public boolean equals(final java.lang.Object obj) {
+        if (obj == this) {
+         return true;
+        }
+        if (!(obj instanceof proto.Db.DB.UserOpResult)) {
+          return super.equals(obj);
+        }
+        proto.Db.DB.UserOpResult other = (proto.Db.DB.UserOpResult) obj;
+
+        boolean result = true;
+        result = result && (hasResult() == other.hasResult());
+        if (hasResult()) {
+          result = result && getResult()
+              .equals(other.getResult());
+        }
+        result = result && (hasUserExtInfo() == other.hasUserExtInfo());
+        if (hasUserExtInfo()) {
+          result = result && getUserExtInfo()
+              .equals(other.getUserExtInfo());
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public int hashCode() {
+        if (memoizedHashCode != 0) {
+          return memoizedHashCode;
+        }
+        int hash = 41;
+        hash = (19 * hash) + getDescriptor().hashCode();
+        if (hasResult()) {
+          hash = (37 * hash) + RESULT_FIELD_NUMBER;
+          hash = (53 * hash) + getResult().hashCode();
+        }
+        if (hasUserExtInfo()) {
+          hash = (37 * hash) + USEREXTINFO_FIELD_NUMBER;
+          hash = (53 * hash) + getUserExtInfo().hashCode();
+        }
+        hash = (29 * hash) + unknownFields.hashCode();
+        memoizedHashCode = hash;
+        return hash;
+      }
+
+      public static proto.Db.DB.UserOpResult parseFrom(
+          java.nio.ByteBuffer data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static proto.Db.DB.UserOpResult parseFrom(
+          java.nio.ByteBuffer data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static proto.Db.DB.UserOpResult parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static proto.Db.DB.UserOpResult parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static proto.Db.DB.UserOpResult parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data);
+      }
+      public static proto.Db.DB.UserOpResult parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return PARSER.parseFrom(data, extensionRegistry);
+      }
+      public static proto.Db.DB.UserOpResult parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static proto.Db.DB.UserOpResult parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static proto.Db.DB.UserOpResult parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input);
+      }
+      public static proto.Db.DB.UserOpResult parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      }
+      public static proto.Db.DB.UserOpResult parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input);
+      }
+      public static proto.Db.DB.UserOpResult parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        return com.google.protobuf.GeneratedMessageV3
+            .parseWithIOException(PARSER, input, extensionRegistry);
+      }
+
+      public Builder newBuilderForType() { return newBuilder(); }
+      public static Builder newBuilder() {
+        return DEFAULT_INSTANCE.toBuilder();
+      }
+      public static Builder newBuilder(proto.Db.DB.UserOpResult prototype) {
+        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() {
+        return this == DEFAULT_INSTANCE
+            ? new Builder() : new Builder().mergeFrom(this);
+      }
+
+      @java.lang.Override
+      protected Builder newBuilderForType(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        Builder builder = new Builder(parent);
+        return builder;
+      }
+      /**
+       * <pre>
+       * user related operation result
+       * </pre>
+       *
+       * Protobuf type {@code proto.DB.UserOpResult}
+       */
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+          // @@protoc_insertion_point(builder_implements:proto.DB.UserOpResult)
+          proto.Db.DB.UserOpResultOrBuilder {
+        public static final com.google.protobuf.Descriptors.Descriptor
+            getDescriptor() {
+          return proto.Db.internal_static_proto_DB_UserOpResult_descriptor;
+        }
+
+        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+            internalGetFieldAccessorTable() {
+          return proto.Db.internal_static_proto_DB_UserOpResult_fieldAccessorTable
+              .ensureFieldAccessorsInitialized(
+                  proto.Db.DB.UserOpResult.class, proto.Db.DB.UserOpResult.Builder.class);
+        }
+
+        // Construct using proto.Db.DB.UserOpResult.newBuilder()
+        private Builder() {
+          maybeForceBuilderInitialization();
+        }
+
+        private Builder(
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          super(parent);
+          maybeForceBuilderInitialization();
+        }
+        private void maybeForceBuilderInitialization() {
+          if (com.google.protobuf.GeneratedMessageV3
+                  .alwaysUseFieldBuilders) {
+          }
+        }
+        public Builder clear() {
+          super.clear();
+          if (resultBuilder_ == null) {
+            result_ = null;
+          } else {
+            result_ = null;
+            resultBuilder_ = null;
+          }
+          if (userExtInfoBuilder_ == null) {
+            userExtInfo_ = null;
+          } else {
+            userExtInfo_ = null;
+            userExtInfoBuilder_ = null;
+          }
+          return this;
+        }
+
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return proto.Db.internal_static_proto_DB_UserOpResult_descriptor;
+        }
+
+        public proto.Db.DB.UserOpResult getDefaultInstanceForType() {
+          return proto.Db.DB.UserOpResult.getDefaultInstance();
+        }
+
+        public proto.Db.DB.UserOpResult build() {
+          proto.Db.DB.UserOpResult result = buildPartial();
+          if (!result.isInitialized()) {
+            throw newUninitializedMessageException(result);
+          }
+          return result;
+        }
+
+        public proto.Db.DB.UserOpResult buildPartial() {
+          proto.Db.DB.UserOpResult result = new proto.Db.DB.UserOpResult(this);
+          if (resultBuilder_ == null) {
+            result.result_ = result_;
+          } else {
+            result.result_ = resultBuilder_.build();
+          }
+          if (userExtInfoBuilder_ == null) {
+            result.userExtInfo_ = userExtInfo_;
+          } else {
+            result.userExtInfo_ = userExtInfoBuilder_.build();
+          }
+          onBuilt();
+          return result;
+        }
+
+        public Builder clone() {
+          return (Builder) super.clone();
+        }
+        public Builder setField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            Object value) {
+          return (Builder) super.setField(field, value);
+        }
+        public Builder clearField(
+            com.google.protobuf.Descriptors.FieldDescriptor field) {
+          return (Builder) super.clearField(field);
+        }
+        public Builder clearOneof(
+            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+          return (Builder) super.clearOneof(oneof);
+        }
+        public Builder setRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            int index, Object value) {
+          return (Builder) super.setRepeatedField(field, index, value);
+        }
+        public Builder addRepeatedField(
+            com.google.protobuf.Descriptors.FieldDescriptor field,
+            Object value) {
+          return (Builder) super.addRepeatedField(field, value);
+        }
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof proto.Db.DB.UserOpResult) {
+            return mergeFrom((proto.Db.DB.UserOpResult)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+
+        public Builder mergeFrom(proto.Db.DB.UserOpResult other) {
+          if (other == proto.Db.DB.UserOpResult.getDefaultInstance()) return this;
+          if (other.hasResult()) {
+            mergeResult(other.getResult());
+          }
+          if (other.hasUserExtInfo()) {
+            mergeUserExtInfo(other.getUserExtInfo());
+          }
+          onChanged();
+          return this;
+        }
+
+        public final boolean isInitialized() {
+          return true;
+        }
+
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+          proto.Db.DB.UserOpResult parsedMessage = null;
+          try {
+            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+            parsedMessage = (proto.Db.DB.UserOpResult) e.getUnfinishedMessage();
+            throw e.unwrapIOException();
+          } finally {
+            if (parsedMessage != null) {
+              mergeFrom(parsedMessage);
+            }
+          }
+          return this;
+        }
+
+        private proto.Db.DB.Result result_ = null;
+        private com.google.protobuf.SingleFieldBuilderV3<
+            proto.Db.DB.Result, proto.Db.DB.Result.Builder, proto.Db.DB.ResultOrBuilder> resultBuilder_;
+        /**
+         * <code>.proto.DB.Result result = 1;</code>
+         */
+        public boolean hasResult() {
+          return resultBuilder_ != null || result_ != null;
+        }
+        /**
+         * <code>.proto.DB.Result result = 1;</code>
+         */
+        public proto.Db.DB.Result getResult() {
+          if (resultBuilder_ == null) {
+            return result_ == null ? proto.Db.DB.Result.getDefaultInstance() : result_;
+          } else {
+            return resultBuilder_.getMessage();
+          }
+        }
+        /**
+         * <code>.proto.DB.Result result = 1;</code>
+         */
+        public Builder setResult(proto.Db.DB.Result value) {
+          if (resultBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            result_ = value;
+            onChanged();
+          } else {
+            resultBuilder_.setMessage(value);
+          }
+
+          return this;
+        }
+        /**
+         * <code>.proto.DB.Result result = 1;</code>
+         */
+        public Builder setResult(
+            proto.Db.DB.Result.Builder builderForValue) {
+          if (resultBuilder_ == null) {
+            result_ = builderForValue.build();
+            onChanged();
+          } else {
+            resultBuilder_.setMessage(builderForValue.build());
+          }
+
+          return this;
+        }
+        /**
+         * <code>.proto.DB.Result result = 1;</code>
+         */
+        public Builder mergeResult(proto.Db.DB.Result value) {
+          if (resultBuilder_ == null) {
+            if (result_ != null) {
+              result_ =
+                proto.Db.DB.Result.newBuilder(result_).mergeFrom(value).buildPartial();
+            } else {
+              result_ = value;
+            }
+            onChanged();
+          } else {
+            resultBuilder_.mergeFrom(value);
+          }
+
+          return this;
+        }
+        /**
+         * <code>.proto.DB.Result result = 1;</code>
+         */
+        public Builder clearResult() {
+          if (resultBuilder_ == null) {
+            result_ = null;
+            onChanged();
+          } else {
+            result_ = null;
+            resultBuilder_ = null;
+          }
+
+          return this;
+        }
+        /**
+         * <code>.proto.DB.Result result = 1;</code>
+         */
+        public proto.Db.DB.Result.Builder getResultBuilder() {
+          
+          onChanged();
+          return getResultFieldBuilder().getBuilder();
+        }
+        /**
+         * <code>.proto.DB.Result result = 1;</code>
+         */
+        public proto.Db.DB.ResultOrBuilder getResultOrBuilder() {
+          if (resultBuilder_ != null) {
+            return resultBuilder_.getMessageOrBuilder();
+          } else {
+            return result_ == null ?
+                proto.Db.DB.Result.getDefaultInstance() : result_;
+          }
+        }
+        /**
+         * <code>.proto.DB.Result result = 1;</code>
+         */
+        private com.google.protobuf.SingleFieldBuilderV3<
+            proto.Db.DB.Result, proto.Db.DB.Result.Builder, proto.Db.DB.ResultOrBuilder> 
+            getResultFieldBuilder() {
+          if (resultBuilder_ == null) {
+            resultBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+                proto.Db.DB.Result, proto.Db.DB.Result.Builder, proto.Db.DB.ResultOrBuilder>(
+                    getResult(),
+                    getParentForChildren(),
+                    isClean());
+            result_ = null;
+          }
+          return resultBuilder_;
+        }
+
+        private proto.Db.DB.UserExtendInfo userExtInfo_ = null;
+        private com.google.protobuf.SingleFieldBuilderV3<
+            proto.Db.DB.UserExtendInfo, proto.Db.DB.UserExtendInfo.Builder, proto.Db.DB.UserExtendInfoOrBuilder> userExtInfoBuilder_;
+        /**
+         * <code>.proto.DB.UserExtendInfo userExtInfo = 2;</code>
+         */
+        public boolean hasUserExtInfo() {
+          return userExtInfoBuilder_ != null || userExtInfo_ != null;
+        }
+        /**
+         * <code>.proto.DB.UserExtendInfo userExtInfo = 2;</code>
+         */
+        public proto.Db.DB.UserExtendInfo getUserExtInfo() {
+          if (userExtInfoBuilder_ == null) {
+            return userExtInfo_ == null ? proto.Db.DB.UserExtendInfo.getDefaultInstance() : userExtInfo_;
+          } else {
+            return userExtInfoBuilder_.getMessage();
+          }
+        }
+        /**
+         * <code>.proto.DB.UserExtendInfo userExtInfo = 2;</code>
+         */
+        public Builder setUserExtInfo(proto.Db.DB.UserExtendInfo value) {
+          if (userExtInfoBuilder_ == null) {
+            if (value == null) {
+              throw new NullPointerException();
+            }
+            userExtInfo_ = value;
+            onChanged();
+          } else {
+            userExtInfoBuilder_.setMessage(value);
+          }
+
+          return this;
+        }
+        /**
+         * <code>.proto.DB.UserExtendInfo userExtInfo = 2;</code>
+         */
+        public Builder setUserExtInfo(
+            proto.Db.DB.UserExtendInfo.Builder builderForValue) {
+          if (userExtInfoBuilder_ == null) {
+            userExtInfo_ = builderForValue.build();
+            onChanged();
+          } else {
+            userExtInfoBuilder_.setMessage(builderForValue.build());
+          }
+
+          return this;
+        }
+        /**
+         * <code>.proto.DB.UserExtendInfo userExtInfo = 2;</code>
+         */
+        public Builder mergeUserExtInfo(proto.Db.DB.UserExtendInfo value) {
+          if (userExtInfoBuilder_ == null) {
+            if (userExtInfo_ != null) {
+              userExtInfo_ =
+                proto.Db.DB.UserExtendInfo.newBuilder(userExtInfo_).mergeFrom(value).buildPartial();
+            } else {
+              userExtInfo_ = value;
+            }
+            onChanged();
+          } else {
+            userExtInfoBuilder_.mergeFrom(value);
+          }
+
+          return this;
+        }
+        /**
+         * <code>.proto.DB.UserExtendInfo userExtInfo = 2;</code>
+         */
+        public Builder clearUserExtInfo() {
+          if (userExtInfoBuilder_ == null) {
+            userExtInfo_ = null;
+            onChanged();
+          } else {
+            userExtInfo_ = null;
+            userExtInfoBuilder_ = null;
+          }
+
+          return this;
+        }
+        /**
+         * <code>.proto.DB.UserExtendInfo userExtInfo = 2;</code>
+         */
+        public proto.Db.DB.UserExtendInfo.Builder getUserExtInfoBuilder() {
+          
+          onChanged();
+          return getUserExtInfoFieldBuilder().getBuilder();
+        }
+        /**
+         * <code>.proto.DB.UserExtendInfo userExtInfo = 2;</code>
+         */
+        public proto.Db.DB.UserExtendInfoOrBuilder getUserExtInfoOrBuilder() {
+          if (userExtInfoBuilder_ != null) {
+            return userExtInfoBuilder_.getMessageOrBuilder();
+          } else {
+            return userExtInfo_ == null ?
+                proto.Db.DB.UserExtendInfo.getDefaultInstance() : userExtInfo_;
+          }
+        }
+        /**
+         * <code>.proto.DB.UserExtendInfo userExtInfo = 2;</code>
+         */
+        private com.google.protobuf.SingleFieldBuilderV3<
+            proto.Db.DB.UserExtendInfo, proto.Db.DB.UserExtendInfo.Builder, proto.Db.DB.UserExtendInfoOrBuilder> 
+            getUserExtInfoFieldBuilder() {
+          if (userExtInfoBuilder_ == null) {
+            userExtInfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+                proto.Db.DB.UserExtendInfo, proto.Db.DB.UserExtendInfo.Builder, proto.Db.DB.UserExtendInfoOrBuilder>(
+                    getUserExtInfo(),
+                    getParentForChildren(),
+                    isClean());
+            userExtInfo_ = null;
+          }
+          return userExtInfoBuilder_;
+        }
+        public final Builder setUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return this;
+        }
+
+        public final Builder mergeUnknownFields(
+            final com.google.protobuf.UnknownFieldSet unknownFields) {
+          return this;
+        }
+
+
+        // @@protoc_insertion_point(builder_scope:proto.DB.UserOpResult)
+      }
+
+      // @@protoc_insertion_point(class_scope:proto.DB.UserOpResult)
+      private static final proto.Db.DB.UserOpResult DEFAULT_INSTANCE;
+      static {
+        DEFAULT_INSTANCE = new proto.Db.DB.UserOpResult();
+      }
+
+      public static proto.Db.DB.UserOpResult getDefaultInstance() {
+        return DEFAULT_INSTANCE;
+      }
+
+      private static final com.google.protobuf.Parser<UserOpResult>
+          PARSER = new com.google.protobuf.AbstractParser<UserOpResult>() {
+        public UserOpResult parsePartialFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
+            return new UserOpResult(input, extensionRegistry);
+        }
+      };
+
+      public static com.google.protobuf.Parser<UserOpResult> parser() {
+        return PARSER;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Parser<UserOpResult> getParserForType() {
+        return PARSER;
+      }
+
+      public proto.Db.DB.UserOpResult getDefaultInstanceForType() {
+        return DEFAULT_INSTANCE;
+      }
+
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -2881,10 +4062,10 @@ public final class Db {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_proto_DB_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_proto_DB_NullValue_descriptor;
+    internal_static_proto_DB_Result_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_proto_DB_NullValue_fieldAccessorTable;
+      internal_static_proto_DB_Result_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_proto_DB_UserKey_descriptor;
   private static final 
@@ -2900,6 +4081,11 @@ public final class Db {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_proto_DB_UserLogoutRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_proto_DB_UserOpResult_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_proto_DB_UserOpResult_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -2909,23 +4095,33 @@ public final class Db {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\010db.proto\022\005proto\032\014common.proto\"\315\001\n\002DB\032\013" +
-      "\n\tNullValue\0322\n\007UserKey\022\013\n\003usn\030\001 \001(\006\022\013\n\003u" +
-      "id\030\002 \001(\004\022\r\n\005email\030\003 \001(\t\032U\n\016UserExtendInf" +
-      "o\022$\n\004info\030\001 \001(\0132\026.proto.common.UserInfo\022" +
-      "\016\n\006secret\030\002 \001(\t\022\r\n\005token\030\003 \001(\t\032/\n\021UserLo" +
-      "goutRequest\022\013\n\003usn\030\001 \001(\004\022\r\n\005token\030\002 \001(\t2" +
-      "\212\003\n\tDBService\0226\n\tUserQuery\022\021.proto.DB.Us" +
-      "erKey\032\026.proto.common.UserInfo\022=\n\016UserUpd" +
-      "ateInfo\022\026.proto.common.UserInfo\032\023.proto." +
-      "DB.NullValue\022B\n\014UserRegister\022\030.proto.DB.",
-      "UserExtendInfo\032\030.proto.DB.UserExtendInfo" +
-      "\022?\n\tUserLogin\022\030.proto.DB.UserExtendInfo\032" +
-      "\030.proto.DB.UserExtendInfo\022>\n\nUserLogout\022" +
-      "\033.proto.DB.UserLogoutRequest\032\023.proto.DB." +
-      "NullValue\022A\n\022UserExtraInfoQuery\022\021.proto." +
-      "DB.UserKey\032\030.proto.DB.UserExtendInfob\006pr" +
-      "oto3"
+      "\n\010db.proto\022\005proto\032\014common.proto\"\354\004\n\002DB\032;" +
+      "\n\006Result\022$\n\006status\030\001 \001(\0162\024.proto.DB.Stat" +
+      "usCode\022\013\n\003msg\030\002 \001(\t\0322\n\007UserKey\022\013\n\003usn\030\001 " +
+      "\001(\006\022\013\n\003uid\030\002 \001(\004\022\r\n\005email\030\003 \001(\t\032U\n\016UserE" +
+      "xtendInfo\022$\n\004info\030\001 \001(\0132\026.proto.common.U" +
+      "serInfo\022\016\n\006secret\030\002 \001(\t\022\r\n\005token\030\003 \001(\t\032/" +
+      "\n\021UserLogoutRequest\022\013\n\003usn\030\001 \001(\004\022\r\n\005toke" +
+      "n\030\002 \001(\t\032_\n\014UserOpResult\022 \n\006result\030\001 \001(\0132" +
+      "\020.proto.DB.Result\022-\n\013userExtInfo\030\002 \001(\0132\030" +
+      ".proto.DB.UserExtendInfo\"\213\002\n\nStatusCode\022",
+      "\r\n\tSTATUS_OK\020\000\022\026\n\022STATUS_INVALID_USN\020e\022\026" +
+      "\n\022STATUS_INVALID_UID\020f\022\030\n\024STATUS_INVALID" +
+      "_EMAIL\020g\022\031\n\025STATUS_INVALID_SECRET\020h\022\030\n\024S" +
+      "TATUS_INVALID_TOKEN\020i\022\036\n\031STATUS_USER_ALR" +
+      "EADY_EXIST\020\311\001\022\032\n\025STATUS_USER_NOT_FOUND\020\312" +
+      "\001\022\032\n\025STATUS_INTERNAL_ERROR\020\364\003\022\027\n\022STATUS_" +
+      "UNAVAILABLE\020\367\0032\376\002\n\tDBService\0226\n\tUserQuer" +
+      "y\022\021.proto.DB.UserKey\032\026.proto.DB.UserOpRe" +
+      "sult\022:\n\016UserUpdateInfo\022\026.proto.common.Us" +
+      "erInfo\032\020.proto.DB.Result\022@\n\014UserRegister",
+      "\022\030.proto.DB.UserExtendInfo\032\026.proto.DB.Us" +
+      "erOpResult\022=\n\tUserLogin\022\030.proto.DB.UserE" +
+      "xtendInfo\032\026.proto.DB.UserOpResult\022;\n\nUse" +
+      "rLogout\022\033.proto.DB.UserLogoutRequest\032\020.p" +
+      "roto.DB.Result\022?\n\022UserExtraInfoQuery\022\021.p" +
+      "roto.DB.UserKey\032\026.proto.DB.UserOpResultb" +
+      "\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2946,12 +4142,12 @@ public final class Db {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_proto_DB_descriptor,
         new java.lang.String[] { });
-    internal_static_proto_DB_NullValue_descriptor =
+    internal_static_proto_DB_Result_descriptor =
       internal_static_proto_DB_descriptor.getNestedTypes().get(0);
-    internal_static_proto_DB_NullValue_fieldAccessorTable = new
+    internal_static_proto_DB_Result_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_proto_DB_NullValue_descriptor,
-        new java.lang.String[] { });
+        internal_static_proto_DB_Result_descriptor,
+        new java.lang.String[] { "Status", "Msg", });
     internal_static_proto_DB_UserKey_descriptor =
       internal_static_proto_DB_descriptor.getNestedTypes().get(1);
     internal_static_proto_DB_UserKey_fieldAccessorTable = new
@@ -2970,6 +4166,12 @@ public final class Db {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_proto_DB_UserLogoutRequest_descriptor,
         new java.lang.String[] { "Usn", "Token", });
+    internal_static_proto_DB_UserOpResult_descriptor =
+      internal_static_proto_DB_descriptor.getNestedTypes().get(4);
+    internal_static_proto_DB_UserOpResult_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_proto_DB_UserOpResult_descriptor,
+        new java.lang.String[] { "Result", "UserExtInfo", });
     proto.common.Common.getDescriptor();
   }
 

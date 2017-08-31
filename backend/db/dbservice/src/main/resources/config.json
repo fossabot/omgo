@@ -1,12 +1,10 @@
 {
     "info.version": "v0.0.1",
 
-    "rpc.host": "localhost",
-    "rpc.port": 60001,
-
     "service.root": "backends",
     "service.kind": "dbservice",
     "service.self": "dbs-0",
+    "service.host": "localhost",
     "service.port": 60001,
     "service.names": ["snowflake"],
 

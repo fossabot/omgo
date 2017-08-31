@@ -44,6 +44,6 @@ docker run --rm -d ${NETHOST} -p ${SERVICE_PORT}:${SERVICE_PORT} \
     --entrypoint /go/bin/${SERVICE_NAME} \
     ${SERVICE_NAME} \
     --service-key backends/${SERVICE_NAME}/${SNOWFLAKE_SID} \
-    --service-host ${IPADDR}:${SERVICE_PORT} \
+    --service-host ${IPADDR} \
     -p ${SERVICE_PORT} \
     -e http://${IPADDR}:2379

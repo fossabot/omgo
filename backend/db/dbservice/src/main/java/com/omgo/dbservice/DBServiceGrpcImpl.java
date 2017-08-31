@@ -14,7 +14,7 @@ import io.vertx.ext.sql.SQLClient;
 import io.vertx.ext.sql.SQLConnection;
 import io.vertx.redis.RedisClient;
 import proto.DBServiceGrpc;
-import proto.Db;
+import proto.Db.DB;
 import proto.SnowflakeOuterClass;
 import proto.SnowflakeServiceGrpc;
 import proto.common.Common;
@@ -30,33 +30,41 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
 
+    // SQL query constants
     private static final String QUERY_USERINFO_USN = "SELECT * FROM user WHERE usn=?";
     private static final String QUERY_USERINFO_UID = "SELECT * FROM user WHERE uid=?";
     private static final String QUERY_USERINFO_EMAIL = "SELECT * FROM user WHERE email=?";
 
+    // gRPC responses
+    private static final DB.Result dbOkResult = DbProtoUtils.makeOkResult();
+    private static final DB.Result userNotFoundResult = DbProtoUtils.makeResult(DB.StatusCode.STATUS_USER_NOT_FOUND);
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DBServiceGrpcImpl.class);
 
+    // clients
     private SQLClient sqlClient;
     private RedisClient redisClient;
 
+    //
     public DBServiceGrpcImpl(SQLClient sqlClient, RedisClient redisClient) {
         this.sqlClient = sqlClient;
         this.redisClient = redisClient;
     }
 
     @Override
-    public void userQuery(Db.DB.UserKey request, Future<Common.UserInfo> response) {
+    public void userQuery(DB.UserKey request, Future<DB.UserOpResult> response) {
         LOGGER.info("userQuery:" + request);
 
         // query success handler
-        Handler<Common.UserInfo> successHandler = response::complete;
+        Handler<DB.UserOpResult> successHandler = response::complete;
 
         // query in redis then in mysql
-        Future<Common.UserInfo> redisFuture = queryUserInfoRedis(request.getUsn());
+        Future<DB.UserExtendInfo> redisFuture = queryUserInfoRedis(request.getUsn());
         redisFuture.setHandler(res -> {
             if (res.succeeded()) {
-                LOGGER.info(String.format("redis hit for user:%d", res.result().getUsn()));
-                successHandler.handle(res.result());
+                DB.UserExtendInfo extendInfo = res.result();
+                LOGGER.info(String.format("redis hit for user:%d", extendInfo.getInfo().getUsn()));
+                successHandler.handle(DbProtoUtils.makeUserOpOkResult(extendInfo));
             } else {
                 Future<Common.UserInfo> mysqlFuture = queryUserInfoSQL(request);
                 mysqlFuture.setHandler(sqlRes -> {
@@ -69,10 +77,13 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                                 LOGGER.info(updateRedisRes.cause());
                             }
                             // response
-                            successHandler.handle(sqlRes.result());
+                            DB.UserOpResult result = DbProtoUtils.makeUserOpOkResult(userInfo);
+                            successHandler.handle(result);
                         });
                     } else {
-                        response.fail("user query failed in both redis and mysql");
+                        // query failed
+                        LOGGER.warn("user query failed in both redis and mysql");
+                        response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_USER_NOT_FOUND, ""));
                     }
                 });
             }
@@ -80,7 +91,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
     }
 
     @Override
-    public void userUpdateInfo(Common.UserInfo request, Future<Db.DB.NullValue> response) {
+    public void userUpdateInfo(Common.UserInfo request, Future<DB.Result> response) {
         LOGGER.info("userUpdate:" + request);
 
         Future<Common.UserInfo> updateSQLFuture = updateUserInfoSQL(request);
@@ -90,24 +101,21 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                 Future<JsonObject> redisFuture = updateUserInfoRedis(ModelConverter.userInfo2Json(userInfo));
                 redisFuture.setHandler(redisRes -> {
                     if (redisRes.succeeded()) {
-                        Common.RspHeader header = Common.RspHeader.newBuilder()
-                            .setStatus(Common.ResultCode.RESULT_OK_VALUE)
-                            .build();
-                        response.complete(Db.DB.NullValue.newBuilder().build());
+                        response.complete(dbOkResult);
                     } else {
                         LOGGER.error("update user info redis failed:" + redisRes.cause());
-                        response.fail("user update redis failed");
+                        response.complete(DbProtoUtils.makeResult(DB.StatusCode.STATUS_INTERNAL_ERROR, redisRes.cause().toString()));
                     }
                 });
             } else {
                 LOGGER.error("update user info failed:" + res.cause());
-                response.fail("user update failed");
+                response.complete(DbProtoUtils.makeResult(DB.StatusCode.STATUS_INTERNAL_ERROR, res.cause().toString()));
             }
         });
     }
 
     @Override
-    public void userRegister(Db.DB.UserExtendInfo request, Future<Db.DB.UserExtendInfo> response) {
+    public void userRegister(DB.UserExtendInfo request, Future<DB.UserOpResult> response) {
         LOGGER.info("userRegister", request);
 
         Common.UserInfo userInfo = request.getInfo();
@@ -138,11 +146,11 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
             return;
         }
 
-        Db.DB.UserExtendInfo.Builder extendInfoBuilder = Db.DB.UserExtendInfo.newBuilder();
+        DB.UserExtendInfo.Builder extendInfoBuilder = DB.UserExtendInfo.newBuilder();
         Common.UserInfo.Builder userInfoBuilder = Common.UserInfo.newBuilder();
 
         // check if user with email already exist
-        Db.DB.UserKey userKey = Db.DB.UserKey.newBuilder()
+        DB.UserKey userKey = DB.UserKey.newBuilder()
             .setEmail(email)
             .build();
 
@@ -174,8 +182,6 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                         jsonObject.put(ModelConverter.KEY_SALT, salt);
                         jsonObject.put(ModelConverter.KEY_SECRET, saltedSecret);
 
-                        // TODO: 29/08/2017 secret add salt
-
                         Future<JsonObject> insertFuture = insertUserInfoSQL(jsonObject);
                         // actual insert
                         insertFuture.setHandler(insertRes -> {
@@ -190,10 +196,10 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                                         extendInfoBuilder.setInfo(finalUserInfo)
                                             .setToken(token)
                                             .setSecret(secret);
-                                        response.complete(extendInfoBuilder.build());
+                                        response.complete(DbProtoUtils.makeUserOpOkResult(extendInfoBuilder.build()));
                                     } else {
                                         LOGGER.error("update userInfo redis failed:" + redisRes.cause());
-                                        response.fail(redisRes.cause());
+                                        response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_INTERNAL_ERROR, redisRes.cause().toString()));
                                     }
                                 });
                             } else {
@@ -211,17 +217,17 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
     }
 
     @Override
-    public void userLogin(Db.DB.UserExtendInfo request, Future<Db.DB.UserExtendInfo> response) {
+    public void userLogin(DB.UserExtendInfo request, Future<DB.UserOpResult> response) {
         super.userLogin(request, response);
     }
 
     @Override
-    public void userLogout(Db.DB.UserLogoutRequest request, Future<Db.DB.NullValue> response) {
+    public void userLogout(DB.UserLogoutRequest request, Future<DB.Result> response) {
         super.userLogout(request, response);
     }
 
     @Override
-    public void userExtraInfoQuery(Db.DB.UserKey request, Future<Db.DB.UserExtendInfo> response) {
+    public void userExtraInfoQuery(DB.UserKey request, Future<DB.UserOpResult> response) {
         super.userExtraInfoQuery(request, response);
     }
 
@@ -279,15 +285,19 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
      * @param usn user serial number
      * @return Future
      */
-    private Future<Common.UserInfo> queryUserInfoRedis(long usn) {
-        Future<Common.UserInfo> future = Future.future();
+    private Future<DB.UserExtendInfo> queryUserInfoRedis(long usn) {
+        Future<DB.UserExtendInfo> future = Future.future();
 
         if (usn == 0L) {
             future.fail("invalid usn");
         } else {
             redisClient.hgetall(Utils.getRedisKey(usn), res -> {
                 if (res.succeeded()) {
-                    future.complete(ModelConverter.json2UserInfo(res.result()));
+                    JsonObject jsonObject = res.result();
+                    String secret = jsonObject.getString(ModelConverter.KEY_SECRET);
+                    String token = jsonObject.getString(ModelConverter.KEY_TOKEN);
+                    DbProtoUtils.makeUserExtendInfo(ModelConverter.json2UserInfo(jsonObject), secret, token);
+                    future.complete();
                 } else {
                     future.fail(res.cause());
                 }
@@ -303,7 +313,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
      * @param userKey User key with usn/uid/email
      * @return Future
      */
-    private Future<Common.UserInfo> queryUserInfoSQL(Db.DB.UserKey userKey) {
+    private Future<Common.UserInfo> queryUserInfoSQL(DB.UserKey userKey) {
         Future<Common.UserInfo> future = Future.future();
 
         long usn = userKey.getUsn();
