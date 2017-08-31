@@ -93,6 +93,10 @@ public final class Db {
        */
       STATUS_OK(0),
       /**
+       * <code>STATUS_INVALID_PARAM = 100;</code>
+       */
+      STATUS_INVALID_PARAM(100),
+      /**
        * <code>STATUS_INVALID_USN = 101;</code>
        */
       STATUS_INVALID_USN(101),
@@ -139,6 +143,10 @@ public final class Db {
        * <code>STATUS_OK = 0;</code>
        */
       public static final int STATUS_OK_VALUE = 0;
+      /**
+       * <code>STATUS_INVALID_PARAM = 100;</code>
+       */
+      public static final int STATUS_INVALID_PARAM_VALUE = 100;
       /**
        * <code>STATUS_INVALID_USN = 101;</code>
        */
@@ -196,6 +204,7 @@ public final class Db {
       public static StatusCode forNumber(int value) {
         switch (value) {
           case 0: return STATUS_OK;
+          case 100: return STATUS_INVALID_PARAM;
           case 101: return STATUS_INVALID_USN;
           case 102: return STATUS_INVALID_UID;
           case 103: return STATUS_INVALID_EMAIL;
@@ -4095,7 +4104,7 @@ public final class Db {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\010db.proto\022\005proto\032\014common.proto\"\354\004\n\002DB\032;" +
+      "\n\010db.proto\022\005proto\032\014common.proto\"\206\005\n\002DB\032;" +
       "\n\006Result\022$\n\006status\030\001 \001(\0162\024.proto.DB.Stat" +
       "usCode\022\013\n\003msg\030\002 \001(\t\0322\n\007UserKey\022\013\n\003usn\030\001 " +
       "\001(\006\022\013\n\003uid\030\002 \001(\004\022\r\n\005email\030\003 \001(\t\032U\n\016UserE" +
@@ -4104,24 +4113,24 @@ public final class Db {
       "\n\021UserLogoutRequest\022\013\n\003usn\030\001 \001(\004\022\r\n\005toke" +
       "n\030\002 \001(\t\032_\n\014UserOpResult\022 \n\006result\030\001 \001(\0132" +
       "\020.proto.DB.Result\022-\n\013userExtInfo\030\002 \001(\0132\030" +
-      ".proto.DB.UserExtendInfo\"\213\002\n\nStatusCode\022",
-      "\r\n\tSTATUS_OK\020\000\022\026\n\022STATUS_INVALID_USN\020e\022\026" +
-      "\n\022STATUS_INVALID_UID\020f\022\030\n\024STATUS_INVALID" +
-      "_EMAIL\020g\022\031\n\025STATUS_INVALID_SECRET\020h\022\030\n\024S" +
-      "TATUS_INVALID_TOKEN\020i\022\036\n\031STATUS_USER_ALR" +
-      "EADY_EXIST\020\311\001\022\032\n\025STATUS_USER_NOT_FOUND\020\312" +
-      "\001\022\032\n\025STATUS_INTERNAL_ERROR\020\364\003\022\027\n\022STATUS_" +
-      "UNAVAILABLE\020\367\0032\376\002\n\tDBService\0226\n\tUserQuer" +
-      "y\022\021.proto.DB.UserKey\032\026.proto.DB.UserOpRe" +
-      "sult\022:\n\016UserUpdateInfo\022\026.proto.common.Us" +
-      "erInfo\032\020.proto.DB.Result\022@\n\014UserRegister",
-      "\022\030.proto.DB.UserExtendInfo\032\026.proto.DB.Us" +
-      "erOpResult\022=\n\tUserLogin\022\030.proto.DB.UserE" +
-      "xtendInfo\032\026.proto.DB.UserOpResult\022;\n\nUse" +
-      "rLogout\022\033.proto.DB.UserLogoutRequest\032\020.p" +
-      "roto.DB.Result\022?\n\022UserExtraInfoQuery\022\021.p" +
-      "roto.DB.UserKey\032\026.proto.DB.UserOpResultb" +
-      "\006proto3"
+      ".proto.DB.UserExtendInfo\"\245\002\n\nStatusCode\022",
+      "\r\n\tSTATUS_OK\020\000\022\030\n\024STATUS_INVALID_PARAM\020d" +
+      "\022\026\n\022STATUS_INVALID_USN\020e\022\026\n\022STATUS_INVAL" +
+      "ID_UID\020f\022\030\n\024STATUS_INVALID_EMAIL\020g\022\031\n\025ST" +
+      "ATUS_INVALID_SECRET\020h\022\030\n\024STATUS_INVALID_" +
+      "TOKEN\020i\022\036\n\031STATUS_USER_ALREADY_EXIST\020\311\001\022" +
+      "\032\n\025STATUS_USER_NOT_FOUND\020\312\001\022\032\n\025STATUS_IN" +
+      "TERNAL_ERROR\020\364\003\022\027\n\022STATUS_UNAVAILABLE\020\367\003" +
+      "2\376\002\n\tDBService\0226\n\tUserQuery\022\021.proto.DB.U" +
+      "serKey\032\026.proto.DB.UserOpResult\022:\n\016UserUp" +
+      "dateInfo\022\026.proto.common.UserInfo\032\020.proto",
+      ".DB.Result\022@\n\014UserRegister\022\030.proto.DB.Us" +
+      "erExtendInfo\032\026.proto.DB.UserOpResult\022=\n\t" +
+      "UserLogin\022\030.proto.DB.UserExtendInfo\032\026.pr" +
+      "oto.DB.UserOpResult\022;\n\nUserLogout\022\033.prot" +
+      "o.DB.UserLogoutRequest\032\020.proto.DB.Result" +
+      "\022?\n\022UserExtraInfoQuery\022\021.proto.DB.UserKe" +
+      "y\032\026.proto.DB.UserOpResultb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

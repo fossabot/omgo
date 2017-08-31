@@ -120,28 +120,28 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
 
         Common.UserInfo userInfo = request.getInfo();
         if (userInfo == null) {
-            response.fail("invalid user info(null)");
+            response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_INVALID_PARAM));
             LOGGER.error("invalid user info(null)");
             return;
         }
 
         String email = userInfo.getEmail();
         if (!Utils.isValidEmailAddress(email)) {
-            response.fail("invalid email address");
+            response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_INVALID_EMAIL));
             LOGGER.error("invalid email address");
             return;
         }
 
         String nickname = userInfo.getNickname();
         if (Utils.isEmptyString(nickname)) {
-            response.fail("invalid nickname");
+            response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_INVALID_PARAM));
             LOGGER.error("invalid nickname");
             return;
         }
 
         String secret = request.getSecret();
         if (Utils.isEmptyString(secret) || secret.length() < AccountUtils.PASSWORD_MIN_LEN) {
-            response.fail("invalid password");
+            response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_INVALID_SECRET));
             LOGGER.error("invalid password");
             return;
         }
@@ -163,8 +163,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
             // email already exist
             if (sqlRes.succeeded()) {
                 LOGGER.error("register failed, user with email:" + email + " already existed");
-                response.fail("email has already been registered");
-                return;
+                response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_USER_ALREADY_EXIST));
             } else {
                 // generate user id
                 snowflakeFuture.setHandler(res -> {
@@ -199,17 +198,17 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                                         response.complete(DbProtoUtils.makeUserOpOkResult(extendInfoBuilder.build()));
                                     } else {
                                         LOGGER.error("update userInfo redis failed:" + redisRes.cause());
-                                        response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_INTERNAL_ERROR, redisRes.cause().toString()));
+                                        response.complete(DbProtoUtils.makeUserOpInternalFailedResult(redisRes.cause().toString()));
                                     }
                                 });
                             } else {
                                 LOGGER.error(insertRes.cause());
-                                response.fail(insertRes.cause());
+                                response.complete(DbProtoUtils.makeUserOpInternalFailedResult(insertRes.cause().toString()));
                             }
                         });
 
                     } else {
-                        response.fail(res.cause());
+                        response.complete(DbProtoUtils.makeUserOpInternalFailedResult(res.cause().toString()));
                     }
                 });
             }

@@ -48,8 +48,16 @@ public class DbProtoUtils {
         return makeUserOpResult(makeOkResult(), makeUserExtendInfo(userInfo, "", ""));
     }
 
+    public static DB.UserOpResult makeUserOpResult(DB.StatusCode code) {
+        return makeUserOpResult(makeResult(code), null);
+    }
+
     public static DB.UserOpResult makeUserOpResult(DB.StatusCode code, String msg) {
         return makeUserOpResult(makeResult(code, msg), null);
+    }
+
+    public static DB.UserOpResult makeUserOpInternalFailedResult(String msg) {
+        return makeUserOpResult(makeResult(DB.StatusCode.STATUS_INTERNAL_ERROR, msg), null);
     }
 
     public static DB.UserOpResult makeUserOpResult(DB.Result result, DB.UserExtendInfo extendInfo) {

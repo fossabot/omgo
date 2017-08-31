@@ -28,6 +28,7 @@ service DBService {
 message DB {
     enum StatusCode {
         STATUS_OK                 = 0; // no error
+        STATUS_INVALID_PARAM      = 100;
         STATUS_INVALID_USN        = 101;
         STATUS_INVALID_UID        = 102;
         STATUS_INVALID_EMAIL      = 103;
