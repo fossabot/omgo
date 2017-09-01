@@ -2,6 +2,7 @@ package com.omgo.dbservice.model;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import proto.Db;
 import proto.common.Common;
 
 import java.util.ArrayList;
@@ -68,6 +69,15 @@ public class ModelConverter {
             .put(KEY_USN, userInfo.getUsn());
     }
 
+    public static Db.DB.UserExtendInfo json2UserExtendInfo(JsonObject jsonObject) {
+        Db.DB.UserExtendInfo.Builder builder = Db.DB.UserExtendInfo.newBuilder();
+        Common.UserInfo userInfo = json2UserInfo(jsonObject);
+        builder.setInfo(userInfo)
+            .setSecret(jsonObject.getString(KEY_SECRET))
+            .setToken(jsonObject.getString(KEY_TOKEN));
+        return builder.build();
+    }
+
     public static String SQLQueryQueryUid(long uid) {
         return "SELECT * FROM user WHERE uid=" + uid;
     }
@@ -92,7 +102,6 @@ public class ModelConverter {
 
         SQL_INSERT += String.join(",", VALUE_KEYS) + ") VALUES (";
 
-        final long uid = jsonObject.getLong(ModelConverter.KEY_UID);
         SQL_INSERT += jsonObject.getLong(ModelConverter.KEY_UID) + ",";
         SQL_INSERT += COMMA + jsonObject.getString(ModelConverter.KEY_AVATAR) + COMMA + ",";
         SQL_INSERT += jsonObject.getLong(ModelConverter.KEY_BIRTHDAY) + ",";

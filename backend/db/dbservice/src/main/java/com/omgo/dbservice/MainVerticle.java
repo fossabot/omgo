@@ -2,6 +2,8 @@ package com.omgo.dbservice;
 
 import com.omgo.dbservice.etcd.Services;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
+import io.vertx.core.file.FileSystem;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -12,6 +14,8 @@ import io.vertx.grpc.VertxServer;
 import io.vertx.grpc.VertxServerBuilder;
 import io.vertx.redis.RedisClient;
 import io.vertx.redis.RedisOptions;
+import io.vertx.redis.RedisTransaction;
+import proto.Db;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,6 +48,8 @@ public class MainVerticle extends AbstractVerticle {
         }
 
         setupServices();
+
+        testRedis();
     }
 
     /**
@@ -115,7 +121,8 @@ public class MainVerticle extends AbstractVerticle {
 
         LOGGER.info(redisConfig);
 
-        return RedisClient.create(vertx, redisConfig);
+        redisClient = RedisClient.create(vertx, redisConfig);
+        return redisClient;
     }
 
     /**
@@ -153,5 +160,86 @@ public class MainVerticle extends AbstractVerticle {
         // register self to etcd as service
         servicePool.registerService(Services.generatePath(root, selfKind, selfName), String.format("%s:%d", serviceHost, servicePort));
         LOGGER.info("service registered");
+    }
+
+    private static String TAG = "--------->  ";
+    private RedisClient redisClient;
+
+    private void testRedis() {
+        RedisTransaction transaction = redisClient.transaction();
+        transaction.multi(event -> {
+            transaction.hgetall("user:100000", getAllEvent -> {
+                if (getAllEvent.succeeded() && "QUEUED".equals(getAllEvent.result())) {
+                    transaction.expire("user:100000", 10, expireEvent -> {
+                        if (expireEvent.succeeded() && "QUEUED".equals(expireEvent.result())) {
+                            transaction.exec(execEvent -> System.out.println(execEvent.result()));
+                        } else {
+                            transaction.discard(de -> {
+
+                            });
+                        }
+                    });
+                } else {
+                    transaction.discard(discardEvent -> {
+                    });
+                }
+            });
+        });
+    }
+
+    private void testComposition() {
+        Future<String> lastFuture = Future.future();
+        lastFuture.setHandler(res -> {
+           if (res.succeeded()) {
+               LOGGER.info(TAG + "complete! " + res.result());
+           } else {
+               LOGGER.info(TAG + "complete! " + res.cause());
+           }
+        });
+
+        Future<String> sqlFuture = getFailFuture("shit");
+        sqlFuture.setHandler(res -> {
+            if (res.succeeded()) {
+
+            } else {
+                Db.DB.StatusCode code = Db.DB.StatusCode.valueOf(res.cause().getMessage());
+                LOGGER.info("wow " + code.toString());
+            }
+        });
+    }
+
+    private Future<String> getOkFuture(String msg) {
+        Future<String> future = Future.future();
+
+        JsonObject dataJson = new JsonObject();
+        dataJson.put("hello", "world");
+        redisClient.hmset("testkey:1", dataJson, res -> {
+            if (res.succeeded()) {
+                future.complete(msg);
+            } else {
+                future.fail(res.cause());
+            }
+        });
+
+        return future;
+    }
+
+    private Future<String> getFailFuture(String msg) {
+        Future<String> future = Future.future();
+
+        redisClient.hgetall("testkey:2", res -> {
+            if (res.succeeded()) {
+                JsonObject jsonObject = res.result();
+                if (jsonObject.isEmpty()) {
+                    future.fail(Db.DB.StatusCode.STATUS_INVALID_PARAM.toString());
+                } else {
+                    future.complete(msg);
+                }
+            } else {
+                future.fail(Db.DB.StatusCode.STATUS_INVALID_PARAM.toString());
+            }
+        });
+
+        return future;
     }
 }
