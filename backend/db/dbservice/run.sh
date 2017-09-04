@@ -26,6 +26,3 @@ docker build --no-cache --rm=true -t ${SERVICE_NAME} .
 docker run --rm -d ${NETHOST} -p ${PORT}:${PORT} \
     --name ${SID} \
     ${SERVICE_NAME} \
-
-# register service
-# curl -q -L -X PUT http://${LOCALHOST}:2379/v2/keys/backends/${SERVICE_NAME}/${SID} -d value=${IPADDR}:${PORT}
