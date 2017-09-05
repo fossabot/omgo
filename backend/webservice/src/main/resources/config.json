@@ -1,0 +1,8 @@
+{
+    "info.version": "v0.0.1",
+
+    "service.root": "backends",
+    "service.names": ["dbservice"],
+
+    "etcd.host": ["http://localhost:2379"]
+}
