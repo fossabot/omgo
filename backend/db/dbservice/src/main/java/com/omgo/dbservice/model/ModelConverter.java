@@ -1,12 +1,10 @@
 package com.omgo.dbservice.model;
 
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import proto.Db;
 import proto.common.Common;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ModelConverter {
     public static final String KEY_AVATAR = "avatar";
@@ -83,38 +81,46 @@ public class ModelConverter {
     }
 
     public static String SQLQueryInsert(JsonObject jsonObject) {
-        String SQL_INSERT = "INSERT INTO user (";
-        String SQL_VALUES = "";
+        String SQL_INSERT = "INSERT INTO user ";
 
-        List<String> VALUE_KEYS = new ArrayList<>();
-        VALUE_KEYS.add(ModelConverter.KEY_UID);
-        VALUE_KEYS.add(ModelConverter.KEY_AVATAR);
-        VALUE_KEYS.add(ModelConverter.KEY_BIRTHDAY);
-        VALUE_KEYS.add(ModelConverter.KEY_COUNTRY);
-        VALUE_KEYS.add(ModelConverter.KEY_EMAIL);
-        VALUE_KEYS.add(ModelConverter.KEY_GENDER);
-        VALUE_KEYS.add(ModelConverter.KEY_LAST_LOGIN);
-        VALUE_KEYS.add(ModelConverter.KEY_LOGIN_COUNT);
-        VALUE_KEYS.add(ModelConverter.KEY_NICKNAME);
-        VALUE_KEYS.add(ModelConverter.KEY_SALT);
-        VALUE_KEYS.add(ModelConverter.KEY_SECRET);
-        VALUE_KEYS.add(ModelConverter.KEY_SINCE);
+        Set<String> keySet = new HashSet<>();
+        keySet.add(ModelConverter.KEY_UID);
+        keySet.add(ModelConverter.KEY_AVATAR);
+        keySet.add(ModelConverter.KEY_BIRTHDAY);
+        keySet.add(ModelConverter.KEY_COUNTRY);
+        keySet.add(ModelConverter.KEY_EMAIL);
+        keySet.add(ModelConverter.KEY_GENDER);
+        keySet.add(ModelConverter.KEY_LAST_LOGIN);
+        keySet.add(ModelConverter.KEY_LOGIN_COUNT);
+        keySet.add(ModelConverter.KEY_NICKNAME);
+        keySet.add(ModelConverter.KEY_SALT);
+        keySet.add(ModelConverter.KEY_SECRET);
+        keySet.add(ModelConverter.KEY_SINCE);
 
-        SQL_INSERT += String.join(",", VALUE_KEYS) + ") VALUES (";
-
-        SQL_INSERT += jsonObject.getLong(ModelConverter.KEY_UID) + ",";
-        SQL_INSERT += COMMA + jsonObject.getString(ModelConverter.KEY_AVATAR) + COMMA + ",";
-        SQL_INSERT += jsonObject.getLong(ModelConverter.KEY_BIRTHDAY) + ",";
-        SQL_INSERT += COMMA + jsonObject.getString(ModelConverter.KEY_COUNTRY) + COMMA + ",";
-        SQL_INSERT += COMMA + jsonObject.getString(ModelConverter.KEY_EMAIL) + COMMA + ",";
-        SQL_INSERT += jsonObject.getInteger(ModelConverter.KEY_GENDER) + ",";
-        SQL_INSERT += jsonObject.getLong(ModelConverter.KEY_LAST_LOGIN) + ",";
-        SQL_INSERT += jsonObject.getLong(ModelConverter.KEY_LOGIN_COUNT) + ",";
-        SQL_INSERT += COMMA + jsonObject.getString(ModelConverter.KEY_NICKNAME) + COMMA + ",";
-        SQL_INSERT += COMMA + jsonObject.getString(ModelConverter.KEY_SALT) + COMMA + ",";
-        SQL_INSERT += COMMA + jsonObject.getString(ModelConverter.KEY_SECRET) + COMMA + ",";
-        SQL_INSERT += jsonObject.getLong(ModelConverter.KEY_SINCE) + ")";
+        SQL_INSERT += toKeyValues(jsonObject, keySet);
 
         return SQL_INSERT;
+    }
+
+    public static String toKeyValues(JsonObject jsonObject, Set<String> keySet) {
+        List<String> keys = new ArrayList<>();
+        List<String> values = new ArrayList<>();
+
+        Map<String, Object> map = jsonObject.getMap();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            String key = entry.getKey();
+            if (!keySet.contains(key)) {
+                continue;
+            }
+            keys.add(key);
+            Object value = entry.getValue();
+            if (value instanceof String) {
+                values.add(COMMA + (String)value + COMMA);
+            } else {
+                values.add(value.toString());
+            }
+        }
+
+        return "(" + String.join(",", keys) + ") VALUES (" + String.join(",", values) + ")";
     }
 }
