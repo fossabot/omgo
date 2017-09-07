@@ -3,6 +3,7 @@ package com.omgo.webservice;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -28,6 +29,13 @@ public class MainVerticle extends AbstractVerticle {
         router.route().handler(BodyHandler.create());
         router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
 
+        registerAuthRoute(router);
+
+        HttpServer server = vertx.createHttpServer();
+        server.requestHandler(router::accept).listen(8080);
+    }
+
+    private void registerAuthRoute(Router router) {
         // Simple auth service with uses a properties file for user/role info
 
         Route route = router.route(HttpMethod.GET, ApiConstant.getApiPath(ApiConstant.API_LOGIN))
@@ -35,9 +43,17 @@ public class MainVerticle extends AbstractVerticle {
             .produces(Constants.MIME_JSON);
 
         route.handler(routingContext -> {
-            LOGGER.info("handling request: " + routingContext.request().uri());
+            HttpServerRequest request = routingContext.request();
+
+            LOGGER.info("handling request: " + request.uri());
             JsonObject jsonObject = new JsonObject();
             jsonObject.put("uid", 1000);
+
+            String email = request.headers().get("email");
+            String password = request.headers().get("password");
+
+            LOGGER.info("email:" + email);
+            LOGGER.info("password:" + password);
 
             HttpServerResponse response = routingContext.response();
             // enable chunked responses because we will be adding data as
@@ -48,8 +64,5 @@ public class MainVerticle extends AbstractVerticle {
             response.putHeader("content-type", "application/json");
             response.write(jsonObject.encode()).end();
         });
-
-        HttpServer server = vertx.createHttpServer();
-        server.requestHandler(router::accept).listen(8080);
     }
 }
