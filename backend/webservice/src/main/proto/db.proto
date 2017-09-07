@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package proto;
+
+import "common.proto";
+
+// Database service definition
+service DBService {
+    // query user info
+    rpc UserQuery(DB.UserKey) returns (DB.UserOpResult);
+
+    // update user info
+    rpc UserUpdateInfo(proto.common.UserInfo) returns (DB.Result);
+
+    // register
+    rpc UserRegister(DB.UserExtendInfo) returns (DB.UserOpResult);
+
+    // login
+    rpc UserLogin(DB.UserExtendInfo) returns (DB.UserOpResult);
+
+    // logout
+    rpc UserLogout(DB.UserLogoutRequest) returns (DB.Result);
+
+    // verify token
+    rpc UserExtraInfoQuery(DB.UserKey) returns (DB.UserOpResult);
+}
+
+message DB {
+    enum StatusCode {
+        STATUS_OK                 = 0; // no error
+        STATUS_INVALID_PARAM      = 100;
+        STATUS_INVALID_USN        = 101;
+        STATUS_INVALID_UID        = 102;
+        STATUS_INVALID_EMAIL      = 103;
+        STATUS_INVALID_SECRET     = 104;
+        STATUS_INVALID_TOKEN      = 105;
+        STATUS_USER_ALREADY_EXIST = 201;
+        STATUS_USER_NOT_FOUND     = 202;
+        STATUS_INTERNAL_ERROR     = 500;
+        STATUS_UNAVAILABLE        = 503;
+    }
+
+    message Result {
+        StatusCode status = 1;
+        string     msg    = 2;
+    }
+
+    // user query key
+    message UserKey {
+        fixed64 usn   = 1;
+        uint64  uid   = 2;
+        string  email = 3;
+    }
+
+    message UserExtendInfo {
+        proto.common.UserInfo info   = 1;
+        string                secret = 2; // password hash
+        string                token  = 3;
+    }
+
+    message UserLogoutRequest {
+        uint64 usn   = 1;
+        string token = 2;
+    }
+
+    // user related operation result
+    message UserOpResult {
+        Result         result      = 1;
+        UserExtendInfo userExtInfo = 2;
+    }
+}
