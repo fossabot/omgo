@@ -55,7 +55,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                 responseFuture.complete(result);
             } else {
                 // query in sql
-                Future<JsonObject> sqlFuture = dbOperator.queryUserInfoSQL(request);
+                Future<JsonObject> sqlFuture = dbOperator.queryUserInfoSQL(ModelConverter.key2Json(request));
                 sqlFuture.compose(querySql -> {
                     // update in redis
                     Future<JsonObject> updateFuture = dbOperator.updateUserInfoRedis(querySql);
@@ -69,7 +69,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
     public void userUpdateInfo(Common.UserInfo request, Future<DB.Result> response) {
         LOGGER.info("userUpdate: " + request);
 
-        Future<JsonObject> updateSQLFuture = dbOperator.updateUserInfoSQL(request);
+        Future<JsonObject> updateSQLFuture = dbOperator.updateUserInfoSQL(ModelConverter.userInfo2Json(request));
         updateSQLFuture.setHandler(res -> {
             if (res.succeeded()) {
                 Future<JsonObject> redisFuture = dbOperator.updateUserInfoRedis(res.result());
@@ -132,10 +132,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         });
 
         // check if user with email already exist
-        DB.UserKey userKey = DB.UserKey.newBuilder()
-            .setEmail(email)
-            .build();
-        Future<JsonObject> sqlFuture = dbOperator.queryUserInfoSQL(userKey);
+        Future<JsonObject> sqlFuture = dbOperator.queryUserInfoSQL(new JsonObject().put(ModelConverter.KEY_EMAIL, email));
 
         sqlFuture.setHandler(sqlRes -> {
             // email already exist
@@ -175,26 +172,109 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         LOGGER.info("userLogin: " + request);
 
         Common.UserInfo userInfo = request.getInfo();
-        if (userInfo == null) {
+        long queryUsn = userInfo == null ? 0L : userInfo.getUsn();
+        long queryUid = userInfo == null ? 0L : userInfo.getUid();
+        String queryEmail = userInfo == null ? "" : userInfo.getEmail();
+        String querySecret = request.getSecret();
+        String queryToken = request.getToken();
+
+        if (Utils.isEmptyString(queryEmail)
+            && Utils.isEmptyString(querySecret)
+            && queryUsn == 0L
+            && Utils.isEmptyString(queryToken)) {
             response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_INVALID_PARAM));
             return;
         }
 
-        long queryUsn = userInfo.getUsn();
-        String queryEmail = userInfo.getEmail();
-        String querySecret = request.getSecret();
-        String queryToken = request.getToken();
-
-        // query user info in mysql
         DB.UserKey key = DB.UserKey
             .newBuilder()
             .setEmail(queryEmail)
-            .setUid(userInfo.getUid())
+            .setUid(queryUid)
             .setUsn(queryUsn)
             .build();
 
+        // response
+        Future<JsonObject> responseFuture = Future.future();
+        responseFuture.setHandler(res -> {
+            if (res.succeeded()) {
+                response.complete(DbProtoUtils.makeUserOpOkResult(res.result()));
+            } else {
+                LOGGER.error(res.cause());
+                DB.StatusCode code = DB.StatusCode.valueOf(res.cause().toString());
+                response.complete(DbProtoUtils.makeUserOpResult(code));
+            }
+        });
+
+        // entry
+        Future<JsonObject> entry = Future.future();
+        entry
+            .compose(v -> {
+                if (Utils.isNotEmptyString(queryToken) && queryUsn != 0L) {
+                    // query user info in redis
+                    return dbOperator.queryUserInfoRedis(queryUsn);
+                } else {
+                    // no token info, pass
+                    JsonObject emptyJson = new JsonObject();
+                    Future<JsonObject> future = Future.future();
+                    future.complete(emptyJson);
+                    return future;
+                }
+            })
+            .compose(v -> {
+                String token = v.getString(ModelConverter.KEY_TOKEN);
+                if (Utils.isNotEmptyString(queryToken) && queryToken.equals(token)) {
+                    // login with token success
+                    Future<JsonObject> tokenLoginFuture = Future.future();
+                    tokenLoginFuture.complete(v);
+                    return tokenLoginFuture;
+                } else if (Utils.isEmptyString(queryEmail) && Utils.isEmptyString(querySecret)) {
+                    // login with token failed, and no other info
+                    return Future.failedFuture(DB.StatusCode.STATUS_INVALID_PARAM.toString());
+                } else {
+                    // login with email and secret
+                    Future<JsonObject> future = Future.future();
+                    future.complete(new JsonObject());
+                    return future;
+                }
+            })
+            .compose(v -> {
+                // query in mysql and update
+                Future<JsonObject> sqlQueryFuture = dbOperator.queryUserInfoSQL(ModelConverter.key2Json(key));
+                return sqlQueryFuture.compose(queryRes -> {
+                    String salt = queryRes.getString(ModelConverter.KEY_SALT);
+
+                    boolean authed = v.containsKey(ModelConverter.KEY_TOKEN);
+                    if (!authed) {
+                        String saltedQuerySecret = AccountUtils.saltedSecret(querySecret, salt);
+                        String secret = queryRes.getString(ModelConverter.KEY_SECRET);
+                        authed = Utils.isNotEmptyString(saltedQuerySecret) && saltedQuerySecret.equals(secret);
+                    }
+                    if (authed) {
+                        byte[] saltRaw = AccountUtils.decodeBase64(salt);
+                        byte[] tokenRaw = AccountUtils.getToken(saltRaw);
+                        int loginCount = queryRes.getInteger(ModelConverter.KEY_LOGIN_COUNT);
+                        String token = AccountUtils.encodeBase64(tokenRaw);
+                        queryRes.put(ModelConverter.KEY_TOKEN, token);
+                        queryRes.put(ModelConverter.KEY_LAST_LOGIN, System.currentTimeMillis());
+                        queryRes.put(ModelConverter.KEY_LOGIN_COUNT, loginCount + 1);
+
+                        return dbOperator.updateUserInfoSQL(queryRes);
+                    } else {
+                        return Future.failedFuture(DB.StatusCode.STATUS_INVALID_SECRET.toString());
+                    }
+                });
+            })
+            .compose(v -> {
+                // update in redis
+                Future<JsonObject> updateRedisFuture = dbOperator.updateUserInfoRedis(v);
+                updateRedisFuture.setHandler(responseFuture.completer());
+            }, responseFuture);
+
+        entry.complete(new JsonObject());
+
+        /*
         // 1. usn + token
-        if (queryUsn != 0L && !Utils.isEmptyString(queryToken)) {
+        if (queryUsn != 0L && Utils.isNotEmptyString(queryToken)) {
             Future<JsonObject> redisFuture = dbOperator.queryUserInfoRedis(userInfo.getUsn());
             redisFuture.setHandler(res -> {
                 if (res.succeeded()) {
@@ -226,7 +306,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                 String salt = sqlResult.getString(ModelConverter.KEY_SALT);
                 String saltedQuerySecret = AccountUtils.saltedSecret(querySecret, salt);
                 // found in sql, check password
-                if (!Utils.isEmptyString(saltedQuerySecret) && saltedQuerySecret.equals(sqlResult.getString(ModelConverter.KEY_SECRET))) {
+                if (Utils.isNotEmptyString(saltedQuerySecret) && saltedQuerySecret.equals(sqlResult.getString(ModelConverter.KEY_SECRET))) {
                     byte[] saltRaw = AccountUtils.decodeBase64(salt);
                     byte[] tokenRaw = AccountUtils.getToken(saltRaw);
                     String token = AccountUtils.encodeBase64(tokenRaw);
@@ -243,6 +323,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                 response.complete(DbProtoUtils.makeUserOpOkResult(updateRes));
             }, responseFuture);
         }
+        */
     }
 
     @Override
@@ -303,7 +384,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
             if (redisQueryRes.succeeded()) {
                 response.complete(DbProtoUtils.makeUserOpOkResult(redisQueryRes.result()));
             } else {
-                Future<JsonObject> mysqlFuture = dbOperator.queryUserInfoSQL(request);
+                Future<JsonObject> mysqlFuture = dbOperator.queryUserInfoSQL(ModelConverter.key2Json(request));
                 mysqlFuture.setHandler(mysqlRes -> {
                     if (mysqlRes.succeeded()) {
                         JsonObject mysqlJson = mysqlRes.result();

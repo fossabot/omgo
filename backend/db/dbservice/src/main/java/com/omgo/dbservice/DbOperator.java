@@ -15,10 +15,11 @@ import io.vertx.redis.RedisTransaction;
 import proto.Db;
 import proto.SnowflakeOuterClass;
 import proto.SnowflakeServiceGrpc;
-import proto.common.Common;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DbOperator {
@@ -143,11 +144,13 @@ public class DbOperator {
     /**
      * Query user info in MySQL
      *
-     * @param userKey User key with usn/uid/email
+     * @param keyJson
      * @return Future
      */
-    public Future<JsonObject> queryUserInfoSQL(Db.DB.UserKey userKey) {
+    public Future<JsonObject> queryUserInfoSQL(JsonObject keyJson) {
         Future<JsonObject> future = Future.future();
+
+        Db.DB.UserKey userKey = ModelConverter.json2UserKey(keyJson);
 
         long usn = userKey.getUsn();
         long uid = userKey.getUid();
@@ -168,7 +171,7 @@ public class DbOperator {
                     } else if (uid != 0L) {
                         params.add(uid);
                         query = QUERY_USERINFO_UID;
-                    } else if (!Utils.isEmptyString(email)) {
+                    } else if (Utils.isNotEmptyString(email)) {
                         params.add(email);
                         query = QUERY_USERINFO_EMAIL;
                     }
@@ -244,45 +247,33 @@ public class DbOperator {
     /**
      * Update user info in MySQL
      *
-     * @param userInfo
+     * @param userJson
      * @return Future
      */
-    public Future<JsonObject> updateUserInfoSQL(Common.UserInfo userInfo) {
+    public Future<JsonObject> updateUserInfoSQL(JsonObject userJson) {
         Future<JsonObject> future = Future.future();
 
-        if (userInfo.getUsn() == 0L) {
+        long usn = userJson.getLong(ModelConverter.KEY_USN);
+        if (usn == 0L) {
             future.fail("invalid usn");
             return future;
         }
+
+        Set<String> updatableKeys = ModelConverter.getUserUpdatableMapKeySet();
 
         String SQL_UPDATE = "UPDATE user SET ";
 
         List<String> columnNameList = new ArrayList<>();
         JsonArray params = new JsonArray();
 
-        if (!Utils.isEmptyString(userInfo.getAvatar())) {
-            params.add(userInfo.getAvatar());
-            columnNameList.add(ModelConverter.KEY_AVATAR + "=?");
-        }
-        if (userInfo.getBirthday() != 0L) {
-            params.add(userInfo.getBirthday());
-            columnNameList.add(ModelConverter.KEY_BIRTHDAY + "=?");
-        }
-        if (!Utils.isEmptyString(userInfo.getCountry())) {
-            params.add(userInfo.getCountry());
-            columnNameList.add(ModelConverter.KEY_COUNTRY + "=?");
-        }
-        if (AccountUtils.isValidEmailAddress(userInfo.getEmail())) {
-            params.add(userInfo.getEmail());
-            columnNameList.add(ModelConverter.KEY_EMAIL + "=?");
-        }
-        if (userInfo.getGender() != Common.Gender.GENDER_UNKNOWN) {
-            params.add(userInfo.getGenderValue());
-            columnNameList.add(ModelConverter.KEY_GENDER + "=?");
-        }
-        if (!Utils.isEmptyString(userInfo.getNickname())) {
-            params.add(userInfo.getNickname());
-            columnNameList.add(ModelConverter.KEY_NICKNAME + "=?");
+        Map<String, Object> map = userJson.getMap();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            String key = entry.getKey();
+            if (!updatableKeys.contains(key)) {
+                continue;
+            }
+            params.add(entry.getValue());
+            columnNameList.add(key + "=?");
         }
 
         if (columnNameList.size() == 0) {
@@ -293,7 +284,7 @@ public class DbOperator {
         SQL_UPDATE += String.join(",", columnNameList);
         SQL_UPDATE += " WHERE usn=?";
 
-        params.add(userInfo.getUsn());
+        params.add(usn);
 
         // update
         String finalSQL_UPDATE = SQL_UPDATE;
@@ -302,11 +293,13 @@ public class DbOperator {
                 SQLConnection connection = res.result();
                 connection.updateWithParams(finalSQL_UPDATE, params, sqlRes -> {
                     if (sqlRes.succeeded()) {
-                        connection.queryWithParams(QUERY_USERINFO_USN, new JsonArray().add(userInfo.getUsn()), queryRes -> {
+                        connection.queryWithParams(QUERY_USERINFO_USN, new JsonArray().add(usn), queryRes -> {
                             if (queryRes.succeeded()) {
                                 List<JsonObject> rows = queryRes.result().getRows();
                                 if (rows.size() > 0) {
-                                    future.complete(rows.get(0));
+                                    JsonObject resultJson = rows.get(0);
+                                    resultJson.put(ModelConverter.KEY_TOKEN, userJson.getString(ModelConverter.KEY_TOKEN, ""));
+                                    future.complete(resultJson);
                                 } else {
                                     future.fail("query after update failed");
                                 }

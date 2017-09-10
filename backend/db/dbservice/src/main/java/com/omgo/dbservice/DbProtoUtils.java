@@ -3,9 +3,7 @@ package com.omgo.dbservice;
 import com.omgo.dbservice.model.ModelConverter;
 import com.omgo.dbservice.model.Utils;
 import io.vertx.core.json.JsonObject;
-import proto.Db;
 import proto.Db.DB;
-import proto.common.Common;
 
 public class DbProtoUtils {
 
@@ -20,7 +18,7 @@ public class DbProtoUtils {
     public static DB.Result makeResult(DB.StatusCode code, String msg) {
         DB.Result.Builder builder = DB.Result.newBuilder();
         builder.setStatus(code);
-        if (!Utils.isEmptyString(msg)) {
+        if (Utils.isNotEmptyString(msg)) {
             builder.setMsg(msg);
         }
         return builder.build();

@@ -67,6 +67,28 @@ public class ModelConverter {
             .put(KEY_USN, userInfo.getUsn());
     }
 
+    public static JsonObject key2Json(Db.DB.UserKey key) {
+        return new JsonObject()
+            .put(KEY_EMAIL, key.getEmail())
+            .put(KEY_UID, key.getUid())
+            .put(KEY_USN, key.getUsn());
+    }
+
+    public static Db.DB.UserKey json2UserKey(JsonObject jsonObject) {
+        Db.DB.UserKey.Builder builder = Db.DB.UserKey.newBuilder();
+        if (jsonObject.containsKey(KEY_USN)) {
+            builder.setUsn(jsonObject.getLong(KEY_USN));
+        }
+        if (jsonObject.containsKey(KEY_UID)) {
+            builder.setUid(jsonObject.getLong(KEY_UID));
+        }
+        if (jsonObject.containsKey(KEY_EMAIL)) {
+            builder.setEmail(jsonObject.getString(KEY_EMAIL));
+        }
+
+        return builder.build();
+    }
+
     public static Db.DB.UserExtendInfo json2UserExtendInfo(JsonObject jsonObject) {
         Db.DB.UserExtendInfo.Builder builder = Db.DB.UserExtendInfo.newBuilder();
         Common.UserInfo userInfo = json2UserInfo(jsonObject);
@@ -80,9 +102,7 @@ public class ModelConverter {
         return "SELECT * FROM user WHERE uid=" + uid;
     }
 
-    public static String SQLQueryInsert(JsonObject jsonObject) {
-        String SQL_INSERT = "INSERT INTO user ";
-
+    private static Set<String> getUserMapKeySet() {
         Set<String> keySet = new HashSet<>();
         keySet.add(ModelConverter.KEY_UID);
         keySet.add(ModelConverter.KEY_AVATAR);
@@ -96,8 +116,13 @@ public class ModelConverter {
         keySet.add(ModelConverter.KEY_SALT);
         keySet.add(ModelConverter.KEY_SECRET);
         keySet.add(ModelConverter.KEY_SINCE);
+        return keySet;
+    }
 
-        SQL_INSERT += toKeyValues(jsonObject, keySet);
+    public static String SQLQueryInsert(JsonObject jsonObject) {
+        String SQL_INSERT = "INSERT INTO user ";
+
+        SQL_INSERT += toKeyValues(jsonObject, getUserMapKeySet());
 
         return SQL_INSERT;
     }
@@ -122,5 +147,18 @@ public class ModelConverter {
         }
 
         return "(" + String.join(",", keys) + ") VALUES (" + String.join(",", values) + ")";
+    }
+
+    public static Set<String> getUserUpdatableMapKeySet() {
+        Set<String> keySet = new HashSet<>();
+        keySet.add(ModelConverter.KEY_AVATAR);
+        keySet.add(ModelConverter.KEY_BIRTHDAY);
+        keySet.add(ModelConverter.KEY_COUNTRY);
+        keySet.add(ModelConverter.KEY_EMAIL);
+        keySet.add(ModelConverter.KEY_GENDER);
+        keySet.add(ModelConverter.KEY_LAST_LOGIN);
+        keySet.add(ModelConverter.KEY_LOGIN_COUNT);
+        keySet.add(ModelConverter.KEY_NICKNAME);
+        return keySet;
     }
 }

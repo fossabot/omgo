@@ -15,12 +15,12 @@ cd ./redis/
 sh ./run.sh
 cd ..
 
-exit
-
 # DB service
 cd ./dbservice/
 sh ./run.sh
 cd ../../
+
+exit
 
 # DB service
 cd ./game/
