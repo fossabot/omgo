@@ -1,14 +1,26 @@
 package com.omgo.webservice.handler;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
+import com.omgo.webservice.Utils;
+import com.omgo.webservice.model.ModelConverter;
+import io.grpc.ManagedChannel;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
+import proto.DBServiceGrpc;
+import proto.Db;
+import proto.common.Common;
 
 public class RegisterHandler extends BaseHandler {
-    public RegisterHandler(Vertx vertx) {
+
+    private DBServiceGrpc.DBServiceVertxStub dbServiceVertxStub;
+
+    public RegisterHandler(Vertx vertx, ManagedChannel channel) {
         super(vertx);
+        dbServiceVertxStub = DBServiceGrpc.newVertxStub(channel);
     }
 
     @Override
@@ -16,26 +28,50 @@ public class RegisterHandler extends BaseHandler {
         super.register(router, path);
 
         route.handler(routingContext -> {
-            HttpServerRequest request = routingContext.request();
+            HttpServerRequest request = super.handle(routingContext);
+            HttpServerResponse response = super.response(routingContext);
 
-            LOGGER.info("handling request: " + request.uri());
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.put("uid", 1000);
+            JsonObject registerJson = super.getHeaderJson(request);
+            String avatar = registerJson.getString(ModelConverter.KEY_AVATAR);
+            String birthday = registerJson.getString(ModelConverter.KEY_BIRTHDAY);
+            String country = registerJson.getString(ModelConverter.KEY_COUNTRY);
+            String email = registerJson.getString(ModelConverter.KEY_EMAIL);
+            String gender = registerJson.getString(ModelConverter.KEY_GENDER);
+            String nickname = registerJson.getString(ModelConverter.KEY_NICKNAME);
+            String secret = registerJson.getString(ModelConverter.KEY_SECRET);
 
-            String email = request.headers().get("email");
-            String password = request.headers().get("password");
+            long birthdayLong = Utils.isEmptyString(birthday) ? 0L : Long.parseLong(birthday);
+            int genderInt = Utils.isEmptyString(gender) ? 0 : Integer.parseInt(gender);
 
-            LOGGER.info("email:" + email);
-            LOGGER.info("password:" + password);
+            Common.UserInfo.Builder userInfoBuilder = Common.UserInfo.newBuilder();
+            userInfoBuilder
+                .setAvatar(avatar)
+                .setBirthday(birthdayLong)
+                .setCountry(country)
+                .setEmail(email)
+                .setGender(Common.Gender.forNumber(genderInt))
+                .setNickname(nickname);
 
-            HttpServerResponse response = routingContext.response();
-            // enable chunked responses because we will be adding data as
-            // we execute over other handlers. This is only required once and
-            // only if several handlers do output.
-            response.setChunked(true);
+            Db.DB.UserExtendInfo.Builder builder = Db.DB.UserExtendInfo.newBuilder();
+            Db.DB.UserExtendInfo extendInfo = builder
+                .setInfo(userInfoBuilder.build())
+                .setSecret(secret)
+                .build();
 
-            response.putHeader("content-type", "application/json");
-            response.write(jsonObject.encode()).end();
+            dbServiceVertxStub.userRegister(extendInfo, res -> {
+                if (res.succeeded()) {
+                    JsonObject resultJson = new JsonObject();
+                    try {
+                        String result = JsonFormat.printer().print(res.result());
+                        resultJson = new JsonObject(result);
+                    } catch (InvalidProtocolBufferException e) {
+                        e.printStackTrace();
+                    }
+                    response.write(resultJson.encode()).end();
+                } else {
+                    routingContext.fail(500);
+                }
+            });
         });
     }
 }

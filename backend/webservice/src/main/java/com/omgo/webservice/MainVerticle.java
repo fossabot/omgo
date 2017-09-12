@@ -5,26 +5,15 @@ import com.omgo.webservice.handler.LoginHandler;
 import com.omgo.webservice.handler.RegisterHandler;
 import io.grpc.ManagedChannel;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
-import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import io.vertx.ext.auth.User;
-import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.Session;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CookieHandler;
-import io.vertx.ext.web.handler.FormLoginHandler;
 import io.vertx.ext.web.handler.SessionHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
-import proto.DBServiceGrpc;
-import proto.Db;
-import proto.common.Common;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +29,6 @@ public class MainVerticle extends AbstractVerticle {
 
         setupServices();
         startApiService();
-        testDBservice();
     }
 
     private void startApiService() {
@@ -56,7 +44,7 @@ public class MainVerticle extends AbstractVerticle {
         loginHandler.register(router, ApiConstant.getApiPath(ApiConstant.API_LOGIN));
 
         // register
-        RegisterHandler registerHandler = new RegisterHandler(vertx);
+        RegisterHandler registerHandler = new RegisterHandler(vertx, grpcChannel);
         registerHandler.register(router, ApiConstant.getApiPath(ApiConstant.API_REGISTER));
 
         // start service
@@ -95,25 +83,5 @@ public class MainVerticle extends AbstractVerticle {
         LOGGER.info("service pool created");
 
         grpcChannel = servicePool.getChannel(servicePool.getServicePath("dbservice"));
-    }
-
-    private void testDBservice() {
-        Services.ServicePool pool = Services.getInstance().getServicePool();
-        ManagedChannel channel = pool.getChannel(pool.getServicePath("dbservice"));
-        DBServiceGrpc.DBServiceVertxStub stub = DBServiceGrpc.newVertxStub(channel);
-
-        Common.UserInfo.Builder userInfoBuilder = Common.UserInfo.newBuilder();
-        userInfoBuilder.setEmail("masterg@yeah.net");
-        Db.DB.UserExtendInfo.Builder extendInfoBuilder = Db.DB.UserExtendInfo.newBuilder();
-        extendInfoBuilder.setInfo(userInfoBuilder.build())
-            .setSecret("g3st4p0");
-
-        stub.userLogin(extendInfoBuilder.build(), res -> {
-            if (res.succeeded()) {
-                LOGGER.info(res.result());
-            } else {
-                LOGGER.warn(res.cause());
-            }
-        });
     }
 }

@@ -42,6 +42,7 @@ public class GrpcAuthUser extends AbstractUser {
             try {
                 String info = JsonFormat.printer().print(userExtendInfo);
                 principle = new JsonObject(info);
+                principle.remove("secret");
                 return principle;
             } catch (InvalidProtocolBufferException e) {
                 e.printStackTrace();

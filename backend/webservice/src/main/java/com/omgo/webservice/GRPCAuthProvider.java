@@ -1,7 +1,5 @@
 package com.omgo.webservice;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.util.JsonFormat;
 import io.grpc.ManagedChannel;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -31,12 +29,18 @@ public class GRPCAuthProvider implements AuthProvider {
     @Override
     public void authenticate(JsonObject jsonObject, Handler<AsyncResult<User>> handler) {
         String email = jsonObject.getString("email");
+        String password = jsonObject.getString("password");
+        String token = jsonObject.getString("token");
+        String strUsn = jsonObject.getString("usn");
+        long usn = Utils.isEmptyString(strUsn) ? 0L : Long.parseLong(strUsn);
+
+        // TODO: 11/09/2017
+
         if (Utils.isEmptyString(email) || !email.matches(STRING_EMAIL_REGEX)) {
             handler.handle(Future.failedFuture("auth info invalid email:" + email));
             return;
         }
 
-        String password = jsonObject.getString("password");
         if (Utils.isEmptyString(password)) {
             handler.handle(Future.failedFuture("auth info invalid password"));
             return;
