@@ -150,6 +150,16 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                     jsonObject.put(ModelConverter.KEY_LAST_LOGIN, System.currentTimeMillis());
                     jsonObject.put(ModelConverter.KEY_LOGIN_COUNT, 1);
 
+                    jsonObject.put(ModelConverter.KEY_LAST_IP, request.getLastIp());
+                    jsonObject.put(ModelConverter.KEY_APP_LANGUAGE, request.getAppLanguage());
+                    jsonObject.put(ModelConverter.KEY_APP_VERSION, request.getAppVersion());
+                    jsonObject.put(ModelConverter.KEY_AVATAR, request.getAvatar());
+                    jsonObject.put(ModelConverter.KEY_DEVICE_TYPE, request.getDeviceType());
+                    jsonObject.put(ModelConverter.KEY_MCC, request.getMcc());
+                    jsonObject.put(ModelConverter.KEY_OS, request.getOs());
+                    jsonObject.put(ModelConverter.KEY_OS_LOCALE, request.getOsLocale());
+                    jsonObject.put(ModelConverter.KEY_TIMEZONE, request.getTimezone());
+
                     return dbOperator.insertUserInfoSQL(jsonObject);
                 }).compose(insertRes -> {
                     Future<JsonObject> updateRedisFuture = dbOperator.updateUserInfoRedis(insertRes);
