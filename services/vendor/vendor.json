@@ -11,32 +11,32 @@
 		{
 			"checksumSHA1": "7BC2/27NId9xaPDB5w3nWN2mn9A=",
 			"path": "github.com/coreos/etcd/auth/authpb",
-			"revision": "ee0c805de2fa046f545f303cfef4cda89f91fe9b",
-			"revisionTime": "2017-06-14T22:39:58Z"
+			"revision": "86d15d1b1c5b572f37797eb90ee00d17d037043a",
+			"revisionTime": "2017-08-28T19:21:54Z"
 		},
 		{
-			"checksumSHA1": "a5Yxqv1cBQn4cva/PdiSO5fLf+U=",
+			"checksumSHA1": "8SJsG+UVmhX5lf1jeMlO5q202Lc=",
 			"path": "github.com/coreos/etcd/clientv3",
-			"revision": "ee0c805de2fa046f545f303cfef4cda89f91fe9b",
-			"revisionTime": "2017-06-14T22:39:58Z"
+			"revision": "86d15d1b1c5b572f37797eb90ee00d17d037043a",
+			"revisionTime": "2017-08-28T19:21:54Z"
 		},
 		{
-			"checksumSHA1": "PnBbh5xS4/RtluD+Vatock/WZts=",
+			"checksumSHA1": "P9fegjOukUL4pPOCCY5K7/DQmTM=",
 			"path": "github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes",
-			"revision": "ee0c805de2fa046f545f303cfef4cda89f91fe9b",
-			"revisionTime": "2017-06-14T22:39:58Z"
+			"revision": "86d15d1b1c5b572f37797eb90ee00d17d037043a",
+			"revisionTime": "2017-08-28T19:21:54Z"
 		},
 		{
-			"checksumSHA1": "YbcU644vKiOJQO/DZZA/H+ZWHL0=",
+			"checksumSHA1": "c0ltvGUOnk8qaEshFwc0PDH5nbc=",
 			"path": "github.com/coreos/etcd/etcdserver/etcdserverpb",
-			"revision": "ee0c805de2fa046f545f303cfef4cda89f91fe9b",
-			"revisionTime": "2017-06-14T22:39:58Z"
+			"revision": "86d15d1b1c5b572f37797eb90ee00d17d037043a",
+			"revisionTime": "2017-08-28T19:21:54Z"
 		},
 		{
 			"checksumSHA1": "JAkX9DfIBrSe0vUa07xl5cikxVQ=",
 			"path": "github.com/coreos/etcd/mvcc/mvccpb",
-			"revision": "ee0c805de2fa046f545f303cfef4cda89f91fe9b",
-			"revisionTime": "2017-06-14T22:39:58Z"
+			"revision": "86d15d1b1c5b572f37797eb90ee00d17d037043a",
+			"revisionTime": "2017-08-28T19:21:54Z"
 		},
 		{
 			"checksumSHA1": "qlPUeFabwF4RKAOF1H+yBFU1Veg=",
