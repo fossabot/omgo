@@ -27,7 +27,7 @@ public class DbProtoUtils {
     public static DB.UserOpResult makeUserOpOkResult(JsonObject jsonObject) {
         return DB.UserOpResult.newBuilder()
             .setResult(makeOkResult())
-            .setUserExtInfo(ModelConverter.json2UserExtendInfo(jsonObject))
+            .setUser(ModelConverter.json2UserEntry(jsonObject))
             .build();
     }
 

@@ -10,7 +10,6 @@ import io.vertx.ext.sql.SQLClient;
 import io.vertx.redis.RedisClient;
 import proto.DBServiceGrpc;
 import proto.Db.DB;
-import proto.common.Common;
 
 /**
  * Database gRPC service implementation
@@ -32,7 +31,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
     }
 
     @Override
-    public void userQuery(DB.UserKey request, Future<DB.UserOpResult> response) {
+    public void userQuery(DB.UserEntry request, Future<DB.UserOpResult> response) {
         LOGGER.info("userQuery: " + request);
 
         Future<JsonObject> responseFuture = Future.future();
@@ -55,7 +54,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                 responseFuture.complete(result);
             } else {
                 // query in sql
-                Future<JsonObject> sqlFuture = dbOperator.queryUserInfoSQL(ModelConverter.key2Json(request));
+                Future<JsonObject> sqlFuture = dbOperator.queryUserInfoSQL(ModelConverter.userEntry2Json(request));
                 sqlFuture.compose(querySql -> {
                     // update in redis
                     Future<JsonObject> updateFuture = dbOperator.updateUserInfoRedis(querySql);
@@ -66,10 +65,10 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
     }
 
     @Override
-    public void userUpdateInfo(Common.UserInfo request, Future<DB.Result> response) {
+    public void userUpdateInfo(DB.UserEntry request, Future<DB.Result> response) {
         LOGGER.info("userUpdate: " + request);
 
-        Future<JsonObject> updateSQLFuture = dbOperator.updateUserInfoSQL(ModelConverter.userInfo2Json(request));
+        Future<JsonObject> updateSQLFuture = dbOperator.updateUserInfoSQL(ModelConverter.userEntry2Json(request));
         updateSQLFuture.setHandler(res -> {
             if (res.succeeded()) {
                 Future<JsonObject> redisFuture = dbOperator.updateUserInfoRedis(res.result());
@@ -89,24 +88,17 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
     }
 
     @Override
-    public void userRegister(DB.UserExtendInfo request, Future<DB.UserOpResult> response) {
+    public void userRegister(DB.UserEntry request, Future<DB.UserOpResult> response) {
         LOGGER.info("userRegister: " + request);
 
-        Common.UserInfo userInfo = request.getInfo();
-        if (userInfo == null) {
-            response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_INVALID_PARAM));
-            LOGGER.error("invalid user info(null)");
-            return;
-        }
-
-        String email = userInfo.getEmail();
+        String email = request.getEmail();
         if (!AccountUtils.isValidEmailAddress(email)) {
             response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_INVALID_EMAIL));
             LOGGER.error("invalid email address");
             return;
         }
 
-        String nickname = userInfo.getNickname();
+        String nickname = request.getNickname();
         if (Utils.isEmptyString(nickname)) {
             response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_INVALID_PARAM));
             LOGGER.error("invalid nickname");
@@ -149,7 +141,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                     String salt = AccountUtils.encodeBase64(saltRaw);
                     String token = AccountUtils.encodeBase64(tokenRaw);
                     String saltedSecret = AccountUtils.saltedSecret(secret, salt);
-                    JsonObject jsonObject = ModelConverter.userInfo2Json(userInfo);
+                    JsonObject jsonObject = ModelConverter.userEntry2Json(request);
                     jsonObject.put(ModelConverter.KEY_UID, userId);
                     jsonObject.put(ModelConverter.KEY_TOKEN, token);
                     jsonObject.put(ModelConverter.KEY_SALT, salt);
@@ -168,13 +160,11 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
     }
 
     @Override
-    public void userLogin(DB.UserExtendInfo request, Future<DB.UserOpResult> response) {
+    public void userLogin(DB.UserEntry request, Future<DB.UserOpResult> response) {
         LOGGER.info("userLogin: " + request);
 
-        Common.UserInfo userInfo = request.getInfo();
-        long queryUsn = userInfo == null ? 0L : userInfo.getUsn();
-        long queryUid = userInfo == null ? 0L : userInfo.getUid();
-        String queryEmail = userInfo == null ? "" : userInfo.getEmail();
+        long queryUsn = request.getUsn();
+        String queryEmail = request.getEmail();
         String querySecret = request.getSecret();
         String queryToken = request.getToken();
 
@@ -185,13 +175,6 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
             response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_INVALID_PARAM));
             return;
         }
-
-        DB.UserKey key = DB.UserKey
-            .newBuilder()
-            .setEmail(queryEmail)
-            .setUid(queryUid)
-            .setUsn(queryUsn)
-            .build();
 
         // response
         Future<JsonObject> responseFuture = Future.future();
@@ -239,7 +222,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
             })
             .compose(v -> {
                 // query in mysql and update
-                Future<JsonObject> sqlQueryFuture = dbOperator.queryUserInfoSQL(ModelConverter.key2Json(key));
+                Future<JsonObject> sqlQueryFuture = dbOperator.queryUserInfoSQL(ModelConverter.userEntry2Json(request));
                 return sqlQueryFuture.compose(queryRes -> {
                     String salt = queryRes.getString(ModelConverter.KEY_SALT);
 
@@ -257,6 +240,15 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                         queryRes.put(ModelConverter.KEY_TOKEN, token);
                         queryRes.put(ModelConverter.KEY_LAST_LOGIN, System.currentTimeMillis());
                         queryRes.put(ModelConverter.KEY_LOGIN_COUNT, loginCount + 1);
+                        queryRes.put(ModelConverter.KEY_LAST_IP, request.getLastIp());
+                        queryRes.put(ModelConverter.KEY_APP_LANGUAGE, request.getAppLanguage());
+                        queryRes.put(ModelConverter.KEY_APP_VERSION, request.getAppVersion());
+                        queryRes.put(ModelConverter.KEY_AVATAR, request.getAvatar());
+                        queryRes.put(ModelConverter.KEY_DEVICE_TYPE, request.getDeviceType());
+                        queryRes.put(ModelConverter.KEY_MCC, request.getMcc());
+                        queryRes.put(ModelConverter.KEY_OS, request.getOs());
+                        queryRes.put(ModelConverter.KEY_OS_LOCALE, request.getOsLocale());
+                        queryRes.put(ModelConverter.KEY_TIMEZONE, request.getTimezone());
 
                         return dbOperator.updateUserInfoSQL(queryRes);
                     } else {
@@ -271,59 +263,6 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
             }, responseFuture);
 
         entry.complete(new JsonObject());
-
-        /*
-        // 1. usn + token
-        if (queryUsn != 0L && Utils.isNotEmptyString(queryToken)) {
-            Future<JsonObject> redisFuture = dbOperator.queryUserInfoRedis(userInfo.getUsn());
-            redisFuture.setHandler(res -> {
-                if (res.succeeded()) {
-                    // check token
-                    JsonObject redisJson = res.result();
-                    if (!queryToken.equals(redisJson.getString(ModelConverter.KEY_TOKEN))) {
-                        response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_INVALID_TOKEN));
-                    } else {
-                        response.complete(DbProtoUtils.makeUserOpOkResult(redisJson));
-                    }
-                } else {
-                    response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_USER_NOT_FOUND));
-                }
-            });
-        } else if (AccountUtils.isValidEmailAddress(queryEmail) && AccountUtils.isValidSecret(querySecret)) {
-            Future<JsonObject> responseFuture = Future.future();
-            responseFuture.setHandler(res -> {
-                if (res.succeeded()) {
-                    response.complete(DbProtoUtils.makeUserOpOkResult(res.result()));
-                } else {
-                    LOGGER.error(res.cause());
-                    DB.StatusCode code = DB.StatusCode.valueOf(res.cause().toString());
-                    response.complete(DbProtoUtils.makeUserOpResult(code));
-                }
-            });
-            // 2. email + secret
-            Future<JsonObject> sqlFuture = dbOperator.queryUserInfoSQL(key);
-            sqlFuture.compose(sqlResult -> {
-                String salt = sqlResult.getString(ModelConverter.KEY_SALT);
-                String saltedQuerySecret = AccountUtils.saltedSecret(querySecret, salt);
-                // found in sql, check password
-                if (Utils.isNotEmptyString(saltedQuerySecret) && saltedQuerySecret.equals(sqlResult.getString(ModelConverter.KEY_SECRET))) {
-                    byte[] saltRaw = AccountUtils.decodeBase64(salt);
-                    byte[] tokenRaw = AccountUtils.getToken(saltRaw);
-                    String token = AccountUtils.encodeBase64(tokenRaw);
-                    sqlResult.put(ModelConverter.KEY_TOKEN, token);
-
-                    // update in redis
-                    return dbOperator.updateUserInfoRedis(sqlResult);
-                } else {
-                    // magic, enum to string then back to enum
-                    return Future.failedFuture(DB.StatusCode.STATUS_INVALID_SECRET.toString());
-                }
-            }).compose(updateRes -> {
-                // update redis success
-                response.complete(DbProtoUtils.makeUserOpOkResult(updateRes));
-            }, responseFuture);
-        }
-        */
     }
 
     @Override
@@ -365,7 +304,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
     }
 
     @Override
-    public void userExtraInfoQuery(DB.UserKey request, Future<DB.UserOpResult> response) {
+    public void userExtraInfoQuery(DB.UserEntry request, Future<DB.UserOpResult> response) {
         long usn = request.getUsn();
         long uid = request.getUid();
         String email = request.getEmail();
@@ -384,7 +323,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
             if (redisQueryRes.succeeded()) {
                 response.complete(DbProtoUtils.makeUserOpOkResult(redisQueryRes.result()));
             } else {
-                Future<JsonObject> mysqlFuture = dbOperator.queryUserInfoSQL(ModelConverter.key2Json(request));
+                Future<JsonObject> mysqlFuture = dbOperator.queryUserInfoSQL(ModelConverter.userEntry2Json(request));
                 mysqlFuture.setHandler(mysqlRes -> {
                     if (mysqlRes.succeeded()) {
                         JsonObject mysqlJson = mysqlRes.result();

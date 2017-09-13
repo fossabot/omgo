@@ -2,27 +2,25 @@ syntax = "proto3";
 
 package proto;
 
-import "common.proto";
-
 // Database service definition
 service DBService {
     // query user info
-    rpc UserQuery(DB.UserKey) returns (DB.UserOpResult);
+    rpc UserQuery(DB.UserEntry) returns (DB.UserOpResult);
 
     // update user info
-    rpc UserUpdateInfo(proto.common.UserInfo) returns (DB.Result);
+    rpc UserUpdateInfo(DB.UserEntry) returns (DB.Result);
 
     // register
-    rpc UserRegister(DB.UserExtendInfo) returns (DB.UserOpResult);
+    rpc UserRegister(DB.UserEntry) returns (DB.UserOpResult);
 
     // login
-    rpc UserLogin(DB.UserExtendInfo) returns (DB.UserOpResult);
+    rpc UserLogin(DB.UserEntry) returns (DB.UserOpResult);
 
     // logout
     rpc UserLogout(DB.UserLogoutRequest) returns (DB.Result);
 
     // verify token
-    rpc UserExtraInfoQuery(DB.UserKey) returns (DB.UserOpResult);
+    rpc UserExtraInfoQuery(DB.UserEntry) returns (DB.UserOpResult);
 }
 
 message DB {
@@ -45,17 +43,34 @@ message DB {
         string     msg    = 2;
     }
 
-    // user query key
-    message UserKey {
-        fixed64 usn   = 1;
-        uint64  uid   = 2;
-        string  email = 3;
-    }
-
-    message UserExtendInfo {
-        proto.common.UserInfo info   = 1;
-        string                secret = 2; // password hash
-        string                token  = 3;
+    message UserEntry {
+        fixed64 usn            = 1;
+        uint64  uid            = 2;
+        string  app_language   = 3;
+        string  app_version    = 4;
+        string  avatar         = 5;
+        uint64  birthday       = 6;
+        string  country        = 7;
+        int32   device_type    = 8;
+        string  email          = 9;
+        bool    email_verified = 10;
+        int32   gender         = 11;
+        bool    is_official    = 12;
+        string  last_ip        = 13;
+        uint64  last_login     = 14;
+        uint64  login_count    = 15;
+        int32   mcc            = 16;
+        string  nickname       = 17;
+        string  os             = 18;
+        string  os_locale      = 19;
+        int32   premium_level  = 20;
+        string  salt           = 21;
+        string  secret         = 22;
+        uint64  since          = 23;
+        string  social_id      = 24;
+        int32   status         = 25;
+        int32   timezone       = 26;
+        string  token          = 27;
     }
 
     message UserLogoutRequest {
@@ -65,7 +80,7 @@ message DB {
 
     // user related operation result
     message UserOpResult {
-        Result         result      = 1;
-        UserExtendInfo userExtInfo = 2;
+        Result    result = 1;
+        UserEntry user   = 2;
     }
 }

@@ -58,19 +58,27 @@ enum Gender {
     GENDER_MALE    = 2;
 }
 
+enum UserStatus {
+    USER_STATUS_NORMAL     = 0;
+    USER_STATUS_RESTRICTED = 1;
+    USER_STATUS_BANNED     = 2;
+    USER_STATUS_DELETED    = 3;
+}
+
 /// User Information
 message UserInfo {
-    fixed64 usn         = 1;  /// user serial no. internal only
-    uint64  uid         = 2;  /// id
-    string  avatar      = 3;  /// avatar url
-    fixed64 birthday    = 4;  /// EPOCH
-    string  country     = 5;  /// country / region
-    string  email       = 6;  /// email address
-    Gender  gender      = 7;  /// gender
-    fixed64 last_login  = 8;  /// last login timestamp
-    int32   login_count = 9;  /// login count
-    string  nickname    = 10; /// name
-    fixed64 since       = 11; /// register timestamp
+    fixed64    usn         = 1;  /// user serial no. internal only
+    uint64     uid         = 2;  /// id
+    string     avatar      = 3;  /// avatar url
+    fixed64    birthday    = 4;  /// EPOCH
+    string     country     = 5;  /// country / region
+    string     email       = 6;  /// email address
+    Gender     gender      = 7;  /// gender
+    fixed64    last_login  = 8;  /// last login timestamp
+    int32      login_count = 9;  /// login count
+    string     nickname    = 10; /// name
+    fixed64    since       = 11; /// register timestamp
+    UserStatus status      = 12;
 }
 
 message Location {

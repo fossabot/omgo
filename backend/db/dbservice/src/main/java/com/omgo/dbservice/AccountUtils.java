@@ -1,6 +1,6 @@
 package com.omgo.dbservice;
 
-import com.omgo.dbservice.model.ModelConstant;
+import com.omgo.dbservice.model.ModelConverter;
 import com.omgo.dbservice.model.Utils;
 
 import java.security.MessageDigest;
@@ -16,7 +16,7 @@ public final class AccountUtils {
     private static Random random = new Random(System.currentTimeMillis());
 
     public static String getRedisKey(long usn) {
-        return String.format("%s:%d", ModelConstant.KEY_USER, usn);
+        return String.format("%s:%d", ModelConverter.KEY_USER, usn);
     }
 
     public static byte[] getSalt() {

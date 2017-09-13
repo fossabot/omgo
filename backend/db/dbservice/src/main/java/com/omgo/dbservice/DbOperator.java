@@ -144,17 +144,17 @@ public class DbOperator {
     /**
      * Query user info in MySQL
      *
-     * @param keyJson
+     * @param json
      * @return Future
      */
-    public Future<JsonObject> queryUserInfoSQL(JsonObject keyJson) {
+    public Future<JsonObject> queryUserInfoSQL(JsonObject json) {
         Future<JsonObject> future = Future.future();
 
-        Db.DB.UserKey userKey = ModelConverter.json2UserKey(keyJson);
+        Db.DB.UserEntry userEntry = ModelConverter.json2UserEntry(json);
 
-        long usn = userKey.getUsn();
-        long uid = userKey.getUid();
-        String email = userKey.getEmail();
+        long usn = userEntry.getUsn();
+        long uid = userEntry.getUid();
+        String email = userEntry.getEmail();
 
         if (usn == 0L && uid == 0L && Utils.isEmptyString(email)) {
             future.fail("invalid query key");
@@ -297,9 +297,7 @@ public class DbOperator {
                             if (queryRes.succeeded()) {
                                 List<JsonObject> rows = queryRes.result().getRows();
                                 if (rows.size() > 0) {
-                                    JsonObject resultJson = rows.get(0);
-                                    resultJson.put(ModelConverter.KEY_TOKEN, userJson.getString(ModelConverter.KEY_TOKEN, ""));
-                                    future.complete(resultJson);
+                                    future.complete(rows.get(0));
                                 } else {
                                     future.fail("query after update failed");
                                 }
