@@ -1,5 +1,6 @@
 package com.omgo.webservice;
 
+import com.omgo.webservice.model.ModelConverter;
 import io.grpc.ManagedChannel;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -12,7 +13,6 @@ import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.auth.User;
 import proto.DBServiceGrpc;
 import proto.Db;
-import proto.common.Common;
 
 public class GRPCAuthProvider implements AuthProvider {
 
@@ -28,11 +28,12 @@ public class GRPCAuthProvider implements AuthProvider {
 
     @Override
     public void authenticate(JsonObject jsonObject, Handler<AsyncResult<User>> handler) {
-        String email = jsonObject.getString("email");
-        String password = jsonObject.getString("password");
-        String token = jsonObject.getString("token");
+        String email = jsonObject.getString("email", "");
+        String password = jsonObject.getString("password", "");
+        String token = jsonObject.getString("token", "");
         String strUsn = jsonObject.getString("usn");
         long usn = Utils.isEmptyString(strUsn) ? 0L : Long.parseLong(strUsn);
+        String clientIpAddress = jsonObject.getString(ModelConverter.KEY_LAST_IP, "");
 
         // TODO: 11/09/2017
 
@@ -46,14 +47,15 @@ public class GRPCAuthProvider implements AuthProvider {
             return;
         }
 
-        Db.DB.UserExtendInfo.Builder extendInfoBuilder = Db.DB.UserExtendInfo.newBuilder();
-        Common.UserInfo.Builder userInfoBuilder = Common.UserInfo.newBuilder();
+        Db.DB.UserEntry.Builder entryBuilder = Db.DB.UserEntry.newBuilder();
+        entryBuilder
+            .setEmail(email)
+            .setSecret(password)
+            .setUsn(usn)
+            .setLastIp(clientIpAddress)
+            .setToken(token);
 
-        userInfoBuilder.setEmail(email);
-        extendInfoBuilder.setInfo(userInfoBuilder.build())
-            .setSecret(password);
-
-        dbServiceVertxStub.userLogin(extendInfoBuilder.build(), res -> {
+        dbServiceVertxStub.userLogin(entryBuilder.build(), res -> {
             if (res.failed()) {
                 handler.handle(Future.failedFuture(res.cause()));
             } else {
@@ -65,14 +67,14 @@ public class GRPCAuthProvider implements AuthProvider {
                     return;
                 }
                 // check user
-                Db.DB.UserExtendInfo userExtendInfo = loginResult.getUserExtInfo();
-                if (userExtendInfo == null) {
+                Db.DB.UserEntry userEntry = loginResult.getUser();
+                if (userEntry == null) {
                     handler.handle(Future.failedFuture("invalid user extend info"));
                     return;
                 }
 
                 LOGGER.info(loginResult);
-                handler.handle(Future.succeededFuture(new GrpcAuthUser(this, email, userExtendInfo)));
+                handler.handle(Future.succeededFuture(new GrpcAuthUser(this, email, userEntry)));
             }
         });
     }

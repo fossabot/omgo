@@ -21,12 +21,12 @@ public class GrpcAuthUser extends AbstractUser {
     private GRPCAuthProvider authProvider;
     private String email;
     private JsonObject principle;
-    private Db.DB.UserExtendInfo userExtendInfo;
+    private Db.DB.UserEntry userEntry;
 
-    public GrpcAuthUser(GRPCAuthProvider authProvider, String email, Db.DB.UserExtendInfo userExtendInfo) {
+    public GrpcAuthUser(GRPCAuthProvider authProvider, String email, Db.DB.UserEntry userEntry) {
         this.authProvider = authProvider;
         this.email = email;
-        this.userExtendInfo = userExtendInfo;
+        this.userEntry = userEntry;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class GrpcAuthUser extends AbstractUser {
 //            principle = new JsonObject().put("email", email);
             principle = new JsonObject();
             try {
-                String info = JsonFormat.printer().print(userExtendInfo);
+                String info = JsonFormat.printer().print(userEntry);
                 principle = new JsonObject(info);
                 principle.remove("secret");
                 return principle;
@@ -67,7 +67,7 @@ public class GrpcAuthUser extends AbstractUser {
         buffer.appendInt(bytes.length);
         buffer.appendBytes(bytes);
 
-        bytes = userExtendInfo.toByteArray();
+        bytes = userEntry.toByteArray();
         buffer.appendInt(bytes.length);
         buffer.appendBytes(bytes);
     }
@@ -86,7 +86,7 @@ public class GrpcAuthUser extends AbstractUser {
         bytes = buffer.getBytes(pos, pos + len);
         pos += len;
         try {
-            userExtendInfo = Db.DB.UserExtendInfo.parseFrom(bytes);
+            userEntry = Db.DB.UserEntry.parseFrom(bytes);
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }

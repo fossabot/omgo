@@ -12,7 +12,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import proto.DBServiceGrpc;
 import proto.Db;
-import proto.common.Common;
 
 public class RegisterHandler extends BaseHandler {
 
@@ -43,22 +42,17 @@ public class RegisterHandler extends BaseHandler {
             long birthdayLong = Utils.isEmptyString(birthday) ? 0L : Long.parseLong(birthday);
             int genderInt = Utils.isEmptyString(gender) ? 0 : Integer.parseInt(gender);
 
-            Common.UserInfo.Builder userInfoBuilder = Common.UserInfo.newBuilder();
-            userInfoBuilder
+            Db.DB.UserEntry.Builder userEntryBuilder = Db.DB.UserEntry.newBuilder();
+            userEntryBuilder
                 .setAvatar(avatar)
                 .setBirthday(birthdayLong)
                 .setCountry(country)
                 .setEmail(email)
-                .setGender(Common.Gender.forNumber(genderInt))
-                .setNickname(nickname);
+                .setGender(genderInt)
+                .setNickname(nickname)
+                .setSecret(secret);
 
-            Db.DB.UserExtendInfo.Builder builder = Db.DB.UserExtendInfo.newBuilder();
-            Db.DB.UserExtendInfo extendInfo = builder
-                .setInfo(userInfoBuilder.build())
-                .setSecret(secret)
-                .build();
-
-            dbServiceVertxStub.userRegister(extendInfo, res -> {
+            dbServiceVertxStub.userRegister(userEntryBuilder.build(), res -> {
                 if (res.succeeded()) {
                     JsonObject resultJson = new JsonObject();
                     try {

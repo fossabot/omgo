@@ -112,6 +112,8 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
             return;
         }
 
+        // TODO: 14/09/2017 check more parameters
+
         // response future
         Future<JsonObject> responseFuture = Future.future();
         responseFuture.setHandler(res -> {
@@ -190,7 +192,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         Future<JsonObject> responseFuture = Future.future();
         responseFuture.setHandler(res -> {
             if (res.succeeded()) {
-                response.complete(DbProtoUtils.makeUserOpOkResult(res.result()));
+                response.complete(DbProtoUtils.makeUserOpOkResult(ModelConverter.removePrivateKeysForLogin(res.result())));
             } else {
                 LOGGER.error(res.cause());
                 DB.StatusCode code = DB.StatusCode.valueOf(res.cause().toString());

@@ -136,6 +136,19 @@ public class ModelConverter {
         return keySet;
     }
 
+    public static JsonObject removePrivateKeysForLogin(JsonObject jsonObject) {
+        jsonObject.remove(KEY_APP_LANGUAGE);
+        jsonObject.remove(KEY_APP_VERSION);
+        jsonObject.remove(KEY_DEVICE_TYPE);
+        jsonObject.remove(KEY_MCC);
+        jsonObject.remove(KEY_OS);
+        jsonObject.remove(KEY_OS_LOCALE);
+        jsonObject.remove(KEY_SALT);
+        jsonObject.remove(KEY_SECRET);
+
+        return jsonObject;
+    }
+
     public static String SQLQueryInsert(JsonObject jsonObject) {
         String SQL_INSERT = "INSERT INTO user ";
 

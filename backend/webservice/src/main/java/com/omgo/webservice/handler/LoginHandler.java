@@ -1,6 +1,7 @@
 package com.omgo.webservice.handler;
 
 import com.omgo.webservice.GRPCAuthProvider;
+import com.omgo.webservice.model.ModelConverter;
 import io.grpc.ManagedChannel;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
@@ -32,6 +33,7 @@ public class LoginHandler extends BaseHandler {
             Session session = routingContext.session();
 
             JsonObject authJson = super.getHeaderJson(request);
+            authJson.put(ModelConverter.KEY_LAST_IP, request.connection().remoteAddress().host());
             authProvider.authenticate(authJson, authRes -> {
                 if (authRes.succeeded()) {
                     User user = authRes.result();
