@@ -18,7 +18,8 @@ DELETE FROM table WHERE usn=0;
 ```sql
 create table user
 (
-	usn bigint auto_increment primary key,
+	usn bigint auto_increment
+		primary key,
 	uid bigint default '100000' not null,
 	app_language varchar(16) null,
 	app_version varchar(32) null,
@@ -30,6 +31,7 @@ create table user
 	email_verified tinyint(1) default '0' null,
 	gender int default '0' null,
 	is_official tinyint(1) default '0' null,
+	is_robot tinyint(1) default '0' null,
 	last_ip varchar(128) null,
 	last_login bigint default '0' not null,
 	login_count bigint default '0' not null,
@@ -37,11 +39,16 @@ create table user
 	nickname varchar(128) not null,
 	os varchar(255) null,
 	os_locale varchar(16) null,
+	phone varchar(32) null,
+	phone_verified tinyint(1) default '0' null,
+	premium_end bigint default '0' null,
+	premium_exp bigint default '0' null,
 	premium_level int default '0' null,
-	salt varchar(255) null,
 	secret varchar(255) null,
 	since bigint default '0' not null,
 	social_id varchar(32) null,
+	social_name varchar(64) null,
+	social_verified tinyint(1) default '0' null,
 	status int default '0' null,
 	timezone int default '0' null,
 	token varchar(255) null,

@@ -137,30 +137,18 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                 // generate user id
                 Future<JsonObject> snowflakeFuture = dbOperator.generateUniqueUserId();
                 snowflakeFuture.compose(snowflake -> {
+                    long now = System.currentTimeMillis();
                     long userId = snowflake.getLong(ModelConverter.KEY_UID);
-                    byte[] saltRaw = AccountUtils.getSalt();
-                    byte[] tokenRaw = AccountUtils.getToken(saltRaw);
-                    String salt = AccountUtils.encodeBase64(saltRaw);
+                    byte[] tokenRaw = AccountUtils.getToken();
                     String token = AccountUtils.encodeBase64(tokenRaw);
-                    String saltedSecret = AccountUtils.saltedSecret(secret, salt);
+                    String saltedSecret = AccountUtils.saltedSecret(secret, now);
                     JsonObject jsonObject = ModelConverter.userEntry2Json(request);
                     jsonObject.put(ModelConverter.KEY_UID, userId);
                     jsonObject.put(ModelConverter.KEY_TOKEN, token);
-                    jsonObject.put(ModelConverter.KEY_SALT, salt);
                     jsonObject.put(ModelConverter.KEY_SECRET, saltedSecret);
-                    jsonObject.put(ModelConverter.KEY_SINCE, System.currentTimeMillis());
-                    jsonObject.put(ModelConverter.KEY_LAST_LOGIN, System.currentTimeMillis());
+                    jsonObject.put(ModelConverter.KEY_SINCE, now);
+                    jsonObject.put(ModelConverter.KEY_LAST_LOGIN, now);
                     jsonObject.put(ModelConverter.KEY_LOGIN_COUNT, 1);
-
-                    jsonObject.put(ModelConverter.KEY_LAST_IP, request.getLastIp());
-                    jsonObject.put(ModelConverter.KEY_APP_LANGUAGE, request.getAppLanguage());
-                    jsonObject.put(ModelConverter.KEY_APP_VERSION, request.getAppVersion());
-                    jsonObject.put(ModelConverter.KEY_AVATAR, request.getAvatar());
-                    jsonObject.put(ModelConverter.KEY_DEVICE_TYPE, request.getDeviceType());
-                    jsonObject.put(ModelConverter.KEY_MCC, request.getMcc());
-                    jsonObject.put(ModelConverter.KEY_OS, request.getOs());
-                    jsonObject.put(ModelConverter.KEY_OS_LOCALE, request.getOsLocale());
-                    jsonObject.put(ModelConverter.KEY_TIMEZONE, request.getTimezone());
 
                     return dbOperator.insertUserInfoSQL(jsonObject);
                 }).compose(insertRes -> {
@@ -236,7 +224,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                 // query in mysql and update
                 Future<JsonObject> sqlQueryFuture = dbOperator.queryUserInfoSQL(ModelConverter.userEntry2Json(request));
                 return sqlQueryFuture.compose(queryRes -> {
-                    String salt = queryRes.getString(ModelConverter.KEY_SALT);
+                    long salt = queryRes.getLong(ModelConverter.KEY_SINCE);
 
                     boolean authed = v.containsKey(ModelConverter.KEY_TOKEN);
                     if (!authed) {
@@ -245,8 +233,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                         authed = Utils.isNotEmptyString(saltedQuerySecret) && saltedQuerySecret.equals(secret);
                     }
                     if (authed) {
-                        byte[] saltRaw = AccountUtils.decodeBase64(salt);
-                        byte[] tokenRaw = AccountUtils.getToken(saltRaw);
+                        byte[] tokenRaw = AccountUtils.getToken();
                         int loginCount = queryRes.getInteger(ModelConverter.KEY_LOGIN_COUNT);
                         String token = AccountUtils.encodeBase64(tokenRaw);
                         queryRes.put(ModelConverter.KEY_TOKEN, token);

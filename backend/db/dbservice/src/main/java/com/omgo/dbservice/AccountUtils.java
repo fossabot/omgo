@@ -19,16 +19,9 @@ public final class AccountUtils {
         return String.format("%s:%d", ModelConverter.KEY_USER, usn);
     }
 
-    public static byte[] getSalt() {
-        byte[] salt = new byte[32];
-        random.nextBytes(salt);
-        return salt;
-    }
-
-    public static byte[] getToken(byte[] salt) {
-        byte[] raw = new byte[32 + salt.length];
+    public static byte[] getToken() {
+        byte[] raw = new byte[32];
         random.nextBytes(raw);
-        System.arraycopy(salt, 0, raw, 32, salt.length);
         try {
             MessageDigest digestMD5 = MessageDigest.getInstance("MD5");
             return digestMD5.digest(raw);
@@ -47,9 +40,9 @@ public final class AccountUtils {
         return Base64.getDecoder().decode(encoded);
     }
 
-    public static String saltedSecret(String secret, String salt) {
+    public static String saltedSecret(String secret, long salt) {
         try {
-            String salted = secret + salt;
+            String salted = secret + String.valueOf(salt);
             MessageDigest digestSHA1 = MessageDigest.getInstance("SHA-1");
             digestSHA1.reset();
             byte[] saltedRaw = digestSHA1.digest(salted.getBytes("UTF-8"));
