@@ -160,7 +160,7 @@ public class ModelConverter {
         return keySet;
     }
 
-    public static JsonObject removePrivateKeysForLogin(JsonObject jsonObject) {
+    public static JsonObject removeKeysForLoginResponse(JsonObject jsonObject) {
         jsonObject.remove(KEY_APP_LANGUAGE);
         jsonObject.remove(KEY_APP_VERSION);
         jsonObject.remove(KEY_DEVICE_TYPE);
@@ -170,6 +170,24 @@ public class ModelConverter {
         jsonObject.remove(KEY_SECRET);
         jsonObject.remove(KEY_SOCIAL_ID);
         jsonObject.remove(KEY_SOCIAL_NAME);
+        jsonObject.remove(KEY_TIMEZONE);
+
+        return jsonObject;
+    }
+
+    public static JsonObject removeKeysForRegisterRequest(JsonObject jsonObject) {
+        jsonObject.remove(KEY_USN);
+        jsonObject.remove(KEY_UID);
+        jsonObject.remove(KEY_EMAIL_VERIFIED);
+        jsonObject.remove(KEY_IS_OFFICIAL);
+        jsonObject.remove(KEY_IS_ROBOT);
+        jsonObject.remove(KEY_PHONE_VERIFIED);
+        jsonObject.remove(KEY_PREMIUM_END);
+        jsonObject.remove(KEY_PREMIUM_EXP);
+        jsonObject.remove(KEY_PREMIUM_LEVEL);
+        jsonObject.remove(KEY_SECRET);
+        jsonObject.remove(KEY_SINCE);
+        jsonObject.remove(KEY_SOCIAL_VERIFIED);
         jsonObject.remove(KEY_TIMEZONE);
 
         return jsonObject;

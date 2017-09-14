@@ -24,7 +24,6 @@ public class LoginHandler extends BaseHandler {
         super.register(router, path);
 
         GRPCAuthProvider authProvider = new GRPCAuthProvider(vertx, grpcChannel);
-
         route.handler(routingContext -> {
             HttpServerRequest request = super.handle(routingContext);
             HttpServerResponse response = super.response(routingContext);
@@ -33,6 +32,11 @@ public class LoginHandler extends BaseHandler {
             Session session = routingContext.session();
 
             JsonObject authJson = super.getHeaderJson(request);
+
+            // TODO: 15/09/2017 check parameters here
+            // thought dbservice has already check these parameters
+            // but just for break fast's cause
+
             authJson.put(ModelConverter.KEY_LAST_IP, request.connection().remoteAddress().host());
             authProvider.authenticate(authJson, authRes -> {
                 if (authRes.succeeded()) {

@@ -2,6 +2,7 @@ package com.omgo.webservice;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
+import com.omgo.webservice.model.ModelConverter;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -37,16 +38,8 @@ public class GrpcAuthUser extends AbstractUser {
     @Override
     public JsonObject principal() {
         if (principle == null) {
-//            principle = new JsonObject().put("email", email);
             principle = new JsonObject();
-            try {
-                String info = JsonFormat.printer().print(userEntry);
-                principle = new JsonObject(info);
-                principle.remove("secret");
-                return principle;
-            } catch (InvalidProtocolBufferException e) {
-                e.printStackTrace();
-            }
+            principle = ModelConverter.userEntry2Json(userEntry);
         }
         return principle;
     }

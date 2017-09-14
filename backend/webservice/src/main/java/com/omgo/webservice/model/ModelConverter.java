@@ -20,6 +20,7 @@ public class ModelConverter {
     public static final String KEY_EMAIL_VERIFIED = "email_verified";
     public static final String KEY_GENDER = "gender";
     public static final String KEY_IS_OFFICIAL = "is_official";
+    public static final String KEY_IS_ROBOT = "is_robot";
     public static final String KEY_LAST_IP = "last_ip";
     public static final String KEY_LAST_LOGIN = "last_login";
     public static final String KEY_LOGIN_COUNT = "login_count";
@@ -27,11 +28,16 @@ public class ModelConverter {
     public static final String KEY_NICKNAME = "nickname";
     public static final String KEY_OS = "os";
     public static final String KEY_OS_LOCALE = "os_locale";
+    public static final String KEY_PHONE = "phone";
+    public static final String KEY_PHONE_VERIFIED = "phone_verified";
+    public static final String KEY_PREMIUM_END = "premium_end";
+    public static final String KEY_PREMIUM_EXP = "premium_exp";
     public static final String KEY_PREMIUM_LEVEL = "premium_level";
-    public static final String KEY_SALT = "salt";
     public static final String KEY_SECRET = "secret";
     public static final String KEY_SINCE = "since";
     public static final String KEY_SOCIAL_ID = "social_id";
+    public static final String KEY_SOCIAL_NAME = "social_name";
+    public static final String KEY_SOCIAL_VERIFIED = "social_verified";
     public static final String KEY_STATUS = "status";
     public static final String KEY_TIMEZONE = "timezone";
     public static final String KEY_TOKEN = "token";
@@ -52,6 +58,7 @@ public class ModelConverter {
             .setEmailVerified(jsonObject.getBoolean(KEY_EMAIL_VERIFIED, false))
             .setGender(jsonObject.getInteger(KEY_GENDER, 0))
             .setIsOfficial(jsonObject.getBoolean(KEY_IS_OFFICIAL, false))
+            .setIsRobot(jsonObject.getBoolean(KEY_IS_ROBOT, false))
             .setLastIp(jsonObject.getString(KEY_LAST_IP, ""))
             .setLastLogin(jsonObject.getLong(KEY_LAST_LOGIN, 0L))
             .setLoginCount(jsonObject.getLong(KEY_LOGIN_COUNT, 0L))
@@ -59,11 +66,16 @@ public class ModelConverter {
             .setNickname(jsonObject.getString(KEY_NICKNAME, ""))
             .setOs(jsonObject.getString(KEY_OS, ""))
             .setOsLocale(jsonObject.getString(KEY_OS_LOCALE, ""))
+            .setPhone(jsonObject.getString(KEY_PHONE, ""))
+            .setPhoneVerified (jsonObject.getBoolean(KEY_PHONE_VERIFIED, false))
+            .setPremiumEnd(jsonObject.getLong(KEY_PREMIUM_END, 0L))
+            .setPremiumExp(jsonObject.getLong(KEY_PREMIUM_EXP, 0L))
             .setPremiumLevel(jsonObject.getInteger(KEY_PREMIUM_LEVEL, 0))
-            .setSalt(jsonObject.getString(KEY_SALT, ""))
             .setSecret(jsonObject.getString(KEY_SECRET, ""))
             .setSince(jsonObject.getLong(KEY_SINCE, 0L))
             .setSocialId(jsonObject.getString(KEY_SOCIAL_ID, ""))
+            .setSocialName(jsonObject.getString(KEY_SOCIAL_NAME, ""))
+            .setSocialVerified(jsonObject.getBoolean(KEY_SOCIAL_VERIFIED, false))
             .setStatus(jsonObject.getInteger(KEY_STATUS, 0))
             .setTimezone(jsonObject.getInteger(KEY_TIMEZONE, 0))
             .setToken(jsonObject.getString(KEY_TOKEN, ""))
@@ -84,6 +96,7 @@ public class ModelConverter {
             .put(KEY_EMAIL_VERIFIED, userEntry.getEmailVerified())
             .put(KEY_GENDER, userEntry.getGender())
             .put(KEY_IS_OFFICIAL, userEntry.getIsOfficial())
+            .put(KEY_IS_ROBOT, userEntry.getIsRobot())
             .put(KEY_LAST_IP, userEntry.getLastIp())
             .put(KEY_LAST_LOGIN, userEntry.getLastLogin())
             .put(KEY_LOGIN_COUNT, userEntry.getLoginCount())
@@ -91,11 +104,16 @@ public class ModelConverter {
             .put(KEY_NICKNAME, userEntry.getNickname())
             .put(KEY_OS, userEntry.getOs())
             .put(KEY_OS_LOCALE, userEntry.getOsLocale())
+            .put(KEY_PHONE, userEntry.getPhone())
+            .put(KEY_PHONE_VERIFIED, userEntry.getPhoneVerified())
+            .put(KEY_PREMIUM_END, userEntry.getPremiumEnd())
+            .put(KEY_PREMIUM_EXP, userEntry.getPremiumExp())
             .put(KEY_PREMIUM_LEVEL, userEntry.getPremiumLevel())
-            .put(KEY_SALT, userEntry.getSalt())
             .put(KEY_SECRET, userEntry.getSecret())
             .put(KEY_SINCE, userEntry.getSince())
             .put(KEY_SOCIAL_ID, userEntry.getSocialId())
+            .put(KEY_SOCIAL_NAME, userEntry.getSocialName())
+            .put(KEY_SOCIAL_VERIFIED, userEntry.getSocialVerified())
             .put(KEY_STATUS, userEntry.getStatus())
             .put(KEY_TIMEZONE, userEntry.getTimezone())
             .put(KEY_TOKEN, userEntry.getToken());
@@ -118,6 +136,7 @@ public class ModelConverter {
         keySet.add(KEY_EMAIL_VERIFIED);
         keySet.add(KEY_GENDER);
         keySet.add(KEY_IS_OFFICIAL);
+        keySet.add(KEY_IS_ROBOT);
         keySet.add(KEY_LAST_IP);
         keySet.add(KEY_LAST_LOGIN);
         keySet.add(KEY_LOGIN_COUNT);
@@ -125,15 +144,53 @@ public class ModelConverter {
         keySet.add(KEY_NICKNAME);
         keySet.add(KEY_OS);
         keySet.add(KEY_OS_LOCALE);
+        keySet.add(KEY_PHONE);
+        keySet.add(KEY_PHONE_VERIFIED);
+        keySet.add(KEY_PREMIUM_END);
+        keySet.add(KEY_PREMIUM_EXP);
         keySet.add(KEY_PREMIUM_LEVEL);
-        keySet.add(KEY_SALT);
         keySet.add(KEY_SECRET);
         keySet.add(KEY_SINCE);
         keySet.add(KEY_SOCIAL_ID);
+        keySet.add(KEY_SOCIAL_NAME);
+        keySet.add(KEY_SOCIAL_VERIFIED);
         keySet.add(KEY_STATUS);
         keySet.add(KEY_TIMEZONE);
         keySet.add(KEY_TOKEN);
         return keySet;
+    }
+
+    public static JsonObject removeKeysForLoginResponse(JsonObject jsonObject) {
+        jsonObject.remove(KEY_APP_LANGUAGE);
+        jsonObject.remove(KEY_APP_VERSION);
+        jsonObject.remove(KEY_DEVICE_TYPE);
+        jsonObject.remove(KEY_MCC);
+        jsonObject.remove(KEY_OS);
+        jsonObject.remove(KEY_OS_LOCALE);
+        jsonObject.remove(KEY_SECRET);
+        jsonObject.remove(KEY_SOCIAL_ID);
+        jsonObject.remove(KEY_SOCIAL_NAME);
+        jsonObject.remove(KEY_TIMEZONE);
+
+        return jsonObject;
+    }
+
+    public static JsonObject removeKeysForRegisterRequest(JsonObject jsonObject) {
+        jsonObject.remove(KEY_USN);
+        jsonObject.remove(KEY_UID);
+        jsonObject.remove(KEY_EMAIL_VERIFIED);
+        jsonObject.remove(KEY_IS_OFFICIAL);
+        jsonObject.remove(KEY_IS_ROBOT);
+        jsonObject.remove(KEY_PHONE_VERIFIED);
+        jsonObject.remove(KEY_PREMIUM_END);
+        jsonObject.remove(KEY_PREMIUM_EXP);
+        jsonObject.remove(KEY_PREMIUM_LEVEL);
+        jsonObject.remove(KEY_SECRET);
+        jsonObject.remove(KEY_SINCE);
+        jsonObject.remove(KEY_SOCIAL_VERIFIED);
+        jsonObject.remove(KEY_TIMEZONE);
+
+        return jsonObject;
     }
 
     public static String SQLQueryInsert(JsonObject jsonObject) {
@@ -157,7 +214,7 @@ public class ModelConverter {
             keys.add(key);
             Object value = entry.getValue();
             if (value instanceof String) {
-                values.add(COMMA + (String) value + COMMA);
+                values.add(COMMA + value + COMMA);
             } else {
                 values.add(value.toString());
             }
@@ -177,7 +234,6 @@ public class ModelConverter {
         keySet.add(KEY_EMAIL);
         keySet.add(KEY_EMAIL_VERIFIED);
         keySet.add(KEY_GENDER);
-        keySet.add(KEY_IS_OFFICIAL);
         keySet.add(KEY_LAST_IP);
         keySet.add(KEY_LAST_LOGIN);
         keySet.add(KEY_LOGIN_COUNT);
@@ -185,9 +241,15 @@ public class ModelConverter {
         keySet.add(KEY_NICKNAME);
         keySet.add(KEY_OS);
         keySet.add(KEY_OS_LOCALE);
+        keySet.add(KEY_PHONE);
+        keySet.add(KEY_PHONE_VERIFIED);
+        keySet.add(KEY_PREMIUM_END);
+        keySet.add(KEY_PREMIUM_EXP);
         keySet.add(KEY_PREMIUM_LEVEL);
         keySet.add(KEY_SECRET);
         keySet.add(KEY_SOCIAL_ID);
+        keySet.add(KEY_SOCIAL_NAME);
+        keySet.add(KEY_SOCIAL_VERIFIED);
         keySet.add(KEY_STATUS);
         keySet.add(KEY_TIMEZONE);
         keySet.add(KEY_TOKEN);

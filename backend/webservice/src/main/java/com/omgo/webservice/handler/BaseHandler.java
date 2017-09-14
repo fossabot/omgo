@@ -24,8 +24,6 @@ public class BaseHandler {
 
     protected String path;
 
-    protected JsonObject headerJson;
-
     public BaseHandler(Vertx vertx) {
         this.vertx = vertx;
         LOGGER = LoggerFactory.getLogger(this.getClass());
@@ -58,11 +56,9 @@ public class BaseHandler {
     }
 
     protected JsonObject getHeaderJson(HttpServerRequest request) {
-        if (headerJson == null) {
-            headerJson = new JsonObject();
-            for (Map.Entry<String, String> entry : request.headers().entries()) {
-                headerJson.put(entry.getKey(), entry.getValue());
-            }
+        JsonObject headerJson = new JsonObject();
+        for (Map.Entry<String, String> entry : request.headers().entries()) {
+            headerJson.put(entry.getKey(), entry.getValue());
         }
         return headerJson;
     }

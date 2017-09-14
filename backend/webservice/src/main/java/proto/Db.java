@@ -962,116 +962,151 @@ public final class Db {
       boolean getIsOfficial();
 
       /**
-       * <code>string last_ip = 13;</code>
+       * <code>bool is_robot = 13;</code>
+       */
+      boolean getIsRobot();
+
+      /**
+       * <code>string last_ip = 14;</code>
        */
       java.lang.String getLastIp();
       /**
-       * <code>string last_ip = 13;</code>
+       * <code>string last_ip = 14;</code>
        */
       com.google.protobuf.ByteString
           getLastIpBytes();
 
       /**
-       * <code>uint64 last_login = 14;</code>
+       * <code>uint64 last_login = 15;</code>
        */
       long getLastLogin();
 
       /**
-       * <code>uint64 login_count = 15;</code>
+       * <code>uint64 login_count = 16;</code>
        */
       long getLoginCount();
 
       /**
-       * <code>int32 mcc = 16;</code>
+       * <code>int32 mcc = 17;</code>
        */
       int getMcc();
 
       /**
-       * <code>string nickname = 17;</code>
+       * <code>string nickname = 18;</code>
        */
       java.lang.String getNickname();
       /**
-       * <code>string nickname = 17;</code>
+       * <code>string nickname = 18;</code>
        */
       com.google.protobuf.ByteString
           getNicknameBytes();
 
       /**
-       * <code>string os = 18;</code>
+       * <code>string os = 19;</code>
        */
       java.lang.String getOs();
       /**
-       * <code>string os = 18;</code>
+       * <code>string os = 19;</code>
        */
       com.google.protobuf.ByteString
           getOsBytes();
 
       /**
-       * <code>string os_locale = 19;</code>
+       * <code>string os_locale = 20;</code>
        */
       java.lang.String getOsLocale();
       /**
-       * <code>string os_locale = 19;</code>
+       * <code>string os_locale = 20;</code>
        */
       com.google.protobuf.ByteString
           getOsLocaleBytes();
 
       /**
-       * <code>int32 premium_level = 20;</code>
+       * <code>string phone = 21;</code>
+       */
+      java.lang.String getPhone();
+      /**
+       * <code>string phone = 21;</code>
+       */
+      com.google.protobuf.ByteString
+          getPhoneBytes();
+
+      /**
+       * <code>bool phone_verified = 22;</code>
+       */
+      boolean getPhoneVerified();
+
+      /**
+       * <code>uint64 premium_end = 23;</code>
+       */
+      long getPremiumEnd();
+
+      /**
+       * <code>uint64 premium_exp = 24;</code>
+       */
+      long getPremiumExp();
+
+      /**
+       * <code>int32 premium_level = 25;</code>
        */
       int getPremiumLevel();
 
       /**
-       * <code>string salt = 21;</code>
-       */
-      java.lang.String getSalt();
-      /**
-       * <code>string salt = 21;</code>
-       */
-      com.google.protobuf.ByteString
-          getSaltBytes();
-
-      /**
-       * <code>string secret = 22;</code>
+       * <code>string secret = 26;</code>
        */
       java.lang.String getSecret();
       /**
-       * <code>string secret = 22;</code>
+       * <code>string secret = 26;</code>
        */
       com.google.protobuf.ByteString
           getSecretBytes();
 
       /**
-       * <code>uint64 since = 23;</code>
+       * <code>uint64 since = 27;</code>
        */
       long getSince();
 
       /**
-       * <code>string social_id = 24;</code>
+       * <code>string social_id = 28;</code>
        */
       java.lang.String getSocialId();
       /**
-       * <code>string social_id = 24;</code>
+       * <code>string social_id = 28;</code>
        */
       com.google.protobuf.ByteString
           getSocialIdBytes();
 
       /**
-       * <code>int32 status = 25;</code>
+       * <code>string social_name = 29;</code>
+       */
+      java.lang.String getSocialName();
+      /**
+       * <code>string social_name = 29;</code>
+       */
+      com.google.protobuf.ByteString
+          getSocialNameBytes();
+
+      /**
+       * <code>bool social_verified = 30;</code>
+       */
+      boolean getSocialVerified();
+
+      /**
+       * <code>int32 status = 31;</code>
        */
       int getStatus();
 
       /**
-       * <code>int32 timezone = 26;</code>
+       * <code>int32 timezone = 32;</code>
        */
       int getTimezone();
 
       /**
-       * <code>string token = 27;</code>
+       * <code>string token = 33;</code>
        */
       java.lang.String getToken();
       /**
-       * <code>string token = 27;</code>
+       * <code>string token = 33;</code>
        */
       com.google.protobuf.ByteString
           getTokenBytes();
@@ -1100,6 +1135,7 @@ public final class Db {
         emailVerified_ = false;
         gender_ = 0;
         isOfficial_ = false;
+        isRobot_ = false;
         lastIp_ = "";
         lastLogin_ = 0L;
         loginCount_ = 0L;
@@ -1107,11 +1143,16 @@ public final class Db {
         nickname_ = "";
         os_ = "";
         osLocale_ = "";
+        phone_ = "";
+        phoneVerified_ = false;
+        premiumEnd_ = 0L;
+        premiumExp_ = 0L;
         premiumLevel_ = 0;
-        salt_ = "";
         secret_ = "";
         since_ = 0L;
         socialId_ = "";
+        socialName_ = "";
+        socialVerified_ = false;
         status_ = 0;
         timezone_ = 0;
         token_ = "";
@@ -1128,6 +1169,7 @@ public final class Db {
           throws com.google.protobuf.InvalidProtocolBufferException {
         this();
         int mutable_bitField0_ = 0;
+        int mutable_bitField1_ = 0;
         try {
           boolean done = false;
           while (!done) {
@@ -1207,84 +1249,115 @@ public final class Db {
                 isOfficial_ = input.readBool();
                 break;
               }
-              case 106: {
+              case 104: {
+
+                isRobot_ = input.readBool();
+                break;
+              }
+              case 114: {
                 java.lang.String s = input.readStringRequireUtf8();
 
                 lastIp_ = s;
                 break;
               }
-              case 112: {
+              case 120: {
 
                 lastLogin_ = input.readUInt64();
                 break;
               }
-              case 120: {
+              case 128: {
 
                 loginCount_ = input.readUInt64();
                 break;
               }
-              case 128: {
+              case 136: {
 
                 mcc_ = input.readInt32();
-                break;
-              }
-              case 138: {
-                java.lang.String s = input.readStringRequireUtf8();
-
-                nickname_ = s;
                 break;
               }
               case 146: {
                 java.lang.String s = input.readStringRequireUtf8();
 
-                os_ = s;
+                nickname_ = s;
                 break;
               }
               case 154: {
                 java.lang.String s = input.readStringRequireUtf8();
 
-                osLocale_ = s;
+                os_ = s;
                 break;
               }
-              case 160: {
+              case 162: {
+                java.lang.String s = input.readStringRequireUtf8();
 
-                premiumLevel_ = input.readInt32();
+                osLocale_ = s;
                 break;
               }
               case 170: {
                 java.lang.String s = input.readStringRequireUtf8();
 
-                salt_ = s;
+                phone_ = s;
                 break;
               }
-              case 178: {
+              case 176: {
+
+                phoneVerified_ = input.readBool();
+                break;
+              }
+              case 184: {
+
+                premiumEnd_ = input.readUInt64();
+                break;
+              }
+              case 192: {
+
+                premiumExp_ = input.readUInt64();
+                break;
+              }
+              case 200: {
+
+                premiumLevel_ = input.readInt32();
+                break;
+              }
+              case 210: {
                 java.lang.String s = input.readStringRequireUtf8();
 
                 secret_ = s;
                 break;
               }
-              case 184: {
+              case 216: {
 
                 since_ = input.readUInt64();
                 break;
               }
-              case 194: {
+              case 226: {
                 java.lang.String s = input.readStringRequireUtf8();
 
                 socialId_ = s;
                 break;
               }
-              case 200: {
+              case 234: {
+                java.lang.String s = input.readStringRequireUtf8();
+
+                socialName_ = s;
+                break;
+              }
+              case 240: {
+
+                socialVerified_ = input.readBool();
+                break;
+              }
+              case 248: {
 
                 status_ = input.readInt32();
                 break;
               }
-              case 208: {
+              case 256: {
 
                 timezone_ = input.readInt32();
                 break;
               }
-              case 218: {
+              case 266: {
                 java.lang.String s = input.readStringRequireUtf8();
 
                 token_ = s;
@@ -1546,10 +1619,19 @@ public final class Db {
         return isOfficial_;
       }
 
-      public static final int LAST_IP_FIELD_NUMBER = 13;
+      public static final int IS_ROBOT_FIELD_NUMBER = 13;
+      private boolean isRobot_;
+      /**
+       * <code>bool is_robot = 13;</code>
+       */
+      public boolean getIsRobot() {
+        return isRobot_;
+      }
+
+      public static final int LAST_IP_FIELD_NUMBER = 14;
       private volatile java.lang.Object lastIp_;
       /**
-       * <code>string last_ip = 13;</code>
+       * <code>string last_ip = 14;</code>
        */
       public java.lang.String getLastIp() {
         java.lang.Object ref = lastIp_;
@@ -1564,7 +1646,7 @@ public final class Db {
         }
       }
       /**
-       * <code>string last_ip = 13;</code>
+       * <code>string last_ip = 14;</code>
        */
       public com.google.protobuf.ByteString
           getLastIpBytes() {
@@ -1580,37 +1662,37 @@ public final class Db {
         }
       }
 
-      public static final int LAST_LOGIN_FIELD_NUMBER = 14;
+      public static final int LAST_LOGIN_FIELD_NUMBER = 15;
       private long lastLogin_;
       /**
-       * <code>uint64 last_login = 14;</code>
+       * <code>uint64 last_login = 15;</code>
        */
       public long getLastLogin() {
         return lastLogin_;
       }
 
-      public static final int LOGIN_COUNT_FIELD_NUMBER = 15;
+      public static final int LOGIN_COUNT_FIELD_NUMBER = 16;
       private long loginCount_;
       /**
-       * <code>uint64 login_count = 15;</code>
+       * <code>uint64 login_count = 16;</code>
        */
       public long getLoginCount() {
         return loginCount_;
       }
 
-      public static final int MCC_FIELD_NUMBER = 16;
+      public static final int MCC_FIELD_NUMBER = 17;
       private int mcc_;
       /**
-       * <code>int32 mcc = 16;</code>
+       * <code>int32 mcc = 17;</code>
        */
       public int getMcc() {
         return mcc_;
       }
 
-      public static final int NICKNAME_FIELD_NUMBER = 17;
+      public static final int NICKNAME_FIELD_NUMBER = 18;
       private volatile java.lang.Object nickname_;
       /**
-       * <code>string nickname = 17;</code>
+       * <code>string nickname = 18;</code>
        */
       public java.lang.String getNickname() {
         java.lang.Object ref = nickname_;
@@ -1625,7 +1707,7 @@ public final class Db {
         }
       }
       /**
-       * <code>string nickname = 17;</code>
+       * <code>string nickname = 18;</code>
        */
       public com.google.protobuf.ByteString
           getNicknameBytes() {
@@ -1641,10 +1723,10 @@ public final class Db {
         }
       }
 
-      public static final int OS_FIELD_NUMBER = 18;
+      public static final int OS_FIELD_NUMBER = 19;
       private volatile java.lang.Object os_;
       /**
-       * <code>string os = 18;</code>
+       * <code>string os = 19;</code>
        */
       public java.lang.String getOs() {
         java.lang.Object ref = os_;
@@ -1659,7 +1741,7 @@ public final class Db {
         }
       }
       /**
-       * <code>string os = 18;</code>
+       * <code>string os = 19;</code>
        */
       public com.google.protobuf.ByteString
           getOsBytes() {
@@ -1675,10 +1757,10 @@ public final class Db {
         }
       }
 
-      public static final int OS_LOCALE_FIELD_NUMBER = 19;
+      public static final int OS_LOCALE_FIELD_NUMBER = 20;
       private volatile java.lang.Object osLocale_;
       /**
-       * <code>string os_locale = 19;</code>
+       * <code>string os_locale = 20;</code>
        */
       public java.lang.String getOsLocale() {
         java.lang.Object ref = osLocale_;
@@ -1693,7 +1775,7 @@ public final class Db {
         }
       }
       /**
-       * <code>string os_locale = 19;</code>
+       * <code>string os_locale = 20;</code>
        */
       public com.google.protobuf.ByteString
           getOsLocaleBytes() {
@@ -1709,53 +1791,80 @@ public final class Db {
         }
       }
 
-      public static final int PREMIUM_LEVEL_FIELD_NUMBER = 20;
-      private int premiumLevel_;
+      public static final int PHONE_FIELD_NUMBER = 21;
+      private volatile java.lang.Object phone_;
       /**
-       * <code>int32 premium_level = 20;</code>
+       * <code>string phone = 21;</code>
        */
-      public int getPremiumLevel() {
-        return premiumLevel_;
-      }
-
-      public static final int SALT_FIELD_NUMBER = 21;
-      private volatile java.lang.Object salt_;
-      /**
-       * <code>string salt = 21;</code>
-       */
-      public java.lang.String getSalt() {
-        java.lang.Object ref = salt_;
+      public java.lang.String getPhone() {
+        java.lang.Object ref = phone_;
         if (ref instanceof java.lang.String) {
           return (java.lang.String) ref;
         } else {
           com.google.protobuf.ByteString bs = 
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          salt_ = s;
+          phone_ = s;
           return s;
         }
       }
       /**
-       * <code>string salt = 21;</code>
+       * <code>string phone = 21;</code>
        */
       public com.google.protobuf.ByteString
-          getSaltBytes() {
-        java.lang.Object ref = salt_;
+          getPhoneBytes() {
+        java.lang.Object ref = phone_;
         if (ref instanceof java.lang.String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          salt_ = b;
+          phone_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
 
-      public static final int SECRET_FIELD_NUMBER = 22;
+      public static final int PHONE_VERIFIED_FIELD_NUMBER = 22;
+      private boolean phoneVerified_;
+      /**
+       * <code>bool phone_verified = 22;</code>
+       */
+      public boolean getPhoneVerified() {
+        return phoneVerified_;
+      }
+
+      public static final int PREMIUM_END_FIELD_NUMBER = 23;
+      private long premiumEnd_;
+      /**
+       * <code>uint64 premium_end = 23;</code>
+       */
+      public long getPremiumEnd() {
+        return premiumEnd_;
+      }
+
+      public static final int PREMIUM_EXP_FIELD_NUMBER = 24;
+      private long premiumExp_;
+      /**
+       * <code>uint64 premium_exp = 24;</code>
+       */
+      public long getPremiumExp() {
+        return premiumExp_;
+      }
+
+      public static final int PREMIUM_LEVEL_FIELD_NUMBER = 25;
+      private int premiumLevel_;
+      /**
+       * <code>int32 premium_level = 25;</code>
+       */
+      public int getPremiumLevel() {
+        return premiumLevel_;
+      }
+
+      public static final int SECRET_FIELD_NUMBER = 26;
       private volatile java.lang.Object secret_;
       /**
-       * <code>string secret = 22;</code>
+       * <code>string secret = 26;</code>
        */
       public java.lang.String getSecret() {
         java.lang.Object ref = secret_;
@@ -1770,7 +1879,7 @@ public final class Db {
         }
       }
       /**
-       * <code>string secret = 22;</code>
+       * <code>string secret = 26;</code>
        */
       public com.google.protobuf.ByteString
           getSecretBytes() {
@@ -1786,19 +1895,19 @@ public final class Db {
         }
       }
 
-      public static final int SINCE_FIELD_NUMBER = 23;
+      public static final int SINCE_FIELD_NUMBER = 27;
       private long since_;
       /**
-       * <code>uint64 since = 23;</code>
+       * <code>uint64 since = 27;</code>
        */
       public long getSince() {
         return since_;
       }
 
-      public static final int SOCIAL_ID_FIELD_NUMBER = 24;
+      public static final int SOCIAL_ID_FIELD_NUMBER = 28;
       private volatile java.lang.Object socialId_;
       /**
-       * <code>string social_id = 24;</code>
+       * <code>string social_id = 28;</code>
        */
       public java.lang.String getSocialId() {
         java.lang.Object ref = socialId_;
@@ -1813,7 +1922,7 @@ public final class Db {
         }
       }
       /**
-       * <code>string social_id = 24;</code>
+       * <code>string social_id = 28;</code>
        */
       public com.google.protobuf.ByteString
           getSocialIdBytes() {
@@ -1829,28 +1938,71 @@ public final class Db {
         }
       }
 
-      public static final int STATUS_FIELD_NUMBER = 25;
+      public static final int SOCIAL_NAME_FIELD_NUMBER = 29;
+      private volatile java.lang.Object socialName_;
+      /**
+       * <code>string social_name = 29;</code>
+       */
+      public java.lang.String getSocialName() {
+        java.lang.Object ref = socialName_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          socialName_ = s;
+          return s;
+        }
+      }
+      /**
+       * <code>string social_name = 29;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSocialNameBytes() {
+        java.lang.Object ref = socialName_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          socialName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
+      public static final int SOCIAL_VERIFIED_FIELD_NUMBER = 30;
+      private boolean socialVerified_;
+      /**
+       * <code>bool social_verified = 30;</code>
+       */
+      public boolean getSocialVerified() {
+        return socialVerified_;
+      }
+
+      public static final int STATUS_FIELD_NUMBER = 31;
       private int status_;
       /**
-       * <code>int32 status = 25;</code>
+       * <code>int32 status = 31;</code>
        */
       public int getStatus() {
         return status_;
       }
 
-      public static final int TIMEZONE_FIELD_NUMBER = 26;
+      public static final int TIMEZONE_FIELD_NUMBER = 32;
       private int timezone_;
       /**
-       * <code>int32 timezone = 26;</code>
+       * <code>int32 timezone = 32;</code>
        */
       public int getTimezone() {
         return timezone_;
       }
 
-      public static final int TOKEN_FIELD_NUMBER = 27;
+      public static final int TOKEN_FIELD_NUMBER = 33;
       private volatile java.lang.Object token_;
       /**
-       * <code>string token = 27;</code>
+       * <code>string token = 33;</code>
        */
       public java.lang.String getToken() {
         java.lang.Object ref = token_;
@@ -1865,7 +2017,7 @@ public final class Db {
         }
       }
       /**
-       * <code>string token = 27;</code>
+       * <code>string token = 33;</code>
        */
       public com.google.protobuf.ByteString
           getTokenBytes() {
@@ -1929,50 +2081,68 @@ public final class Db {
         if (isOfficial_ != false) {
           output.writeBool(12, isOfficial_);
         }
+        if (isRobot_ != false) {
+          output.writeBool(13, isRobot_);
+        }
         if (!getLastIpBytes().isEmpty()) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 13, lastIp_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 14, lastIp_);
         }
         if (lastLogin_ != 0L) {
-          output.writeUInt64(14, lastLogin_);
+          output.writeUInt64(15, lastLogin_);
         }
         if (loginCount_ != 0L) {
-          output.writeUInt64(15, loginCount_);
+          output.writeUInt64(16, loginCount_);
         }
         if (mcc_ != 0) {
-          output.writeInt32(16, mcc_);
+          output.writeInt32(17, mcc_);
         }
         if (!getNicknameBytes().isEmpty()) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 17, nickname_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 18, nickname_);
         }
         if (!getOsBytes().isEmpty()) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 18, os_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 19, os_);
         }
         if (!getOsLocaleBytes().isEmpty()) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 19, osLocale_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 20, osLocale_);
+        }
+        if (!getPhoneBytes().isEmpty()) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 21, phone_);
+        }
+        if (phoneVerified_ != false) {
+          output.writeBool(22, phoneVerified_);
+        }
+        if (premiumEnd_ != 0L) {
+          output.writeUInt64(23, premiumEnd_);
+        }
+        if (premiumExp_ != 0L) {
+          output.writeUInt64(24, premiumExp_);
         }
         if (premiumLevel_ != 0) {
-          output.writeInt32(20, premiumLevel_);
-        }
-        if (!getSaltBytes().isEmpty()) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 21, salt_);
+          output.writeInt32(25, premiumLevel_);
         }
         if (!getSecretBytes().isEmpty()) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 22, secret_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 26, secret_);
         }
         if (since_ != 0L) {
-          output.writeUInt64(23, since_);
+          output.writeUInt64(27, since_);
         }
         if (!getSocialIdBytes().isEmpty()) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 24, socialId_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 28, socialId_);
+        }
+        if (!getSocialNameBytes().isEmpty()) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 29, socialName_);
+        }
+        if (socialVerified_ != false) {
+          output.writeBool(30, socialVerified_);
         }
         if (status_ != 0) {
-          output.writeInt32(25, status_);
+          output.writeInt32(31, status_);
         }
         if (timezone_ != 0) {
-          output.writeInt32(26, timezone_);
+          output.writeInt32(32, timezone_);
         }
         if (!getTokenBytes().isEmpty()) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 27, token_);
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 33, token_);
         }
       }
 
@@ -2024,57 +2194,80 @@ public final class Db {
           size += com.google.protobuf.CodedOutputStream
             .computeBoolSize(12, isOfficial_);
         }
+        if (isRobot_ != false) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBoolSize(13, isRobot_);
+        }
         if (!getLastIpBytes().isEmpty()) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(13, lastIp_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(14, lastIp_);
         }
         if (lastLogin_ != 0L) {
           size += com.google.protobuf.CodedOutputStream
-            .computeUInt64Size(14, lastLogin_);
+            .computeUInt64Size(15, lastLogin_);
         }
         if (loginCount_ != 0L) {
           size += com.google.protobuf.CodedOutputStream
-            .computeUInt64Size(15, loginCount_);
+            .computeUInt64Size(16, loginCount_);
         }
         if (mcc_ != 0) {
           size += com.google.protobuf.CodedOutputStream
-            .computeInt32Size(16, mcc_);
+            .computeInt32Size(17, mcc_);
         }
         if (!getNicknameBytes().isEmpty()) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(17, nickname_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(18, nickname_);
         }
         if (!getOsBytes().isEmpty()) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(18, os_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(19, os_);
         }
         if (!getOsLocaleBytes().isEmpty()) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(19, osLocale_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(20, osLocale_);
+        }
+        if (!getPhoneBytes().isEmpty()) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(21, phone_);
+        }
+        if (phoneVerified_ != false) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBoolSize(22, phoneVerified_);
+        }
+        if (premiumEnd_ != 0L) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(23, premiumEnd_);
+        }
+        if (premiumExp_ != 0L) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt64Size(24, premiumExp_);
         }
         if (premiumLevel_ != 0) {
           size += com.google.protobuf.CodedOutputStream
-            .computeInt32Size(20, premiumLevel_);
-        }
-        if (!getSaltBytes().isEmpty()) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(21, salt_);
+            .computeInt32Size(25, premiumLevel_);
         }
         if (!getSecretBytes().isEmpty()) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(22, secret_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(26, secret_);
         }
         if (since_ != 0L) {
           size += com.google.protobuf.CodedOutputStream
-            .computeUInt64Size(23, since_);
+            .computeUInt64Size(27, since_);
         }
         if (!getSocialIdBytes().isEmpty()) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(24, socialId_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(28, socialId_);
+        }
+        if (!getSocialNameBytes().isEmpty()) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(29, socialName_);
+        }
+        if (socialVerified_ != false) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeBoolSize(30, socialVerified_);
         }
         if (status_ != 0) {
           size += com.google.protobuf.CodedOutputStream
-            .computeInt32Size(25, status_);
+            .computeInt32Size(31, status_);
         }
         if (timezone_ != 0) {
           size += com.google.protobuf.CodedOutputStream
-            .computeInt32Size(26, timezone_);
+            .computeInt32Size(32, timezone_);
         }
         if (!getTokenBytes().isEmpty()) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(27, token_);
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(33, token_);
         }
         memoizedSize = size;
         return size;
@@ -2116,6 +2309,8 @@ public final class Db {
             == other.getGender());
         result = result && (getIsOfficial()
             == other.getIsOfficial());
+        result = result && (getIsRobot()
+            == other.getIsRobot());
         result = result && getLastIp()
             .equals(other.getLastIp());
         result = result && (getLastLogin()
@@ -2130,16 +2325,26 @@ public final class Db {
             .equals(other.getOs());
         result = result && getOsLocale()
             .equals(other.getOsLocale());
+        result = result && getPhone()
+            .equals(other.getPhone());
+        result = result && (getPhoneVerified()
+            == other.getPhoneVerified());
+        result = result && (getPremiumEnd()
+            == other.getPremiumEnd());
+        result = result && (getPremiumExp()
+            == other.getPremiumExp());
         result = result && (getPremiumLevel()
             == other.getPremiumLevel());
-        result = result && getSalt()
-            .equals(other.getSalt());
         result = result && getSecret()
             .equals(other.getSecret());
         result = result && (getSince()
             == other.getSince());
         result = result && getSocialId()
             .equals(other.getSocialId());
+        result = result && getSocialName()
+            .equals(other.getSocialName());
+        result = result && (getSocialVerified()
+            == other.getSocialVerified());
         result = result && (getStatus()
             == other.getStatus());
         result = result && (getTimezone()
@@ -2185,6 +2390,9 @@ public final class Db {
         hash = (37 * hash) + IS_OFFICIAL_FIELD_NUMBER;
         hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
             getIsOfficial());
+        hash = (37 * hash) + IS_ROBOT_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getIsRobot());
         hash = (37 * hash) + LAST_IP_FIELD_NUMBER;
         hash = (53 * hash) + getLastIp().hashCode();
         hash = (37 * hash) + LAST_LOGIN_FIELD_NUMBER;
@@ -2201,10 +2409,19 @@ public final class Db {
         hash = (53 * hash) + getOs().hashCode();
         hash = (37 * hash) + OS_LOCALE_FIELD_NUMBER;
         hash = (53 * hash) + getOsLocale().hashCode();
+        hash = (37 * hash) + PHONE_FIELD_NUMBER;
+        hash = (53 * hash) + getPhone().hashCode();
+        hash = (37 * hash) + PHONE_VERIFIED_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getPhoneVerified());
+        hash = (37 * hash) + PREMIUM_END_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+            getPremiumEnd());
+        hash = (37 * hash) + PREMIUM_EXP_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+            getPremiumExp());
         hash = (37 * hash) + PREMIUM_LEVEL_FIELD_NUMBER;
         hash = (53 * hash) + getPremiumLevel();
-        hash = (37 * hash) + SALT_FIELD_NUMBER;
-        hash = (53 * hash) + getSalt().hashCode();
         hash = (37 * hash) + SECRET_FIELD_NUMBER;
         hash = (53 * hash) + getSecret().hashCode();
         hash = (37 * hash) + SINCE_FIELD_NUMBER;
@@ -2212,6 +2429,11 @@ public final class Db {
             getSince());
         hash = (37 * hash) + SOCIAL_ID_FIELD_NUMBER;
         hash = (53 * hash) + getSocialId().hashCode();
+        hash = (37 * hash) + SOCIAL_NAME_FIELD_NUMBER;
+        hash = (53 * hash) + getSocialName().hashCode();
+        hash = (37 * hash) + SOCIAL_VERIFIED_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getSocialVerified());
         hash = (37 * hash) + STATUS_FIELD_NUMBER;
         hash = (53 * hash) + getStatus();
         hash = (37 * hash) + TIMEZONE_FIELD_NUMBER;
@@ -2371,6 +2593,8 @@ public final class Db {
 
           isOfficial_ = false;
 
+          isRobot_ = false;
+
           lastIp_ = "";
 
           lastLogin_ = 0L;
@@ -2385,15 +2609,25 @@ public final class Db {
 
           osLocale_ = "";
 
-          premiumLevel_ = 0;
+          phone_ = "";
 
-          salt_ = "";
+          phoneVerified_ = false;
+
+          premiumEnd_ = 0L;
+
+          premiumExp_ = 0L;
+
+          premiumLevel_ = 0;
 
           secret_ = "";
 
           since_ = 0L;
 
           socialId_ = "";
+
+          socialName_ = "";
+
+          socialVerified_ = false;
 
           status_ = 0;
 
@@ -2435,6 +2669,7 @@ public final class Db {
           result.emailVerified_ = emailVerified_;
           result.gender_ = gender_;
           result.isOfficial_ = isOfficial_;
+          result.isRobot_ = isRobot_;
           result.lastIp_ = lastIp_;
           result.lastLogin_ = lastLogin_;
           result.loginCount_ = loginCount_;
@@ -2442,11 +2677,16 @@ public final class Db {
           result.nickname_ = nickname_;
           result.os_ = os_;
           result.osLocale_ = osLocale_;
+          result.phone_ = phone_;
+          result.phoneVerified_ = phoneVerified_;
+          result.premiumEnd_ = premiumEnd_;
+          result.premiumExp_ = premiumExp_;
           result.premiumLevel_ = premiumLevel_;
-          result.salt_ = salt_;
           result.secret_ = secret_;
           result.since_ = since_;
           result.socialId_ = socialId_;
+          result.socialName_ = socialName_;
+          result.socialVerified_ = socialVerified_;
           result.status_ = status_;
           result.timezone_ = timezone_;
           result.token_ = token_;
@@ -2532,6 +2772,9 @@ public final class Db {
           if (other.getIsOfficial() != false) {
             setIsOfficial(other.getIsOfficial());
           }
+          if (other.getIsRobot() != false) {
+            setIsRobot(other.getIsRobot());
+          }
           if (!other.getLastIp().isEmpty()) {
             lastIp_ = other.lastIp_;
             onChanged();
@@ -2557,12 +2800,21 @@ public final class Db {
             osLocale_ = other.osLocale_;
             onChanged();
           }
+          if (!other.getPhone().isEmpty()) {
+            phone_ = other.phone_;
+            onChanged();
+          }
+          if (other.getPhoneVerified() != false) {
+            setPhoneVerified(other.getPhoneVerified());
+          }
+          if (other.getPremiumEnd() != 0L) {
+            setPremiumEnd(other.getPremiumEnd());
+          }
+          if (other.getPremiumExp() != 0L) {
+            setPremiumExp(other.getPremiumExp());
+          }
           if (other.getPremiumLevel() != 0) {
             setPremiumLevel(other.getPremiumLevel());
-          }
-          if (!other.getSalt().isEmpty()) {
-            salt_ = other.salt_;
-            onChanged();
           }
           if (!other.getSecret().isEmpty()) {
             secret_ = other.secret_;
@@ -2574,6 +2826,13 @@ public final class Db {
           if (!other.getSocialId().isEmpty()) {
             socialId_ = other.socialId_;
             onChanged();
+          }
+          if (!other.getSocialName().isEmpty()) {
+            socialName_ = other.socialName_;
+            onChanged();
+          }
+          if (other.getSocialVerified() != false) {
+            setSocialVerified(other.getSocialVerified());
           }
           if (other.getStatus() != 0) {
             setStatus(other.getStatus());
@@ -3138,9 +3397,35 @@ public final class Db {
           return this;
         }
 
+        private boolean isRobot_ ;
+        /**
+         * <code>bool is_robot = 13;</code>
+         */
+        public boolean getIsRobot() {
+          return isRobot_;
+        }
+        /**
+         * <code>bool is_robot = 13;</code>
+         */
+        public Builder setIsRobot(boolean value) {
+          
+          isRobot_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>bool is_robot = 13;</code>
+         */
+        public Builder clearIsRobot() {
+          
+          isRobot_ = false;
+          onChanged();
+          return this;
+        }
+
         private java.lang.Object lastIp_ = "";
         /**
-         * <code>string last_ip = 13;</code>
+         * <code>string last_ip = 14;</code>
          */
         public java.lang.String getLastIp() {
           java.lang.Object ref = lastIp_;
@@ -3155,7 +3440,7 @@ public final class Db {
           }
         }
         /**
-         * <code>string last_ip = 13;</code>
+         * <code>string last_ip = 14;</code>
          */
         public com.google.protobuf.ByteString
             getLastIpBytes() {
@@ -3171,7 +3456,7 @@ public final class Db {
           }
         }
         /**
-         * <code>string last_ip = 13;</code>
+         * <code>string last_ip = 14;</code>
          */
         public Builder setLastIp(
             java.lang.String value) {
@@ -3184,7 +3469,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>string last_ip = 13;</code>
+         * <code>string last_ip = 14;</code>
          */
         public Builder clearLastIp() {
           
@@ -3193,7 +3478,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>string last_ip = 13;</code>
+         * <code>string last_ip = 14;</code>
          */
         public Builder setLastIpBytes(
             com.google.protobuf.ByteString value) {
@@ -3209,13 +3494,13 @@ public final class Db {
 
         private long lastLogin_ ;
         /**
-         * <code>uint64 last_login = 14;</code>
+         * <code>uint64 last_login = 15;</code>
          */
         public long getLastLogin() {
           return lastLogin_;
         }
         /**
-         * <code>uint64 last_login = 14;</code>
+         * <code>uint64 last_login = 15;</code>
          */
         public Builder setLastLogin(long value) {
           
@@ -3224,7 +3509,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>uint64 last_login = 14;</code>
+         * <code>uint64 last_login = 15;</code>
          */
         public Builder clearLastLogin() {
           
@@ -3235,13 +3520,13 @@ public final class Db {
 
         private long loginCount_ ;
         /**
-         * <code>uint64 login_count = 15;</code>
+         * <code>uint64 login_count = 16;</code>
          */
         public long getLoginCount() {
           return loginCount_;
         }
         /**
-         * <code>uint64 login_count = 15;</code>
+         * <code>uint64 login_count = 16;</code>
          */
         public Builder setLoginCount(long value) {
           
@@ -3250,7 +3535,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>uint64 login_count = 15;</code>
+         * <code>uint64 login_count = 16;</code>
          */
         public Builder clearLoginCount() {
           
@@ -3261,13 +3546,13 @@ public final class Db {
 
         private int mcc_ ;
         /**
-         * <code>int32 mcc = 16;</code>
+         * <code>int32 mcc = 17;</code>
          */
         public int getMcc() {
           return mcc_;
         }
         /**
-         * <code>int32 mcc = 16;</code>
+         * <code>int32 mcc = 17;</code>
          */
         public Builder setMcc(int value) {
           
@@ -3276,7 +3561,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>int32 mcc = 16;</code>
+         * <code>int32 mcc = 17;</code>
          */
         public Builder clearMcc() {
           
@@ -3287,7 +3572,7 @@ public final class Db {
 
         private java.lang.Object nickname_ = "";
         /**
-         * <code>string nickname = 17;</code>
+         * <code>string nickname = 18;</code>
          */
         public java.lang.String getNickname() {
           java.lang.Object ref = nickname_;
@@ -3302,7 +3587,7 @@ public final class Db {
           }
         }
         /**
-         * <code>string nickname = 17;</code>
+         * <code>string nickname = 18;</code>
          */
         public com.google.protobuf.ByteString
             getNicknameBytes() {
@@ -3318,7 +3603,7 @@ public final class Db {
           }
         }
         /**
-         * <code>string nickname = 17;</code>
+         * <code>string nickname = 18;</code>
          */
         public Builder setNickname(
             java.lang.String value) {
@@ -3331,7 +3616,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>string nickname = 17;</code>
+         * <code>string nickname = 18;</code>
          */
         public Builder clearNickname() {
           
@@ -3340,7 +3625,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>string nickname = 17;</code>
+         * <code>string nickname = 18;</code>
          */
         public Builder setNicknameBytes(
             com.google.protobuf.ByteString value) {
@@ -3356,7 +3641,7 @@ public final class Db {
 
         private java.lang.Object os_ = "";
         /**
-         * <code>string os = 18;</code>
+         * <code>string os = 19;</code>
          */
         public java.lang.String getOs() {
           java.lang.Object ref = os_;
@@ -3371,7 +3656,7 @@ public final class Db {
           }
         }
         /**
-         * <code>string os = 18;</code>
+         * <code>string os = 19;</code>
          */
         public com.google.protobuf.ByteString
             getOsBytes() {
@@ -3387,7 +3672,7 @@ public final class Db {
           }
         }
         /**
-         * <code>string os = 18;</code>
+         * <code>string os = 19;</code>
          */
         public Builder setOs(
             java.lang.String value) {
@@ -3400,7 +3685,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>string os = 18;</code>
+         * <code>string os = 19;</code>
          */
         public Builder clearOs() {
           
@@ -3409,7 +3694,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>string os = 18;</code>
+         * <code>string os = 19;</code>
          */
         public Builder setOsBytes(
             com.google.protobuf.ByteString value) {
@@ -3425,7 +3710,7 @@ public final class Db {
 
         private java.lang.Object osLocale_ = "";
         /**
-         * <code>string os_locale = 19;</code>
+         * <code>string os_locale = 20;</code>
          */
         public java.lang.String getOsLocale() {
           java.lang.Object ref = osLocale_;
@@ -3440,7 +3725,7 @@ public final class Db {
           }
         }
         /**
-         * <code>string os_locale = 19;</code>
+         * <code>string os_locale = 20;</code>
          */
         public com.google.protobuf.ByteString
             getOsLocaleBytes() {
@@ -3456,7 +3741,7 @@ public final class Db {
           }
         }
         /**
-         * <code>string os_locale = 19;</code>
+         * <code>string os_locale = 20;</code>
          */
         public Builder setOsLocale(
             java.lang.String value) {
@@ -3469,7 +3754,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>string os_locale = 19;</code>
+         * <code>string os_locale = 20;</code>
          */
         public Builder clearOsLocale() {
           
@@ -3478,7 +3763,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>string os_locale = 19;</code>
+         * <code>string os_locale = 20;</code>
          */
         public Builder setOsLocaleBytes(
             com.google.protobuf.ByteString value) {
@@ -3492,15 +3777,162 @@ public final class Db {
           return this;
         }
 
+        private java.lang.Object phone_ = "";
+        /**
+         * <code>string phone = 21;</code>
+         */
+        public java.lang.String getPhone() {
+          java.lang.Object ref = phone_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            phone_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>string phone = 21;</code>
+         */
+        public com.google.protobuf.ByteString
+            getPhoneBytes() {
+          java.lang.Object ref = phone_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            phone_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>string phone = 21;</code>
+         */
+        public Builder setPhone(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  
+          phone_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>string phone = 21;</code>
+         */
+        public Builder clearPhone() {
+          
+          phone_ = getDefaultInstance().getPhone();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>string phone = 21;</code>
+         */
+        public Builder setPhoneBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+          
+          phone_ = value;
+          onChanged();
+          return this;
+        }
+
+        private boolean phoneVerified_ ;
+        /**
+         * <code>bool phone_verified = 22;</code>
+         */
+        public boolean getPhoneVerified() {
+          return phoneVerified_;
+        }
+        /**
+         * <code>bool phone_verified = 22;</code>
+         */
+        public Builder setPhoneVerified(boolean value) {
+          
+          phoneVerified_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>bool phone_verified = 22;</code>
+         */
+        public Builder clearPhoneVerified() {
+          
+          phoneVerified_ = false;
+          onChanged();
+          return this;
+        }
+
+        private long premiumEnd_ ;
+        /**
+         * <code>uint64 premium_end = 23;</code>
+         */
+        public long getPremiumEnd() {
+          return premiumEnd_;
+        }
+        /**
+         * <code>uint64 premium_end = 23;</code>
+         */
+        public Builder setPremiumEnd(long value) {
+          
+          premiumEnd_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>uint64 premium_end = 23;</code>
+         */
+        public Builder clearPremiumEnd() {
+          
+          premiumEnd_ = 0L;
+          onChanged();
+          return this;
+        }
+
+        private long premiumExp_ ;
+        /**
+         * <code>uint64 premium_exp = 24;</code>
+         */
+        public long getPremiumExp() {
+          return premiumExp_;
+        }
+        /**
+         * <code>uint64 premium_exp = 24;</code>
+         */
+        public Builder setPremiumExp(long value) {
+          
+          premiumExp_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>uint64 premium_exp = 24;</code>
+         */
+        public Builder clearPremiumExp() {
+          
+          premiumExp_ = 0L;
+          onChanged();
+          return this;
+        }
+
         private int premiumLevel_ ;
         /**
-         * <code>int32 premium_level = 20;</code>
+         * <code>int32 premium_level = 25;</code>
          */
         public int getPremiumLevel() {
           return premiumLevel_;
         }
         /**
-         * <code>int32 premium_level = 20;</code>
+         * <code>int32 premium_level = 25;</code>
          */
         public Builder setPremiumLevel(int value) {
           
@@ -3509,7 +3941,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>int32 premium_level = 20;</code>
+         * <code>int32 premium_level = 25;</code>
          */
         public Builder clearPremiumLevel() {
           
@@ -3518,78 +3950,9 @@ public final class Db {
           return this;
         }
 
-        private java.lang.Object salt_ = "";
-        /**
-         * <code>string salt = 21;</code>
-         */
-        public java.lang.String getSalt() {
-          java.lang.Object ref = salt_;
-          if (!(ref instanceof java.lang.String)) {
-            com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
-            java.lang.String s = bs.toStringUtf8();
-            salt_ = s;
-            return s;
-          } else {
-            return (java.lang.String) ref;
-          }
-        }
-        /**
-         * <code>string salt = 21;</code>
-         */
-        public com.google.protobuf.ByteString
-            getSaltBytes() {
-          java.lang.Object ref = salt_;
-          if (ref instanceof String) {
-            com.google.protobuf.ByteString b = 
-                com.google.protobuf.ByteString.copyFromUtf8(
-                    (java.lang.String) ref);
-            salt_ = b;
-            return b;
-          } else {
-            return (com.google.protobuf.ByteString) ref;
-          }
-        }
-        /**
-         * <code>string salt = 21;</code>
-         */
-        public Builder setSalt(
-            java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  
-          salt_ = value;
-          onChanged();
-          return this;
-        }
-        /**
-         * <code>string salt = 21;</code>
-         */
-        public Builder clearSalt() {
-          
-          salt_ = getDefaultInstance().getSalt();
-          onChanged();
-          return this;
-        }
-        /**
-         * <code>string salt = 21;</code>
-         */
-        public Builder setSaltBytes(
-            com.google.protobuf.ByteString value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-          
-          salt_ = value;
-          onChanged();
-          return this;
-        }
-
         private java.lang.Object secret_ = "";
         /**
-         * <code>string secret = 22;</code>
+         * <code>string secret = 26;</code>
          */
         public java.lang.String getSecret() {
           java.lang.Object ref = secret_;
@@ -3604,7 +3967,7 @@ public final class Db {
           }
         }
         /**
-         * <code>string secret = 22;</code>
+         * <code>string secret = 26;</code>
          */
         public com.google.protobuf.ByteString
             getSecretBytes() {
@@ -3620,7 +3983,7 @@ public final class Db {
           }
         }
         /**
-         * <code>string secret = 22;</code>
+         * <code>string secret = 26;</code>
          */
         public Builder setSecret(
             java.lang.String value) {
@@ -3633,7 +3996,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>string secret = 22;</code>
+         * <code>string secret = 26;</code>
          */
         public Builder clearSecret() {
           
@@ -3642,7 +4005,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>string secret = 22;</code>
+         * <code>string secret = 26;</code>
          */
         public Builder setSecretBytes(
             com.google.protobuf.ByteString value) {
@@ -3658,13 +4021,13 @@ public final class Db {
 
         private long since_ ;
         /**
-         * <code>uint64 since = 23;</code>
+         * <code>uint64 since = 27;</code>
          */
         public long getSince() {
           return since_;
         }
         /**
-         * <code>uint64 since = 23;</code>
+         * <code>uint64 since = 27;</code>
          */
         public Builder setSince(long value) {
           
@@ -3673,7 +4036,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>uint64 since = 23;</code>
+         * <code>uint64 since = 27;</code>
          */
         public Builder clearSince() {
           
@@ -3684,7 +4047,7 @@ public final class Db {
 
         private java.lang.Object socialId_ = "";
         /**
-         * <code>string social_id = 24;</code>
+         * <code>string social_id = 28;</code>
          */
         public java.lang.String getSocialId() {
           java.lang.Object ref = socialId_;
@@ -3699,7 +4062,7 @@ public final class Db {
           }
         }
         /**
-         * <code>string social_id = 24;</code>
+         * <code>string social_id = 28;</code>
          */
         public com.google.protobuf.ByteString
             getSocialIdBytes() {
@@ -3715,7 +4078,7 @@ public final class Db {
           }
         }
         /**
-         * <code>string social_id = 24;</code>
+         * <code>string social_id = 28;</code>
          */
         public Builder setSocialId(
             java.lang.String value) {
@@ -3728,7 +4091,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>string social_id = 24;</code>
+         * <code>string social_id = 28;</code>
          */
         public Builder clearSocialId() {
           
@@ -3737,7 +4100,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>string social_id = 24;</code>
+         * <code>string social_id = 28;</code>
          */
         public Builder setSocialIdBytes(
             com.google.protobuf.ByteString value) {
@@ -3751,15 +4114,110 @@ public final class Db {
           return this;
         }
 
+        private java.lang.Object socialName_ = "";
+        /**
+         * <code>string social_name = 29;</code>
+         */
+        public java.lang.String getSocialName() {
+          java.lang.Object ref = socialName_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            socialName_ = s;
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <code>string social_name = 29;</code>
+         */
+        public com.google.protobuf.ByteString
+            getSocialNameBytes() {
+          java.lang.Object ref = socialName_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            socialName_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <code>string social_name = 29;</code>
+         */
+        public Builder setSocialName(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  
+          socialName_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>string social_name = 29;</code>
+         */
+        public Builder clearSocialName() {
+          
+          socialName_ = getDefaultInstance().getSocialName();
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>string social_name = 29;</code>
+         */
+        public Builder setSocialNameBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+          
+          socialName_ = value;
+          onChanged();
+          return this;
+        }
+
+        private boolean socialVerified_ ;
+        /**
+         * <code>bool social_verified = 30;</code>
+         */
+        public boolean getSocialVerified() {
+          return socialVerified_;
+        }
+        /**
+         * <code>bool social_verified = 30;</code>
+         */
+        public Builder setSocialVerified(boolean value) {
+          
+          socialVerified_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <code>bool social_verified = 30;</code>
+         */
+        public Builder clearSocialVerified() {
+          
+          socialVerified_ = false;
+          onChanged();
+          return this;
+        }
+
         private int status_ ;
         /**
-         * <code>int32 status = 25;</code>
+         * <code>int32 status = 31;</code>
          */
         public int getStatus() {
           return status_;
         }
         /**
-         * <code>int32 status = 25;</code>
+         * <code>int32 status = 31;</code>
          */
         public Builder setStatus(int value) {
           
@@ -3768,7 +4226,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>int32 status = 25;</code>
+         * <code>int32 status = 31;</code>
          */
         public Builder clearStatus() {
           
@@ -3779,13 +4237,13 @@ public final class Db {
 
         private int timezone_ ;
         /**
-         * <code>int32 timezone = 26;</code>
+         * <code>int32 timezone = 32;</code>
          */
         public int getTimezone() {
           return timezone_;
         }
         /**
-         * <code>int32 timezone = 26;</code>
+         * <code>int32 timezone = 32;</code>
          */
         public Builder setTimezone(int value) {
           
@@ -3794,7 +4252,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>int32 timezone = 26;</code>
+         * <code>int32 timezone = 32;</code>
          */
         public Builder clearTimezone() {
           
@@ -3805,7 +4263,7 @@ public final class Db {
 
         private java.lang.Object token_ = "";
         /**
-         * <code>string token = 27;</code>
+         * <code>string token = 33;</code>
          */
         public java.lang.String getToken() {
           java.lang.Object ref = token_;
@@ -3820,7 +4278,7 @@ public final class Db {
           }
         }
         /**
-         * <code>string token = 27;</code>
+         * <code>string token = 33;</code>
          */
         public com.google.protobuf.ByteString
             getTokenBytes() {
@@ -3836,7 +4294,7 @@ public final class Db {
           }
         }
         /**
-         * <code>string token = 27;</code>
+         * <code>string token = 33;</code>
          */
         public Builder setToken(
             java.lang.String value) {
@@ -3849,7 +4307,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>string token = 27;</code>
+         * <code>string token = 33;</code>
          */
         public Builder clearToken() {
           
@@ -3858,7 +4316,7 @@ public final class Db {
           return this;
         }
         /**
-         * <code>string token = 27;</code>
+         * <code>string token = 33;</code>
          */
         public Builder setTokenBytes(
             com.google.protobuf.ByteString value) {
@@ -5616,41 +6074,44 @@ public final class Db {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\010db.proto\022\005proto\"\326\007\n\002DB\032;\n\006Result\022$\n\006st" +
+      "\n\010db.proto\022\005proto\"\331\010\n\002DB\032;\n\006Result\022$\n\006st" +
       "atus\030\001 \001(\0162\024.proto.DB.StatusCode\022\013\n\003msg\030" +
-      "\002 \001(\t\032\344\003\n\tUserEntry\022\013\n\003usn\030\001 \001(\006\022\013\n\003uid\030" +
+      "\002 \001(\t\032\347\004\n\tUserEntry\022\013\n\003usn\030\001 \001(\006\022\013\n\003uid\030" +
       "\002 \001(\004\022\024\n\014app_language\030\003 \001(\t\022\023\n\013app_versi" +
       "on\030\004 \001(\t\022\016\n\006avatar\030\005 \001(\t\022\020\n\010birthday\030\006 \001" +
       "(\004\022\017\n\007country\030\007 \001(\t\022\023\n\013device_type\030\010 \001(\005" +
       "\022\r\n\005email\030\t \001(\t\022\026\n\016email_verified\030\n \001(\010\022" +
-      "\016\n\006gender\030\013 \001(\005\022\023\n\013is_official\030\014 \001(\010\022\017\n\007" +
-      "last_ip\030\r \001(\t\022\022\n\nlast_login\030\016 \001(\004\022\023\n\013log" +
-      "in_count\030\017 \001(\004\022\013\n\003mcc\030\020 \001(\005\022\020\n\010nickname\030",
-      "\021 \001(\t\022\n\n\002os\030\022 \001(\t\022\021\n\tos_locale\030\023 \001(\t\022\025\n\r" +
-      "premium_level\030\024 \001(\005\022\014\n\004salt\030\025 \001(\t\022\016\n\006sec" +
-      "ret\030\026 \001(\t\022\r\n\005since\030\027 \001(\004\022\021\n\tsocial_id\030\030 " +
-      "\001(\t\022\016\n\006status\030\031 \001(\005\022\020\n\010timezone\030\032 \001(\005\022\r\n" +
-      "\005token\030\033 \001(\t\032/\n\021UserLogoutRequest\022\013\n\003usn" +
-      "\030\001 \001(\004\022\r\n\005token\030\002 \001(\t\032S\n\014UserOpResult\022 \n" +
-      "\006result\030\001 \001(\0132\020.proto.DB.Result\022!\n\004user\030" +
-      "\002 \001(\0132\023.proto.DB.UserEntry\"\245\002\n\nStatusCod" +
-      "e\022\r\n\tSTATUS_OK\020\000\022\030\n\024STATUS_INVALID_PARAM" +
-      "\020d\022\026\n\022STATUS_INVALID_USN\020e\022\026\n\022STATUS_INV",
-      "ALID_UID\020f\022\030\n\024STATUS_INVALID_EMAIL\020g\022\031\n\025" +
-      "STATUS_INVALID_SECRET\020h\022\030\n\024STATUS_INVALI" +
-      "D_TOKEN\020i\022\036\n\031STATUS_USER_ALREADY_EXIST\020\311" +
-      "\001\022\032\n\025STATUS_USER_NOT_FOUND\020\312\001\022\032\n\025STATUS_" +
-      "INTERNAL_ERROR\020\364\003\022\027\n\022STATUS_UNAVAILABLE\020" +
-      "\367\0032\365\002\n\tDBService\0228\n\tUserQuery\022\023.proto.DB" +
-      ".UserEntry\032\026.proto.DB.UserOpResult\0227\n\016Us" +
-      "erUpdateInfo\022\023.proto.DB.UserEntry\032\020.prot" +
-      "o.DB.Result\022;\n\014UserRegister\022\023.proto.DB.U" +
-      "serEntry\032\026.proto.DB.UserOpResult\0228\n\tUser",
-      "Login\022\023.proto.DB.UserEntry\032\026.proto.DB.Us" +
-      "erOpResult\022;\n\nUserLogout\022\033.proto.DB.User" +
-      "LogoutRequest\032\020.proto.DB.Result\022A\n\022UserE" +
-      "xtraInfoQuery\022\023.proto.DB.UserEntry\032\026.pro" +
-      "to.DB.UserOpResultb\006proto3"
+      "\016\n\006gender\030\013 \001(\005\022\023\n\013is_official\030\014 \001(\010\022\020\n\010" +
+      "is_robot\030\r \001(\010\022\017\n\007last_ip\030\016 \001(\t\022\022\n\nlast_" +
+      "login\030\017 \001(\004\022\023\n\013login_count\030\020 \001(\004\022\013\n\003mcc\030",
+      "\021 \001(\005\022\020\n\010nickname\030\022 \001(\t\022\n\n\002os\030\023 \001(\t\022\021\n\to" +
+      "s_locale\030\024 \001(\t\022\r\n\005phone\030\025 \001(\t\022\026\n\016phone_v" +
+      "erified\030\026 \001(\010\022\023\n\013premium_end\030\027 \001(\004\022\023\n\013pr" +
+      "emium_exp\030\030 \001(\004\022\025\n\rpremium_level\030\031 \001(\005\022\016" +
+      "\n\006secret\030\032 \001(\t\022\r\n\005since\030\033 \001(\004\022\021\n\tsocial_" +
+      "id\030\034 \001(\t\022\023\n\013social_name\030\035 \001(\t\022\027\n\017social_" +
+      "verified\030\036 \001(\010\022\016\n\006status\030\037 \001(\005\022\020\n\010timezo" +
+      "ne\030  \001(\005\022\r\n\005token\030! \001(\t\032/\n\021UserLogoutReq" +
+      "uest\022\013\n\003usn\030\001 \001(\004\022\r\n\005token\030\002 \001(\t\032S\n\014User" +
+      "OpResult\022 \n\006result\030\001 \001(\0132\020.proto.DB.Resu",
+      "lt\022!\n\004user\030\002 \001(\0132\023.proto.DB.UserEntry\"\245\002" +
+      "\n\nStatusCode\022\r\n\tSTATUS_OK\020\000\022\030\n\024STATUS_IN" +
+      "VALID_PARAM\020d\022\026\n\022STATUS_INVALID_USN\020e\022\026\n" +
+      "\022STATUS_INVALID_UID\020f\022\030\n\024STATUS_INVALID_" +
+      "EMAIL\020g\022\031\n\025STATUS_INVALID_SECRET\020h\022\030\n\024ST" +
+      "ATUS_INVALID_TOKEN\020i\022\036\n\031STATUS_USER_ALRE" +
+      "ADY_EXIST\020\311\001\022\032\n\025STATUS_USER_NOT_FOUND\020\312\001" +
+      "\022\032\n\025STATUS_INTERNAL_ERROR\020\364\003\022\027\n\022STATUS_U" +
+      "NAVAILABLE\020\367\0032\365\002\n\tDBService\0228\n\tUserQuery" +
+      "\022\023.proto.DB.UserEntry\032\026.proto.DB.UserOpR",
+      "esult\0227\n\016UserUpdateInfo\022\023.proto.DB.UserE" +
+      "ntry\032\020.proto.DB.Result\022;\n\014UserRegister\022\023" +
+      ".proto.DB.UserEntry\032\026.proto.DB.UserOpRes" +
+      "ult\0228\n\tUserLogin\022\023.proto.DB.UserEntry\032\026." +
+      "proto.DB.UserOpResult\022;\n\nUserLogout\022\033.pr" +
+      "oto.DB.UserLogoutRequest\032\020.proto.DB.Resu" +
+      "lt\022A\n\022UserExtraInfoQuery\022\023.proto.DB.User" +
+      "Entry\032\026.proto.DB.UserOpResultb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -5681,7 +6142,7 @@ public final class Db {
     internal_static_proto_DB_UserEntry_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_proto_DB_UserEntry_descriptor,
-        new java.lang.String[] { "Usn", "Uid", "AppLanguage", "AppVersion", "Avatar", "Birthday", "Country", "DeviceType", "Email", "EmailVerified", "Gender", "IsOfficial", "LastIp", "LastLogin", "LoginCount", "Mcc", "Nickname", "Os", "OsLocale", "PremiumLevel", "Salt", "Secret", "Since", "SocialId", "Status", "Timezone", "Token", });
+        new java.lang.String[] { "Usn", "Uid", "AppLanguage", "AppVersion", "Avatar", "Birthday", "Country", "DeviceType", "Email", "EmailVerified", "Gender", "IsOfficial", "IsRobot", "LastIp", "LastLogin", "LoginCount", "Mcc", "Nickname", "Os", "OsLocale", "Phone", "PhoneVerified", "PremiumEnd", "PremiumExp", "PremiumLevel", "Secret", "Since", "SocialId", "SocialName", "SocialVerified", "Status", "Timezone", "Token", });
     internal_static_proto_DB_UserLogoutRequest_descriptor =
       internal_static_proto_DB_descriptor.getNestedTypes().get(2);
     internal_static_proto_DB_UserLogoutRequest_fieldAccessorTable = new

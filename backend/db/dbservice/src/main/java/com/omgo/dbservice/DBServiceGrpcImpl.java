@@ -118,7 +118,9 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         Future<JsonObject> responseFuture = Future.future();
         responseFuture.setHandler(res -> {
             if (res.succeeded()) {
-                response.complete(DbProtoUtils.makeUserOpOkResult(res.result()));
+                JsonObject resultJson = res.result();
+                ModelConverter.removeKeysForRegisterRequest(resultJson);
+                response.complete(DbProtoUtils.makeUserOpOkResult(resultJson));
             } else {
                 LOGGER.error(res.cause());
                 response.complete(DbProtoUtils.makeUserOpInternalFailedResult(res.cause().toString()));
@@ -180,10 +182,15 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         Future<JsonObject> responseFuture = Future.future();
         responseFuture.setHandler(res -> {
             if (res.succeeded()) {
-                response.complete(DbProtoUtils.makeUserOpOkResult(ModelConverter.removePrivateKeysForLogin(res.result())));
+                response.complete(DbProtoUtils.makeUserOpOkResult(ModelConverter.removeKeysForLoginResponse(res.result())));
             } else {
-                LOGGER.error(res.cause());
-                DB.StatusCode code = DB.StatusCode.valueOf(res.cause().toString());
+                LOGGER.warn(res.cause());
+                DB.StatusCode code;
+                try {
+                    code = DB.StatusCode.valueOf(res.cause().toString());
+                } catch (IllegalArgumentException e) {
+                    code = DB.StatusCode.STATUS_USER_NOT_FOUND;
+                }
                 response.complete(DbProtoUtils.makeUserOpResult(code));
             }
         });
@@ -242,7 +249,6 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                         queryRes.put(ModelConverter.KEY_LAST_IP, request.getLastIp());
                         queryRes.put(ModelConverter.KEY_APP_LANGUAGE, request.getAppLanguage());
                         queryRes.put(ModelConverter.KEY_APP_VERSION, request.getAppVersion());
-                        queryRes.put(ModelConverter.KEY_AVATAR, request.getAvatar());
                         queryRes.put(ModelConverter.KEY_DEVICE_TYPE, request.getDeviceType());
                         queryRes.put(ModelConverter.KEY_MCC, request.getMcc());
                         queryRes.put(ModelConverter.KEY_OS, request.getOs());
