@@ -65,6 +65,11 @@ enum UserStatus {
     USER_STATUS_DELETED    = 3;
 }
 
+enum SocialType {
+    SOCIAL_TYPE_UNVERIFIED = 0;
+    SOCIAL_TYPE_VERIFIED   = 1;
+}
+
 /// User Information
 message UserInfo {
     fixed64    usn         = 1;  /// user serial no. internal only
