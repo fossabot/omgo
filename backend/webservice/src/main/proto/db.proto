@@ -44,40 +44,39 @@ message DB {
     }
 
     message UserEntry {
-        fixed64 usn            = 1;
-        uint64  uid            = 2;
-        string  app_language   = 3;
-        string  app_version    = 4;
-        string  avatar         = 5;
-        uint64  birthday       = 6;
-        string  country        = 7;
-        int32   device_type    = 8;
-        string  email          = 9;
-        bool    email_verified = 10;
-        int32   gender         = 11;
-        bool    is_official    = 12;
-        bool    is_robot       = 13;
-        string  last_ip        = 14;
-        uint64  last_login     = 15;
-        uint64  login_count    = 16;
-        int32   mcc            = 17;
-        string  nickname       = 18;
-        string  os             = 19;
-        string  os_locale      = 20;
-        string  phone          = 21;
-        bool    phone_verified = 22;
-        uint64  premium_end    = 23;
-        uint64  premium_exp    = 24;
-        int32   premium_level  = 25;
-        string  salt           = 26;
-        string  secret         = 27;
-        uint64  since          = 28;
-        string  social_id      = 29;
-        string  social_name    = 30;
-        int32   social_status  = 31;
-        int32   status         = 32;
-        int32   timezone       = 33;
-        string  token          = 34;
+        fixed64 usn             = 1;
+        uint64  uid             = 2;
+        string  app_language    = 3;
+        string  app_version     = 4;
+        string  avatar          = 5;
+        uint64  birthday        = 6;
+        string  country         = 7;
+        int32   device_type     = 8;
+        string  email           = 9;
+        bool    email_verified  = 10;
+        int32   gender          = 11;
+        bool    is_official     = 12;
+        bool    is_robot        = 13;
+        string  last_ip         = 14;
+        uint64  last_login      = 15;
+        uint64  login_count     = 16;
+        int32   mcc             = 17;
+        string  nickname        = 18;
+        string  os              = 19;
+        string  os_locale       = 20;
+        string  phone           = 21;
+        bool    phone_verified  = 22;
+        uint64  premium_end     = 23;
+        uint64  premium_exp     = 24;
+        int32   premium_level   = 25;
+        string  secret          = 26;
+        uint64  since           = 27;
+        string  social_id       = 28;
+        string  social_name     = 29;
+        bool    social_verified = 30;
+        int32   status          = 31;
+        int32   timezone        = 32;
+        string  token           = 33;
     }
 
     message UserLogoutRequest {

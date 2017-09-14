@@ -65,11 +65,6 @@ enum UserStatus {
     USER_STATUS_DELETED    = 3;
 }
 
-enum SocialType {
-    SOCIAL_TYPE_UNVERIFIED = 0;
-    SOCIAL_TYPE_VERIFIED   = 1;
-}
-
 /// User Information
 message UserInfo {
     fixed64    usn         = 1;  /// user serial no. internal only
@@ -90,34 +85,6 @@ message Location {
     string longitude = 1;
     string latitude  = 2;
     string address   = 3;
-}
-
-//-----------------------------------------------------------------------------
-/// HTTP
-/// the messages in this section is used only for generating HTTP responses
-/// SHOULD NOT BE USED in any other socket services
-
-/// Network Configuration Item
-/// tell client where to connect
-message NetworkConfig {
-    int32  id   = 1; /// config id
-    string desc = 2; /// description
-    string ip   = 3; /// host ip
-    int32  port = 4; /// port
-}
-
-/// Client Application Configuration
-/// tell client how to behave
-message AppConfig {
-    repeated NetworkConfig network_cfg = 1;
-}
-
-/// HTTP Login Response
-message LoginRsp {
-    RspHeader header    = 1;
-    string    token     = 2;
-    AppConfig config    = 3;
-    UserInfo  user_info = 4;
 }
 
 //-----------------------------------------------------------------------------
