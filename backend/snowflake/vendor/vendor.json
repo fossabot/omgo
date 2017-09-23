@@ -42,8 +42,8 @@
 			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
 			"origin": "github.com/master-g/omgo/utils/vendor/github.com/davecgh/go-spew/spew",
 			"path": "github.com/davecgh/go-spew/spew",
-			"revision": "e7bc667e584bb16a8cf6c1c533fa454963ae1e53",
-			"revisionTime": "2017-09-14T17:13:24Z"
+			"revision": "8b3894c75f532b39bf0eba51543252a19cbd9e1f",
+			"revisionTime": "2017-09-23T01:31:02Z"
 		},
 		{
 			"checksumSHA1": "qlPUeFabwF4RKAOF1H+yBFU1Veg=",
@@ -61,26 +61,26 @@
 			"checksumSHA1": "7hln62oZPZmyqEmgXaybf9WxQ7A=",
 			"origin": "github.com/master-g/omgo/utils/vendor/github.com/maruel/panicparse/stack",
 			"path": "github.com/maruel/panicparse/stack",
-			"revision": "e7bc667e584bb16a8cf6c1c533fa454963ae1e53",
-			"revisionTime": "2017-09-14T17:13:24Z"
+			"revision": "8b3894c75f532b39bf0eba51543252a19cbd9e1f",
+			"revisionTime": "2017-09-23T01:31:02Z"
 		},
 		{
 			"checksumSHA1": "UiSXEfHLJ72bAFS1ieRs1b2phkg=",
 			"path": "github.com/master-g/omgo/proto/grpc/snowflake",
-			"revision": "e7bc667e584bb16a8cf6c1c533fa454963ae1e53",
-			"revisionTime": "2017-09-14T17:13:24Z"
+			"revision": "8b3894c75f532b39bf0eba51543252a19cbd9e1f",
+			"revisionTime": "2017-09-23T01:31:02Z"
 		},
 		{
 			"checksumSHA1": "z99XNGfjiIuWbDTv/HBUWc7UUXA=",
 			"path": "github.com/master-g/omgo/services",
-			"revision": "e7bc667e584bb16a8cf6c1c533fa454963ae1e53",
-			"revisionTime": "2017-09-14T17:13:24Z"
+			"revision": "8b3894c75f532b39bf0eba51543252a19cbd9e1f",
+			"revisionTime": "2017-09-23T01:31:02Z"
 		},
 		{
 			"checksumSHA1": "2z8kr6ar+EmHwI5L/EepHHnJ+Bg=",
 			"path": "github.com/master-g/omgo/utils",
-			"revision": "e7bc667e584bb16a8cf6c1c533fa454963ae1e53",
-			"revisionTime": "2017-09-14T17:13:24Z"
+			"revision": "8b3894c75f532b39bf0eba51543252a19cbd9e1f",
+			"revisionTime": "2017-09-23T01:31:02Z"
 		},
 		{
 			"checksumSHA1": "Y+HGqEkYM15ir+J93MEaHdyFy0c=",
