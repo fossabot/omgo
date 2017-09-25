@@ -21,7 +21,6 @@
 package transport // import "google.golang.org/grpc/transport"
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"net"
@@ -48,28 +47,25 @@ type recvMsg struct {
 	err error
 }
 
-func (*recvMsg) item() {}
-
-// All items in an out of a recvBuffer should be the same type.
-type item interface {
-	item()
-}
-
-// recvBuffer is an unbounded channel of item.
+// recvBuffer is an unbounded channel of recvMsg structs.
+// Note recvBuffer differs from controlBuffer only in that recvBuffer
+// holds a channel of only recvMsg structs instead of objects implementing "item" interface.
+// recvBuffer is written to much more often than
+// controlBuffer and using strict recvMsg structs helps avoid allocation in "recvBuffer.put"
 type recvBuffer struct {
-	c       chan item
+	c       chan recvMsg
 	mu      sync.Mutex
-	backlog []item
+	backlog []recvMsg
 }
 
 func newRecvBuffer() *recvBuffer {
 	b := &recvBuffer{
-		c: make(chan item, 1),
+		c: make(chan recvMsg, 1),
 	}
 	return b
 }
 
-func (b *recvBuffer) put(r item) {
+func (b *recvBuffer) put(r recvMsg) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	if len(b.backlog) == 0 {
@@ -88,6 +84,103 @@ func (b *recvBuffer) load() {
 	if len(b.backlog) > 0 {
 		select {
 		case b.c <- b.backlog[0]:
+			b.backlog[0] = recvMsg{}
+			b.backlog = b.backlog[1:]
+		default:
+		}
+	}
+}
+
+// get returns the channel that receives a recvMsg in the buffer.
+//
+// Upon receipt of a recvMsg, the caller should call load to send another
+// recvMsg onto the channel if there is any.
+func (b *recvBuffer) get() <-chan recvMsg {
+	return b.c
+}
+
+// recvBufferReader implements io.Reader interface to read the data from
+// recvBuffer.
+type recvBufferReader struct {
+	ctx    context.Context
+	goAway chan struct{}
+	recv   *recvBuffer
+	last   []byte // Stores the remaining data in the previous calls.
+	err    error
+}
+
+// Read reads the next len(p) bytes from last. If last is drained, it tries to
+// read additional data from recv. It blocks if there no additional data available
+// in recv. If Read returns any non-nil error, it will continue to return that error.
+func (r *recvBufferReader) Read(p []byte) (n int, err error) {
+	if r.err != nil {
+		return 0, r.err
+	}
+	n, r.err = r.read(p)
+	return n, r.err
+}
+
+func (r *recvBufferReader) read(p []byte) (n int, err error) {
+	if r.last != nil && len(r.last) > 0 {
+		// Read remaining data left in last call.
+		copied := copy(p, r.last)
+		r.last = r.last[copied:]
+		return copied, nil
+	}
+	select {
+	case <-r.ctx.Done():
+		return 0, ContextErr(r.ctx.Err())
+	case <-r.goAway:
+		return 0, ErrStreamDrain
+	case m := <-r.recv.get():
+		r.recv.load()
+		if m.err != nil {
+			return 0, m.err
+		}
+		copied := copy(p, m.data)
+		r.last = m.data[copied:]
+		return copied, nil
+	}
+}
+
+// All items in an out of a controlBuffer should be the same type.
+type item interface {
+	item()
+}
+
+// controlBuffer is an unbounded channel of item.
+type controlBuffer struct {
+	c       chan item
+	mu      sync.Mutex
+	backlog []item
+}
+
+func newControlBuffer() *controlBuffer {
+	b := &controlBuffer{
+		c: make(chan item, 1),
+	}
+	return b
+}
+
+func (b *controlBuffer) put(r item) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	if len(b.backlog) == 0 {
+		select {
+		case b.c <- r:
+			return
+		default:
+		}
+	}
+	b.backlog = append(b.backlog, r)
+}
+
+func (b *controlBuffer) load() {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	if len(b.backlog) > 0 {
+		select {
+		case b.c <- b.backlog[0]:
 			b.backlog[0] = nil
 			b.backlog = b.backlog[1:]
 		default:
@@ -99,46 +192,8 @@ func (b *recvBuffer) load() {
 //
 // Upon receipt of an item, the caller should call load to send another
 // item onto the channel if there is any.
-func (b *recvBuffer) get() <-chan item {
+func (b *controlBuffer) get() <-chan item {
 	return b.c
-}
-
-// recvBufferReader implements io.Reader interface to read the data from
-// recvBuffer.
-type recvBufferReader struct {
-	ctx    context.Context
-	goAway chan struct{}
-	recv   *recvBuffer
-	last   *bytes.Reader // Stores the remaining data in the previous calls.
-	err    error
-}
-
-// Read reads the next len(p) bytes from last. If last is drained, it tries to
-// read additional data from recv. It blocks if there no additional data available
-// in recv. If Read returns any non-nil error, it will continue to return that error.
-func (r *recvBufferReader) Read(p []byte) (n int, err error) {
-	if r.err != nil {
-		return 0, r.err
-	}
-	defer func() { r.err = err }()
-	if r.last != nil && r.last.Len() > 0 {
-		// Read remaining data left in last call.
-		return r.last.Read(p)
-	}
-	select {
-	case <-r.ctx.Done():
-		return 0, ContextErr(r.ctx.Err())
-	case <-r.goAway:
-		return 0, ErrStreamDrain
-	case i := <-r.recv.get():
-		r.recv.load()
-		m := i.(*recvMsg)
-		if m.err != nil {
-			return 0, m.err
-		}
-		r.last = bytes.NewReader(m.data)
-		return r.last.Read(p)
-	}
 }
 
 type streamState uint8
@@ -180,7 +235,8 @@ type Stream struct {
 	// is used to adjust flow control, if need be.
 	requestRead func(int)
 
-	sendQuotaPool *quotaPool
+	sendQuotaPool  *quotaPool
+	localSendQuota *quotaPool
 	// Close headerChan to indicate the end of reception of header metadata.
 	headerChan chan struct{}
 	// header caches the received header metadata.
@@ -311,7 +367,7 @@ func (s *Stream) SetTrailer(md metadata.MD) error {
 }
 
 func (s *Stream) write(m recvMsg) {
-	s.buf.put(&m)
+	s.buf.put(m)
 }
 
 // Read reads all p bytes from the wire for this stream.
@@ -436,9 +492,9 @@ type ConnectOptions struct {
 	KeepaliveParams keepalive.ClientParameters
 	// StatsHandler stores the handler for stats.
 	StatsHandler stats.Handler
-	// InitialWindowSize sets the intial window size for a stream.
+	// InitialWindowSize sets the initial window size for a stream.
 	InitialWindowSize int32
-	// InitialConnWindowSize sets the intial window size for a connection.
+	// InitialConnWindowSize sets the initial window size for a connection.
 	InitialConnWindowSize int32
 }
 
@@ -488,8 +544,10 @@ type CallHdr struct {
 
 	// Flush indicates whether a new stream command should be sent
 	// to the peer without waiting for the first data. This is
-	// only a hint. The transport may modify the flush decision
+	// only a hint.
+	// If it's true, the transport may modify the flush decision
 	// for performance purposes.
+	// If it's false, new stream will never be flushed.
 	Flush bool
 }
 
@@ -507,7 +565,7 @@ type ClientTransport interface {
 
 	// Write sends the data for the given stream. A nil stream indicates
 	// the write is to be performed on the transport as a whole.
-	Write(s *Stream, data []byte, opts *Options) error
+	Write(s *Stream, hdr []byte, data []byte, opts *Options) error
 
 	// NewStream creates a Stream for an RPC.
 	NewStream(ctx context.Context, callHdr *CallHdr) (*Stream, error)
@@ -549,7 +607,7 @@ type ServerTransport interface {
 
 	// Write sends the data for the given stream.
 	// Write may not be called on all streams.
-	Write(s *Stream, data []byte, opts *Options) error
+	Write(s *Stream, hdr []byte, data []byte, opts *Options) error
 
 	// WriteStatus sends the status of a stream to the client.  WriteStatus is
 	// the final call made on a stream and always occurs.
@@ -643,12 +701,6 @@ func wait(ctx context.Context, done, goAway, closing <-chan struct{}, proceed <-
 	case <-ctx.Done():
 		return 0, ContextErr(ctx.Err())
 	case <-done:
-		// User cancellation has precedence.
-		select {
-		case <-ctx.Done():
-			return 0, ContextErr(ctx.Err())
-		default:
-		}
 		return 0, io.EOF
 	case <-goAway:
 		return 0, ErrStreamDrain
@@ -668,6 +720,39 @@ const (
 	// NoReason is the default value when GoAway frame is received.
 	NoReason GoAwayReason = 1
 	// TooManyPings indicates that a GoAway frame with ErrCodeEnhanceYourCalm
-	// was recieved and that the debug data said "too_many_pings".
+	// was received and that the debug data said "too_many_pings".
 	TooManyPings GoAwayReason = 2
 )
+
+// loopyWriter is run in a separate go routine. It is the single code path that will
+// write data on wire.
+func loopyWriter(cbuf *controlBuffer, done chan struct{}, handler func(item) error) {
+	for {
+		select {
+		case i := <-cbuf.get():
+			cbuf.load()
+			if err := handler(i); err != nil {
+				return
+			}
+		case <-done:
+			return
+		}
+	hasData:
+		for {
+			select {
+			case i := <-cbuf.get():
+				cbuf.load()
+				if err := handler(i); err != nil {
+					return
+				}
+			case <-done:
+				return
+			default:
+				if err := handler(&flushIO{}); err != nil {
+					return
+				}
+				break hasData
+			}
+		}
+	}
+}
