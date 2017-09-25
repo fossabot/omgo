@@ -13,6 +13,15 @@ SET @@auto_increment_increment=2;
 DELETE FROM table WHERE usn=0;
 ```
 
+### join
+
+```sql
+SELECT column-names
+  FROM table-name1 JOIN table-name2
+    ON column-name1 = column-name2
+ WHERE condition
+```
+
 ## DDLs
 
 ```sql

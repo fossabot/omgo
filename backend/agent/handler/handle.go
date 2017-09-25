@@ -12,7 +12,6 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/backend/agent/types"
-	"github.com/master-g/omgo/keys"
 	"github.com/master-g/omgo/net/packet"
 	pbdb "github.com/master-g/omgo/proto/grpc/db"
 	pbgame "github.com/master-g/omgo/proto/grpc/game"
@@ -134,14 +133,14 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	}
 
 	// validate user token
-	dbConn := services.GetServiceWithID(keys.ServiceDB, DefaultDBSID)
+	dbConn := services.GetServiceWithID(DBService, DefaultDBSID)
 	if dbConn == nil {
 		log.Errorf("cannot get db service:", DefaultDBSID)
 		return response(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	dbClient := pbdb.NewDBServiceClient(dbConn)
-	userKey := &pbdb.DB_UserKey{Usn: usn}
+	userKey := &pbdb.DB_UserEntry{Usn: usn}
 	dbRsp, err := dbClient.UserExtraInfoQuery(context.Background(), userKey)
 	if err != nil {
 		log.Errorf("error while query user extra info:%v", usn)
@@ -149,13 +148,13 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 		return response(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
-	if dbRsp.Usn == 0 || dbRsp.GetToken() == "" {
+	if dbRsp.Result.Status != pbdb.DB_STATUS_OK || dbRsp.User.Token == "" {
 		log.Errorf("user extra info not found:%v", usn)
 		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		return response(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
-	if strings.Compare(token, dbRsp.GetToken()) != 0 {
+	if strings.Compare(token, dbRsp.User.Token) != 0 {
 		log.Infof("invalid token")
 		session.SetFlagKicked()
 		return response(pc.Cmd_LOGIN_RSP, rsp)
@@ -180,7 +179,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	session.GSID = DefaultGSID
 	session.SetFlagAuth()
 
-	conn := services.GetServiceWithID(keys.ServiceGame, session.GSID)
+	conn := services.GetServiceWithID(GameService, session.GSID)
 	if conn == nil {
 		log.Error("cannot get game service:", session.GSID)
 		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
@@ -189,7 +188,7 @@ func ProcUserLoginReq(session *types.Session, reader *packet.RawPacket) []byte {
 	cli := pbgame.NewGameServiceClient(conn)
 
 	// open game server stream
-	ctx := metadata.NewContext(context.Background(), metadata.New(map[string]string{keys.Usn: fmt.Sprint(session.Usn)}))
+	ctx := metadata.NewContext(context.Background(), metadata.New(map[string]string{Usn: fmt.Sprint(session.Usn)}))
 	stream, err := cli.Stream(ctx)
 	if err != nil {
 		log.Error(err)
