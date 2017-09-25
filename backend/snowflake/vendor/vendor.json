@@ -42,8 +42,8 @@
 			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
 			"origin": "github.com/master-g/omgo/utils/vendor/github.com/davecgh/go-spew/spew",
 			"path": "github.com/davecgh/go-spew/spew",
-			"revision": "5f23244a1573f46d9f0a7b4dc9d4a4c5ec025905",
-			"revisionTime": "2017-09-23T01:32:15Z"
+			"revision": "57414b2f6bc5e4f7d0ec8837c67639a6643e01be",
+			"revisionTime": "2017-09-25T10:05:38Z"
 		},
 		{
 			"checksumSHA1": "qlPUeFabwF4RKAOF1H+yBFU1Veg=",
@@ -61,26 +61,26 @@
 			"checksumSHA1": "7hln62oZPZmyqEmgXaybf9WxQ7A=",
 			"origin": "github.com/master-g/omgo/utils/vendor/github.com/maruel/panicparse/stack",
 			"path": "github.com/maruel/panicparse/stack",
-			"revision": "5f23244a1573f46d9f0a7b4dc9d4a4c5ec025905",
-			"revisionTime": "2017-09-23T01:32:15Z"
+			"revision": "57414b2f6bc5e4f7d0ec8837c67639a6643e01be",
+			"revisionTime": "2017-09-25T10:05:38Z"
 		},
 		{
 			"checksumSHA1": "UiSXEfHLJ72bAFS1ieRs1b2phkg=",
 			"path": "github.com/master-g/omgo/proto/grpc/snowflake",
-			"revision": "5f23244a1573f46d9f0a7b4dc9d4a4c5ec025905",
-			"revisionTime": "2017-09-23T01:32:15Z"
+			"revision": "57414b2f6bc5e4f7d0ec8837c67639a6643e01be",
+			"revisionTime": "2017-09-25T10:05:38Z"
 		},
 		{
 			"checksumSHA1": "z99XNGfjiIuWbDTv/HBUWc7UUXA=",
 			"path": "github.com/master-g/omgo/services",
-			"revision": "5f23244a1573f46d9f0a7b4dc9d4a4c5ec025905",
-			"revisionTime": "2017-09-23T01:32:15Z"
+			"revision": "57414b2f6bc5e4f7d0ec8837c67639a6643e01be",
+			"revisionTime": "2017-09-25T10:05:38Z"
 		},
 		{
 			"checksumSHA1": "2z8kr6ar+EmHwI5L/EepHHnJ+Bg=",
 			"path": "github.com/master-g/omgo/utils",
-			"revision": "5f23244a1573f46d9f0a7b4dc9d4a4c5ec025905",
-			"revisionTime": "2017-09-23T01:32:15Z"
+			"revision": "57414b2f6bc5e4f7d0ec8837c67639a6643e01be",
+			"revisionTime": "2017-09-25T10:05:38Z"
 		},
 		{
 			"checksumSHA1": "Y+HGqEkYM15ir+J93MEaHdyFy0c=",
@@ -143,13 +143,13 @@
 			"revisionTime": "2017-06-09T08:37:55Z"
 		},
 		{
-			"checksumSHA1": "MRLtTu/vpd18le8/HPLxOdjO5RE=",
+			"checksumSHA1": "KG+XZAbxdkpBm3Fa3bJ3Ylq8CKI=",
 			"path": "golang.org/x/text/unicode/bidi",
 			"revision": "3491b61b9edc56653ad4333e605e2908e46a036b",
 			"revisionTime": "2017-06-09T08:37:55Z"
 		},
 		{
-			"checksumSHA1": "kKylzIrLEnH8NKyeVAL0dq5gjVQ=",
+			"checksumSHA1": "Anof4bt0AU+Sa3R8Rq0KBnlpbaQ=",
 			"path": "golang.org/x/text/unicode/norm",
 			"revision": "3491b61b9edc56653ad4333e605e2908e46a036b",
 			"revisionTime": "2017-06-09T08:37:55Z"
