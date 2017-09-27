@@ -4,5 +4,8 @@
     "service.root": "backends",
     "service.names": ["dbservice"],
 
+    "session.map": "web0.sessionmap",
+    "session.expire": 86400000,
+
     "etcd.host": ["http://localhost:2379"]
 }

@@ -20,13 +20,13 @@ public class LoginHandler extends BaseHandler {
     }
 
     @Override
-    public void register(Router router, String path) {
-        super.register(router, path);
+    public void initRoute(Router router, String path) {
+        super.initRoute(router, path);
 
         GRPCAuthProvider authProvider = new GRPCAuthProvider(vertx, grpcChannel);
         route.handler(routingContext -> {
-            HttpServerRequest request = super.handle(routingContext);
-            HttpServerResponse response = super.response(routingContext);
+            HttpServerRequest request = super.getRequest(routingContext);
+            HttpServerResponse response = super.getResponse(routingContext);
 
             // authenticate
             Session session = routingContext.session();
@@ -42,9 +42,10 @@ public class LoginHandler extends BaseHandler {
                 if (authRes.succeeded()) {
                     User user = authRes.result();
                     routingContext.setUser(user);
-                    if (session != null) {
-                        session.regenerateId();
-                    }
+
+                    session.put(ModelConverter.KEY_TOKEN, user.principal().getString(ModelConverter.KEY_TOKEN));
+                    session.regenerateId();
+
                     response.write(user.principal().encode()).end();
                 } else {
                     routingContext.fail(403);

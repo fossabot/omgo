@@ -8,6 +8,7 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.Session;
 import proto.DBServiceGrpc;
 import proto.Db;
 
@@ -31,7 +32,7 @@ secret:	p4ssw0rd
 timezone:	8
  */
 
-// response
+// getResponse
 /*
 {
 "usn": 0,
@@ -80,12 +81,12 @@ public class RegisterHandler extends BaseHandler {
     }
 
     @Override
-    public void register(Router router, String path) {
-        super.register(router, path);
+    public void initRoute(Router router, String path) {
+        super.initRoute(router, path);
 
         route.handler(routingContext -> {
-            HttpServerRequest request = super.handle(routingContext);
-            HttpServerResponse response = super.response(routingContext);
+            HttpServerRequest request = super.getRequest(routingContext);
+            HttpServerResponse response = super.getResponse(routingContext);
 
             JsonObject registerJson = super.getHeaderJson(request);
             String app_language = registerJson.getString(ModelConverter.KEY_APP_LANGUAGE, "");
@@ -135,6 +136,11 @@ public class RegisterHandler extends BaseHandler {
                     Db.DB.StatusCode code = res.result().getResult().getStatus();
                     if (code == Db.DB.StatusCode.STATUS_OK) {
                         JsonObject resultJson = ModelConverter.userEntry2Json(res.result().getUser());
+
+                        Session session = routingContext.session();
+                        session.put(ModelConverter.KEY_TOKEN, resultJson.getString(ModelConverter.KEY_TOKEN));
+                        session.regenerateId();
+
                         response.write(resultJson.encode()).end();
                     } else {
                         routingContext.fail(500);

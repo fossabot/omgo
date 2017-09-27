@@ -1,5 +1,7 @@
 package com.omgo.webservice.handler;
 
+import com.omgo.webservice.Utils;
+import com.omgo.webservice.model.ModelConverter;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;
@@ -10,6 +12,7 @@ import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.Session;
 
 import java.util.Map;
 
@@ -29,8 +32,8 @@ public class BaseHandler {
         LOGGER = LoggerFactory.getLogger(this.getClass());
     }
 
-    public void register(Router router, String path) {
-        LOGGER.info("register handler for : " + path);
+    public void initRoute(Router router, String path) {
+        LOGGER.info("initRoute handler for : " + path);
         this.path = path;
 
         route = router.route(httpMethod(), path)
@@ -38,14 +41,14 @@ public class BaseHandler {
             .produces(produces());
     }
 
-    protected HttpServerRequest handle(RoutingContext context) {
+    protected HttpServerRequest getRequest(RoutingContext context) {
         HttpServerRequest request = context.request();
         LOGGER.info("handling request: " + request.uri());
         LOGGER.info("header: " + getHeaderJson(request));
         return request;
     }
 
-    protected HttpServerResponse response(RoutingContext context) {
+    protected HttpServerResponse getResponse(RoutingContext context) {
         HttpServerResponse response = context.response();
         // enable chunked responses because we will be adding data as
         // we execute over other handlers. This is only required once and
@@ -61,6 +64,19 @@ public class BaseHandler {
             headerJson.put(entry.getKey(), entry.getValue());
         }
         return headerJson;
+    }
+
+    protected boolean isSessionValid(RoutingContext context) {
+        Session session = context.session();
+        if (session != null) {
+            JsonObject headerJson = getHeaderJson(getRequest(context));
+            String clientToken = headerJson.getString(ModelConverter.KEY_TOKEN);
+            String sessionToken = session.get(ModelConverter.KEY_TOKEN);
+            if (!Utils.isEmptyString(clientToken) && !Utils.isEmptyString(sessionToken)) {
+                return sessionToken.equals(clientToken);
+            }
+        }
+        return false;
     }
 
     protected HttpMethod httpMethod() {

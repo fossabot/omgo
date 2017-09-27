@@ -527,10 +527,10 @@ public class Services {
                 LOGGER.info(String.format("service %s @ %s registered", fullPath, address));
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                LOGGER.error("error while register service for interrupt");
+                LOGGER.error("error while initRoute service for interrupt");
             } catch (ExecutionException e) {
                 e.printStackTrace();
-                LOGGER.error("error while register service for exception");
+                LOGGER.error("error while initRoute service for exception");
             }
             kvClient.close();
         }

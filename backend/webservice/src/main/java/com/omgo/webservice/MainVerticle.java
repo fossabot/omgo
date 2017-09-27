@@ -3,6 +3,7 @@ package com.omgo.webservice;
 import com.omgo.webservice.etcd.Services;
 import com.omgo.webservice.handler.LoginHandler;
 import com.omgo.webservice.handler.RegisterHandler;
+import com.omgo.webservice.handler.TestHandler;
 import io.grpc.ManagedChannel;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
@@ -14,6 +15,7 @@ import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CookieHandler;
 import io.vertx.ext.web.handler.SessionHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
+import io.vertx.ext.web.sstore.SessionStore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,15 +39,23 @@ public class MainVerticle extends AbstractVerticle {
         // Cookies, sessions and request bodies
         router.route().handler(CookieHandler.create());
         router.route().handler(BodyHandler.create());
-        router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
+        SessionStore store = LocalSessionStore.create(
+            vertx,
+            config().getString("session.map"),
+            config().getLong("session.expire", 24 * 60 * 60 * 1000L));
+        router.route().handler(SessionHandler.create(store));
 
         // login
         LoginHandler loginHandler = new LoginHandler(vertx, grpcChannel);
-        loginHandler.register(router, ApiConstant.getApiPath(ApiConstant.API_LOGIN));
+        loginHandler.initRoute(router, ApiConstant.getApiPath(ApiConstant.API_LOGIN));
 
         // register
         RegisterHandler registerHandler = new RegisterHandler(vertx, grpcChannel);
-        registerHandler.register(router, ApiConstant.getApiPath(ApiConstant.API_REGISTER));
+        registerHandler.initRoute(router, ApiConstant.getApiPath(ApiConstant.API_REGISTER));
+
+        // test
+        TestHandler testHandler = new TestHandler(vertx);
+        testHandler.initRoute(router, ApiConstant.getApiPath(ApiConstant.API_TEST));
 
         // start service
         HttpServer server = vertx.createHttpServer();
