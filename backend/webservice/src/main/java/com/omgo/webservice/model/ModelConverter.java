@@ -42,6 +42,9 @@ public class ModelConverter {
     public static final String KEY_TIMEZONE = "timezone";
     public static final String KEY_TOKEN = "token";
 
+    public static final String KEY_SEND_SEED = "send_seed";
+    public static final String KEY_RECV_SEED = "recv_seed";
+
     private static final String COMMA = "'";
 
     public static Db.DB.UserEntry json2UserEntry(JsonObject jsonObject) {

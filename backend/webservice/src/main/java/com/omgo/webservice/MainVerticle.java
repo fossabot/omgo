@@ -1,6 +1,7 @@
 package com.omgo.webservice;
 
 import com.omgo.webservice.etcd.Services;
+import com.omgo.webservice.handler.HandshakeHandler;
 import com.omgo.webservice.handler.LoginHandler;
 import com.omgo.webservice.handler.RegisterHandler;
 import com.omgo.webservice.handler.TestHandler;
@@ -52,6 +53,10 @@ public class MainVerticle extends AbstractVerticle {
         // register
         RegisterHandler registerHandler = new RegisterHandler(vertx, grpcChannel);
         registerHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_REGISTER));
+
+        // handshake
+        HandshakeHandler handshakeHandler = new HandshakeHandler(vertx);
+        handshakeHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_HANDSHAKE));
 
         // test
         TestHandler testHandler = new TestHandler(vertx);
