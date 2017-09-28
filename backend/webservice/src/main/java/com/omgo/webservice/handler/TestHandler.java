@@ -12,8 +12,8 @@ public class TestHandler extends BaseHandler {
     }
 
     @Override
-    public void initRoute(Router router, String path) {
-        super.initRoute(router, path);
+    public void setRoute(Router router, String path) {
+        super.setRoute(router, path);
 
         route.handler(routingContext -> {
             HttpServerRequest request = super.getRequest(routingContext);

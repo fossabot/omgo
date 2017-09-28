@@ -32,8 +32,14 @@ public class BaseHandler {
         LOGGER = LoggerFactory.getLogger(this.getClass());
     }
 
-    public void initRoute(Router router, String path) {
-        LOGGER.info("initRoute handler for : " + path);
+    /**
+     * setup a route for path
+     *
+     * @param router
+     * @param path
+     */
+    public void setRoute(Router router, String path) {
+        LOGGER.info("setRoute handler for : " + path);
         this.path = path;
 
         route = router.route(httpMethod(), path)
@@ -41,6 +47,12 @@ public class BaseHandler {
             .produces(produces());
     }
 
+    /**
+     * get request object from routing context, and log its info
+     *
+     * @param context
+     * @return
+     */
     protected HttpServerRequest getRequest(RoutingContext context) {
         HttpServerRequest request = context.request();
         LOGGER.info("handling request: " + request.uri());
@@ -48,6 +60,12 @@ public class BaseHandler {
         return request;
     }
 
+    /**
+     * get response object from routing context, and setup chunk, content-type etc.
+     *
+     * @param context
+     * @return
+     */
     protected HttpServerResponse getResponse(RoutingContext context) {
         HttpServerResponse response = context.response();
         // enable chunked responses because we will be adding data as
@@ -58,6 +76,12 @@ public class BaseHandler {
         return response;
     }
 
+    /**
+     * get request header json object
+     *
+     * @param request
+     * @return
+     */
     protected JsonObject getHeaderJson(HttpServerRequest request) {
         JsonObject headerJson = new JsonObject();
         for (Map.Entry<String, String> entry : request.headers().entries()) {
@@ -66,6 +90,28 @@ public class BaseHandler {
         return headerJson;
     }
 
+    /**
+     * set token
+     *
+     * @param routingContext
+     * @param token
+     * @return
+     */
+    protected Session setSessionToken(RoutingContext routingContext, String token) {
+        Session session = routingContext.session();
+        if (session != null) {
+            session.regenerateId();
+            session.put(ModelConverter.KEY_TOKEN, token);
+        }
+        return session;
+    }
+
+    /**
+     * verify session via token
+     *
+     * @param context
+     * @return
+     */
     protected boolean isSessionValid(RoutingContext context) {
         Session session = context.session();
         if (session != null) {

@@ -9,7 +9,6 @@ import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.Session;
 
 public class LoginHandler extends BaseHandler {
     private ManagedChannel grpcChannel;
@@ -20,16 +19,13 @@ public class LoginHandler extends BaseHandler {
     }
 
     @Override
-    public void initRoute(Router router, String path) {
-        super.initRoute(router, path);
+    public void setRoute(Router router, String path) {
+        super.setRoute(router, path);
 
         GRPCAuthProvider authProvider = new GRPCAuthProvider(vertx, grpcChannel);
         route.handler(routingContext -> {
             HttpServerRequest request = super.getRequest(routingContext);
             HttpServerResponse response = super.getResponse(routingContext);
-
-            // authenticate
-            Session session = routingContext.session();
 
             JsonObject authJson = super.getHeaderJson(request);
 
@@ -43,8 +39,7 @@ public class LoginHandler extends BaseHandler {
                     User user = authRes.result();
                     routingContext.setUser(user);
 
-                    session.put(ModelConverter.KEY_TOKEN, user.principal().getString(ModelConverter.KEY_TOKEN));
-                    session.regenerateId();
+                    setSessionToken(routingContext, user.principal().getString(ModelConverter.KEY_TOKEN));
 
                     response.write(user.principal().encode()).end();
                 } else {

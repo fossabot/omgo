@@ -47,15 +47,15 @@ public class MainVerticle extends AbstractVerticle {
 
         // login
         LoginHandler loginHandler = new LoginHandler(vertx, grpcChannel);
-        loginHandler.initRoute(router, ApiConstant.getApiPath(ApiConstant.API_LOGIN));
+        loginHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_LOGIN));
 
         // register
         RegisterHandler registerHandler = new RegisterHandler(vertx, grpcChannel);
-        registerHandler.initRoute(router, ApiConstant.getApiPath(ApiConstant.API_REGISTER));
+        registerHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_REGISTER));
 
         // test
         TestHandler testHandler = new TestHandler(vertx);
-        testHandler.initRoute(router, ApiConstant.getApiPath(ApiConstant.API_TEST));
+        testHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_TEST));
 
         // start service
         HttpServer server = vertx.createHttpServer();

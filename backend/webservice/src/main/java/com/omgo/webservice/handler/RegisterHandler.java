@@ -8,7 +8,6 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.Session;
 import proto.DBServiceGrpc;
 import proto.Db;
 
@@ -81,8 +80,8 @@ public class RegisterHandler extends BaseHandler {
     }
 
     @Override
-    public void initRoute(Router router, String path) {
-        super.initRoute(router, path);
+    public void setRoute(Router router, String path) {
+        super.setRoute(router, path);
 
         route.handler(routingContext -> {
             HttpServerRequest request = super.getRequest(routingContext);
@@ -137,9 +136,7 @@ public class RegisterHandler extends BaseHandler {
                     if (code == Db.DB.StatusCode.STATUS_OK) {
                         JsonObject resultJson = ModelConverter.userEntry2Json(res.result().getUser());
 
-                        Session session = routingContext.session();
-                        session.put(ModelConverter.KEY_TOKEN, resultJson.getString(ModelConverter.KEY_TOKEN));
-                        session.regenerateId();
+                        setSessionToken(routingContext, resultJson.getString(ModelConverter.KEY_TOKEN));
 
                         response.write(resultJson.encode()).end();
                     } else {
