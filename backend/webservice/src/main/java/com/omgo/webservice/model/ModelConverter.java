@@ -42,8 +42,9 @@ public class ModelConverter {
     public static final String KEY_TIMEZONE = "timezone";
     public static final String KEY_TOKEN = "token";
 
-    public static final String KEY_SEND_SEED = "send_seed";
-    public static final String KEY_RECV_SEED = "recv_seed";
+    public static final String KEY_USER_INFO = "user_info";
+    public static final String KEY_TIMESTAMP = "timestamp";
+    public static final String KEY_SEED = "seed";
 
     private static final String COMMA = "'";
 

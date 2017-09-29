@@ -24,7 +24,7 @@ public class TestHandler extends BaseHandler {
                 return;
             }
 
-            JsonObject rsp = new JsonObject();
+            JsonObject rsp = getResponseJson();
             rsp.put("foo", "bar");
             JsonObject headerJson = getHeaderJson(request);
             response.write(rsp.encode()).end();

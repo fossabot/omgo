@@ -90,6 +90,13 @@ public class BaseHandler {
         return headerJson;
     }
 
+    protected JsonObject getResponseJson() {
+        JsonObject rspJson = new JsonObject();
+        rspJson.put(ModelConverter.KEY_TIMESTAMP, System.currentTimeMillis());
+
+        return rspJson;
+    }
+
     /**
      * set token
      *
@@ -115,6 +122,9 @@ public class BaseHandler {
     protected boolean isSessionValid(RoutingContext context) {
         Session session = context.session();
         if (session != null) {
+            if (Utils.DEBUG) {
+                return true;
+            }
             JsonObject headerJson = getHeaderJson(getRequest(context));
             String clientToken = headerJson.getString(ModelConverter.KEY_TOKEN);
             String sessionToken = session.get(ModelConverter.KEY_TOKEN);

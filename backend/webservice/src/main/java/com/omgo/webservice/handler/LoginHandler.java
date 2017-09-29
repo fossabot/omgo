@@ -41,7 +41,9 @@ public class LoginHandler extends BaseHandler {
 
                     setSessionToken(routingContext, user.principal().getString(ModelConverter.KEY_TOKEN));
 
-                    response.write(user.principal().encode()).end();
+                    JsonObject rspJson = getResponseJson();
+                    rspJson.put(ModelConverter.KEY_USER_INFO, user.principal());
+                    response.write(rspJson.encode()).end();
                 } else {
                     routingContext.fail(403);
                 }

@@ -138,7 +138,9 @@ public class RegisterHandler extends BaseHandler {
 
                         setSessionToken(routingContext, resultJson.getString(ModelConverter.KEY_TOKEN));
 
-                        response.write(resultJson.encode()).end();
+                        JsonObject rspJson = getResponseJson();
+                        rspJson.put(ModelConverter.KEY_USER_INFO, resultJson);
+                        response.write(rspJson.encode()).end();
                     } else {
                         routingContext.fail(500);
                     }

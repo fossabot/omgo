@@ -1,5 +1,6 @@
 {
     "info.version": "v0.0.1",
+    "debug": true,
 
     "service.root": "backends",
     "service.names": ["dbservice"],

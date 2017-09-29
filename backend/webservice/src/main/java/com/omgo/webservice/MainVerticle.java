@@ -30,6 +30,8 @@ public class MainVerticle extends AbstractVerticle {
     public void start() {
         LOGGER.info("config version: " + config().getString("info.version"));
 
+        Utils.DEBUG = config().getBoolean("debug", false);
+
         setupServices();
         startApiService();
     }
