@@ -54,6 +54,7 @@ public final class AccountUtils {
         return null;
     }
 
+    // FIXME: 29/09/2017 invalid email address like xxx@xxx can pass this test
     public static boolean isValidEmailAddress(String s) {
         if (Utils.isEmptyString(s)) {
             return false;

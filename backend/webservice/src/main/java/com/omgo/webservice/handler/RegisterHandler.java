@@ -142,9 +142,11 @@ public class RegisterHandler extends BaseHandler {
                         rspJson.put(ModelConverter.KEY_USER_INFO, resultJson);
                         response.write(rspJson.encode()).end();
                     } else {
+                        LOGGER.info(res.result().getResult());
                         routingContext.fail(500);
                     }
                 } else {
+                    LOGGER.info(res.cause());
                     routingContext.fail(500);
                 }
             });

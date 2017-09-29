@@ -331,7 +331,7 @@ public class DbOperator {
         // query
         String queryQuery = ModelConverter.SQLQueryQueryUid(uid);
         // insert
-        String insertQuery = ModelConverter.SQLQueryInsert(userJson);
+        String insertQuery = ModelConverter.SQLQueryUserInsert(userJson);
         sqlClient.getConnection(res -> {
             if (res.succeeded()) {
                 SQLConnection connection = res.result();

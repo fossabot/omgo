@@ -27,6 +27,7 @@ public class MainVerticle extends AbstractVerticle {
     @Override
     public void start() {
         LOGGER.info("config version: " + config().getString("info.version"));
+        LOGGER.info("config debug: " + config().getBoolean("debug", false));
 
         serviceHost = config().getString("service.host", "localhost");
         servicePort = config().getInteger("service.port", 60001);

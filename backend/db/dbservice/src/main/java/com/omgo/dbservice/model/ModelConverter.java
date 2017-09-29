@@ -125,6 +125,7 @@ public class ModelConverter {
 
     private static Set<String> getUserMapKeySet() {
         Set<String> keySet = new HashSet<>();
+        keySet.add(KEY_USN);
         keySet.add(KEY_UID);
         keySet.add(KEY_APP_LANGUAGE);
         keySet.add(KEY_APP_VERSION);
@@ -193,12 +194,47 @@ public class ModelConverter {
         return jsonObject;
     }
 
-    public static String SQLQueryInsert(JsonObject jsonObject) {
-        String SQL_INSERT = "INSERT INTO user ";
+    private static String sqlString(String value) {
+        return "\"" + value + "\"";
+    }
 
-        SQL_INSERT += toKeyValues(jsonObject, getUserMapKeySet());
+    public static String SQLQueryUserInsert(JsonObject jsonObject) {
+        String SQL_INSERT = "INSERT INTO user VALUES(UUID_SHORT()*2+1, ";
+        String query = SQL_INSERT +
+            jsonObject.getLong(ModelConverter.KEY_UID) + "," +
+            sqlString(jsonObject.getString(ModelConverter.KEY_APP_LANGUAGE)) + "," +
+            sqlString(jsonObject.getString(ModelConverter.KEY_APP_VERSION)) + "," +
+            sqlString(jsonObject.getString(ModelConverter.KEY_AVATAR)) + "," +
+            jsonObject.getLong(ModelConverter.KEY_BIRTHDAY) + "," +
+            sqlString(jsonObject.getString(ModelConverter.KEY_COUNTRY)) + "," +
+            jsonObject.getInteger(ModelConverter.KEY_DEVICE_TYPE) + "," +
+            sqlString(jsonObject.getString(ModelConverter.KEY_EMAIL)) + "," +
+            jsonObject.getBoolean(ModelConverter.KEY_EMAIL_VERIFIED) + "," +
+            jsonObject.getInteger(ModelConverter.KEY_GENDER) + "," +
+            jsonObject.getBoolean(ModelConverter.KEY_IS_OFFICIAL) + "," +
+            jsonObject.getBoolean(ModelConverter.KEY_IS_ROBOT) + "," +
+            sqlString(jsonObject.getString(ModelConverter.KEY_LAST_IP)) + "," +
+            jsonObject.getLong(ModelConverter.KEY_LAST_LOGIN) + "," +
+            jsonObject.getLong(ModelConverter.KEY_LOGIN_COUNT) + "," +
+            jsonObject.getInteger(ModelConverter.KEY_MCC) + "," +
+            sqlString(jsonObject.getString(ModelConverter.KEY_NICKNAME)) + "," +
+            sqlString(jsonObject.getString(ModelConverter.KEY_OS)) + "," +
+            sqlString(jsonObject.getString(ModelConverter.KEY_OS_LOCALE)) + "," +
+            sqlString(jsonObject.getString(ModelConverter.KEY_PHONE)) + "," +
+            jsonObject.getBoolean(ModelConverter.KEY_PHONE_VERIFIED) + "," +
+            jsonObject.getLong(ModelConverter.KEY_PREMIUM_END) + "," +
+            jsonObject.getLong(ModelConverter.KEY_PREMIUM_EXP) + "," +
+            jsonObject.getInteger(ModelConverter.KEY_PREMIUM_LEVEL) + "," +
+            sqlString(jsonObject.getString(ModelConverter.KEY_SECRET)) + "," +
+            jsonObject.getLong(ModelConverter.KEY_SINCE) + "," +
+            sqlString(jsonObject.getString(ModelConverter.KEY_SOCIAL_ID)) + "," +
+            sqlString(jsonObject.getString(ModelConverter.KEY_SOCIAL_NAME)) + "," +
+            jsonObject.getBoolean(ModelConverter.KEY_SOCIAL_VERIFIED) + "," +
+            jsonObject.getInteger(ModelConverter.KEY_STATUS) + "," +
+            jsonObject.getInteger(ModelConverter.KEY_TIMEZONE) + "," +
+            sqlString(jsonObject.getString(ModelConverter.KEY_TOKEN)) + ");";
 
-        return SQL_INSERT;
+        return query;
     }
 
     public static String toKeyValues(JsonObject jsonObject, Set<String> keySet) {
