@@ -323,7 +323,7 @@ CREATE TABLE `innodb_index_stats` (
 
 LOCK TABLES `innodb_index_stats` WRITE;
 /*!40000 ALTER TABLE `innodb_index_stats` DISABLE KEYS */;
-INSERT INTO `innodb_index_stats` VALUES ('master','user','PRIMARY','2017-09-13 12:27:23','n_diff_pfx01',1,1,'usn'),('master','user','PRIMARY','2017-09-13 12:27:23','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','PRIMARY','2017-09-13 12:27:23','size',1,NULL,'Number of pages in the index'),('master','user','user_uid_uindex','2017-09-13 12:27:23','n_diff_pfx01',1,1,'uid'),('master','user','user_uid_uindex','2017-09-13 12:27:23','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','user_uid_uindex','2017-09-13 12:27:23','size',1,NULL,'Number of pages in the index'),('master','user','user_usn_uindex','2017-09-13 12:27:23','n_diff_pfx01',1,1,'usn'),('master','user','user_usn_uindex','2017-09-13 12:27:23','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','user_usn_uindex','2017-09-13 12:27:23','size',1,NULL,'Number of pages in the index'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_diff_pfx01',0,1,'source_uuid'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_diff_pfx02',0,1,'source_uuid,interval_start'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','size',1,NULL,'Number of pages in the index'),('sample','ass','PRIMARY','2017-08-26 17:01:34','n_diff_pfx01',0,1,'id'),('sample','ass','PRIMARY','2017-08-26 17:01:34','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('sample','ass','PRIMARY','2017-08-26 17:01:34','size',1,NULL,'Number of pages in the index'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','n_diff_pfx01',2,1,'variable'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','size',1,NULL,'Number of pages in the index');
+INSERT INTO `innodb_index_stats` VALUES ('master','user','PRIMARY','2017-09-14 16:25:56','n_diff_pfx01',1,1,'usn'),('master','user','PRIMARY','2017-09-14 16:25:56','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','PRIMARY','2017-09-14 16:25:56','size',1,NULL,'Number of pages in the index'),('master','user','user_uid_uindex','2017-09-14 16:25:56','n_diff_pfx01',1,1,'uid'),('master','user','user_uid_uindex','2017-09-14 16:25:56','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','user_uid_uindex','2017-09-14 16:25:56','size',1,NULL,'Number of pages in the index'),('master','user','user_usn_uindex','2017-09-14 16:25:56','n_diff_pfx01',1,1,'usn'),('master','user','user_usn_uindex','2017-09-14 16:25:56','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('master','user','user_usn_uindex','2017-09-14 16:25:56','size',1,NULL,'Number of pages in the index'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_diff_pfx01',0,1,'source_uuid'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_diff_pfx02',0,1,'source_uuid,interval_start'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('mysql','gtid_executed','PRIMARY','2017-07-21 09:55:23','size',1,NULL,'Number of pages in the index'),('sample','ass','PRIMARY','2017-08-26 17:01:34','n_diff_pfx01',0,1,'id'),('sample','ass','PRIMARY','2017-08-26 17:01:34','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('sample','ass','PRIMARY','2017-08-26 17:01:34','size',1,NULL,'Number of pages in the index'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','n_diff_pfx01',2,1,'variable'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('sys','sys_config','PRIMARY','2017-07-21 09:55:24','size',1,NULL,'Number of pages in the index');
 /*!40000 ALTER TABLE `innodb_index_stats` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -351,7 +351,7 @@ CREATE TABLE `innodb_table_stats` (
 
 LOCK TABLES `innodb_table_stats` WRITE;
 /*!40000 ALTER TABLE `innodb_table_stats` DISABLE KEYS */;
-INSERT INTO `innodb_table_stats` VALUES ('master','user','2017-09-13 12:27:23',1,1,2),('mysql','gtid_executed','2017-07-21 09:55:23',0,1,0),('sample','ass','2017-08-26 17:01:34',0,1,0),('sys','sys_config','2017-07-21 09:55:24',2,1,0);
+INSERT INTO `innodb_table_stats` VALUES ('master','user','2017-09-14 16:25:56',1,1,2),('mysql','gtid_executed','2017-07-21 09:55:23',0,1,0),('sample','ass','2017-08-26 17:01:34',0,1,0),('sys','sys_config','2017-07-21 09:55:24',2,1,0);
 /*!40000 ALTER TABLE `innodb_table_stats` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -958,6 +958,7 @@ CREATE TABLE `user` (
   `email_verified` tinyint(1) DEFAULT '0',
   `gender` int(11) DEFAULT '0',
   `is_official` tinyint(1) DEFAULT '0',
+  `is_robot` tinyint(1) DEFAULT '0',
   `last_ip` varchar(128) DEFAULT NULL,
   `last_login` bigint(20) NOT NULL DEFAULT '0',
   `login_count` bigint(20) NOT NULL DEFAULT '0',
@@ -965,11 +966,16 @@ CREATE TABLE `user` (
   `nickname` varchar(128) NOT NULL,
   `os` varchar(255) DEFAULT NULL,
   `os_locale` varchar(16) DEFAULT NULL,
+  `phone` varchar(32) DEFAULT NULL,
+  `phone_verified` tinyint(1) DEFAULT '0',
+  `premium_end` bigint(20) DEFAULT '0',
+  `premium_exp` bigint(20) DEFAULT '0',
   `premium_level` int(11) DEFAULT '0',
-  `salt` varchar(255) DEFAULT NULL,
   `secret` varchar(255) DEFAULT NULL,
   `since` bigint(20) NOT NULL DEFAULT '0',
   `social_id` varchar(32) DEFAULT NULL,
+  `social_name` varchar(64) DEFAULT NULL,
+  `social_verified` tinyint(1) DEFAULT '0',
   `status` int(11) DEFAULT '0',
   `timezone` int(11) DEFAULT '0',
   `token` varchar(255) DEFAULT NULL,
@@ -985,7 +991,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1000001,10984,'zh-rCN','0.0.1','http://gravatar.com/avatar/93b8190b43c17f279cd7bb45d61210b2',531187200,'CN',0,'masterg@yeah.net',0,2,0,'192.168.0.27',1505305643233,1,460,'mg','Android 8.0 Oreo API 26','zh-rCN',0,'F2AP1KFFXg4CT0g1wRWJRJIqrMhlDcJaMo7lZP1ZOmc=','DeQjj4B44nCxGJMxNOChdhddEls=',1505305643233,'',0,8,'IPmsFfsl5ccU48la6CU2ug==');
+INSERT INTO `user` VALUES (1000001,13294,'','','http://gravatar.com/avatar/fddd805f5195dab1951784d2a6b69448?s=200',531262800000,'CN',0,'dearunclexiao@qq.com',0,2,0,0,'127.0.0.1',1506616479789,15,0,'dearunclexiao','','','18600001111',0,0,0,0,'xg8q7u/i8CbD1WMBSG7TBHJZU0c=',1505406356268,'','',0,0,0,'IiYot4a99/Bsu+1UwgaJXQ==');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1002,4 +1008,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-09-13 20:28:49
+-- Dump completed on 2017-09-29 15:29:55
