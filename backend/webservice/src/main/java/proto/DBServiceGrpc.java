@@ -173,7 +173,7 @@ public final class DBServiceGrpc {
 
     /**
      * <pre>
-     * setRoute
+     * register
      * </pre>
      */
     public void userRegister(proto.Db.DB.UserEntry request,
@@ -304,7 +304,7 @@ public final class DBServiceGrpc {
 
     /**
      * <pre>
-     * setRoute
+     * register
      * </pre>
      */
     public void userRegister(proto.Db.DB.UserEntry request,
@@ -390,7 +390,7 @@ public final class DBServiceGrpc {
 
     /**
      * <pre>
-     * setRoute
+     * register
      * </pre>
      */
     public proto.Db.DB.UserOpResult userRegister(proto.Db.DB.UserEntry request) {
@@ -474,7 +474,7 @@ public final class DBServiceGrpc {
 
     /**
      * <pre>
-     * setRoute
+     * register
      * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<proto.Db.DB.UserOpResult> userRegister(
@@ -546,7 +546,7 @@ public final class DBServiceGrpc {
 
     /**
      * <pre>
-     * setRoute
+     * register
      * </pre>
      */
     public void userRegister(proto.Db.DB.UserEntry request,
@@ -677,7 +677,7 @@ public final class DBServiceGrpc {
 
     /**
      * <pre>
-     * setRoute
+     * register
      * </pre>
      */
     public void userRegister(proto.Db.DB.UserEntry request,
