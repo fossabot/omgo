@@ -10,7 +10,7 @@ service DBService {
     // update user info
     rpc UserUpdateInfo(DB.UserEntry) returns (DB.Result);
 
-    // setRoute
+    // register
     rpc UserRegister(DB.UserEntry) returns (DB.UserOpResult);
 
     // login
