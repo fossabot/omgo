@@ -119,7 +119,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         responseFuture.setHandler(res -> {
             if (res.succeeded()) {
                 JsonObject resultJson = res.result();
-                ModelConverter.removeKeysForRegisterRequest(resultJson);
+                ModelConverter.removeKeysForLoginResponse(resultJson);
                 response.complete(DbProtoUtils.makeUserOpOkResult(resultJson));
             } else {
                 LOGGER.error(res.cause());
