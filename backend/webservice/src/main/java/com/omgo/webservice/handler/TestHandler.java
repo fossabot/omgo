@@ -4,31 +4,21 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 
 public class TestHandler extends BaseHandler {
     public TestHandler(Vertx vertx) {
         super(vertx);
+        setRequireValidSession(true);
     }
 
     @Override
-    public void setRoute(Router router, String path) {
-        super.setRoute(router, path);
+    protected void handle(RoutingContext routingContext, HttpServerResponse response) {
+        HttpServerRequest request = super.getRequest(routingContext);
 
-        route.handler(routingContext -> {
-            HttpServerRequest request = super.getRequest(routingContext);
-            HttpServerResponse response = super.getResponse(routingContext);
-
-            if (!isSessionValid(routingContext)) {
-                routingContext.fail(401);
-                return;
-            }
-
-            JsonObject rsp = getResponseJson();
-            rsp.put("foo", "bar");
-            JsonObject headerJson = getHeaderJson(request);
-            response.write(rsp.encode()).end();
-        });
+        JsonObject rsp = getResponseJson();
+        rsp.put("foo", "bar");
+        JsonObject headerJson = getHeaderJson(request);
+        response.write(rsp.encode()).end();
     }
-
 }

@@ -6,7 +6,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.Session;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
@@ -17,48 +17,43 @@ public class HandshakeHandler extends BaseHandler {
     }
 
     @Override
-    public void setRoute(Router router, String path) {
-        super.setRoute(router, path);
+    protected void handle(RoutingContext routingContext, HttpServerResponse response) {
+        HttpServerRequest request = super.getRequest(routingContext);
 
-        route.handler(routingContext -> {
-            HttpServerRequest request = super.getRequest(routingContext);
-            HttpServerResponse response = super.getResponse(routingContext);
+        if (!isSessionValid(routingContext)) {
+            routingContext.fail(401);
+            return;
+        }
 
-            if (!isSessionValid(routingContext)) {
-                routingContext.fail(401);
-                return;
-            }
+        Session session = routingContext.session();
 
-            Session session = routingContext.session();
+        JsonObject headerJson = getHeaderJson(request);
 
-            JsonObject headerJson = getHeaderJson(request);
+        String clientSeed = headerJson.getString(ModelConverter.KEY_SEED);
 
-            String clientSeed = headerJson.getString(ModelConverter.KEY_SEED);
+        if (Utils.isEmptyString(clientSeed)) {
+            routingContext.fail(403);
+            return;
+        }
 
-            if (Utils.isEmptyString(clientSeed)) {
-                routingContext.fail(403);
-                return;
-            }
+        byte[] clientSeedBytes;
 
-            byte[] clientSeedBytes;
+        try {
+            clientSeedBytes = Utils.decodeBase64(clientSeed);
+        } catch (IllegalArgumentException e) {
+            LOGGER.info(e);
+            routingContext.fail(403);
+            return;
+        }
 
-            try {
-                clientSeedBytes = Utils.decodeBase64(clientSeed);
-            } catch (IllegalArgumentException e) {
-                LOGGER.info(e);
-                routingContext.fail(403);
-                return;
-            }
+        Curve25519 cipher = Curve25519.getInstance(Curve25519.BEST);
+        Curve25519KeyPair keyPair = cipher.generateKeyPair();
 
-            Curve25519 cipher = Curve25519.getInstance(Curve25519.BEST);
-            Curve25519KeyPair keyPair = cipher.generateKeyPair();
+        byte[] sharedSecret = cipher.calculateAgreement(clientSeedBytes, keyPair.getPrivateKey());
+        session.put(ModelConverter.KEY_SEED, sharedSecret);
 
-            byte[] sharedSecret = cipher.calculateAgreement(clientSeedBytes, keyPair.getPrivateKey());
-            session.put(ModelConverter.KEY_SEED, sharedSecret);
-
-            JsonObject rspJson = getResponseJson();
-            rspJson.put(ModelConverter.KEY_SEED, Utils.encodeBase64(keyPair.getPublicKey()));
-            response.write(rspJson.encode()).end();
-        });
+        JsonObject rspJson = getResponseJson();
+        rspJson.put(ModelConverter.KEY_SEED, Utils.encodeBase64(keyPair.getPublicKey()));
+        response.write(rspJson.encode()).end();
     }
 }

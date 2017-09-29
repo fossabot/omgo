@@ -20,6 +20,7 @@ invoke web service APIs via `GET` method
 "header": {
     "token": "base64 token",
     "param": "encrypted json string",
+    "signature": "sha1 checksum (key+value)",
     "nonce": "timestamp + request sequence"
 }
 }
@@ -34,7 +35,7 @@ the param is encrypted from parameter json object
 "key2": "value2",
 "key3": "value3",
 "...": "value...",
-"signature": "sha1 checksum (key+value)"
+"timestamp": "value"
 }
 ```
 

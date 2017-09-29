@@ -7,7 +7,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import proto.DBServiceGrpc;
 import proto.Db;
 
@@ -80,76 +80,71 @@ public class RegisterHandler extends BaseHandler {
     }
 
     @Override
-    public void setRoute(Router router, String path) {
-        super.setRoute(router, path);
+    protected void handle(RoutingContext routingContext, HttpServerResponse response) {
+        HttpServerRequest request = super.getRequest(routingContext);
 
-        route.handler(routingContext -> {
-            HttpServerRequest request = super.getRequest(routingContext);
-            HttpServerResponse response = super.getResponse(routingContext);
+        JsonObject registerJson = super.getHeaderJson(request);
+        String app_language = registerJson.getString(ModelConverter.KEY_APP_LANGUAGE, "");
+        String app_version = registerJson.getString(ModelConverter.KEY_APP_VERSION, "");
+        String avatar = registerJson.getString(ModelConverter.KEY_AVATAR, "");
+        String birthday = registerJson.getString(ModelConverter.KEY_BIRTHDAY, "");
+        String country = registerJson.getString(ModelConverter.KEY_COUNTRY, "");
+        String device_type = registerJson.getString(ModelConverter.KEY_DEVICE_TYPE, "");
+        String email = registerJson.getString(ModelConverter.KEY_EMAIL, "");
+        String gender = registerJson.getString(ModelConverter.KEY_GENDER, "");
+        String mcc = registerJson.getString(ModelConverter.KEY_MCC, "");
+        String nickname = registerJson.getString(ModelConverter.KEY_NICKNAME, "");
+        String os = registerJson.getString(ModelConverter.KEY_OS, "");
+        String os_locale = registerJson.getString(ModelConverter.KEY_OS_LOCALE, "");
+        String phone = registerJson.getString(ModelConverter.KEY_PHONE, "");
+        String secret = registerJson.getString(ModelConverter.KEY_SECRET, "");
+        String timezone = registerJson.getString(ModelConverter.KEY_TIMEZONE, "");
 
-            JsonObject registerJson = super.getHeaderJson(request);
-            String app_language = registerJson.getString(ModelConverter.KEY_APP_LANGUAGE, "");
-            String app_version = registerJson.getString(ModelConverter.KEY_APP_VERSION, "");
-            String avatar = registerJson.getString(ModelConverter.KEY_AVATAR, "");
-            String birthday = registerJson.getString(ModelConverter.KEY_BIRTHDAY, "");
-            String country = registerJson.getString(ModelConverter.KEY_COUNTRY, "");
-            String device_type = registerJson.getString(ModelConverter.KEY_DEVICE_TYPE, "");
-            String email = registerJson.getString(ModelConverter.KEY_EMAIL, "");
-            String gender = registerJson.getString(ModelConverter.KEY_GENDER, "");
-            String mcc = registerJson.getString(ModelConverter.KEY_MCC, "");
-            String nickname = registerJson.getString(ModelConverter.KEY_NICKNAME, "");
-            String os = registerJson.getString(ModelConverter.KEY_OS, "");
-            String os_locale = registerJson.getString(ModelConverter.KEY_OS_LOCALE, "");
-            String phone = registerJson.getString(ModelConverter.KEY_PHONE, "");
-            String secret = registerJson.getString(ModelConverter.KEY_SECRET, "");
-            String timezone = registerJson.getString(ModelConverter.KEY_TIMEZONE, "");
-
-            long birthdayLong = Utils.isEmptyString(birthday) ? 0L : Long.parseLong(birthday);
-            int genderInt = Utils.isEmptyString(gender) ? 0 : Integer.parseInt(gender);
-            int deviceType = Utils.isEmptyString(device_type) ? 0 : Integer.parseInt(device_type);
-            int mccInt = Utils.isEmptyString(mcc) ? 0 : Integer.parseInt(mcc);
-            int timezoneInt = Utils.isEmptyString(timezone) ? 0 : Integer.parseInt(timezone);
+        long birthdayLong = Utils.isEmptyString(birthday) ? 0L : Long.parseLong(birthday);
+        int genderInt = Utils.isEmptyString(gender) ? 0 : Integer.parseInt(gender);
+        int deviceType = Utils.isEmptyString(device_type) ? 0 : Integer.parseInt(device_type);
+        int mccInt = Utils.isEmptyString(mcc) ? 0 : Integer.parseInt(mcc);
+        int timezoneInt = Utils.isEmptyString(timezone) ? 0 : Integer.parseInt(timezone);
 
 
-            Db.DB.UserEntry.Builder userEntryBuilder = Db.DB.UserEntry.newBuilder();
-            userEntryBuilder
-                .setAppLanguage(app_language)
-                .setAppVersion(app_version)
-                .setAvatar(avatar)
-                .setBirthday(birthdayLong)
-                .setCountry(country)
-                .setDeviceType(deviceType)
-                .setEmail(email)
-                .setGender(genderInt)
-                .setLastIp(request.connection().remoteAddress().host())
-                .setMcc(mccInt)
-                .setNickname(nickname)
-                .setOs(os)
-                .setOsLocale(os_locale)
-                .setPhone(phone)
-                .setSecret(secret)
-                .setTimezone(timezoneInt);
+        Db.DB.UserEntry.Builder userEntryBuilder = Db.DB.UserEntry.newBuilder();
+        userEntryBuilder
+            .setAppLanguage(app_language)
+            .setAppVersion(app_version)
+            .setAvatar(avatar)
+            .setBirthday(birthdayLong)
+            .setCountry(country)
+            .setDeviceType(deviceType)
+            .setEmail(email)
+            .setGender(genderInt)
+            .setLastIp(request.connection().remoteAddress().host())
+            .setMcc(mccInt)
+            .setNickname(nickname)
+            .setOs(os)
+            .setOsLocale(os_locale)
+            .setPhone(phone)
+            .setSecret(secret)
+            .setTimezone(timezoneInt);
 
-            dbServiceVertxStub.userRegister(userEntryBuilder.build(), res -> {
-                if (res.succeeded()) {
-                    Db.DB.StatusCode code = res.result().getResult().getStatus();
-                    if (code == Db.DB.StatusCode.STATUS_OK) {
-                        JsonObject resultJson = ModelConverter.userEntry2Json(res.result().getUser());
+        dbServiceVertxStub.userRegister(userEntryBuilder.build(), res -> {
+            if (res.succeeded()) {
+                Db.DB.StatusCode code = res.result().getResult().getStatus();
+                if (code == Db.DB.StatusCode.STATUS_OK) {
+                    JsonObject resultJson = ModelConverter.userEntry2Json(res.result().getUser());
 
-                        setSessionToken(routingContext, resultJson.getString(ModelConverter.KEY_TOKEN));
+                    setSessionToken(routingContext, resultJson.getString(ModelConverter.KEY_TOKEN));
 
-                        JsonObject rspJson = getResponseJson();
-                        rspJson.put(ModelConverter.KEY_USER_INFO, resultJson);
-                        response.write(rspJson.encode()).end();
-                    } else {
-                        LOGGER.info(res.result().getResult());
-                        routingContext.fail(500);
-                    }
+                    JsonObject rspJson = getResponseJson();
+                    rspJson.put(ModelConverter.KEY_USER_INFO, resultJson);
+                    response.write(rspJson.encode()).end();
                 } else {
-                    LOGGER.info(res.cause());
+                    LOGGER.info(res.result().getResult());
                     routingContext.fail(500);
                 }
-            });
+            } else {
+                LOGGER.info(res.cause());
+                routingContext.fail(500);
+            }
         });
     }
 }

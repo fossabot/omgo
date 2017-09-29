@@ -45,6 +45,7 @@ public class ModelConverter {
     public static final String KEY_USER_INFO = "user_info";
     public static final String KEY_TIMESTAMP = "timestamp";
     public static final String KEY_SEED = "seed";
+    public static final String KEY_SIGNATURE = "signature";
 
     private static final String COMMA = "'";
 

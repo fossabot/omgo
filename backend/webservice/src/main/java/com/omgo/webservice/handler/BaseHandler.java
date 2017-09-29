@@ -15,6 +15,7 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.Session;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 public class BaseHandler {
     protected String MIME_JSON = "application/json";
@@ -27,9 +28,15 @@ public class BaseHandler {
 
     protected String path;
 
+    protected boolean requireValidSession;
+
     public BaseHandler(Vertx vertx) {
         this.vertx = vertx;
         LOGGER = LoggerFactory.getLogger(this.getClass());
+    }
+
+    public void setRequireValidSession(boolean isRequire) {
+        requireValidSession = isRequire;
     }
 
     /**
@@ -45,6 +52,24 @@ public class BaseHandler {
         route = router.route(httpMethod(), path)
             .consumes(consumes())
             .produces(produces());
+
+
+        route.handler(routingContext -> {
+            if (requireValidSession) {
+                if (!isSessionValid(routingContext)) {
+                    routingContext.fail(401);
+                    return;
+                }
+            }
+
+            HttpServerResponse response = getResponse(routingContext);
+
+            handle(routingContext, response);
+        });
+    }
+
+    protected void handle(RoutingContext routingContext, HttpServerResponse response) {
+
     }
 
     /**
@@ -145,5 +170,20 @@ public class BaseHandler {
 
     protected String produces() {
         return MIME_JSON;
+    }
+
+    private byte[] calculateSignature(JsonObject jsonObject) {
+        if (jsonObject == null || jsonObject.isEmpty()) {
+            return null;
+        }
+
+        TreeMap<String, Object> treeMap = new TreeMap<>(jsonObject.getMap());
+        StringBuilder sb = new StringBuilder();
+        for (String key : treeMap.keySet()) {
+            sb.append(key);
+            sb.append(treeMap.get(key));
+        }
+        String raw = sb.toString();
+        return Utils.sha1(raw);
     }
 }
