@@ -1,6 +1,7 @@
 package com.omgo.webservice.handler;
 
 import com.omgo.webservice.GRPCAuthProvider;
+import com.omgo.webservice.model.HttpStatus;
 import com.omgo.webservice.model.ModelConverter;
 import io.grpc.ManagedChannel;
 import io.vertx.core.Vertx;
@@ -16,6 +17,8 @@ public class LoginHandler extends BaseHandler {
 
     public LoginHandler(Vertx vertx, ManagedChannel channel) {
         super(vertx);
+        notRequireValidNonce();
+        notRequireValidSession();
         this.authProvider = new GRPCAuthProvider(vertx, channel);
     }
 
@@ -41,7 +44,7 @@ public class LoginHandler extends BaseHandler {
                 rspJson.put(ModelConverter.KEY_USER_INFO, user.principal());
                 response.write(rspJson.encode()).end();
             } else {
-                routingContext.fail(403);
+                routingContext.fail(HttpStatus.FORBIDDEN.code);
             }
         });
     }

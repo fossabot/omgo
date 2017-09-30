@@ -42,10 +42,11 @@ public class ModelConverter {
     public static final String KEY_TIMEZONE = "timezone";
     public static final String KEY_TOKEN = "token";
 
-    public static final String KEY_USER_INFO = "user_info";
-    public static final String KEY_TIMESTAMP = "timestamp";
+    public static final String KEY_NONCE = "nonce";
     public static final String KEY_SEED = "seed";
     public static final String KEY_SIGNATURE = "signature";
+    public static final String KEY_TIMESTAMP = "timestamp";
+    public static final String KEY_USER_INFO = "user_info";
 
     private static final String COMMA = "'";
 
@@ -72,7 +73,7 @@ public class ModelConverter {
             .setOs(jsonObject.getString(KEY_OS, ""))
             .setOsLocale(jsonObject.getString(KEY_OS_LOCALE, ""))
             .setPhone(jsonObject.getString(KEY_PHONE, ""))
-            .setPhoneVerified (jsonObject.getBoolean(KEY_PHONE_VERIFIED, false))
+            .setPhoneVerified(jsonObject.getBoolean(KEY_PHONE_VERIFIED, false))
             .setPremiumEnd(jsonObject.getLong(KEY_PREMIUM_END, 0L))
             .setPremiumExp(jsonObject.getLong(KEY_PREMIUM_EXP, 0L))
             .setPremiumLevel(jsonObject.getInteger(KEY_PREMIUM_LEVEL, 0))

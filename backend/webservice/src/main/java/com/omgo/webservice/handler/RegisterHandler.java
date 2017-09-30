@@ -1,6 +1,7 @@
 package com.omgo.webservice.handler;
 
 import com.omgo.webservice.Utils;
+import com.omgo.webservice.model.HttpStatus;
 import com.omgo.webservice.model.ModelConverter;
 import io.grpc.ManagedChannel;
 import io.vertx.core.Vertx;
@@ -76,6 +77,8 @@ public class RegisterHandler extends BaseHandler {
 
     public RegisterHandler(Vertx vertx, ManagedChannel channel) {
         super(vertx);
+        notRequireValidNonce();
+        notRequireValidSession();
         dbServiceVertxStub = DBServiceGrpc.newVertxStub(channel);
     }
 
@@ -139,11 +142,11 @@ public class RegisterHandler extends BaseHandler {
                     response.write(rspJson.encode()).end();
                 } else {
                     LOGGER.info(res.result().getResult());
-                    routingContext.fail(500);
+                    routingContext.fail(HttpStatus.INTERNAL_SERVER_ERROR.code);
                 }
             } else {
                 LOGGER.info(res.cause());
-                routingContext.fail(500);
+                routingContext.fail(HttpStatus.INTERNAL_SERVER_ERROR.code);
             }
         });
     }

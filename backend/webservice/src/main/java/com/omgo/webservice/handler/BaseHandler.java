@@ -1,6 +1,7 @@
 package com.omgo.webservice.handler;
 
 import com.omgo.webservice.Utils;
+import com.omgo.webservice.model.HttpStatus;
 import com.omgo.webservice.model.ModelConverter;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
@@ -28,15 +29,24 @@ public class BaseHandler {
 
     protected String path;
 
+    // security
     protected boolean requireValidSession;
+    protected boolean requireValidNonce;
+
 
     public BaseHandler(Vertx vertx) {
         this.vertx = vertx;
+        this.requireValidSession = true;
+        this.requireValidNonce = true;
         LOGGER = LoggerFactory.getLogger(this.getClass());
     }
 
-    public void setRequireValidSession(boolean isRequire) {
-        requireValidSession = isRequire;
+    public void notRequireValidSession() {
+        requireValidSession = false;
+    }
+
+    public void notRequireValidNonce() {
+        requireValidSession = false;
     }
 
     /**
@@ -57,9 +67,23 @@ public class BaseHandler {
         route.handler(routingContext -> {
             if (requireValidSession) {
                 if (!isSessionValid(routingContext)) {
-                    routingContext.fail(401);
+                    LOGGER.info("invalid session");
+                    routingContext.fail(HttpStatus.UNAUTHORIZED.code);
                     return;
                 }
+            }
+
+            String nonce = getValidNonce(routingContext);
+            if (requireValidNonce && !Utils.DEBUG) {
+                if (nonce == null) {
+                    LOGGER.info("invalid nonce");
+                    routingContext.fail(HttpStatus.UNAUTHORIZED.code);
+                    return;
+                }
+            }
+
+            if (nonce != null) {
+                setSessionNonce(routingContext, nonce);
             }
 
             HttpServerResponse response = getResponse(routingContext);
@@ -139,6 +163,21 @@ public class BaseHandler {
     }
 
     /**
+     * set nonce
+     *
+     * @param routingContext
+     * @param nonce
+     * @return
+     */
+    protected Session setSessionNonce(RoutingContext routingContext, String nonce) {
+        Session session = routingContext.session();
+        if (session != null) {
+            session.put(ModelConverter.KEY_NONCE, nonce);
+        }
+        return session;
+    }
+
+    /**
      * verify session via token
      *
      * @param context
@@ -158,6 +197,31 @@ public class BaseHandler {
             }
         }
         return false;
+    }
+
+    protected String getValidNonce(RoutingContext context) {
+        Session session = context.session();
+        if (session != null) {
+            JsonObject headerJson = getHeaderJson(getRequest(context));
+            String requestNonce = headerJson.getString(ModelConverter.KEY_NONCE);
+            String sessionNonce = session.get(ModelConverter.KEY_NONCE);
+            if (Utils.isEmptyString(requestNonce) || Utils.isEmptyString(sessionNonce)) {
+                return null;
+            }
+
+            try {
+                long reqNonce = Long.parseLong(requestNonce);
+                long sesNonce = Long.parseLong(sessionNonce);
+                if (reqNonce <= sesNonce) {
+                    return requestNonce;
+                } else {
+                    return null;
+                }
+            } catch (Exception e) {
+                LOGGER.info(e);
+            }
+        }
+        return null;
     }
 
     protected HttpMethod httpMethod() {
