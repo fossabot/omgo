@@ -6,6 +6,8 @@ import java.util.Base64;
 public class Utils {
     public static boolean DEBUG = false;
 
+    public static boolean STANDALONE = false;
+
     public static boolean isEmptyString(String s) {
         return s == null || s.equals("");
     }

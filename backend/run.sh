@@ -13,12 +13,12 @@ cd ..
 # DB redis
 cd ./redis/
 sh ./run.sh
-cd ..
+cd ../../
 
 # DB service
 cd ./dbservice/
 sh ./run.sh
-cd ../../
+cd ..
 
 exit
 

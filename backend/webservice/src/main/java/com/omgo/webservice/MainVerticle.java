@@ -31,6 +31,7 @@ public class MainVerticle extends AbstractVerticle {
         LOGGER.info("config version: " + config().getString("info.version"));
 
         Utils.DEBUG = config().getBoolean("debug", false);
+        Utils.STANDALONE = config().getBoolean("standalone", true);
 
         setupServices();
         startApiService();
@@ -48,13 +49,15 @@ public class MainVerticle extends AbstractVerticle {
             config().getLong("session.expire", 24 * 60 * 60 * 1000L));
         router.route().handler(SessionHandler.create(store));
 
-        // login
-        LoginHandler loginHandler = new LoginHandler(vertx, grpcChannel);
-        loginHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_LOGIN));
+        if (!Utils.STANDALONE) {
+            // login
+            LoginHandler loginHandler = new LoginHandler(vertx, grpcChannel);
+            loginHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_LOGIN));
 
-        // register
-        RegisterHandler registerHandler = new RegisterHandler(vertx, grpcChannel);
-        registerHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_REGISTER));
+            // register
+            RegisterHandler registerHandler = new RegisterHandler(vertx, grpcChannel);
+            registerHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_REGISTER));
+        }
 
         // handshake
         HandshakeHandler handshakeHandler = new HandshakeHandler(vertx);
@@ -73,6 +76,10 @@ public class MainVerticle extends AbstractVerticle {
      * setup service pool
      */
     private void setupServices() {
+        if (Utils.STANDALONE) {
+            return;
+        }
+
         List<String> endpoints = new ArrayList<>();
         JsonArray endpointsJA = config().getJsonArray("etcd.host", new JsonArray().add("http://localhost:2379"));
         for (int i = 0; i < endpointsJA.size(); i++) {
