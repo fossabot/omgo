@@ -1,0 +1,48 @@
+{
+    "info.version": "v0.0.1",
+
+    "service.root": "backends",
+    "service.kind": "dataservice",
+    "service.self": "ds-0",
+    "service.host": "localhost",
+    "service.port": 60001,
+    "service.names": ["snowflake"],
+
+    "etcd.host": ["http://localhost:2379"],
+
+    "redis.host": "localhost",
+    "redis.port": 6379,
+    "redis.encoding": "UTF-8",
+    "redis.tcpKeepAlive": true,
+    "redis.tcpNoDelay": true,
+
+    "mongodb.config": {
+        "connection_string": "mongodb://localhost:27017",
+        "db_name": "master",
+        "maxPoolSize": 50,
+        "minPoolSize": 25,
+        "maxIdleTimeMS": 300000,
+        "maxLifeTimeMS": 3600000,
+        "waitQueueMultiple": 10,
+        "waitQueueTimeoutMS": 10000,
+        "maintenanceFrequencyMS": 2000,
+        "maintenanceInitialDelayMS": 500,
+        "username": "driver",
+        "password": "mongodb",
+        "authSource": "master",
+        "connectTimeoutMS": 300000,
+        "socketTimeoutMS": 100000,
+        "sendBufferSize": 8192,
+        "receiveBufferSize": 8192,
+        "keepAlive": true,
+        "heartbeat.socket": {
+            "connectTimeoutMS": 300000,
+            "socketTimeoutMS": 100000,
+            "sendBufferSize": 8192,
+            "receiveBufferSize": 8192,
+            "keepAlive": true
+        },
+        "heartbeatFrequencyMS": 1000,
+        "minHeartbeatFrequencyMS": 500
+    }
+}

@@ -107,5 +107,7 @@ public class MainVerticle extends AbstractVerticle {
         LOGGER.info("service pool created");
 
         grpcChannel = servicePool.getChannel(servicePool.getServicePath("dbservice"));
+
+        AgentManager.getInstance(vertx).startWatch();
     }
 }

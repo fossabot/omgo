@@ -1,4 +1,4 @@
-package com.omgo.webservice.etcd;
+package com.omgo.dataservice.etcd;
 
 import com.coreos.jetcd.Client;
 import com.coreos.jetcd.KV;
@@ -11,6 +11,7 @@ import com.coreos.jetcd.options.GetOption;
 import com.coreos.jetcd.options.WatchOption;
 import com.coreos.jetcd.watch.WatchEvent;
 import com.coreos.jetcd.watch.WatchResponse;
+import com.omgo.dataservice.MainVerticle;
 import io.grpc.ManagedChannel;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
@@ -32,11 +33,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Services {
 
-    // etcd watcher events
+    // com.omgo.dataservice.etcd watcher events
     public static final String EVENT_SERVICE_ADD = "service.add";
     public static final String EVENT_SERVICE_REMOVE = "service.remove";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Services.class);
+    // service name
+    public static final String SERVICE_SNOWFLAKE = "snowflake";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainVerticle.class);
 
     private static Services instance = null;
 
@@ -51,19 +55,19 @@ public class Services {
         return instance;
     }
 
-    private Services() {
+    protected Services() {
     }
 
-    // etcd client
+    // com.omgo.dataservice.etcd client
     private Client client;
 
     // service pool
     private ServicePool servicePool;
 
     /**
-     * init etcd client with single endpoint
+     * init com.omgo.dataservice.etcd client with single endpoint
      *
-     * @param endpoint etcd endpoint
+     * @param endpoint
      */
     public void init(String endpoint) {
         if (client != null) {
@@ -73,9 +77,9 @@ public class Services {
     }
 
     /**
-     * init etcd client with one or more endpoints
+     * init com.omgo.dataservice.etcd client with one or more endpoints
      *
-     * @param endpoints etcd endpoint list
+     * @param endpoints
      */
     public void init(List<String> endpoints) {
         if (client != null) {
@@ -85,10 +89,10 @@ public class Services {
     }
 
     /**
-     * generate a range key for etcd get/put operation
+     * generate a range key for com.omgo.dataservice.etcd get/put operation
      *
-     * @param key origin key
-     * @return ranged key
+     * @param key
+     * @return
      */
     public static ByteSequence getRangeKey(String key) {
         byte[] keyBytes = key.getBytes();
@@ -101,8 +105,8 @@ public class Services {
     /**
      * generate service full path by concat them with '/'
      *
-     * @param args path parameters
-     * @return full service path
+     * @param args
+     * @return
      */
     public static String generatePath(Object... args) {
         List<String> comps = new ArrayList<>();
@@ -118,8 +122,8 @@ public class Services {
     /**
      * get local ip address and concat with port
      *
-     * @param port service port
-     * @return service local address in ip:port format
+     * @param port
+     * @return
      */
     public static String getLocalAddress(int port) {
         String ip = "";
@@ -136,9 +140,9 @@ public class Services {
     }
 
     /**
-     * get etcd key-value client
+     * get com.omgo.dataservice.etcd key-value client
      *
-     * @return KV client instance
+     * @return
      */
     public KV getKVClient() {
         if (client != null) {
@@ -149,9 +153,9 @@ public class Services {
     }
 
     /**
-     * get etcd watch client
+     * get com.omgo.dataservice.etcd watch client
      *
-     * @return watch client instance
+     * @return
      */
     public Watch getWatchClient() {
         if (client != null) {
@@ -164,8 +168,8 @@ public class Services {
      * get dir part from a path
      * getDir(root/service/name) = root/service
      *
-     * @param path key
-     * @return key had its last path component removed
+     * @param path
+     * @return
      */
     public static String getDir(String path) {
         Path fullPath = Paths.get(path);
@@ -175,7 +179,7 @@ public class Services {
     /**
      * get default service pool
      *
-     * @return default service pool instance
+     * @return
      */
     public ServicePool getServicePool() {
         return servicePool;
@@ -188,7 +192,7 @@ public class Services {
      * @param vertx    Vertx instance
      * @param root     service root ('roots', 'backends', etc.)
      * @param services service names ('snowflake', 'agent', 'game', etc.)
-     * @return service pool instance
+     * @return
      */
     public ServicePool createServicePool(Vertx vertx, String root, List<String> services) {
         if (servicePool != null) {
@@ -234,7 +238,7 @@ public class Services {
         // vertx instance
         Vertx vertx;
 
-        // etcd root ('root', 'backends', etc.)
+        // com.omgo.dataservice.etcd root ('root', 'backends', etc.)
         String root;
 
         // service names that will be connect and watched
@@ -343,12 +347,12 @@ public class Services {
         }
 
         /**
-         * start etcd watcher in vertx blocking style
+         * start com.omgo.dataservice.etcd watcher in vertx blocking style
          *
          * @param root
          */
         private void startWatcher(String root) {
-            LOGGER.info("start watching: " + root);
+            LOGGER.info("start watching");
             vertx.executeBlocking(future -> {
                 watcher(root);
                 future.complete();
@@ -408,7 +412,7 @@ public class Services {
         }
 
         /**
-         * etcd watcher
+         * com.omgo.dataservice.etcd watcher
          *
          * @param root
          */
@@ -524,10 +528,10 @@ public class Services {
                 LOGGER.info(String.format("service %s @ %s registered", fullPath, address));
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                LOGGER.error("error while setRoute service for interrupt");
+                LOGGER.error("error while register service for interrupt");
             } catch (ExecutionException e) {
                 e.printStackTrace();
-                LOGGER.error("error while setRoute service for exception");
+                LOGGER.error("error while register service for exception");
             }
             kvClient.close();
         }

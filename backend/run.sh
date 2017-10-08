@@ -6,7 +6,7 @@ sh ./run.sh
 cd ..
 
 # DB mysql
-cd ./db/mysql/
+cd ./db/mongodb
 sh ./run.sh
 cd ..
 
@@ -15,8 +15,8 @@ cd ./redis/
 sh ./run.sh
 cd ../../
 
-# DB service
-cd ./dbservice/
+# Data service
+cd ./dataservice/
 sh ./run.sh
 cd ..
 

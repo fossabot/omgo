@@ -15,7 +15,7 @@ esac
 docker rm -f ${SID}
 
 docker run -d --name ${SID} ${NETHOST} \
-  -p 37017:27017 \
+  -p 27017:27017 \
   -v ${PWD}/mongod.conf:/etc/mongod.conf \
   -v ${PWD}/db:/data/db \
   mongo \
@@ -33,7 +33,7 @@ docker run -d --name ${SID} ${NETHOST} \
 # db.createUser({user:'dbclient', pwd:'12345678', roles:['dbOwner']})
 
 # *** INITIALIZE DB ***
-# db.status.insert({key:'user', usn:10000, uid:10000})
+# mongo master -u driver -p 'mongodb' --eval "db.status.update({_id:'user'},{_id:'user', usn:12345678, uid:100000001},{upsert:true})"
 
 # docker exec -it mongodb-0 mongo admin -u admin -p admin
 # docker exec -it mongodb-0 mongo master -u dbclient -p 12345678
