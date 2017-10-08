@@ -100,8 +100,10 @@ public class DbOperator {
         queryObject.put("_id", ModelConverter.KEY_USER);
 
         JsonObject updateObject = new JsonObject();
-        updateObject.put("$inc", new JsonObject().put(ModelConverter.KEY_USN, AccountUtils.nextUsnIncrement()));
-        updateObject.put("$inc", new JsonObject().put(ModelConverter.KEY_UID, AccountUtils.nextUidIncrement()));
+        updateObject.put(ModelConverter.KEY_USN, AccountUtils.nextUsnIncrement());
+        updateObject.put(ModelConverter.KEY_UID, AccountUtils.nextUidIncrement());
+        JsonObject incObject = new JsonObject();
+        incObject.put("$inc", updateObject);
 
         UpdateOptions updateOptions = new UpdateOptions();
         updateOptions.setMulti(false);
@@ -110,7 +112,7 @@ public class DbOperator {
 
         Future<JsonObject> future = Future.future();
 
-        mongoClient.findOneAndUpdateWithOptions("status", queryObject, updateObject, new FindOptions(), updateOptions, res -> {
+        mongoClient.findOneAndUpdateWithOptions("status", queryObject, incObject, new FindOptions(), updateOptions, res -> {
             if (res.succeeded()) {
                 future.complete(res.result());
             } else {
@@ -214,7 +216,7 @@ public class DbOperator {
         }
 
         Set<String> updatableKeys = ModelConverter.getUserUpdatableMapKeySet();
-        JsonObject updateObject = new JsonObject();
+        JsonObject userObject = new JsonObject();
 
         Map<String, Object> map = userJson.getMap();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -222,10 +224,10 @@ public class DbOperator {
             if (!updatableKeys.contains(key)) {
                 continue;
             }
-            updateObject.put(key, entry.getValue());
+            userObject.put(key, entry.getValue());
         }
 
-        if (updateObject.isEmpty()) {
+        if (userObject.isEmpty()) {
             future.fail("update user info failed, invalid user info");
             return future;
         }
@@ -233,8 +235,11 @@ public class DbOperator {
         JsonObject queryObject = new JsonObject();
         queryObject.put(ModelConverter.KEY_USN, usn);
 
+        JsonObject updateObject = new JsonObject();
+        updateObject.put("$set", userObject);
+
         // update
-        mongoClient.updateCollectionWithOptions(ModelConverter.KEY_USER, queryObject, updateObject, new UpdateOptions(true), res -> {
+        mongoClient.findOneAndUpdateWithOptions(ModelConverter.KEY_USER, queryObject, updateObject, new FindOptions(), new UpdateOptions(true), res -> {
             if (res.succeeded()) {
                 mongodbFindUser(queryObject, future);
             } else {

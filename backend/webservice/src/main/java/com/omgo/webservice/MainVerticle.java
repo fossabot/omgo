@@ -95,7 +95,7 @@ public class MainVerticle extends AbstractVerticle {
         LOGGER.info("service root:" + root);
 
         List<String> serviceNames = new ArrayList<>();
-        JsonArray namesJA = config().getJsonArray("service.names", new JsonArray().add("dbservice"));
+        JsonArray namesJA = config().getJsonArray("service.names", new JsonArray().add("dataservice"));
         for (int i = 0; i < namesJA.size(); i++) {
             String name = namesJA.getString(i);
             serviceNames.add(name);
@@ -106,7 +106,7 @@ public class MainVerticle extends AbstractVerticle {
         Services.ServicePool servicePool = Services.getInstance().createServicePool(vertx, root, serviceNames);
         LOGGER.info("service pool created");
 
-        grpcChannel = servicePool.getChannel(servicePool.getServicePath("dbservice"));
+        grpcChannel = servicePool.getChannel(servicePool.getServicePath("dataservice"));
 
         AgentManager.getInstance(vertx).startWatch();
     }

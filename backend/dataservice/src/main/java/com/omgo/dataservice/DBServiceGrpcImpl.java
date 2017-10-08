@@ -39,12 +39,12 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
             if (res.succeeded()) {
                 response.complete(DbProtoUtils.makeUserOpOkResult(res.result()));
             } else {
-                LOGGER.warn("user query failed in both redis and mysql");
+                LOGGER.warn("user query failed in both redis and mongodb");
                 response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_USER_NOT_FOUND, ""));
             }
         });
 
-        // query in redis then in mysql
+        // query in redis then in mongodb
         Future<JsonObject> redisFuture = dbOperator.queryUserInfoRedis(request.getUsn());
         redisFuture.setHandler(queryRedis -> {
             if (queryRedis.succeeded()) {
@@ -53,11 +53,11 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                 LOGGER.info(String.format("redis hit for user:%d", result.getLong(ModelConverter.KEY_USN)));
                 responseFuture.complete(result);
             } else {
-                // query in sql
-                Future<JsonObject> sqlFuture = dbOperator.queryUserInfoDB(ModelConverter.userEntry2Json(request));
-                sqlFuture.compose(querySql -> {
+                // query in mongodb
+                Future<JsonObject> dbFuture = dbOperator.queryUserInfoDB(ModelConverter.userEntry2Json(request));
+                dbFuture.compose(queryDB -> {
                     // update in redis
-                    Future<JsonObject> updateFuture = dbOperator.updateUserInfoRedis(querySql);
+                    Future<JsonObject> updateFuture = dbOperator.updateUserInfoRedis(queryDB);
                     updateFuture.setHandler(responseFuture.completer());
                 }, responseFuture);
             }
@@ -68,8 +68,8 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
     public void userUpdateInfo(DB.UserEntry request, Future<DB.Result> response) {
         LOGGER.info("userUpdate: " + request);
 
-        Future<JsonObject> updateSQLFuture = dbOperator.updateUserInfoDB(ModelConverter.userEntry2Json(request));
-        updateSQLFuture.setHandler(res -> {
+        Future<JsonObject> updateDBFuture = dbOperator.updateUserInfoDB(ModelConverter.userEntry2Json(request));
+        updateDBFuture.setHandler(res -> {
             if (res.succeeded()) {
                 Future<JsonObject> redisFuture = dbOperator.updateUserInfoRedis(res.result());
                 redisFuture.setHandler(redisRes -> {
@@ -128,11 +128,11 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         });
 
         // check if user with email already exist
-        Future<JsonObject> sqlFuture = dbOperator.queryUserInfoDB(new JsonObject().put(ModelConverter.KEY_EMAIL, email));
+        Future<JsonObject> dbFuture = dbOperator.queryUserInfoDB(new JsonObject().put(ModelConverter.KEY_EMAIL, email));
 
-        sqlFuture.setHandler(sqlRes -> {
+        dbFuture.setHandler(dbRes -> {
             // email already exist
-            if (sqlRes.succeeded()) {
+            if (dbRes.succeeded()) {
                 LOGGER.error("register failed, user with email:" + email + " already existed");
                 response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_USER_ALREADY_EXIST));
             } else {
@@ -330,12 +330,12 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
             if (redisQueryRes.succeeded()) {
                 response.complete(DbProtoUtils.makeUserOpOkResult(redisQueryRes.result()));
             } else {
-                Future<JsonObject> mysqlFuture = dbOperator.queryUserInfoDB(ModelConverter.userEntry2Json(request));
-                mysqlFuture.setHandler(mysqlRes -> {
-                    if (mysqlRes.succeeded()) {
-                        JsonObject mysqlJson = mysqlRes.result();
-                        mysqlJson.put(ModelConverter.KEY_TOKEN, redisQueryRes.result().getString(ModelConverter.KEY_TOKEN));
-                        response.complete(DbProtoUtils.makeUserOpOkResult(mysqlJson));
+                Future<JsonObject> dbFuture = dbOperator.queryUserInfoDB(ModelConverter.userEntry2Json(request));
+                dbFuture.setHandler(dbRes -> {
+                    if (dbRes.succeeded()) {
+                        JsonObject dbJson = dbRes.result();
+                        dbJson.put(ModelConverter.KEY_TOKEN, redisQueryRes.result().getString(ModelConverter.KEY_TOKEN));
+                        response.complete(DbProtoUtils.makeUserOpOkResult(dbJson));
                     } else {
                         response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_USER_NOT_FOUND));
                     }
