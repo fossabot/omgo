@@ -42,6 +42,7 @@ public class ModelConverter {
     public static final String KEY_TIMEZONE = "timezone";
     public static final String KEY_TOKEN = "token";
 
+    public static final String KEY_PARAM = "param";
     public static final String KEY_NONCE = "nonce";
     public static final String KEY_SEED = "seed";
     public static final String KEY_SIGNATURE = "signature";

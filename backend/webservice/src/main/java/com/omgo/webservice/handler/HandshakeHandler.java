@@ -15,6 +15,7 @@ import org.whispersystems.curve25519.Curve25519KeyPair;
 public class HandshakeHandler extends BaseHandler {
     public HandshakeHandler(Vertx vertx) {
         super(vertx);
+        notRequireValidEncryption();
     }
 
     @Override

@@ -19,6 +19,7 @@ public class LoginHandler extends BaseHandler {
         super(vertx);
         notRequireValidNonce();
         notRequireValidSession();
+        notRequireValidEncryption();
         this.authProvider = new GRPCAuthProvider(vertx, channel);
     }
 

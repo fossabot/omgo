@@ -1,7 +1,7 @@
 {
     "info.version": "v0.0.1",
     "debug": true,
-    "standalone": false,
+    "standalone": true,
 
     "service.root": "backends",
     "service.names": ["dataservice"],

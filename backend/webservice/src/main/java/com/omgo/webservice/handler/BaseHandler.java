@@ -32,12 +32,14 @@ public class BaseHandler {
     // security
     protected boolean requireValidSession;
     protected boolean requireValidNonce;
+    protected boolean requireValidEncryption;
 
 
     public BaseHandler(Vertx vertx) {
         this.vertx = vertx;
         this.requireValidSession = true;
         this.requireValidNonce = true;
+        this.requireValidEncryption = true;
         LOGGER = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -47,6 +49,10 @@ public class BaseHandler {
 
     public void notRequireValidNonce() {
         requireValidSession = false;
+    }
+
+    public void notRequireValidEncryption() {
+        requireValidEncryption = false;
     }
 
     /**
@@ -84,6 +90,10 @@ public class BaseHandler {
 
             if (nonce != null) {
                 setSessionNonce(routingContext, nonce);
+            }
+
+            if (requireValidEncryption) {
+
             }
 
             HttpServerResponse response = getResponse(routingContext);
@@ -224,6 +234,23 @@ public class BaseHandler {
         return null;
     }
 
+    protected JsonObject getRequestParam(RoutingContext context) {
+        Session session = context.session();
+        HttpServerRequest request = context.request();
+        String paramStr = request.headers().get(ModelConverter.KEY_PARAM);
+
+        if (Utils.DEBUG || !requireValidEncryption) {
+            return new JsonObject(paramStr);
+        } else if (session != null) {
+            byte[] key = session.get(ModelConverter.KEY_SEED);
+            if (key != null) {
+                // TODO: 09/10/2017 decrypt and check signature
+            }
+        }
+
+        return null;
+    }
+
     protected HttpMethod httpMethod() {
         return HttpMethod.GET;
     }
@@ -236,7 +263,7 @@ public class BaseHandler {
         return MIME_JSON;
     }
 
-    private byte[] calculateSignature(JsonObject jsonObject) {
+    protected byte[] calculateSignature(JsonObject jsonObject) {
         if (jsonObject == null || jsonObject.isEmpty()) {
             return null;
         }

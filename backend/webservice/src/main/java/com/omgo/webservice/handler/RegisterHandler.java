@@ -79,6 +79,7 @@ public class RegisterHandler extends BaseHandler {
         super(vertx);
         notRequireValidNonce();
         notRequireValidSession();
+        notRequireValidEncryption();
         dbServiceVertxStub = DBServiceGrpc.newVertxStub(channel);
     }
 
