@@ -13,24 +13,13 @@ public class TestHandler extends BaseHandler {
     }
 
     @Override
-    protected void handle(RoutingContext routingContext, HttpServerResponse response) {
+    protected void handle(RoutingContext routingContext, HttpServerResponse response, JsonObject paramJson) {
         HttpServerRequest request = super.getRequest(routingContext);
 
         JsonObject rsp = getResponseJson();
         rsp.put("foo", "bar");
-        JsonObject headerJson = getHeaderJson(request);
 
-        JsonObject test = new JsonObject();
-        test.put("cdef", "sdfasdf");
-        test.put("adfas", 53);
-        test.put("erqe", "dfasdf");
-        test.put("hdfaier", false);
-        test.put("ndrwe", "dfasdf");
-        test.put("djfdsd", 123456L);
-
-        byte[] b = calculateSignature(test);
-        String bb = Utils.encodeBase64(b);
-        LOGGER.info(bb);
+        LOGGER.info(paramJson);
 
         response.write(rsp.encode()).end();
     }

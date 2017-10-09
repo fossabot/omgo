@@ -7,6 +7,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -15,6 +16,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.Session;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -92,14 +94,23 @@ public class BaseHandler {
                 setSessionNonce(routingContext, nonce);
             }
 
-            if (requireValidEncryption) {
-
-            }
-
             HttpServerResponse response = getResponse(routingContext);
 
-            handle(routingContext, response);
+            if (requireValidEncryption) {
+                JsonObject paramJson = getRequestParam(routingContext);
+                if (paramJson.isEmpty()) {
+                    LOGGER.info("invalid param");
+                    routingContext.fail(HttpStatus.BAD_REQUEST.code);
+                    return;
+                }
+                handle(routingContext, response, paramJson);
+            } else {
+                handle(routingContext, response);
+            }
         });
+    }
+
+    protected void handle(RoutingContext routingContext, HttpServerResponse response, JsonObject paramJson) {
     }
 
     protected void handle(RoutingContext routingContext, HttpServerResponse response) {
@@ -238,17 +249,28 @@ public class BaseHandler {
         Session session = context.session();
         HttpServerRequest request = context.request();
         String paramStr = request.headers().get(ModelConverter.KEY_PARAM);
+        String paramSignature = request.headers().get(ModelConverter.KEY_SIGNATURE);
 
-        if (Utils.DEBUG || !requireValidEncryption) {
-            return new JsonObject(paramStr);
+        if (Utils.DEBUG) {
+            return safeParseJsonString(paramStr);
         } else if (session != null) {
             byte[] key = session.get(ModelConverter.KEY_SEED);
             if (key != null) {
-                // TODO: 09/10/2017 decrypt and check signature
+                // decrypt
+                String decryptString = cryptionXOR(paramStr, key);
+                JsonObject paramJson = safeParseJsonString(decryptString);
+                if (!paramJson.isEmpty()) {
+                    // check signature
+                    byte[] signature = calculateSignature(paramJson);
+                    String signatureBase64 = Utils.encodeBase64(signature);
+                    if (signatureBase64.equals(paramSignature)) {
+                        return paramJson;
+                    }
+                }
             }
         }
 
-        return null;
+        return new JsonObject();
     }
 
     protected HttpMethod httpMethod() {
@@ -261,6 +283,25 @@ public class BaseHandler {
 
     protected String produces() {
         return MIME_JSON;
+    }
+
+    protected JsonObject safeParseJsonString(String jsonStr) {
+        try {
+            JsonObject parsedJson = new JsonObject(jsonStr);
+            return parsedJson;
+        } catch (DecodeException e) {
+            LOGGER.info(e);
+        }
+        return new JsonObject();
+    }
+
+    protected String cryptionXOR(String input, byte[] key) {
+        Charset charSet = Charset.forName("UTF-8");
+        byte[] inputBytes = input.getBytes(charSet);
+        for (int i = 0; i < inputBytes.length; i++) {
+            inputBytes[i] = (byte) (inputBytes[i] ^ key[i % key.length]);
+        }
+        return new String(inputBytes, charSet);
     }
 
     protected byte[] calculateSignature(JsonObject jsonObject) {

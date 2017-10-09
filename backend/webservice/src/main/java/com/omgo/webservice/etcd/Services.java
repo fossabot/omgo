@@ -343,6 +343,36 @@ public class Services {
         }
 
         /**
+         * get all values under path
+         *
+         * @param path
+         * @return
+         */
+        public List<String> getAllValues(String path) {
+            List<String> values = new ArrayList<>();
+            KV client = Services.getInstance().getKVClient();
+            if (client != null) {
+                try {
+                    ByteSequence endKey = Services.getRangeKey(path);
+
+                    ByteSequence key = ByteSequence.fromString(path);
+
+                    CompletableFuture<GetResponse> getFuture = client.get(key, GetOption.newBuilder().withRange(endKey).build());
+                    GetResponse response = getFuture.get();
+                    List<KeyValue> results = response.getKvs();
+                    for (KeyValue kv : results) {
+                        String snHost = kv.getValue().toStringUtf8();
+                        values.add(snHost);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                client.close();
+            }
+            return values;
+        }
+
+        /**
          * start etcd watcher in vertx blocking style
          *
          * @param root

@@ -6,20 +6,22 @@ import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class AgentManager {
     private static AgentManager instance;
 
-    private Vertx vertx;
-
-    private AgentManager(Vertx vertx) {
-        this.vertx = vertx;
+    private AgentManager() {
     }
 
-    public static AgentManager getInstance(Vertx vertx) {
+    public static AgentManager getInstance() {
         if (instance == null) {
             synchronized (AgentManager.class) {
                 if (instance == null) {
-                    instance = new AgentManager(vertx);
+                    instance = new AgentManager();
                 }
             }
         }
@@ -28,7 +30,17 @@ public class AgentManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
 
-    public void startWatch() {
+    private Set<String> agentSet = new HashSet<>();
+
+    public List<String> getAgentList(Services.ServicePool servicePool, String root, String agentServiceType) {
+        if (agentSet.isEmpty()) {
+            List<String> agents = servicePool.getAllValues(Services.generatePath(root, agentServiceType));
+            agentSet.addAll(agents);
+        }
+        return new ArrayList<>(agentSet);
+    }
+
+    public void startWatch(Vertx vertx) {
         EventBus eb = vertx.eventBus();
         eb.consumer(Services.EVENT_SERVICE_ADD, res -> {
             LOGGER.info("service added:");

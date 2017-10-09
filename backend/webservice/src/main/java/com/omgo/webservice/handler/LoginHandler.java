@@ -30,7 +30,7 @@ public class LoginHandler extends BaseHandler {
         JsonObject authJson = super.getHeaderJson(request);
 
         // TODO: 15/09/2017 check parameters here
-        // thought dbservice has already check these parameters
+        // thought dataservice has already check these parameters
         // but just for break fast's cause
 
         authJson.put(ModelConverter.KEY_LAST_IP, request.connection().remoteAddress().host());

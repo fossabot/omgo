@@ -8,7 +8,9 @@ import com.omgo.webservice.handler.TestHandler;
 import io.grpc.ManagedChannel;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
@@ -108,6 +110,8 @@ public class MainVerticle extends AbstractVerticle {
 
         grpcChannel = servicePool.getChannel(servicePool.getServicePath("dataservice"));
 
-        AgentManager.getInstance(vertx).startWatch();
+        List<String> agents = AgentManager.getInstance().getAgentList(servicePool, root, "agent");
+        AgentManager.getInstance().startWatch(vertx);
+        LOGGER.info(agents);
     }
 }

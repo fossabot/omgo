@@ -35,7 +35,7 @@ public class GRPCAuthProvider implements AuthProvider {
         long usn = Utils.isEmptyString(strUsn) ? 0L : Long.parseLong(strUsn);
         String clientIpAddress = jsonObject.getString(ModelConverter.KEY_LAST_IP, "");
 
-        // TODO: 11/09/2017
+        // TODO: 11/09/2017 this regex is kinda invalid for xxx@xxx
 
         if (Utils.isEmptyString(email) || !email.matches(STRING_EMAIL_REGEX)) {
             handler.handle(Future.failedFuture("auth info invalid email:" + email));
