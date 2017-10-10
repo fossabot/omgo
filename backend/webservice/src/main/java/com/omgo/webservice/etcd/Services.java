@@ -155,7 +155,7 @@ public class Services {
      */
     public Watch getWatchClient() {
         if (client != null) {
-            client.getWatchClient();
+            return client.getWatchClient();
         }
         return null;
     }
@@ -198,6 +198,96 @@ public class Services {
 
         servicePool = ServicePool.newBuilder().setRoot(root).setVertx(vertx).addServices(services).build();
         return servicePool;
+    }
+
+    /**
+     * get all values under path
+     *
+     * @param path
+     * @return
+     */
+    public List<String> getAllValues(String path) {
+        List<String> values = new ArrayList<>();
+        KV client = getKVClient();
+        if (client != null) {
+            try {
+                ByteSequence endKey = Services.getRangeKey(path);
+
+                ByteSequence key = ByteSequence.fromString(path);
+
+                CompletableFuture<GetResponse> getFuture = client.get(key, GetOption.newBuilder().withRange(endKey).build());
+                GetResponse response = getFuture.get();
+                List<KeyValue> results = response.getKvs();
+                for (KeyValue kv : results) {
+                    String snHost = kv.getValue().toStringUtf8();
+                    values.add(snHost);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            client.close();
+        }
+        return values;
+    }
+
+    /**
+     * watch value change under path
+     *
+     * @param path
+     */
+    public void startWatch(Vertx vertx, String path) {
+        LOGGER.info("start watching: " + path);
+        vertx.<String>executeBlocking(future -> {
+            while (true) {
+                watcher(vertx, path);
+            }
+//            future.complete(path);
+        }, res -> {
+            LOGGER.info("watch complete");
+        });
+    }
+
+    private void watcher(Vertx vertx, String path) {
+        Watch watch = Services.getInstance().getWatchClient();
+        if (watch != null) {
+            ByteSequence key = ByteSequence.fromString(path);
+            ByteSequence endKey = Services.getRangeKey(path);
+            Watch.Watcher watcher = watch.watch(key, WatchOption.newBuilder().withRange(endKey).build());
+
+            try {
+                WatchResponse response = watcher.listen();
+                for (WatchEvent event : response.getEvents()) {
+                    LOGGER.info("type={}, key={}, value={}",
+                        event.getEventType(),
+                        Optional.ofNullable(event.getKeyValue().getKey())
+                            .map(ByteSequence::toStringUtf8)
+                            .orElse(""),
+                        Optional.ofNullable(event.getKeyValue().getValue())
+                            .map(ByteSequence::toStringUtf8)
+                            .orElse(""));
+
+                    KeyValue kv = event.getKeyValue();
+                    if (kv != null) {
+                        if (kv.getValue() == null || kv.getKey() == null) {
+                            continue;
+                        }
+
+                        EventBus eb = vertx.eventBus();
+                        if (event.getEventType() == WatchEvent.EventType.PUT) {
+                            eb.publish(EVENT_SERVICE_ADD, kv.getKey().toStringUtf8());
+                        } else if (event.getEventType() == WatchEvent.EventType.DELETE) {
+                            eb.publish(EVENT_SERVICE_REMOVE, kv.getKey().toStringUtf8());
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                LOGGER.error(e);
+            }
+
+            LOGGER.info("closing watcher");
+            watcher.close();
+        }
     }
 
 
@@ -334,57 +424,12 @@ public class Services {
                         addService(snKey, snHost);
                     }
                     LOGGER.info("services added");
-                    startWatcher(root);
+                    getInstance().startWatch(vertx, root);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 client.close();
             }
-        }
-
-        /**
-         * get all values under path
-         *
-         * @param path
-         * @return
-         */
-        public List<String> getAllValues(String path) {
-            List<String> values = new ArrayList<>();
-            KV client = Services.getInstance().getKVClient();
-            if (client != null) {
-                try {
-                    ByteSequence endKey = Services.getRangeKey(path);
-
-                    ByteSequence key = ByteSequence.fromString(path);
-
-                    CompletableFuture<GetResponse> getFuture = client.get(key, GetOption.newBuilder().withRange(endKey).build());
-                    GetResponse response = getFuture.get();
-                    List<KeyValue> results = response.getKvs();
-                    for (KeyValue kv : results) {
-                        String snHost = kv.getValue().toStringUtf8();
-                        values.add(snHost);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                client.close();
-            }
-            return values;
-        }
-
-        /**
-         * start etcd watcher in vertx blocking style
-         *
-         * @param root
-         */
-        private void startWatcher(String root) {
-            LOGGER.info("start watching: " + root);
-            vertx.executeBlocking(future -> {
-                watcher(root);
-                future.complete();
-            }, res -> {
-                LOGGER.info("watch complete");
-            });
         }
 
         /**
@@ -435,54 +480,6 @@ public class Services {
 
             EventBus eb = vertx.eventBus();
             eb.publish(EVENT_SERVICE_ADD, servicePath);
-        }
-
-        /**
-         * etcd watcher
-         *
-         * @param root
-         */
-        public void watcher(String root) {
-            Watch watch = Services.getInstance().getWatchClient();
-            if (watch != null) {
-                ByteSequence key = ByteSequence.fromString(root);
-                ByteSequence endKey = Services.getRangeKey(root);
-                Watch.Watcher watcher = watch.watch(key, WatchOption.newBuilder().withRange(endKey).build());
-
-                try {
-                    WatchResponse response = watcher.listen();
-                    for (WatchEvent event : response.getEvents()) {
-                        LOGGER.info("type={}, key={}, value={}",
-                            event.getEventType(),
-                            Optional.ofNullable(event.getKeyValue().getKey())
-                                .map(ByteSequence::toStringUtf8)
-                                .orElse(""),
-                            Optional.ofNullable(event.getKeyValue().getValue())
-                                .map(ByteSequence::toStringUtf8)
-                                .orElse(""));
-
-                        KeyValue kv = event.getKeyValue();
-                        if (kv != null) {
-                            if (kv.getValue() == null || kv.getKey() == null) {
-                                continue;
-                            }
-
-                            EventBus eb = vertx.eventBus();
-                            if (event.getEventType() == WatchEvent.EventType.PUT) {
-                                eb.publish(EVENT_SERVICE_ADD, kv.getKey());
-                            } else if (event.getEventType() == WatchEvent.EventType.DELETE) {
-                                eb.publish(EVENT_SERVICE_REMOVE, kv.getKey());
-                            }
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    LOGGER.error(e);
-                }
-
-                LOGGER.info("closing watcher");
-                watcher.close();
-            }
         }
 
         /**

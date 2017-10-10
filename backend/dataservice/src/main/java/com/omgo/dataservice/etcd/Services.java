@@ -11,7 +11,6 @@ import com.coreos.jetcd.options.GetOption;
 import com.coreos.jetcd.options.WatchOption;
 import com.coreos.jetcd.watch.WatchEvent;
 import com.coreos.jetcd.watch.WatchResponse;
-import com.omgo.dataservice.MainVerticle;
 import io.grpc.ManagedChannel;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
@@ -33,14 +32,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Services {
 
-    // com.omgo.dataservice.etcd watcher events
+    // etcd watcher events
     public static final String EVENT_SERVICE_ADD = "service.add";
     public static final String EVENT_SERVICE_REMOVE = "service.remove";
 
-    // service name
-    public static final String SERVICE_SNOWFLAKE = "snowflake";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MainVerticle.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Services.class);
 
     private static Services instance = null;
 
@@ -55,19 +51,19 @@ public class Services {
         return instance;
     }
 
-    protected Services() {
+    private Services() {
     }
 
-    // com.omgo.dataservice.etcd client
+    // etcd client
     private Client client;
 
     // service pool
     private ServicePool servicePool;
 
     /**
-     * init com.omgo.dataservice.etcd client with single endpoint
+     * init etcd client with single endpoint
      *
-     * @param endpoint
+     * @param endpoint etcd endpoint
      */
     public void init(String endpoint) {
         if (client != null) {
@@ -77,9 +73,9 @@ public class Services {
     }
 
     /**
-     * init com.omgo.dataservice.etcd client with one or more endpoints
+     * init etcd client with one or more endpoints
      *
-     * @param endpoints
+     * @param endpoints etcd endpoint list
      */
     public void init(List<String> endpoints) {
         if (client != null) {
@@ -89,10 +85,10 @@ public class Services {
     }
 
     /**
-     * generate a range key for com.omgo.dataservice.etcd get/put operation
+     * generate a range key for etcd get/put operation
      *
-     * @param key
-     * @return
+     * @param key origin key
+     * @return ranged key
      */
     public static ByteSequence getRangeKey(String key) {
         byte[] keyBytes = key.getBytes();
@@ -105,8 +101,8 @@ public class Services {
     /**
      * generate service full path by concat them with '/'
      *
-     * @param args
-     * @return
+     * @param args path parameters
+     * @return full service path
      */
     public static String generatePath(Object... args) {
         List<String> comps = new ArrayList<>();
@@ -122,8 +118,8 @@ public class Services {
     /**
      * get local ip address and concat with port
      *
-     * @param port
-     * @return
+     * @param port service port
+     * @return service local address in ip:port format
      */
     public static String getLocalAddress(int port) {
         String ip = "";
@@ -140,9 +136,9 @@ public class Services {
     }
 
     /**
-     * get com.omgo.dataservice.etcd key-value client
+     * get etcd key-value client
      *
-     * @return
+     * @return KV client instance
      */
     public KV getKVClient() {
         if (client != null) {
@@ -153,13 +149,13 @@ public class Services {
     }
 
     /**
-     * get com.omgo.dataservice.etcd watch client
+     * get etcd watch client
      *
-     * @return
+     * @return watch client instance
      */
     public Watch getWatchClient() {
         if (client != null) {
-            client.getWatchClient();
+            return client.getWatchClient();
         }
         return null;
     }
@@ -168,8 +164,8 @@ public class Services {
      * get dir part from a path
      * getDir(root/service/name) = root/service
      *
-     * @param path
-     * @return
+     * @param path key
+     * @return key had its last path component removed
      */
     public static String getDir(String path) {
         Path fullPath = Paths.get(path);
@@ -179,7 +175,7 @@ public class Services {
     /**
      * get default service pool
      *
-     * @return
+     * @return default service pool instance
      */
     public ServicePool getServicePool() {
         return servicePool;
@@ -192,7 +188,7 @@ public class Services {
      * @param vertx    Vertx instance
      * @param root     service root ('roots', 'backends', etc.)
      * @param services service names ('snowflake', 'agent', 'game', etc.)
-     * @return
+     * @return service pool instance
      */
     public ServicePool createServicePool(Vertx vertx, String root, List<String> services) {
         if (servicePool != null) {
@@ -202,6 +198,96 @@ public class Services {
 
         servicePool = ServicePool.newBuilder().setRoot(root).setVertx(vertx).addServices(services).build();
         return servicePool;
+    }
+
+    /**
+     * get all values under path
+     *
+     * @param path
+     * @return
+     */
+    public List<String> getAllValues(String path) {
+        List<String> values = new ArrayList<>();
+        KV client = getKVClient();
+        if (client != null) {
+            try {
+                ByteSequence endKey = Services.getRangeKey(path);
+
+                ByteSequence key = ByteSequence.fromString(path);
+
+                CompletableFuture<GetResponse> getFuture = client.get(key, GetOption.newBuilder().withRange(endKey).build());
+                GetResponse response = getFuture.get();
+                List<KeyValue> results = response.getKvs();
+                for (KeyValue kv : results) {
+                    String snHost = kv.getValue().toStringUtf8();
+                    values.add(snHost);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            client.close();
+        }
+        return values;
+    }
+
+    /**
+     * watch value change under path
+     *
+     * @param path
+     */
+    public void startWatch(Vertx vertx, String path) {
+        LOGGER.info("start watching: " + path);
+        vertx.<String>executeBlocking(future -> {
+            while (true) {
+                watcher(vertx, path);
+            }
+//            future.complete(path);
+        }, res -> {
+            LOGGER.info("watch complete");
+        });
+    }
+
+    private void watcher(Vertx vertx, String path) {
+        Watch watch = Services.getInstance().getWatchClient();
+        if (watch != null) {
+            ByteSequence key = ByteSequence.fromString(path);
+            ByteSequence endKey = Services.getRangeKey(path);
+            Watch.Watcher watcher = watch.watch(key, WatchOption.newBuilder().withRange(endKey).build());
+
+            try {
+                WatchResponse response = watcher.listen();
+                for (WatchEvent event : response.getEvents()) {
+                    LOGGER.info("type={}, key={}, value={}",
+                        event.getEventType(),
+                        Optional.ofNullable(event.getKeyValue().getKey())
+                            .map(ByteSequence::toStringUtf8)
+                            .orElse(""),
+                        Optional.ofNullable(event.getKeyValue().getValue())
+                            .map(ByteSequence::toStringUtf8)
+                            .orElse(""));
+
+                    KeyValue kv = event.getKeyValue();
+                    if (kv != null) {
+                        if (kv.getValue() == null || kv.getKey() == null) {
+                            continue;
+                        }
+
+                        EventBus eb = vertx.eventBus();
+                        if (event.getEventType() == WatchEvent.EventType.PUT) {
+                            eb.publish(EVENT_SERVICE_ADD, kv.getKey().toStringUtf8());
+                        } else if (event.getEventType() == WatchEvent.EventType.DELETE) {
+                            eb.publish(EVENT_SERVICE_REMOVE, kv.getKey().toStringUtf8());
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                LOGGER.error(e);
+            }
+
+            LOGGER.info("closing watcher");
+            watcher.close();
+        }
     }
 
 
@@ -238,7 +324,7 @@ public class Services {
         // vertx instance
         Vertx vertx;
 
-        // com.omgo.dataservice.etcd root ('root', 'backends', etc.)
+        // etcd root ('root', 'backends', etc.)
         String root;
 
         // service names that will be connect and watched
@@ -338,27 +424,12 @@ public class Services {
                         addService(snKey, snHost);
                     }
                     LOGGER.info("services added");
-                    startWatcher(root);
+                    getInstance().startWatch(vertx, root);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 client.close();
             }
-        }
-
-        /**
-         * start com.omgo.dataservice.etcd watcher in vertx blocking style
-         *
-         * @param root
-         */
-        private void startWatcher(String root) {
-            LOGGER.info("start watching");
-            vertx.executeBlocking(future -> {
-                watcher(root);
-                future.complete();
-            }, res -> {
-                LOGGER.info("watch complete");
-            });
         }
 
         /**
@@ -409,54 +480,6 @@ public class Services {
 
             EventBus eb = vertx.eventBus();
             eb.publish(EVENT_SERVICE_ADD, servicePath);
-        }
-
-        /**
-         * com.omgo.dataservice.etcd watcher
-         *
-         * @param root
-         */
-        public void watcher(String root) {
-            Watch watch = Services.getInstance().getWatchClient();
-            if (watch != null) {
-                ByteSequence key = ByteSequence.fromString(root);
-                ByteSequence endKey = Services.getRangeKey(root);
-                Watch.Watcher watcher = watch.watch(key, WatchOption.newBuilder().withRange(endKey).build());
-
-                try {
-                    WatchResponse response = watcher.listen();
-                    for (WatchEvent event : response.getEvents()) {
-                        LOGGER.info("type={}, key={}, value={}",
-                            event.getEventType(),
-                            Optional.ofNullable(event.getKeyValue().getKey())
-                                .map(ByteSequence::toStringUtf8)
-                                .orElse(""),
-                            Optional.ofNullable(event.getKeyValue().getValue())
-                                .map(ByteSequence::toStringUtf8)
-                                .orElse(""));
-
-                        KeyValue kv = event.getKeyValue();
-                        if (kv != null) {
-                            if (kv.getValue() == null || kv.getKey() == null) {
-                                continue;
-                            }
-
-                            EventBus eb = vertx.eventBus();
-                            if (event.getEventType() == WatchEvent.EventType.PUT) {
-                                eb.publish(EVENT_SERVICE_ADD, kv.getKey());
-                            } else if (event.getEventType() == WatchEvent.EventType.DELETE) {
-                                eb.publish(EVENT_SERVICE_REMOVE, kv.getKey());
-                            }
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    LOGGER.error(e);
-                }
-
-                LOGGER.info("closing watcher");
-                watcher.close();
-            }
         }
 
         /**
@@ -528,10 +551,10 @@ public class Services {
                 LOGGER.info(String.format("service %s @ %s registered", fullPath, address));
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                LOGGER.error("error while register service for interrupt");
+                LOGGER.error("error while setRoute service for interrupt");
             } catch (ExecutionException e) {
                 e.printStackTrace();
-                LOGGER.error("error while register service for exception");
+                LOGGER.error("error while setRoute service for exception");
             }
             kvClient.close();
         }

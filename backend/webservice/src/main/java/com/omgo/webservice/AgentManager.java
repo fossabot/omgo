@@ -32,9 +32,9 @@ public class AgentManager {
 
     private Set<String> agentSet = new HashSet<>();
 
-    public List<String> getAgentList(Services.ServicePool servicePool, String root, String agentServiceType) {
+    public List<String> getAgentList(String root, String agentServiceType) {
         if (agentSet.isEmpty()) {
-            List<String> agents = servicePool.getAllValues(Services.generatePath(root, agentServiceType));
+            List<String> agents = Services.getInstance().getAllValues(Services.generatePath(root, agentServiceType));
             agentSet.addAll(agents);
         }
         return new ArrayList<>(agentSet);
