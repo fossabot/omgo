@@ -6,7 +6,7 @@
     "service.self": "ds-0",
     "service.host": "localhost",
     "service.port": 60001,
-    "service.names": ["snowflake"],
+    "service.names": [""],
 
     "etcd.host": ["http://localhost:2379"],
 

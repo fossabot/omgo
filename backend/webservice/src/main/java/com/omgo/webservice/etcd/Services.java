@@ -231,6 +231,34 @@ public class Services {
     }
 
     /**
+     * register service to ETCD
+     *
+     * @param fullPath  full path of the service e.g. 'backends/agent/agent-asia-01'
+     * @param address   service address and port e.g. '192.168.0.1:8888'
+     */
+    public void registerService(String fullPath, String address) {
+        KV kvClient = getInstance().getKVClient();
+        if (kvClient == null) {
+            return;
+        }
+
+        ByteSequence key = ByteSequence.fromString(fullPath);
+        ByteSequence value = ByteSequence.fromString(address);
+        CompletableFuture<PutResponse> putFuture = kvClient.put(key, value);
+        try {
+            PutResponse putResponse = putFuture.get();
+            LOGGER.info(String.format("service %s @ %s registered", fullPath, address));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            LOGGER.error("error while setRoute service for interrupt");
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            LOGGER.error("error while setRoute service for exception");
+        }
+        kvClient.close();
+    }
+
+    /**
      * watch value change under path
      *
      * @param path
@@ -535,28 +563,6 @@ public class Services {
                 return service.clients.get(idx).channel;
             }
             return null;
-        }
-
-        public void registerService(String fullPath, String address) {
-            KV kvClient = getInstance().getKVClient();
-            if (kvClient == null) {
-                return;
-            }
-
-            ByteSequence key = ByteSequence.fromString(fullPath);
-            ByteSequence value = ByteSequence.fromString(address);
-            CompletableFuture<PutResponse> putFuture = kvClient.put(key, value);
-            try {
-                PutResponse putResponse = putFuture.get();
-                LOGGER.info(String.format("service %s @ %s registered", fullPath, address));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                LOGGER.error("error while setRoute service for interrupt");
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-                LOGGER.error("error while setRoute service for exception");
-            }
-            kvClient.close();
         }
     }
 }

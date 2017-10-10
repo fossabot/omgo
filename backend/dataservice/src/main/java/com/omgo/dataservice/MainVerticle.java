@@ -3,7 +3,6 @@ package com.omgo.dataservice;
 import com.omgo.dataservice.etcd.Services;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.mongo.MongoClient;
@@ -95,25 +94,13 @@ public class MainVerticle extends AbstractVerticle {
         Services.getInstance().init(endpoints);
 
         String root = config().getString("service.root", "backends");
-        String selfKind = config().getString("service.kind", "dbservice");
-        String selfName = config().getString("service.self", "dbs-0");
+        String selfKind = config().getString("service.kind", "dataservice");
+        String selfName = config().getString("service.self", "ds-0");
 
         LOGGER.info("service root:" + root);
 
-        List<String> serviceNames = new ArrayList<>();
-        JsonArray namesJA = config().getJsonArray("service.names", new JsonArray().add("snowflake"));
-        for (int i = 0; i < namesJA.size(); i++) {
-            String name = namesJA.getString(i);
-            serviceNames.add(name);
-        }
-
-        LOGGER.info("service names:" + serviceNames);
-
-        Services.ServicePool servicePool = Services.getInstance().createServicePool(vertx, root, serviceNames);
-        LOGGER.info("service pool created");
-
         // register self to etcd as service
-        servicePool.registerService(Services.generatePath(root, selfKind, selfName), String.format("%s:%d", serviceHost, servicePort));
+        Services.getInstance().registerService(Services.generatePath(root, selfKind, selfName), String.format("%s:%d", serviceHost, servicePort));
         LOGGER.info("service registered");
     }
 }
