@@ -37,8 +37,6 @@ public class MainVerticle extends AbstractVerticle {
 
         setupServices();
         startApiService();
-
-        test();
     }
 
     private void startApiService() {
@@ -112,29 +110,6 @@ public class MainVerticle extends AbstractVerticle {
 
         grpcChannel = servicePool.getChannel(servicePool.getServicePath("dataservice"));
 
-        List<String> agents = AgentManager.getInstance().getAgentList(root, "agent");
-        AgentManager.getInstance().startWatch(vertx);
-        LOGGER.info(agents);
-    }
-
-    private void test() {
-        List<String> endpoints = new ArrayList<>();
-        JsonArray endpointsJA = config().getJsonArray("etcd.host", new JsonArray().add("http://localhost:2379"));
-        for (int i = 0; i < endpointsJA.size(); i++) {
-            String endpoint = endpointsJA.getString(i);
-            endpoints.add(endpoint);
-        }
-
-        LOGGER.info("etcd host:" + endpoints);
-        Services.getInstance().init(endpoints);
-
-        String root = config().getString("service.root", "backends");
-        LOGGER.info("service root:" + root);
-
-        Services.getInstance().startWatch(vertx, "backends/agent");
-
-        List<String> agents = AgentManager.getInstance().getAgentList(root, "agent");
-        AgentManager.getInstance().startWatch(vertx);
-        LOGGER.info(agents);
+        AgentManager.getInstance().startWatch(vertx, root);
     }
 }

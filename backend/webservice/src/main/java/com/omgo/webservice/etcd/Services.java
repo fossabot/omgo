@@ -266,10 +266,8 @@ public class Services {
     public void startWatch(Vertx vertx, String path) {
         LOGGER.info("start watching: " + path);
         vertx.<String>executeBlocking(future -> {
-            while (true) {
-                watcher(vertx, path);
-            }
-//            future.complete(path);
+            watcher(vertx, path);
+            future.complete(path);
         }, res -> {
             LOGGER.info("watch complete");
         });
@@ -282,35 +280,40 @@ public class Services {
             ByteSequence endKey = Services.getRangeKey(path);
             Watch.Watcher watcher = watch.watch(key, WatchOption.newBuilder().withRange(endKey).build());
 
-            try {
-                WatchResponse response = watcher.listen();
-                for (WatchEvent event : response.getEvents()) {
-                    LOGGER.info("type={}, key={}, value={}",
-                        event.getEventType(),
-                        Optional.ofNullable(event.getKeyValue().getKey())
-                            .map(ByteSequence::toStringUtf8)
-                            .orElse(""),
-                        Optional.ofNullable(event.getKeyValue().getValue())
-                            .map(ByteSequence::toStringUtf8)
-                            .orElse(""));
+            while(true) {
+                try {
+                    WatchResponse response = watcher.listen();
+                    for (WatchEvent event : response.getEvents()) {
+                        LOGGER.info("type={}, key={}, value={}",
+                            event.getEventType(),
+                            Optional.ofNullable(event.getKeyValue().getKey())
+                                .map(ByteSequence::toStringUtf8)
+                                .orElse(""),
+                            Optional.ofNullable(event.getKeyValue().getValue())
+                                .map(ByteSequence::toStringUtf8)
+                                .orElse(""));
 
-                    KeyValue kv = event.getKeyValue();
-                    if (kv != null) {
-                        if (kv.getValue() == null || kv.getKey() == null) {
-                            continue;
-                        }
+                        KeyValue kv = event.getKeyValue();
+                        if (kv != null) {
+                            if (kv.getValue() == null || kv.getKey() == null) {
+                                continue;
+                            }
 
-                        EventBus eb = vertx.eventBus();
-                        if (event.getEventType() == WatchEvent.EventType.PUT) {
-                            eb.publish(EVENT_SERVICE_ADD, kv.getKey().toStringUtf8());
-                        } else if (event.getEventType() == WatchEvent.EventType.DELETE) {
-                            eb.publish(EVENT_SERVICE_REMOVE, kv.getKey().toStringUtf8());
+                            EventBus eb = vertx.eventBus();
+                            if (event.getEventType() == WatchEvent.EventType.PUT) {
+                                eb.publish(EVENT_SERVICE_ADD, kv.getKey().toStringUtf8());
+                            } else if (event.getEventType() == WatchEvent.EventType.DELETE) {
+                                eb.publish(EVENT_SERVICE_REMOVE, kv.getKey().toStringUtf8());
+                            }
                         }
                     }
+                    // TODO: 11/10/2017 ???
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    LOGGER.error(e);
+                    break;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                LOGGER.error(e);
             }
 
             LOGGER.info("closing watcher");

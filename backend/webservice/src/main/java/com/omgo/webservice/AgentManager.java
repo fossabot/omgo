@@ -40,7 +40,9 @@ public class AgentManager {
         return new ArrayList<>(agentSet);
     }
 
-    public void startWatch(Vertx vertx) {
+    public void startWatch(Vertx vertx, String root) {
+        Services.getInstance().startWatch(vertx, Services.generatePath(root, "agent"));
+
         EventBus eb = vertx.eventBus();
         eb.consumer(Services.EVENT_SERVICE_ADD, res -> {
             LOGGER.info("service added:");
