@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -60,7 +61,7 @@ public class Services {
     private Client client;
 
     // watcher set
-    private Map<Long, Watch.Watcher> watcherMap = new HashMap<>();
+    private ConcurrentHashMap<Long, Watch.Watcher> watcherMap = new ConcurrentHashMap<>();
 
     // service pool
     private ServicePool servicePool;
@@ -272,27 +273,35 @@ public class Services {
         LOGGER.info("start watching: " + path);
 
         return vertx.setPeriodic(5000, id -> {
-            vertx.<String>executeBlocking(future -> {
-                Watch.Watcher watcher;
-                if (watcherMap.containsKey(id)) {
-                    watcher = watcherMap.get(id);
-                    watcher.close();
-                    watcherMap.remove(id);
-                }
-
-                Watch watch = Services.getInstance().getWatchClient();
-                if (watch == null) {
-                    future.complete(path);
-                }
-
-                ByteSequence key = ByteSequence.fromString(path);
-                ByteSequence endKey = Services.getRangeKey(path);
-                watcher = watch.watch(key, WatchOption.newBuilder().withRange(endKey).build());
-
-                watcherMap.put(id, watcher);
-                runWatcher(vertx, watcher);
+            Watch.Watcher watcher;
+            if (watcherMap.containsKey(id)) {
+                watcher = watcherMap.get(id);
                 watcher.close();
                 watcherMap.remove(id);
+            }
+
+            Watch watch = Services.getInstance().getWatchClient();
+            if (watch == null) {
+                return;
+            }
+
+            ByteSequence key = ByteSequence.fromString(path);
+            ByteSequence endKey = Services.getRangeKey(path);
+            watcher = watch.watch(key, WatchOption.newBuilder().withRange(endKey).build());
+
+            watcherMap.put(id, watcher);
+
+            vertx.<String>executeBlocking(future -> {
+                if (!watcherMap.containsKey(id)) {
+                    future.complete(path);
+                }
+                Watch.Watcher w = watcherMap.get(id);
+                runWatcher(vertx, w);
+                if (watcherMap.containsKey(id)) {
+                    w = watcherMap.get(id);
+                    w.close();
+                    watcherMap.remove(id);
+                }
 
                 future.complete(path);
             }, res -> {

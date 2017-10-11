@@ -19,7 +19,9 @@ import io.vertx.ext.web.sstore.LocalSessionStore;
 import io.vertx.ext.web.sstore.SessionStore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainVerticle extends AbstractVerticle {
     private static final Logger LOGGER = LoggerFactory.getLogger(MainVerticle.class);
@@ -35,6 +37,8 @@ public class MainVerticle extends AbstractVerticle {
 
         setupServices();
         startApiService();
+
+        watchTest();
     }
 
     private void startApiService() {
@@ -111,4 +115,72 @@ public class MainVerticle extends AbstractVerticle {
         AgentManager.getInstance().startWatch(vertx, root);
     }
 
+    private Map<Long, Lash> theMap = new HashMap<>();
+
+    private void watchTest() {
+        vertx.setPeriodic(5000, id-> {
+            if (theMap.containsKey(id)) {
+                Lash lash = theMap.get(id);
+                lash.stop();
+                theMap.remove(id);
+                LOGGER.info("remove lash by timeout");
+            }
+
+            Lash lash = new Lash();
+            theMap.put(id, lash);
+
+            vertx.executeBlocking(future -> {
+                Lash l = theMap.get(id);
+                if (l != null) {
+                    l.start();
+                    l.stop();
+                }
+                future.complete();
+                theMap.remove(id);
+            }, s-> {
+
+            });
+        });
+
+    }
+
+    private class Lash {
+        public Lash() {
+
+        }
+
+        private boolean flag;
+        private boolean once;
+        private int counter;
+
+        public void start() {
+            flag = true;
+
+            if (once) {
+                LOGGER.info("---------> invalid lash, already stopped");
+            }
+            once = true;
+
+            LOGGER.info("---------> lash start");
+
+            while (flag) {
+                try {
+                    Thread.sleep(500);
+                    counter++;
+                    if (counter == 3) {
+                        LOGGER.info("---------> lash complete");
+                        break;
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            LOGGER.info("---------> lash stop");
+        }
+
+        public void stop() {
+            flag = false;
+            once = true;
+        }
+    }
 }
