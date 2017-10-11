@@ -33,8 +33,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Services {
 
     // etcd watcher events
-    public static final String EVENT_SERVICE_ADD = "service.add";
-    public static final String EVENT_SERVICE_REMOVE = "service.remove";
+    public static final String EVENT_SERVICE_ADDED = "service.added";
+    public static final String EVENT_SERVICE_REMOVED = "service.removed";
+    public static final String EVENT_SERVICE_ONLINE = "service.online";
+    public static final String EVENT_SERVICE_OFFLINE = "service.offline";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Services.class);
 
@@ -56,6 +58,9 @@ public class Services {
 
     // etcd client
     private Client client;
+
+    // watcher set
+    private Map<Long, Watch.Watcher> watcherMap = new HashMap<>();
 
     // service pool
     private ServicePool servicePool;
@@ -233,8 +238,8 @@ public class Services {
     /**
      * register service to ETCD
      *
-     * @param fullPath  full path of the service e.g. 'backends/agent/agent-asia-01'
-     * @param address   service address and port e.g. '192.168.0.1:8888'
+     * @param fullPath full path of the service e.g. 'backends/agent/agent-asia-01'
+     * @param address  service address and port e.g. '192.168.0.1:8888'
      */
     public void registerService(String fullPath, String address) {
         KV kvClient = getInstance().getKVClient();
@@ -263,61 +268,90 @@ public class Services {
      *
      * @param path
      */
-    public void startWatch(Vertx vertx, String path) {
+    public long startWatch(Vertx vertx, String path) {
         LOGGER.info("start watching: " + path);
-        vertx.<String>executeBlocking(future -> {
-            watcher(vertx, path);
-            future.complete(path);
-        }, res -> {
-            LOGGER.info("watch complete");
+
+        return vertx.setPeriodic(5000, id -> {
+            vertx.<String>executeBlocking(future -> {
+                Watch.Watcher watcher;
+                if (watcherMap.containsKey(id)) {
+                    watcher = watcherMap.get(id);
+                    watcher.close();
+                    watcherMap.remove(id);
+                }
+
+                Watch watch = Services.getInstance().getWatchClient();
+                if (watch == null) {
+                    future.complete(path);
+                }
+
+                ByteSequence key = ByteSequence.fromString(path);
+                ByteSequence endKey = Services.getRangeKey(path);
+                watcher = watch.watch(key, WatchOption.newBuilder().withRange(endKey).build());
+
+                watcherMap.put(id, watcher);
+                runWatcher(vertx, watcher);
+                watcher.close();
+                watcherMap.remove(id);
+
+                future.complete(path);
+            }, res -> {
+            });
         });
     }
 
-    private void watcher(Vertx vertx, String path) {
-        Watch watch = Services.getInstance().getWatchClient();
-        if (watch != null) {
-            ByteSequence key = ByteSequence.fromString(path);
-            ByteSequence endKey = Services.getRangeKey(path);
-            Watch.Watcher watcher = watch.watch(key, WatchOption.newBuilder().withRange(endKey).build());
+    /**
+     * stop an ETCD watcher by cancel its timer
+     *
+     * @param vertx
+     * @param watcherId
+     */
+    public void stopWatch(Vertx vertx, long watcherId) {
+        if (watcherMap.containsKey(watcherId)) {
+            Watch.Watcher watcher = watcherMap.get(watcherId);
+            watcher.close();
+            vertx.cancelTimer(watcherId);
+        }
+    }
 
-            while(true) {
-                try {
-                    WatchResponse response = watcher.listen();
-                    for (WatchEvent event : response.getEvents()) {
-                        LOGGER.info("type={}, key={}, value={}",
-                            event.getEventType(),
-                            Optional.ofNullable(event.getKeyValue().getKey())
-                                .map(ByteSequence::toStringUtf8)
-                                .orElse(""),
-                            Optional.ofNullable(event.getKeyValue().getValue())
-                                .map(ByteSequence::toStringUtf8)
-                                .orElse(""));
+    private void runWatcher(Vertx vertx, Watch.Watcher watcher) {
+        try {
+            WatchResponse response = watcher.listen();
+            for (WatchEvent event : response.getEvents()) {
+                LOGGER.info("type={}, key={}, value={}",
+                    event.getEventType(),
+                    Optional.ofNullable(event.getKeyValue().getKey())
+                        .map(ByteSequence::toStringUtf8)
+                        .orElse(""),
+                    Optional.ofNullable(event.getKeyValue().getValue())
+                        .map(ByteSequence::toStringUtf8)
+                        .orElse(""));
 
-                        KeyValue kv = event.getKeyValue();
-                        if (kv != null) {
-                            if (kv.getValue() == null || kv.getKey() == null) {
-                                continue;
-                            }
+                KeyValue kv = event.getKeyValue();
+                if (kv != null) {
+                    if (kv.getValue() == null || kv.getKey() == null) {
+                        continue;
+                    }
 
-                            EventBus eb = vertx.eventBus();
-                            if (event.getEventType() == WatchEvent.EventType.PUT) {
-                                eb.publish(EVENT_SERVICE_ADD, kv.getKey().toStringUtf8());
-                            } else if (event.getEventType() == WatchEvent.EventType.DELETE) {
-                                eb.publish(EVENT_SERVICE_REMOVE, kv.getKey().toStringUtf8());
-                            }
+                    ServicePool servicePool = getServicePool();
+
+                    EventBus eb = vertx.eventBus();
+                    if (event.getEventType() == WatchEvent.EventType.PUT) {
+                        eb.<String>publish(EVENT_SERVICE_ONLINE, kv.getKey().toStringUtf8());
+                        if (servicePool != null) {
+                            servicePool.addService(kv.getKey().toStringUtf8(), kv.getValue().toStringUtf8());
+                        }
+                    } else if (event.getEventType() == WatchEvent.EventType.DELETE) {
+                        eb.<String>publish(EVENT_SERVICE_OFFLINE, kv.getKey().toStringUtf8());
+                        if (servicePool != null) {
+                            servicePool.removeService(kv.getKey().toStringUtf8());
                         }
                     }
-                    // TODO: 11/10/2017 ???
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    LOGGER.error(e);
-                    break;
                 }
             }
-
-            LOGGER.info("closing watcher");
-            watcher.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error(e);
         }
     }
 
@@ -510,7 +544,7 @@ public class Services {
             service.clients.add(serviceClient);
 
             EventBus eb = vertx.eventBus();
-            eb.publish(EVENT_SERVICE_ADD, servicePath);
+            eb.<String>publish(EVENT_SERVICE_ADDED, servicePath);
         }
 
         /**
@@ -539,6 +573,8 @@ public class Services {
             }
             if (!toRemove.isEmpty()) {
                 service.clients.removeAll(toRemove);
+                EventBus eb = vertx.eventBus();
+                eb.<String>publish(EVENT_SERVICE_ADDED, fullPath);
             }
         }
 

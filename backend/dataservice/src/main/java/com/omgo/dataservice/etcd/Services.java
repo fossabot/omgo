@@ -57,6 +57,9 @@ public class Services {
     // etcd client
     private Client client;
 
+    // watcher set
+    private Set<Long> watcherMap = new HashSet<>();
+
     // service pool
     private ServicePool servicePool;
 
@@ -233,8 +236,8 @@ public class Services {
     /**
      * register service to ETCD
      *
-     * @param fullPath  full path of the service e.g. 'backends/agent/agent-asia-01'
-     * @param address   service address and port e.g. '192.168.0.1:8888'
+     * @param fullPath full path of the service e.g. 'backends/agent/agent-asia-01'
+     * @param address  service address and port e.g. '192.168.0.1:8888'
      */
     public void registerService(String fullPath, String address) {
         KV kvClient = getInstance().getKVClient();
@@ -263,16 +266,31 @@ public class Services {
      *
      * @param path
      */
-    public void startWatch(Vertx vertx, String path) {
+    public long startWatch(Vertx vertx, String path) {
         LOGGER.info("start watching: " + path);
-        vertx.<String>executeBlocking(future -> {
-            while (true) {
-                watcher(vertx, path);
+
+        return vertx.setPeriodic(5000, id -> {
+            if (watcherMap.contains(id)) {
+                return;
             }
-//            future.complete(path);
-        }, res -> {
-            LOGGER.info("watch complete");
+            vertx.<String>executeBlocking(future -> {
+                watcherMap.add(id);
+                watcher(vertx, path);
+                watcherMap.remove(id);
+                future.complete(path);
+            }, res -> {
+            });
         });
+    }
+
+    /**
+     * stop an ETCD watcher by cancel its timer
+     *
+     * @param vertx
+     * @param watcherId
+     */
+    public void stopWatch(Vertx vertx, long watcherId) {
+        vertx.cancelTimer(watcherId);
     }
 
     private void watcher(Vertx vertx, String path) {
@@ -302,9 +320,9 @@ public class Services {
 
                         EventBus eb = vertx.eventBus();
                         if (event.getEventType() == WatchEvent.EventType.PUT) {
-                            eb.publish(EVENT_SERVICE_ADD, kv.getKey().toStringUtf8());
+                            eb.<String>publish(EVENT_SERVICE_ADD, kv.getKey().toStringUtf8());
                         } else if (event.getEventType() == WatchEvent.EventType.DELETE) {
-                            eb.publish(EVENT_SERVICE_REMOVE, kv.getKey().toStringUtf8());
+                            eb.<String>publish(EVENT_SERVICE_REMOVE, kv.getKey().toStringUtf8());
                         }
                     }
                 }
@@ -313,7 +331,6 @@ public class Services {
                 LOGGER.error(e);
             }
 
-            LOGGER.info("closing watcher");
             watcher.close();
         }
     }

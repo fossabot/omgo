@@ -44,13 +44,13 @@ public class AgentManager {
         Services.getInstance().startWatch(vertx, Services.generatePath(root, "agent"));
 
         EventBus eb = vertx.eventBus();
-        eb.consumer(Services.EVENT_SERVICE_ADD, res -> {
-            LOGGER.info("service added:");
+        eb.<String>consumer(Services.EVENT_SERVICE_ONLINE, res -> {
+            LOGGER.info("service online:");
             LOGGER.info(res.body());
         });
 
-        eb.consumer(Services.EVENT_SERVICE_REMOVE, res -> {
-            LOGGER.info("service removed:");
+        eb.<String>consumer(Services.EVENT_SERVICE_OFFLINE, res -> {
+            LOGGER.info("service offline:");
             LOGGER.info(res.body());
         });
     }
