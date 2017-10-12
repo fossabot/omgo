@@ -3,7 +3,7 @@ package com.omgo.webservice.handler;
 import com.omgo.webservice.Utils;
 import com.omgo.webservice.model.HttpStatus;
 import com.omgo.webservice.model.ModelConverter;
-import io.grpc.ManagedChannel;
+import com.omgo.webservice.service.Services;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
@@ -75,12 +75,12 @@ public class RegisterHandler extends BaseHandler {
 
     private DBServiceGrpc.DBServiceVertxStub dbServiceVertxStub;
 
-    public RegisterHandler(Vertx vertx, ManagedChannel channel) {
+    public RegisterHandler(Vertx vertx, Services.ServicePool servicePool) {
         super(vertx);
         notRequireValidNonce();
         notRequireValidSession();
         notRequireValidEncryption();
-        dbServiceVertxStub = DBServiceGrpc.newVertxStub(channel);
+        dbServiceVertxStub = DBServiceGrpc.newVertxStub(servicePool.getClient());
     }
 
     @Override

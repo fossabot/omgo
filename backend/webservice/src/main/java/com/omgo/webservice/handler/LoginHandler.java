@@ -3,7 +3,7 @@ package com.omgo.webservice.handler;
 import com.omgo.webservice.GRPCAuthProvider;
 import com.omgo.webservice.model.HttpStatus;
 import com.omgo.webservice.model.ModelConverter;
-import io.grpc.ManagedChannel;
+import com.omgo.webservice.service.Services;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
@@ -15,12 +15,12 @@ public class LoginHandler extends BaseHandler {
 
     private GRPCAuthProvider authProvider;
 
-    public LoginHandler(Vertx vertx, ManagedChannel channel) {
+    public LoginHandler(Vertx vertx, Services.ServicePool servicePool) {
         super(vertx);
         notRequireValidNonce();
         notRequireValidSession();
         notRequireValidEncryption();
-        this.authProvider = new GRPCAuthProvider(vertx, channel);
+        this.authProvider = new GRPCAuthProvider(vertx, servicePool.getClient());
     }
 
     @Override

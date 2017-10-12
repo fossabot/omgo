@@ -1,10 +1,10 @@
 {
     "info.version": "v0.0.1",
     "debug": true,
-    "standalone": true,
+    "standalone": false,
 
     "service.root": "backends",
-    "service.names": ["dataservice"],
+    "service.types": ["dataservice"],
 
     "session.map": "web0.sessionmap",
     "session.expire": 86400000,
