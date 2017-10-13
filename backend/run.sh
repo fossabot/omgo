@@ -20,6 +20,11 @@ cd ./dataservice/
 sh ./run.sh
 cd ..
 
+# Web service
+cd ./webservice/
+sh ./run.sh
+cd ..
+
 exit
 
 # DB service
