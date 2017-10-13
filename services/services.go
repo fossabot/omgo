@@ -51,7 +51,7 @@ func getRangeKey(key string) string {
 }
 
 // Init service pool with given service root on ETCD hosts
-// {root}/{services}/{service-endpoints}
+// {root}/{service-type}/{service-name}
 func Init(root string, hosts, services []string) {
 	once.Do(func() {
 		defaultPool.init(root, hosts, services)
