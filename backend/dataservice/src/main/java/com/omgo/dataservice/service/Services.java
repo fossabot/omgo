@@ -1,4 +1,4 @@
-package com.omgo.webservice.service;
+package com.omgo.dataservice.service;
 
 import com.coreos.jetcd.KV;
 import com.coreos.jetcd.data.ByteSequence;
@@ -6,7 +6,7 @@ import com.coreos.jetcd.data.KeyValue;
 import com.coreos.jetcd.kv.GetResponse;
 import com.coreos.jetcd.kv.PutResponse;
 import com.coreos.jetcd.options.GetOption;
-import com.omgo.webservice.Utils;
+import com.omgo.dataservice.model.Utils;
 import io.grpc.ManagedChannel;
 import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
@@ -43,13 +43,13 @@ public class Services {
     private Services() {
     }
 
-    // etcd client
+    // service client
     private com.coreos.jetcd.Client client;
 
     /**
-     * init etcd client with single endpoint
+     * init service client with single endpoint
      *
-     * @param endpoint etcd endpoint
+     * @param endpoint service endpoint
      */
     public void init(String endpoint) {
         if (client != null) {
@@ -59,9 +59,9 @@ public class Services {
     }
 
     /**
-     * init etcd client with one or more endpoints
+     * init service client with one or more endpoints
      *
-     * @param endpoints etcd endpoint list
+     * @param endpoints service endpoint list
      */
     public void init(List<String> endpoints) {
         if (client != null) {
@@ -71,7 +71,7 @@ public class Services {
     }
 
     /**
-     * generate a range key for etcd get/put operation
+     * generate a range key for service get/put operation
      *
      * @param key origin key
      * @return ranged key
@@ -122,7 +122,7 @@ public class Services {
     }
 
     /**
-     * get etcd key-value client
+     * get service key-value client
      *
      * @return KV client instance
      */

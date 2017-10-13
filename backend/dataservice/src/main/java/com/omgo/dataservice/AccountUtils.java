@@ -3,6 +3,7 @@ package com.omgo.dataservice;
 
 import com.omgo.dataservice.model.ModelConverter;
 import com.omgo.dataservice.model.Utils;
+import org.apache.commons.validator.routines.EmailValidator;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -11,8 +12,6 @@ import java.util.Random;
 
 public final class AccountUtils {
     public static final int PASSWORD_MIN_LEN = 6;
-
-    private static final String STRING_EMAIL_REGEX = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
     private static Random random = new Random(System.currentTimeMillis());
 
@@ -55,13 +54,8 @@ public final class AccountUtils {
         return null;
     }
 
-    // FIXME: 29/09/2017 invalid email address like xxx@xxx can pass this test
     public static boolean isValidEmailAddress(String s) {
-        if (Utils.isEmptyString(s)) {
-            return false;
-        } else {
-            return s.matches(STRING_EMAIL_REGEX);
-        }
+        return EmailValidator.getInstance().isValid(s);
     }
 
     public static boolean isValidSecret(String s) {

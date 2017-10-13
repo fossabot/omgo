@@ -1,5 +1,6 @@
 package com.omgo.webservice.handler;
 
+import com.omgo.webservice.AgentManager;
 import com.omgo.webservice.GRPCAuthProvider;
 import com.omgo.webservice.model.HttpStatus;
 import com.omgo.webservice.model.ModelConverter;
@@ -43,6 +44,7 @@ public class LoginHandler extends BaseHandler {
 
                 JsonObject rspJson = getResponseJson();
                 rspJson.put(ModelConverter.KEY_USER_INFO, user.principal());
+                rspJson.put(ModelConverter.KEY_HOSTS, AgentManager.getInstance().getHostList());
                 response.write(rspJson.encode()).end();
             } else {
                 routingContext.fail(HttpStatus.FORBIDDEN.code);

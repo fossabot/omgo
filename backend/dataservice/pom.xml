@@ -88,6 +88,13 @@
             <version>0.0.1</version>
         </dependency>
 
+        <!-- commons-validator -->
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>1.6</version>
+        </dependency>
+
     </dependencies>
 
     <build>

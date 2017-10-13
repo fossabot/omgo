@@ -1,5 +1,6 @@
 package com.omgo.webservice.handler;
 
+import com.omgo.webservice.AgentManager;
 import com.omgo.webservice.Utils;
 import com.omgo.webservice.model.HttpStatus;
 import com.omgo.webservice.model.ModelConverter;
@@ -153,6 +154,7 @@ public class RegisterHandler extends BaseHandler implements Services.Pool.OnChan
 
                     JsonObject rspJson = getResponseJson();
                     rspJson.put(ModelConverter.KEY_USER_INFO, resultJson);
+                    rspJson.put(ModelConverter.KEY_HOSTS, AgentManager.getInstance().getHostList());
                     response.write(rspJson.encode()).end();
                 } else {
                     LOGGER.info(res.result().getResult());

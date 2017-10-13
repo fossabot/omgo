@@ -12,14 +12,13 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.auth.User;
+import org.apache.commons.validator.routines.EmailValidator;
 import proto.DBServiceGrpc;
 import proto.Db;
 
 public class GRPCAuthProvider implements AuthProvider, Services.Pool.OnChangeListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GRPCAuthProvider.class);
-
-    private static final String STRING_EMAIL_REGEX = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
     private DBServiceGrpc.DBServiceVertxStub dbServiceVertxStub;
     private Services.Pool dataServicePool;
@@ -47,9 +46,7 @@ public class GRPCAuthProvider implements AuthProvider, Services.Pool.OnChangeLis
         long usn = Utils.isEmptyString(strUsn) ? 0L : Long.parseLong(strUsn);
         String clientIpAddress = jsonObject.getString(ModelConverter.KEY_LAST_IP, "");
 
-        // TODO: 11/09/2017 this regex is kinda invalid for xxx@xxx
-
-        if (Utils.isEmptyString(email) || !email.matches(STRING_EMAIL_REGEX)) {
+        if (Utils.isEmptyString(email) || !EmailValidator.getInstance().isValid(email)) {
             handler.handle(Future.failedFuture("auth info invalid email:" + email));
             return;
         }

@@ -78,6 +78,7 @@ public class MainVerticle extends AbstractVerticle {
             return;
         }
 
+        // init etcd
         List<String> endpoints = new ArrayList<>();
         JsonArray endpointsJA = config().getJsonArray("etcd.host", new JsonArray().add("http://localhost:2379"));
         for (int i = 0; i < endpointsJA.size(); i++) {
@@ -103,10 +104,12 @@ public class MainVerticle extends AbstractVerticle {
 
         Services.getInstance().init(endpoints);
 
-        LOGGER.info("service pool created");
+        LOGGER.info("Services inited");
+
+        // init dataservice
 
         dataCenters = Services.getInstance().getServicePool(vertx, root, "dataservice");
-        dataCenters.setListener(new Services.Pool.OnChangeListener() {
+        dataCenters.addOnChangeListener(new Services.Pool.OnChangeListener() {
             @Override
             public void onServiceAdded(Services.Pool pool) {
                 LOGGER.info("new service added");
@@ -117,5 +120,8 @@ public class MainVerticle extends AbstractVerticle {
                 LOGGER.info("service removed");
             }
         });
+
+        // init agent manager
+        AgentManager.getInstance().init(vertx, root, "agent");
     }
 }

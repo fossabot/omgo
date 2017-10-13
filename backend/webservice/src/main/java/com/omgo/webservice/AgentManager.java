@@ -1,12 +1,16 @@
 package com.omgo.webservice;
 
 import com.omgo.webservice.service.Services;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
 import java.util.*;
 
 public class AgentManager {
+    private static final long WATCH_INTERVAL = 30 * 1000; // 30 seconds
+
     private static AgentManager instance;
 
     private AgentManager() {
@@ -25,15 +29,35 @@ public class AgentManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
 
-    private Set<String> agentSet = new HashSet<>();
+    private long timerId = 0;
+    private Map<String, String> agentServices = new HashMap<>();
 
-    public List<String> getAgentList(String root, String agentServiceType) {
-        if (agentSet.isEmpty()) {
-            Map<String, String> agents = Services.getInstance().getAllValues(Services.generatePath(root, agentServiceType));
-            agentSet.addAll(agents.keySet());
+    public void init(Vertx vertx, String root, String agentServiceType) {
+        if (timerId == 0L) {
+            update(root, agentServiceType);
+            startWatch(vertx, root, agentServiceType);
+        }
+    }
+
+    public List<String> getHostList() {
+        List<String> hosts = new ArrayList<>();
+        hosts.addAll(agentServices.values());
+        return hosts;
+    }
+
+    private void startWatch(Vertx vertx, String root, String type) {
+        if (timerId != 0L) {
+            return;
         }
 
-        // TODO: 13/10/2017 create a timer here to update agent services by calling Services.getAllValues
-        return new ArrayList<>(agentSet);
+        timerId = vertx.setPeriodic(WATCH_INTERVAL, id -> {
+            update(root, type);
+        });
+    }
+
+    private void update(String root, String type) {
+        Map<String, String> agents = Services.getInstance().getAllValues(Services.generatePath(root, type));
+        agentServices.clear();
+        agentServices.putAll(agents);
     }
 }

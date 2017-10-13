@@ -1,6 +1,6 @@
 package com.omgo.dataservice;
 
-import com.omgo.dataservice.etcd.Services;
+import com.omgo.dataservice.service.Services;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.logging.Logger;
@@ -99,7 +99,7 @@ public class MainVerticle extends AbstractVerticle {
 
         LOGGER.info("service root:" + root);
 
-        // register self to etcd as service
+        // register self to service as service
         Services.getInstance().registerService(Services.generatePath(root, selfKind, selfName), String.format("%s:%d", serviceHost, servicePort));
         LOGGER.info("service registered");
     }
