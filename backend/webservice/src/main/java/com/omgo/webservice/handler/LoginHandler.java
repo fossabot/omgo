@@ -15,12 +15,12 @@ public class LoginHandler extends BaseHandler {
 
     private GRPCAuthProvider authProvider;
 
-    public LoginHandler(Vertx vertx, Services.ServicePool servicePool) {
+    public LoginHandler(Vertx vertx, Services.Pool servicePool) {
         super(vertx);
         notRequireValidNonce();
         notRequireValidSession();
         notRequireValidEncryption();
-        this.authProvider = new GRPCAuthProvider(vertx, servicePool.getClient());
+        this.authProvider = new GRPCAuthProvider(vertx, servicePool);
     }
 
     @Override

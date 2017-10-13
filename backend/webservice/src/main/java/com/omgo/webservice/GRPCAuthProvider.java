@@ -1,6 +1,7 @@
 package com.omgo.webservice;
 
 import com.omgo.webservice.model.ModelConverter;
+import com.omgo.webservice.service.Services;
 import io.grpc.ManagedChannel;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -14,16 +15,27 @@ import io.vertx.ext.auth.User;
 import proto.DBServiceGrpc;
 import proto.Db;
 
-public class GRPCAuthProvider implements AuthProvider {
+public class GRPCAuthProvider implements AuthProvider, Services.Pool.OnChangeListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GRPCAuthProvider.class);
 
     private static final String STRING_EMAIL_REGEX = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
     private DBServiceGrpc.DBServiceVertxStub dbServiceVertxStub;
+    private Services.Pool dataServicePool;
+    private ManagedChannel channel;
 
-    public GRPCAuthProvider(Vertx vertx, ManagedChannel channel) {
-        dbServiceVertxStub = DBServiceGrpc.newVertxStub(channel);
+    public GRPCAuthProvider(Vertx vertx, Services.Pool pool) {
+        this.dataServicePool = pool;
+        init();
+    }
+
+    private void init() {
+        channel = dataServicePool.getClient();
+        if (channel != null) {
+            dbServiceVertxStub = DBServiceGrpc.newVertxStub(channel);
+        }
+        dataServicePool.addOnChangeListener(this);
     }
 
     @Override
@@ -55,6 +67,11 @@ public class GRPCAuthProvider implements AuthProvider {
             .setLastIp(clientIpAddress)
             .setToken(token);
 
+        if (dbServiceVertxStub == null) {
+            handler.handle(Future.failedFuture("dataservice not ready yet"));
+            return;
+        }
+
         dbServiceVertxStub.userLogin(entryBuilder.build(), res -> {
             if (res.failed()) {
                 handler.handle(Future.failedFuture(res.cause()));
@@ -77,5 +94,22 @@ public class GRPCAuthProvider implements AuthProvider {
                 handler.handle(Future.succeededFuture(new GrpcAuthUser(this, email, userEntry)));
             }
         });
+    }
+
+    @Override
+    public void onServiceAdded(Services.Pool pool) {
+        if (channel == null) {
+            LOGGER.info("dataservice online, init...");
+            init();
+        }
+    }
+
+    @Override
+    public void onServiceRemoved(Services.Pool pool) {
+        if (channel != null && channel.isShutdown()) {
+            LOGGER.info("dataservice offline, halt...");
+            channel = null;
+            dbServiceVertxStub = null;
+        }
     }
 }

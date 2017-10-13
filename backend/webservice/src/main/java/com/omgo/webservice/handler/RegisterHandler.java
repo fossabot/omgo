@@ -4,6 +4,7 @@ import com.omgo.webservice.Utils;
 import com.omgo.webservice.model.HttpStatus;
 import com.omgo.webservice.model.ModelConverter;
 import com.omgo.webservice.service.Services;
+import io.grpc.ManagedChannel;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
@@ -71,16 +72,28 @@ timezone:	8
 }
  */
 
-public class RegisterHandler extends BaseHandler {
+public class RegisterHandler extends BaseHandler implements Services.Pool.OnChangeListener {
 
     private DBServiceGrpc.DBServiceVertxStub dbServiceVertxStub;
+    private Services.Pool dataServicePool;
+    private ManagedChannel channel;
 
-    public RegisterHandler(Vertx vertx, Services.ServicePool servicePool) {
+    public RegisterHandler(Vertx vertx, Services.Pool servicePool) {
         super(vertx);
         notRequireValidNonce();
         notRequireValidSession();
         notRequireValidEncryption();
-        dbServiceVertxStub = DBServiceGrpc.newVertxStub(servicePool.getClient());
+
+        this.dataServicePool = servicePool;
+        init();
+    }
+
+    private void init() {
+        channel = dataServicePool.getClient();
+        if (channel != null) {
+            dbServiceVertxStub = DBServiceGrpc.newVertxStub(channel);
+        }
+        dataServicePool.addOnChangeListener(this);
     }
 
     @Override
@@ -150,5 +163,23 @@ public class RegisterHandler extends BaseHandler {
                 routingContext.fail(HttpStatus.INTERNAL_SERVER_ERROR.code);
             }
         });
+    }
+
+    @Override
+    public void onServiceAdded(Services.Pool pool) {
+        if (channel == null) {
+            LOGGER.info("dataservice online, init...");
+            init();
+        }
+    }
+
+    @Override
+    public void onServiceRemoved(Services.Pool pool) {
+        if (channel != null && channel.isShutdown()) {
+            LOGGER.info("dataservice offline, try re-init");
+            channel = null;
+            dbServiceVertxStub = null;
+            init();
+        }
     }
 }

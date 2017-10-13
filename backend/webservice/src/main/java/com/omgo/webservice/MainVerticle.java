@@ -22,7 +22,7 @@ import java.util.List;
 
 public class MainVerticle extends AbstractVerticle {
     private static final Logger LOGGER = LoggerFactory.getLogger(MainVerticle.class);
-    private Services.ServicePool dataCenters;
+    private Services.Pool dataCenters;
 
     @Override
     public void start() {
@@ -106,14 +106,14 @@ public class MainVerticle extends AbstractVerticle {
         LOGGER.info("service pool created");
 
         dataCenters = Services.getInstance().getServicePool(vertx, root, "dataservice");
-        dataCenters.setListener(new Services.ServicePool.OnChangeListener() {
+        dataCenters.setListener(new Services.Pool.OnChangeListener() {
             @Override
-            public void onServiceAdded(Services.ServicePool pool) {
+            public void onServiceAdded(Services.Pool pool) {
                 LOGGER.info("new service added");
             }
 
             @Override
-            public void onServiceRemoved(Services.ServicePool pool) {
+            public void onServiceRemoved(Services.Pool pool) {
                 LOGGER.info("service removed");
             }
         });

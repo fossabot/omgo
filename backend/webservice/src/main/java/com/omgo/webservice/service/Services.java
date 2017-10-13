@@ -1,6 +1,5 @@
 package com.omgo.webservice.service;
 
-import com.coreos.jetcd.Client;
 import com.coreos.jetcd.KV;
 import com.coreos.jetcd.data.ByteSequence;
 import com.coreos.jetcd.data.KeyValue;
@@ -45,7 +44,7 @@ public class Services {
     }
 
     // etcd client
-    private Client client;
+    private com.coreos.jetcd.Client client;
 
     /**
      * init etcd client with single endpoint
@@ -56,7 +55,7 @@ public class Services {
         if (client != null) {
             client.close();
         }
-        client = Client.builder().endpoints(endpoint).build();
+        client = com.coreos.jetcd.Client.builder().endpoints(endpoint).build();
     }
 
     /**
@@ -68,7 +67,7 @@ public class Services {
         if (client != null) {
             client.close();
         }
-        client = Client.builder().endpoints(endpoints).build();
+        client = com.coreos.jetcd.Client.builder().endpoints(endpoints).build();
     }
 
     /**
@@ -218,14 +217,14 @@ public class Services {
     }
 
     // service-type to service-pool map
-    private Map<String, ServicePool> servicePoolMap = new HashMap<>();
+    private Map<String, Pool> servicePoolMap = new HashMap<>();
 
-    public ServicePool getServicePool(Vertx vertx, String root, String type) {
+    public Pool getServicePool(Vertx vertx, String root, String type) {
         if (servicePoolMap.containsKey(type)) {
             return servicePoolMap.get(type);
         }
 
-        ServicePool pool = new ServicePool(vertx, root, type);
+        Pool pool = new Pool(vertx, root, type);
         pool.updateServices();
         pool.startWatch(DEFAULT_WATCH_INTERVAL);
 
@@ -237,7 +236,7 @@ public class Services {
     /**
      * Service client
      */
-    private static class ServiceClient {
+    private static class Client {
         // service name
         String name;
 
@@ -250,10 +249,10 @@ public class Services {
         // managed channel for creating grpc stub
         ManagedChannel channel;
 
-        private ServiceClient() {
+        private Client() {
         }
 
-        protected static ServiceClient create(Vertx vertx, String fullPath, String address) {
+        protected static Client create(Vertx vertx, String fullPath, String address) {
             if (vertx == null || Utils.isEmptyString(fullPath) || Utils.isEmptyString(address)) {
                 return null;
             }
@@ -267,7 +266,7 @@ public class Services {
             int port = Integer.parseInt(comps[1]);
 
             try {
-                ServiceClient client = new ServiceClient();
+                Client client = new Client();
                 client.fullPath = fullPath;
                 client.address = address;
                 client.name = getName(fullPath);
@@ -286,11 +285,11 @@ public class Services {
         }
     }
 
-    public static class ServicePool {
+    public static class Pool {
         public interface OnChangeListener {
-            void onServiceAdded(ServicePool pool);
+            void onServiceAdded(Pool pool);
 
-            void onServiceRemoved(ServicePool pool);
+            void onServiceRemoved(Pool pool);
         }
 
         // vertx instance
@@ -303,13 +302,13 @@ public class Services {
         String type;
 
         // service change listener
-        OnChangeListener listener;
+        List<OnChangeListener> onChangeListeners;
 
         // fullpath to serviceClient map
-        Map<String, ServiceClient> serviceMap;
+        Map<String, Client> serviceMap;
 
         // serviceClient array
-        List<ServiceClient> serviceArray;
+        List<Client> serviceArray;
 
         // atomic index for round-robin
         AtomicInteger idx;
@@ -317,7 +316,7 @@ public class Services {
         // watcher timer id
         long timerId;
 
-        protected ServicePool(Vertx vertx, String root, String type) {
+        protected Pool(Vertx vertx, String root, String type) {
             this.vertx = vertx;
             this.root = root;
             this.type = type;
@@ -341,33 +340,42 @@ public class Services {
             }
         }
 
-        public void setListener(OnChangeListener listener) {
-            this.listener = listener;
+        public void addOnChangeListener(OnChangeListener listener) {
+            if (this.onChangeListeners == null) {
+                this.onChangeListeners = new ArrayList<>();
+            }
+            this.onChangeListeners.add(listener);
         }
 
-        public OnChangeListener getListener() {
-            return this.listener;
+        public void removeOnChangeListener(OnChangeListener listener) {
+            if (this.onChangeListeners != null) {
+                this.onChangeListeners.remove(listener);
+            }
+        }
+
+        public void clearOnChangeListener() {
+            if (this.onChangeListeners != null) {
+                this.onChangeListeners.clear();
+            }
         }
 
         public void clear() {
             stopWatch();
             serviceMap.clear();
-            for (ServiceClient client : serviceArray) {
+            for (Client client : serviceArray) {
                 if (client.channel != null && !client.channel.isShutdown()) {
                     client.channel.shutdown();
                 }
             }
             serviceArray.clear();
-            if (listener != null) {
-                listener.onServiceRemoved(this);
-            }
+            clearOnChangeListener();
         }
 
         protected void updateServices() {
             Map<String, String> onlineKeyValues = getInstance().getAllValues(generatePath(root, type));
             // check for service offline
             List<String> serviceToRemoveName = new ArrayList<>();
-            List<ServiceClient> serviceToRemoveClient = new ArrayList<>();
+            List<Client> serviceToRemoveClient = new ArrayList<>();
             serviceMap.forEach((fullPath, serviceClient) -> {
                 if (!onlineKeyValues.containsKey(fullPath)) {
                     serviceToRemoveName.add(fullPath);
@@ -380,14 +388,14 @@ public class Services {
             onlineKeyValues.forEach((fullPath, address) -> {
                 if (!serviceMap.containsKey(fullPath)) {
                     // new service online
-                    ServiceClient newClient = ServiceClient.create(vertx, fullPath, address);
+                    Client newClient = Client.create(vertx, fullPath, address);
                     if (newClient != null) {
                         serviceMap.put(fullPath, newClient);
                         serviceArray.add(newClient);
                         serviceAddRemove[0] = true;
                     }
                 } else {
-                    ServiceClient oldClient = serviceMap.get(fullPath);
+                    Client oldClient = serviceMap.get(fullPath);
                     if (!oldClient.address.equals(address)) {
                         // service change its address, remove it
                         // and it will be re-add by watch process
@@ -401,7 +409,7 @@ public class Services {
                 serviceMap.remove(path);
             }
             if (!serviceToRemoveClient.isEmpty()) {
-                for (ServiceClient serviceClient : serviceToRemoveClient) {
+                for (Client serviceClient : serviceToRemoveClient) {
                     if (serviceClient.channel != null && !serviceClient.channel.isShutdown()) {
                         serviceClient.channel.shutdown();
                     }
@@ -411,13 +419,11 @@ public class Services {
             }
 
             // notify
-            if (listener != null) {
-                if (serviceAddRemove[0]) {
-                    listener.onServiceAdded(this);
-                }
-                if (serviceAddRemove[1]) {
-                    listener.onServiceRemoved(this);
-                }
+            if (serviceAddRemove[0]) {
+                dispatchOnServiceAdded();
+            }
+            if (serviceAddRemove[1]) {
+                dispatchOnServiceRemoved();
             }
         }
 
@@ -432,6 +438,29 @@ public class Services {
                 return serviceArray.get(index).channel;
             }
             return null;
+        }
+
+        private void dispatchOnServiceAdded() {
+            dispatchOnServiceListeners(true);
+        }
+
+        private void dispatchOnServiceRemoved() {
+            dispatchOnServiceListeners(false);
+        }
+
+        private void dispatchOnServiceListeners(boolean isAdd) {
+            if (onChangeListeners != null) {
+                for (int i = 0, z = onChangeListeners.size(); i < z; i++) {
+                    OnChangeListener listener = onChangeListeners.get(i);
+                    if (listener != null) {
+                        if (isAdd) {
+                            listener.onServiceAdded(this);
+                        } else {
+                            listener.onServiceRemoved(this);
+                        }
+                    }
+                }
+            }
         }
     }
 }
