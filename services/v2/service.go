@@ -98,6 +98,21 @@ func (p *Pool) connectAll() {
 }
 
 func (p *Pool) addService(fullPath, address string) {
+    p.Lock()
+    defer p.Unlock()
+
+    client = p.clientMap[fullPath]
+    if client != nil {
+        if client.Address == address && client.Conn.
+    }
+
+    // create new client
+    client := &Client{
+        Fullpath: fullPath,
+        Name: nil,
+        Address: address,
+    }
+
 
 }
 
