@@ -1,9 +1,12 @@
 package service
 
 import (
+	"context"
+	"strings"
 	"sync"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/coreos/etcd/clientv3"
 	"google.golang.org/grpc"
 )
@@ -32,6 +35,10 @@ var (
 	once           sync.Once
 	defaultTimeout = 5 * time.Second
 )
+
+func GenPath(arg ...string) string {
+	return strings.Join(arg, "/")
+}
 
 // GetRangeKey generate a ranged key from a given key
 func GetRangeKey(key string) string {
@@ -63,6 +70,58 @@ func New(root, kind string, hosts []string) Pool {
 	return pool
 }
 
-func (p *Pool) connectAll() {
+func (p *Pool) getRangePathKey() clientv3.OpOption {
+	return clientv3.WithRange(GetRangeKey(GenPath(p.Root, p.Kind)))
+}
 
+// connect all the service that is under the root/kind/
+func (p *Pool) connectAll() {
+	// get etcd v3 client
+	cli, err := clientv3.New(p.etcdCfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cli.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
+	resp, err := cli.Get(ctx, p.Root, p.getRangePathKey())
+	cancel()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, v := range resp.Kvs {
+		p.addService(v.Key, v.Value)
+	}
+	log.Println("services added")
+
+	go p.watch()
+}
+
+func (p *Pool) addService(fullPath, address string) {
+
+}
+
+func (p *Pool) removeService(fullPath string) {
+
+}
+
+func (p *Pool) watch() {
+	cli, err := clientv3.New(p.etcdCfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cli.Close()
+
+	rch := cli.Watch(context.Background(), p.Root, p.getRangePathKey())
+	for wresp := range rch {
+		for _, ev := range wresp.Events {
+			log.Printf("%s %q : %q\n", ev.Type, ev.Kv.Key, ev.Kv.Value)
+			switch ev.Type {
+			case clientv3.EventTypePut:
+				p.addService(string(ev.Kv.Key), string(ev.Kv.Value))
+			case clientv3.EventTypeDelete:
+				p.removeService(string(ev.Kv.Key))
+			}
+		}
+	}
 }
