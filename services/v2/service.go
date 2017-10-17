@@ -13,6 +13,12 @@ import (
 	"sync/atomic"
 )
 
+// Service modification event
+type Event struct {
+	Type  int
+	Value string
+}
+
 // Single gRPC connection client
 type Client struct {
 	Fullpath string           // full path of the service, root/type/name
@@ -28,16 +34,18 @@ type Pool struct {
 	Kind         string             // service type
 	clientArray  []*Client          // client list
 	clientMap    map[string]*Client // client map
-	listeners    []chan string      // listener list
 	idx          uint32             // index for round-robin
 	etcdCfg      clientv3.Config    // ETCD client config
+	callbacks    []chan Event       // callback list
 }
 
 const (
-	SEP       = "/"
-	RootIndex = 0
-	KindIndex = 1
-	NameIndex = 2
+	SEP             = "/"
+	RootIndex       = 0
+	KindIndex       = 1
+	NameIndex       = 2
+	EventTypeAdd    = 0
+	EventTypeRemove = 1
 )
 
 var (
@@ -91,7 +99,7 @@ func New(root, kind string, hosts []string) Pool {
 		Kind:        kind,
 		clientArray: make([]*Client, 1),
 		clientMap:   make(map[string]*Client),
-		listeners:   make([]chan string, 1),
+		callbacks:   make([]chan Event, 1),
 		idx:         0,
 		etcdCfg:     etcdCfg,
 	}
@@ -132,18 +140,37 @@ func (p *Pool) addService(fullPath, address string) {
 	p.Lock()
 	defer p.Unlock()
 
-	client := p.clientMap[fullPath]
-	if client != nil {
-		if client.Address == address && client.Conn.GetState() == connectivity.Shutdown {
-
+	client, ok := p.clientMap[fullPath]
+	if !ok {
+		// prepare client if not exists
+		client = &Client{
+			Fullpath: fullPath,
+			Name:     GetName(fullPath),
+			Address:  address,
 		}
+		p.clientMap[fullPath] = client
+	} else if client.Conn.GetState() != connectivity.Shutdown {
+		log.Warnf("service already added: %v", fullPath)
+		return
 	}
 
-	// create new client
-	client = &Client{
-		Fullpath: fullPath,
-		Name:     GetName(fullPath),
-		Address:  address,
+	// service client not exists or has been shutdown
+
+	if conn, err := grpc.Dial(address, grpc.WithBlock(), grpc.WithInsecure()); err == nil {
+		client.Conn = conn
+		p.clientArray = append(p.clientArray, client)
+		event := Event{
+			Type:  EventTypeAdd,
+			Value: fullPath,
+		}
+		for k := range p.callbacks {
+			select {
+			case p.callbacks[k] <- event:
+			default:
+			}
+		}
+	} else {
+		log.Errorf("unable to connect service:%v err:%v", fullPath+" -->"+address, err)
 	}
 
 }
@@ -163,9 +190,23 @@ func (p *Pool) removeService(fullPath string) {
 			if v == client {
 				p.clientArray = append(p.clientArray[:k], p.clientArray[k+1:]...)
 				log.Infof("service removed:%v", fullPath)
-				return
+				break
 			}
 		}
+
+		// notify callbacks
+		event := Event{
+			Type:  EventTypeRemove,
+			Value: fullPath,
+		}
+		for k := range p.callbacks {
+			select {
+			case p.callbacks[k] <- event:
+			default:
+			}
+		}
+	} else {
+		log.Infof("unable to remove service:%v not exist", fullPath)
 	}
 }
 
@@ -188,6 +229,35 @@ func (p *Pool) watch() {
 			}
 		}
 	}
+}
+
+func (p *Pool) RegisterCallback(callback chan Event) *Pool {
+	p.Lock()
+	defer p.Unlock()
+	if p.callbacks == nil {
+		p.callbacks = make([]chan Event, 1)
+	}
+
+	p.callbacks = append(p.callbacks, callback)
+	return p
+}
+
+func (p *Pool) RegisterService(fullPath, address string) {
+	cli, err := clientv3.New(p.etcdCfg)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	defer cli.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
+	_, err = cli.Put(ctx, fullPath, address)
+	cancel()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	log.Infof("put key %v, value %v", fullPath, address)
 }
 
 func (p *Pool) NextClient() (conn *grpc.ClientConn, key string) {
