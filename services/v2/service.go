@@ -9,6 +9,8 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/coreos/etcd/clientv3"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/connectivity"
+	"sync/atomic"
 )
 
 // Single gRPC connection client
@@ -21,23 +23,31 @@ type Client struct {
 
 // Service pool manages clients
 type Pool struct {
-	sync.RWMutex                   // sync mutex
-	Root         string            // service root
-	Kind         string            // service type
-	clientArray  []Client          // client list
-	clientMap    map[string]Client // client map
-	listeners    []chan string     // listener list
-	idx          uint32            // index for round-robin
-	etcdCfg      clientv3.Config   // ETCD client config
+	sync.RWMutex                    // sync mutex
+	Root         string             // service root
+	Kind         string             // service type
+	clientArray  []*Client          // client list
+	clientMap    map[string]*Client // client map
+	listeners    []chan string      // listener list
+	idx          uint32             // index for round-robin
+	etcdCfg      clientv3.Config    // ETCD client config
 }
+
+const (
+	SEP       = "/"
+	RootIndex = 0
+	KindIndex = 1
+	NameIndex = 2
+)
 
 var (
 	once           sync.Once
 	defaultTimeout = 5 * time.Second
 )
 
+// GenPath concat arguments with '/'
 func GenPath(arg ...string) string {
-	return strings.Join(arg, "/")
+	return strings.Join(arg, SEP)
 }
 
 // GetRangeKey generate a ranged key from a given key
@@ -46,6 +56,27 @@ func GetRangeKey(key string) string {
 	copy(rangeKey[:], key)
 	rangeKey[len(rangeKey)-1]++
 	return string(rangeKey)
+}
+
+func GetRoot(fullPath string) string {
+	return getCompAtIndex(fullPath, RootIndex)
+}
+
+func GetKind(fullPath string) string {
+	return getCompAtIndex(fullPath, KindIndex)
+}
+
+func GetName(fullPath string) string {
+	return getCompAtIndex(fullPath, NameIndex)
+}
+
+func getCompAtIndex(fullPath string, index int) string {
+	ret := strings.Split(fullPath, SEP)
+	if index >= len(ret) {
+		return ""
+	} else {
+		return ret[index]
+	}
 }
 
 // New will create a new service pool instance
@@ -58,8 +89,8 @@ func New(root, kind string, hosts []string) Pool {
 	pool := Pool{
 		Root:        root,
 		Kind:        kind,
-		clientArray: make([]Client, 1),
-		clientMap:   make(map[string]Client),
+		clientArray: make([]*Client, 1),
+		clientMap:   make(map[string]*Client),
 		listeners:   make([]chan string, 1),
 		idx:         0,
 		etcdCfg:     etcdCfg,
@@ -90,7 +121,7 @@ func (p *Pool) connectAll() {
 		log.Fatal(err)
 	}
 	for _, v := range resp.Kvs {
-		p.addService(v.Key, v.Value)
+		p.addService(string(v.Key), string(v.Value))
 	}
 	log.Println("services added")
 
@@ -98,26 +129,44 @@ func (p *Pool) connectAll() {
 }
 
 func (p *Pool) addService(fullPath, address string) {
-    p.Lock()
-    defer p.Unlock()
+	p.Lock()
+	defer p.Unlock()
 
-    client = p.clientMap[fullPath]
-    if client != nil {
-        if client.Address == address && client.Conn.
-    }
+	client := p.clientMap[fullPath]
+	if client != nil {
+		if client.Address == address && client.Conn.GetState() == connectivity.Shutdown {
 
-    // create new client
-    client := &Client{
-        Fullpath: fullPath,
-        Name: nil,
-        Address: address,
-    }
+		}
+	}
 
+	// create new client
+	client = &Client{
+		Fullpath: fullPath,
+		Name:     GetName(fullPath),
+		Address:  address,
+	}
 
 }
 
 func (p *Pool) removeService(fullPath string) {
+	p.Lock()
+	defer p.Unlock()
 
+	client, ok := p.clientMap[fullPath]
+	if ok {
+		if client.Conn != nil && client.Conn.GetState() != connectivity.Shutdown {
+			client.Conn.Close()
+		}
+		delete(p.clientMap, fullPath)
+
+		for k, v := range p.clientArray {
+			if v == client {
+				p.clientArray = append(p.clientArray[:k], p.clientArray[k+1:]...)
+				log.Infof("service removed:%v", fullPath)
+				return
+			}
+		}
+	}
 }
 
 func (p *Pool) watch() {
@@ -128,8 +177,8 @@ func (p *Pool) watch() {
 	defer cli.Close()
 
 	rch := cli.Watch(context.Background(), p.Root, p.getRangePathKey())
-	for wresp := range rch {
-		for _, ev := range wresp.Events {
+	for watchRsp := range rch {
+		for _, ev := range watchRsp.Events {
 			log.Printf("%s %q : %q\n", ev.Type, ev.Kv.Key, ev.Kv.Value)
 			switch ev.Type {
 			case clientv3.EventTypePut:
@@ -139,4 +188,22 @@ func (p *Pool) watch() {
 			}
 		}
 	}
+}
+
+func (p *Pool) NextClient() (conn *grpc.ClientConn, key string) {
+	p.RLock()
+	defer p.RUnlock()
+	if len(p.clientArray) == 0 {
+		return nil, ""
+	}
+
+	idx := int(atomic.AddUint32(&p.idx, 1)) % len(p.clientArray)
+	return p.clientArray[idx].Conn, p.clientArray[idx].Fullpath
+}
+
+func main() {
+	endpoints := make([]string, 1)
+	endpoints[0] = "192.168.0.22:2379"
+	pool := New("backends", "test", endpoints)
+
 }
