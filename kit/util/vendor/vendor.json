@@ -1,0 +1,43 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "9cl7+wv0GvxpQV+HOtV93F9pbmE=",
+			"path": "github.com/Sirupsen/logrus",
+			"revision": "89742aefa4b206dcf400792f3bd35b542998eb3b",
+			"revisionTime": "2017-08-22T13:27:46Z"
+		},
+		{
+			"checksumSHA1": "mrz/kicZiUaHxkyfvC/DyQcr8Do=",
+			"path": "github.com/davecgh/go-spew/spew",
+			"revision": "ecdeabc65495df2dec95d7c4a4c3e021903035e5",
+			"revisionTime": "2017-10-02T20:02:53Z"
+		},
+		{
+			"checksumSHA1": "eD75lfMK5JT8ADdyFpdE0Mt9SBM=",
+			"path": "github.com/maruel/panicparse/stack",
+			"revision": "f6ee1e454807f72b84277a84fc06437081340a1b",
+			"revisionTime": "2017-10-16T22:37:38Z"
+		},
+		{
+			"checksumSHA1": "nqWNlnMmVpt628zzvyo6Yv2CX5Q=",
+			"path": "golang.org/x/crypto/ssh/terminal",
+			"revision": "9419663f5a44be8b34ca85f08abc5fe1be11f8a3",
+			"revisionTime": "2017-09-30T17:45:11Z"
+		},
+		{
+			"checksumSHA1": "FUo16zuO20jOcdCUu0IgiF51koE=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "8dbc5d05d6edcc104950cc299a1ce6641235bc86",
+			"revisionTime": "2017-10-13T13:31:29Z"
+		},
+		{
+			"checksumSHA1": "wGkVl9xZjgnLs/olurjDX2Yg8Xw=",
+			"path": "golang.org/x/sys/windows",
+			"revision": "8dbc5d05d6edcc104950cc299a1ce6641235bc86",
+			"revisionTime": "2017-10-13T13:31:29Z"
+		}
+	],
+	"rootPath": "github.com/master-g/omgo/kit/util"
+}
