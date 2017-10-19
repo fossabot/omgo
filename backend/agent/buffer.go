@@ -1,3 +1,5 @@
+// PIPELINE #3: buffer
+
 package main
 
 import (
@@ -5,13 +7,12 @@ import (
 	"net"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/master-g/omgo/backend/agent/types"
-	"github.com/master-g/omgo/net/packet"
-	"github.com/master-g/omgo/utils"
+	"github.com/master-g/omgo/backend/agent/api"
+	"github.com/master-g/omgo/kit/packet"
+	"github.com/master-g/omgo/kit/utils"
 )
 
-// PIPELINE #3: buffer
-// controls the packet send to clients
+// Buffer managed the packet send to clients
 type Buffer struct {
 	ctrl    chan struct{} // receive exit signal
 	pending chan []byte   // pending packets
@@ -20,7 +21,7 @@ type Buffer struct {
 }
 
 // packet sending procedure
-func (buf *Buffer) send(session *types.Session, data []byte) {
+func (buf *Buffer) send(session *api.Session, data []byte) {
 	// in case of empty packet
 	if data == nil {
 		return
@@ -32,7 +33,7 @@ func (buf *Buffer) send(session *types.Session, data []byte) {
 		// encryption is enabled
 		session.Encoder.XORKeyStream(data, data)
 	} else if session.IsFlagKeyExchangedSet() {
-		// key is exchanged, encryption is not yet enabled
+		// key is exchanged, encryption is not yet establish
 		session.ClearFlagKeyExchanged()
 		session.SetFlagEncrypted()
 	}
@@ -55,7 +56,7 @@ func (buf *Buffer) start() {
 		case data := <-buf.pending:
 			buf.rawSend(data)
 		case <-buf.ctrl:
-			// receive session end signal
+			// session control signal received
 			return
 		}
 	}
@@ -76,9 +77,9 @@ func (buf *Buffer) rawSend(data []byte) bool {
 	return true
 }
 
-func newBuffer(conn net.Conn, ctrl chan struct{}, txqueuelen int) *Buffer {
+func newBuffer(conn net.Conn, ctrl chan struct{}, txQueueLen int) *Buffer {
 	buf := Buffer{conn: conn, ctrl: ctrl}
-	buf.pending = make(chan []byte, txqueuelen)
+	buf.pending = make(chan []byte, txQueueLen)
 	buf.cache = make([]byte, packet.MaximumPacketSize)
 	return &buf
 }
