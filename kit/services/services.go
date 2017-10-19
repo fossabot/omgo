@@ -52,6 +52,30 @@ var (
 	defaultTimeout = 5 * time.Second
 )
 
+// RegisterService adds a key-value pair to ETCD service
+func RegisterService(etcdHosts []string, fullPath, address string) {
+	cfg := clientv3.Config{
+		Endpoints:   etcdHosts,
+		DialTimeout: defaultTimeout,
+	}
+
+	cli, err := clientv3.New(cfg)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	defer cli.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
+	_, err = cli.Put(ctx, fullPath, address)
+	cancel()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	log.Infof("put key %v, value %v", fullPath, address)
+}
+
 // GenPath concat arguments with '/'
 func GenPath(arg ...string) string {
 	return strings.Join(arg, SEP)
@@ -273,25 +297,6 @@ func (p *Pool) RemoveCallback(callback chan Event) {
 			break
 		}
 	}
-}
-
-// RegisterService adds a key-value pair to ETCD service
-func (p *Pool) RegisterService(fullPath, address string) {
-	cli, err := clientv3.New(p.etcdCfg)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	defer cli.Close()
-
-	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
-	_, err = cli.Put(ctx, fullPath, address)
-	cancel()
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	log.Infof("put key %v, value %v", fullPath, address)
 }
 
 // NextClient returns a grpc.ClientConn to a service shard under pool's root/kind path

@@ -12,7 +12,7 @@ import (
 	"github.com/master-g/omgo/kit/utils"
 )
 
-// Buffer managed the packet send to clients
+// Buffer manages sending packets to client
 type Buffer struct {
 	ctrl    chan struct{} // receive exit signal
 	pending chan []byte   // pending packets
@@ -20,7 +20,7 @@ type Buffer struct {
 	cache   []byte        // for combined syscall write
 }
 
-// packet sending procedure
+// send data into buffer's channel
 func (buf *Buffer) send(session *api.Session, data []byte) {
 	// in case of empty packet
 	if data == nil {
