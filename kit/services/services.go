@@ -121,13 +121,13 @@ func getCompAtIndex(fullPath string, index int) string {
 }
 
 // New will create a new service pool instance
-func New(root, kind string, hosts []string) Pool {
+func New(root, kind string, hosts []string) *Pool {
 	etcdCfg := clientv3.Config{
 		Endpoints:   hosts,
 		DialTimeout: defaultTimeout,
 	}
 
-	pool := Pool{
+	pool := &Pool{
 		Root:        root,
 		Kind:        kind,
 		clientArray: make([]*Client, 0),

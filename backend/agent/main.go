@@ -148,6 +148,7 @@ func main() {
 			agentFullPath := services.GenPath(etcdRoot, agentKind, agentName)
 			services.RegisterService(etcdHosts, agentFullPath, listenOn)
 			// connect to other services
+			// TODO, create service pools
 
 			// start timer worker
 			initTimer(rpmLimit)

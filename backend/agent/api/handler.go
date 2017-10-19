@@ -19,10 +19,7 @@ import (
 	pbgame "github.com/master-g/omgo/proto/grpc/game"
 	pc "github.com/master-g/omgo/proto/pb/common"
 	"golang.org/x/net/context"
-	"golang.org/x/sys/windows/registry"
 )
-
-var pool *services.Pool
 
 // convert proto message into packet
 func response(cmd pc.Cmd, msg proto.Message) []byte {
@@ -79,13 +76,13 @@ func ProcGetSeedReq(session *Session, reader *packet.RawPacket) []byte {
 	x2, e2 := curve.GenerateECKeyBuf(rand.Reader)
 	key2 := curve.GenerateSharedSecretBuf(x2, req.GetRecvSeed())
 
-	encoder, err := rc4.NewCipher([]byte(fmt.Sprintf("%v%v", Salt, key2)))
+	encoder, err := rc4.NewCipher(key2)
 	if err != nil {
 		log.Error(err)
 		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		return response(pc.Cmd_GET_SEED_RSP, rsp)
 	}
-	decoder, err := rc4.NewCipher([]byte(fmt.Sprintf("%v%v", Salt, key1)))
+	decoder, err := rc4.NewCipher(key1)
 	if err != nil {
 		log.Error(err)
 		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
@@ -162,17 +159,20 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 	}
 
 	// kick previous session if existed
-	p := registry.Query(usn)
-	if prevSession, ok := p.(*Session); ok {
-		kickNotify := &pc.S2CKickNotify{
-			Timestamp: utils.Timestamp(),
-			Reason:    pc.KickReason_KICK_LOGIN_ELSEWHERE,
-			Msg:       session.IP.String(),
+	p, ok := Registry.Load(usn)
+	if ok {
+		if prevSession, ok := p.(*Session); ok {
+			kickNotify := &pc.S2CKickNotify{
+				Timestamp: utils.Timestamp(),
+				Reason:    pc.KickReason_KICK_LOGIN_ELSEWHERE,
+				Msg:       session.IP.String(),
+			}
+			prevSession.Mailbox <- response(pc.Cmd_KICK_NOTIFY, kickNotify)
+			prevSession.SetFlagKicked()
 		}
-		prevSession.Mailbox <- response(pc.Cmd_KICK_NOTIFY, kickNotify)
-		prevSession.SetFlagKicked()
 	}
-	registry.Register(usn, session)
+
+	Registry.Store(usn, session)
 
 	// connection to game server
 	session.Usn = usn

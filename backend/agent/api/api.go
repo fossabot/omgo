@@ -2,10 +2,15 @@ package api
 
 import (
 	"github.com/master-g/omgo/kit/packet"
+	"github.com/master-g/omgo/kit/services"
 	pc "github.com/master-g/omgo/proto/pb/common"
 )
 
-var Handlers map[int32]func(*Session, *packet.RawPacket) []byte
+var (
+	Handlers           map[int32]func(*Session, *packet.RawPacket) []byte
+	gameServerPool     *services.Pool
+	gameServerFullPath string
+)
 
 func init() {
 	Handlers = map[int32]func(*Session, *packet.RawPacket) []byte{
@@ -14,4 +19,9 @@ func init() {
 		int32(pc.Cmd_GET_SEED_REQ):   ProcGetSeedReq,
 		int32(pc.Cmd_OFFLINE_REQ):    ProcOfflineReq,
 	}
+}
+
+func Init(root, kind, name string, etcdHosts []string) {
+	gameServerFullPath = services.GenPath(root, kind, name)
+	gameServerPool = services.New(root, kind, etcdHosts)
 }
