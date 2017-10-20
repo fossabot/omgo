@@ -30,6 +30,7 @@ const (
 	defaultName          = "agent-0"
 	defaultETCD          = "http://127.0.0.1:2379"
 	defaultRoot          = "backends"
+	defaultGameServerId  = "game-0"
 	defaultReadDeadLine  = 3 * time.Minute
 	defaultSockBufSize   = 32*1024 - 1
 	defaultTxQueueLength = 128
@@ -88,6 +89,12 @@ func main() {
 				Name:    "services",
 				Usage:   "service with kinds to connect to",
 				Value:   cli.NewStringSlice(defaultServices...),
+			},
+			&cli.StringFlag{
+				Aliases: []string{"g"},
+				Name:    "game",
+				Usage:   "game server name",
+				Value:   defaultGameServerId,
 			},
 			&cli.DurationFlag{
 				Aliases: []string{"d"},

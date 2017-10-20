@@ -10,6 +10,7 @@ var (
 	Handlers           map[int32]func(*Session, *packet.RawPacket) []byte
 	gameServerPool     *services.Pool
 	gameServerFullPath string
+	gameServerName     string
 )
 
 func init() {
@@ -22,6 +23,7 @@ func init() {
 }
 
 func Init(root, kind, name string, etcdHosts []string) {
+	gameServerName = name
 	gameServerFullPath = services.GenPath(root, kind, name)
 	gameServerPool = services.New(root, kind, etcdHosts)
 }

@@ -177,10 +177,10 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 	// connection to game server
 	session.Usn = usn
 	session.Token = token
-	session.GSID = DefaultGSID
+	session.GSID = gameServerName
 	session.SetFlagAuth()
 
-	conn := services.GetServiceWithID(GameService, session.GSID)
+	conn := services.GetServiceWithID(gameServerFullPath, session.GSID)
 	if conn == nil {
 		log.Error("cannot get game service:", session.GSID)
 		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
@@ -189,7 +189,7 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 	cli := pbgame.NewGameServiceClient(conn)
 
 	// open game server stream
-	ctx := metadata.NewContext(context.Background(), metadata.New(map[string]string{Usn: fmt.Sprint(session.Usn)}))
+	ctx := metadata.NewContext(context.Background(), metadata.New(map[string]string{"usn": fmt.Sprint(session.Usn)}))
 	stream, err := cli.Stream(ctx)
 	if err != nil {
 		log.Error(err)
