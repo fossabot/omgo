@@ -8,6 +8,6 @@ cd ./services
 govendor update +v
 cd ..
 
-cd ./util
+cd ./utils
 govendor update +v
 cd ..
