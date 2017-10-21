@@ -13,7 +13,6 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/kit/packet"
-	"github.com/master-g/omgo/kit/services"
 	"github.com/master-g/omgo/kit/utils"
 	pbdb "github.com/master-g/omgo/proto/grpc/db"
 	pbgame "github.com/master-g/omgo/proto/grpc/game"
@@ -131,9 +130,9 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 	}
 
 	// validate user token
-	dbConn := services.GetServiceWithID(DBService, DefaultDBSID)
+	dbConn := DataServicePool.NextClient()
 	if dbConn == nil {
-		log.Errorf("cannot get db service:", DefaultDBSID)
+		log.Errorf("dataservice not connected yet")
 		return response(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
@@ -177,10 +176,10 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 	// connection to game server
 	session.Usn = usn
 	session.Token = token
-	session.GSID = gameServerName
+	session.GSID = config.GameServerName
 	session.SetFlagAuth()
 
-	conn := services.GetServiceWithID(gameServerFullPath, session.GSID)
+	conn := GameServerPool.GetClient(config.GameServerName)
 	if conn == nil {
 		log.Error("cannot get game service:", session.GSID)
 		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)

@@ -1,16 +1,33 @@
 package api
 
 import (
+	"sync"
+
 	"github.com/master-g/omgo/kit/packet"
 	"github.com/master-g/omgo/kit/services"
 	pc "github.com/master-g/omgo/proto/pb/common"
 )
 
+// Config of ETCD and services
+type Config struct {
+	Root            string   // service root
+	Hosts           []string // ETCD hosts
+	GameServerName  string   // unlike other service, game server should be specific
+	GameServerKind  string   // game server kind, default 'game'
+	DataServiceKind string   // data service kind, default 'dataservice'
+}
+
 var (
-	Handlers           map[int32]func(*Session, *packet.RawPacket) []byte
-	gameServerPool     *services.Pool
-	gameServerFullPath string
-	gameServerName     string
+	// client request handlers
+	Handlers map[int32]func(*Session, *packet.RawPacket) []byte
+	// client session registry
+	Registry sync.Map
+	// game server pool
+	GameServerPool *services.Pool
+	// data service pool
+	DataServicePool *services.Pool
+	// config
+	config Config
 )
 
 func init() {
@@ -22,8 +39,8 @@ func init() {
 	}
 }
 
-func Init(root, kind, name string, etcdHosts []string) {
-	gameServerName = name
-	gameServerFullPath = services.GenPath(root, kind, name)
-	gameServerPool = services.New(root, kind, etcdHosts)
+func Init(cfg Config) {
+	config = cfg
+	GameServerPool = services.New(cfg.Root, cfg.GameServerKind, cfg.Hosts)
+	DataServicePool = services.New(cfg.Root, cfg.DataServiceKind, cfg.Hosts)
 }

@@ -21,10 +21,9 @@ type Event struct {
 
 // Single gRPC connection client
 type Client struct {
-	Fullpath string           // full path of the service, root/type/name
-	Name     string           //  service name
-	Address  string           // service host address, IP:PORT
-	Conn     *grpc.ClientConn // gRPC connection
+	Name    string           //  service name
+	Address string           // service host address, IP:PORT
+	Conn    *grpc.ClientConn // gRPC connection
 }
 
 // Service pool manages clients
@@ -33,7 +32,7 @@ type Pool struct {
 	Root         string             // service root
 	Kind         string             // service type
 	clientArray  []*Client          // client list
-	clientMap    map[string]*Client // client map
+	clientMap    map[string]*Client // client map by name
 	idx          uint32             // index for round-robin
 	etcdCfg      clientv3.Config    // ETCD client config
 	callbacks    []chan Event       // callback list
@@ -182,11 +181,10 @@ func (p *Pool) addService(fullPath, address string) {
 	if !ok {
 		// prepare client if not exists
 		client = &Client{
-			Fullpath: fullPath,
-			Name:     GetName(fullPath),
-			Address:  address,
+			Name:    GetName(fullPath),
+			Address: address,
 		}
-		p.clientMap[fullPath] = client
+		p.clientMap[client.Name] = client
 	} else if client.Conn.GetState() != connectivity.Shutdown {
 		log.Warnf("service already added: %v", fullPath)
 		return
@@ -219,12 +217,12 @@ func (p *Pool) removeService(fullPath string) {
 	p.Lock()
 	defer p.Unlock()
 
-	client, ok := p.clientMap[fullPath]
+	client, ok := p.clientMap[GetName(fullPath)]
 	if ok {
 		if client.Conn != nil && client.Conn.GetState() != connectivity.Shutdown {
 			client.Conn.Close()
 		}
-		delete(p.clientMap, fullPath)
+		delete(p.clientMap, client.Name)
 
 		for k, v := range p.clientArray {
 			if v == client {
@@ -301,13 +299,24 @@ func (p *Pool) RemoveCallback(callback chan Event) {
 
 // NextClient returns a grpc.ClientConn to a service shard under pool's root/kind path
 // a round-robin style index is used to achieve load balance
-func (p *Pool) NextClient() (conn *grpc.ClientConn, key string) {
+func (p *Pool) NextClient() (conn *grpc.ClientConn) {
 	p.RLock()
 	defer p.RUnlock()
 	if len(p.clientArray) == 0 {
-		return nil, ""
+		return nil
 	}
 
 	idx := int(atomic.AddUint32(&p.idx, 1)) % len(p.clientArray)
-	return p.clientArray[idx].Conn, p.clientArray[idx].Fullpath
+	return p.clientArray[idx].Conn
+}
+
+func (p *Pool) GetClient(name string) (conn *grpc.ClientConn) {
+	p.RLock()
+	defer p.RUnlock()
+	client, ok := p.clientMap[name]
+	if !ok {
+		return nil
+	} else {
+		return client.Conn
+	}
 }

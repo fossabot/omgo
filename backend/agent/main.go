@@ -155,7 +155,14 @@ func main() {
 			agentFullPath := services.GenPath(etcdRoot, agentKind, agentName)
 			services.RegisterService(etcdHosts, agentFullPath, listenOn)
 			// connect to other services
-			// TODO, create service pools
+			srvConfig := api.Config{
+				Root:            etcdRoot,
+				Hosts:           etcdHosts,
+				GameServerKind:  "game",
+				GameServerName:  "gs-0",
+				DataServiceKind: "dataservice",
+			}
+			api.Init(srvConfig)
 
 			// start timer worker
 			initTimer(rpmLimit)
