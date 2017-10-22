@@ -3,13 +3,15 @@ package api
 import (
 	"crypto/rc4"
 	"fmt"
-	"github.com/master-g/omgo/kit/ecdh"
-	"google.golang.org/grpc/metadata"
 	"io"
 	"strings"
 	"time"
 
+	"github.com/master-g/omgo/kit/ecdh"
+	"google.golang.org/grpc/metadata"
+
 	"crypto/rand"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/kit/packet"

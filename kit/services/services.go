@@ -8,9 +8,9 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/coreos/etcd/clientv3"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/connectivity"
 	"sync/atomic"
+	"google.golang.org/grpc/connectivity"
+	"google.golang.org/grpc"
 )
 
 // Service modification event
