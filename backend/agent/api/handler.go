@@ -190,7 +190,8 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 	cli := pbgame.NewGameServiceClient(conn)
 
 	// open game server stream
-	ctx := metadata.NewContext(context.Background(), metadata.New(map[string]string{"usn": fmt.Sprint(session.Usn)}))
+	md := metadata.New(map[string]string{"usn": fmt.Sprint(session.Usn)})
+	ctx := metadata.NewOutgoingContext(context.Background(), md)
 	stream, err := cli.Stream(ctx)
 	if err != nil {
 		log.Error(err)

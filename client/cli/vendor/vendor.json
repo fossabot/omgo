@@ -3,145 +3,40 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "8tLSbloQ6bpVBB/CcPbP9sLW45Y=",
-			"path": "github.com/Pallinder/go-randomdata",
-			"revision": "8c3362a5e6781e0d1046f1267b3c1f19b2cde334",
-			"revisionTime": "2017-04-10T16:13:40Z"
-		},
-		{
-			"checksumSHA1": "Liv7AJyNinmP3pvwohcXp4R6xY4=",
+			"checksumSHA1": "9cl7+wv0GvxpQV+HOtV93F9pbmE=",
 			"path": "github.com/Sirupsen/logrus",
-			"revision": "85b1699d505667d13f8ac4478c1debbf85d6c5de",
-			"revisionTime": "2017-06-08T22:14:41Z"
-		},
-		{
-			"checksumSHA1": "KmjnydoAbofMieIWm+it5OWERaM=",
-			"path": "github.com/alecthomas/template",
-			"revision": "a0175ee3bccc567396460bf5acd36800cb10c49c",
-			"revisionTime": "2016-04-05T07:15:01Z"
-		},
-		{
-			"checksumSHA1": "3wt0pTXXeS+S93unwhGoLIyGX/Q=",
-			"path": "github.com/alecthomas/template/parse",
-			"revision": "a0175ee3bccc567396460bf5acd36800cb10c49c",
-			"revisionTime": "2016-04-05T07:15:01Z"
-		},
-		{
-			"checksumSHA1": "fCc3grA7vIxfBru7R3SqjcW+oLI=",
-			"path": "github.com/alecthomas/units",
-			"revision": "2efee857e7cfd4f3d0138cc3cbb1b4966962b93a",
-			"revisionTime": "2015-10-22T06:55:26Z"
-		},
-		{
-			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
-			"origin": "github.com/master-g/omgo/utils/vendor/github.com/davecgh/go-spew/spew",
-			"path": "github.com/davecgh/go-spew/spew",
-			"revision": "203e8c5db0ad86f1c24e7d36cc294db09cb6a82a",
-			"revisionTime": "2017-10-13T17:14:31Z"
-		},
-		{
-			"checksumSHA1": "yLQg8NdQKYqqytcvKA/0EBkOIkw=",
-			"path": "github.com/flynn-archive/go-shlex",
-			"revision": "3f9db97f856818214da2e1057f8ad84803971cff",
-			"revisionTime": "2015-05-15T14:53:56Z"
-		},
-		{
-			"checksumSHA1": "wn2shNJMwRZpvuvkf1s7h0wvqHI=",
-			"path": "github.com/gogo/protobuf/proto",
-			"revision": "2adc21fd136931e0388e278825291678e1d98309",
-			"revisionTime": "2017-08-31T18:35:40Z"
+			"revision": "89742aefa4b206dcf400792f3bd35b542998eb3b",
+			"revisionTime": "2017-08-22T13:27:46Z"
 		},
 		{
 			"checksumSHA1": "yqF125xVSkmfLpIVGrLlfE05IUk=",
 			"path": "github.com/golang/protobuf/proto",
-			"revision": "130e6b02ab059e7b717a096f397c5b60111cae74",
-			"revisionTime": "2017-09-20T22:06:47Z"
-		},
-		{
-			"checksumSHA1": "7hln62oZPZmyqEmgXaybf9WxQ7A=",
-			"origin": "github.com/master-g/omgo/utils/vendor/github.com/maruel/panicparse/stack",
-			"path": "github.com/maruel/panicparse/stack",
-			"revision": "203e8c5db0ad86f1c24e7d36cc294db09cb6a82a",
-			"revisionTime": "2017-10-13T17:14:31Z"
-		},
-		{
-			"checksumSHA1": "Et5hHvnk5iVRSJr5PepcG/4fhJw=",
-			"path": "github.com/master-g/omgo/net/packet",
-			"revision": "203e8c5db0ad86f1c24e7d36cc294db09cb6a82a",
-			"revisionTime": "2017-10-13T17:14:31Z"
+			"revision": "1643683e1b54a9e88ad26d98f81400c8c9d9f4f9",
+			"revisionTime": "2017-10-21T04:39:52Z"
 		},
 		{
 			"checksumSHA1": "H2HbfnMc1ao560ZhRsa0SIu1tq4=",
 			"path": "github.com/master-g/omgo/proto/pb/common",
-			"revision": "203e8c5db0ad86f1c24e7d36cc294db09cb6a82a",
-			"revisionTime": "2017-10-13T17:14:31Z"
+			"revision": "760fd0143b6857a3ab6907d073fb8d921c148048",
+			"revisionTime": "2017-10-23T01:34:39Z"
 		},
 		{
-			"checksumSHA1": "eGmaS1bn7cxf8pKcAgtjDD9dwsw=",
-			"path": "github.com/master-g/omgo/security/ecdh",
-			"revision": "203e8c5db0ad86f1c24e7d36cc294db09cb6a82a",
-			"revisionTime": "2017-10-13T17:14:31Z"
+			"checksumSHA1": "nqWNlnMmVpt628zzvyo6Yv2CX5Q=",
+			"path": "golang.org/x/crypto/ssh/terminal",
+			"revision": "9419663f5a44be8b34ca85f08abc5fe1be11f8a3",
+			"revisionTime": "2017-09-30T17:45:11Z"
 		},
 		{
-			"checksumSHA1": "2z8kr6ar+EmHwI5L/EepHHnJ+Bg=",
-			"path": "github.com/master-g/omgo/utils",
-			"revision": "203e8c5db0ad86f1c24e7d36cc294db09cb6a82a",
-			"revisionTime": "2017-10-13T17:14:31Z"
-		},
-		{
-			"checksumSHA1": "jYpLEs+wZ5LZubvOJEDSQ8I14MI=",
-			"path": "github.com/prometheus/common/log",
-			"revision": "2f17f4a9d485bf34b4bfaccc273805040e4f86c8",
-			"revisionTime": "2017-09-08T16:18:22Z"
-		},
-		{
-			"checksumSHA1": "MlEHIE/60sB86Lmf0MPTIXHzKzE=",
-			"origin": "github.com/master-g/omgo/security/ecdh/vendor/golang.org/x/crypto/curve25519",
-			"path": "golang.org/x/crypto/curve25519",
-			"revision": "203e8c5db0ad86f1c24e7d36cc294db09cb6a82a",
-			"revisionTime": "2017-10-13T17:14:31Z"
-		},
-		{
-			"checksumSHA1": "rIYurTMbnyUj/eMHsaxTBnTvSnY=",
+			"checksumSHA1": "FUo16zuO20jOcdCUu0IgiF51koE=",
 			"path": "golang.org/x/sys/unix",
-			"revision": "fb4cac33e3196ff7f507ab9b2d2a44b0142f5b5a",
-			"revisionTime": "2017-06-14T06:48:48Z"
+			"revision": "8dbc5d05d6edcc104950cc299a1ce6641235bc86",
+			"revisionTime": "2017-10-13T13:31:29Z"
 		},
 		{
-			"checksumSHA1": "GUzvy5+6gTwjQ2PaXxjHfbqjOVw=",
+			"checksumSHA1": "wGkVl9xZjgnLs/olurjDX2Yg8Xw=",
 			"path": "golang.org/x/sys/windows",
-			"revision": "fb4cac33e3196ff7f507ab9b2d2a44b0142f5b5a",
-			"revisionTime": "2017-06-14T06:48:48Z"
-		},
-		{
-			"checksumSHA1": "ZdFZFaXmCgEEaEhVPkyXrnhKhsg=",
-			"path": "golang.org/x/sys/windows/registry",
-			"revision": "fb4cac33e3196ff7f507ab9b2d2a44b0142f5b5a",
-			"revisionTime": "2017-06-14T06:48:48Z"
-		},
-		{
-			"checksumSHA1": "uVlUSSKplihZG7N+QJ6fzDZ4Kh8=",
-			"path": "golang.org/x/sys/windows/svc/eventlog",
-			"revision": "fb4cac33e3196ff7f507ab9b2d2a44b0142f5b5a",
-			"revisionTime": "2017-06-14T06:48:48Z"
-		},
-		{
-			"checksumSHA1": "UktLgmwvU+LOnD/zJBbjhdJJCK8=",
-			"path": "gopkg.in/abiosoft/ishell.v2",
-			"revision": "f58403d26a7c0ad68945110a7ae613b99d869ced",
-			"revisionTime": "2017-03-06T21:04:30Z"
-		},
-		{
-			"checksumSHA1": "3SZTatHIy9OTKc95YlVfXKnoySg=",
-			"path": "gopkg.in/alecthomas/kingpin.v2",
-			"revision": "1087e65c9441605df944fb12c33f0fe7072d18ca",
-			"revisionTime": "2017-07-27T04:22:29Z"
-		},
-		{
-			"checksumSHA1": "VAPpB3iZ9bfjWqNDoX7qXqfRcQU=",
-			"path": "gopkg.in/readline.v1",
-			"revision": "62c6fe6193755f722b8b8788aa7357be55a50ff1",
-			"revisionTime": "2016-07-26T13:51:17Z"
+			"revision": "8dbc5d05d6edcc104950cc299a1ce6641235bc86",
+			"revisionTime": "2017-10-13T13:31:29Z"
 		}
 	],
 	"rootPath": "github.com/master-g/omgo/client/cli"
