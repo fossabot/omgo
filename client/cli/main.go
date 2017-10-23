@@ -21,7 +21,7 @@ var (
 	sess       *Session
 	httpclient *http.Client
 	apiHost    string
-	loginRsp   pc.LoginRsp
+	loginRsp   pc.S2CLoginRsp
 	shell      *ishell.Shell
 )
 

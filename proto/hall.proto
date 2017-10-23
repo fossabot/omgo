@@ -17,8 +17,8 @@ enum BillingMode {
 
 enum GameMode {
     GAME_MODE_RESERVED = 0;
-    GAME_MODE_RACE     = 1; /// Qiang dizhu mode
-    GAME_MODE_CALL     = 2; /// Jiao fen mode
+    GAME_MODE_RACE     = 1; // Qiang dizhu mode
+    GAME_MODE_CALL     = 2; // Jiao fen mode
 }
 
 enum EnterRoomResult {
@@ -57,7 +57,7 @@ message RoomInfo {
     int32       hand_time      = 17; // seconds, how long can a player think before plays a hand
     repeated fixed64 players   = 18; // player usn list
     bool             secure    = 19; // is this room has secure information
-    common.Location  location  = 20; /// Room create location information
+    common.Location  location  = 20; // Room create location information
     // 底分, 时长
 }
 

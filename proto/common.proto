@@ -2,54 +2,54 @@ syntax = "proto3";
 package proto.common;
 option go_package = "github.com/master-g/omgo/proto/pb/common";
 
-/// commands
-/// S -> C : even
-/// C -> S : odd
+// commands
+// S -> C : even
+// C -> S : odd
 enum Cmd {
     RESERVED = 0;
-    /// Common Commands, handle by agent
-    HEART_BEAT_REQ = 0x1;    /// C->S heartbeat request
-    HEART_BEAT_RSP = 0x2;    /// S->C heartbeat response
-    KICK_NOTIFY    = 0x4;    /// S->C kick notification
-    GET_SEED_REQ   = 0x11;   /// C->S cryption key reqeust
-    GET_SEED_RSP   = 0x12;   /// S->C cryption key response
-    LOGIN_REQ      = 0x21;   /// C->S login request
-    LOGIN_RSP      = 0x22;   /// S->C login reponse
-    LOGOUT_REQ     = 0x33;   /// C->S logout request
-    LOGOUT_RSP     = 0x34;   /// S->C logout response
-    OFFLINE_REQ    = 0x87;   /// C->S offline request
-    PING_REQ       = 0x1001; /// C->S ping request
-    PING_RSP       = 0x1002; /// S->C ping response
+    // Common Commands, handle by agent
+    HEART_BEAT_REQ = 0x1;    // C->S heartbeat request
+    HEART_BEAT_RSP = 0x2;    // S->C heartbeat response
+    KICK_NOTIFY    = 0x4;    // S->C kick notification
+    GET_SEED_REQ   = 0x11;   // C->S cryption key reqeust
+    GET_SEED_RSP   = 0x12;   // S->C cryption key response
+    LOGIN_REQ      = 0x21;   // C->S login request
+    LOGIN_RSP      = 0x22;   // S->C login reponse
+    LOGOUT_REQ     = 0x33;   // C->S logout request
+    LOGOUT_RSP     = 0x34;   // S->C logout response
+    OFFLINE_REQ    = 0x87;   // C->S offline request
+    PING_REQ       = 0x1001; // C->S ping request
+    PING_RSP       = 0x1002; // S->C ping response
 
-    /// Hall Commands, handle by agent
-    ROOM_CONFIG_REQ = 0x2001; /// C->S get room config request
-    ROOM_CONFIG_RSP = 0x2002; /// S->C get room config response
-    CREATE_ROOM_REQ = 0x2003; /// C->S create room request
-    CREATE_ROOM_RSP = 0x2004; /// S->C create room response
-    ENTER_ROOM_REQ  = 0x2005; /// C->S enter room request
-    ENTER_ROOM_RSP  = 0x2006; /// S->C enter room response
+    // Hall Commands, handle by agent
+    ROOM_CONFIG_REQ = 0x2001; // C->S get room config request
+    ROOM_CONFIG_RSP = 0x2002; // S->C get room config response
+    CREATE_ROOM_REQ = 0x2003; // C->S create room request
+    CREATE_ROOM_RSP = 0x2004; // S->C create room response
+    ENTER_ROOM_REQ  = 0x2005; // C->S enter room request
+    ENTER_ROOM_RSP  = 0x2006; // S->C enter room response
 
     CMD_COMMON_END = 0x10000;
 
-    /// Room Commands, handle by game
-    EXIT_ROOM_REQ = 0x10007; /// C->S exit room request
-    EXIT_ROOM_RSP = 0x10008; /// S->C exit room response
+    // Room Commands, handle by game
+    EXIT_ROOM_REQ = 0x10007; // C->S exit room request
+    EXIT_ROOM_RSP = 0x10008; // S->C exit room response
 }
 
 enum ResultCode {
-    RESULT_OK             = 0; /// request proceed with no error
-    RESULT_TIMEOUT        = 1; /// request timeout
-    RESULT_UNAUTH         = 2; /// request needs authentication first
-    RESULT_UNKNOWN_CMD    = 3; /// invalid command code
-    RESULT_INVALID        = 4; /// parameter,service, data, whatever invalid
-    RESULT_INTERNAL_ERROR = 5; /// server internal error
+    RESULT_OK             = 0; // request proceed with no error
+    RESULT_TIMEOUT        = 1; // request timeout
+    RESULT_UNAUTH         = 2; // request needs authentication first
+    RESULT_UNKNOWN_CMD    = 3; // invalid command code
+    RESULT_INVALID        = 4; // parameter,service, data, whatever invalid
+    RESULT_INTERNAL_ERROR = 5; // server internal error
 }
 
-/// Common Response Header
+// Common Response Header
 message RspHeader {
-    int32   status    = 1; /// see ResultCode and other status definitions
-    fixed64 timestamp = 2; /// server timestamp
-    string  msg       = 3; /// extra message returned by server
+    int32   status    = 1; // see ResultCode and other status definitions
+    fixed64 timestamp = 2; // server timestamp
+    string  msg       = 3; // extra message returned by server
 }
 
 enum Gender {
@@ -65,19 +65,19 @@ enum UserStatus {
     USER_STATUS_DELETED    = 3;
 }
 
-/// User Information
+// User Information
 message UserInfo {
-    fixed64    usn         = 1;  /// user serial no. internal only
-    uint64     uid         = 2;  /// id
-    string     avatar      = 3;  /// avatar url
-    fixed64    birthday    = 4;  /// EPOCH
-    string     country     = 5;  /// country / region
-    string     email       = 6;  /// email address
-    Gender     gender      = 7;  /// gender
-    fixed64    last_login  = 8;  /// last login timestamp
-    int32      login_count = 9;  /// login count
-    string     nickname    = 10; /// name
-    fixed64    since       = 11; /// register timestamp
+    fixed64    usn         = 1;  // user serial no. internal only
+    uint64     uid         = 2;  // id
+    string     avatar      = 3;  // avatar url
+    fixed64    birthday    = 4;  // EPOCH
+    string     country     = 5;  // country / region
+    string     email       = 6;  // email address
+    Gender     gender      = 7;  // gender
+    fixed64    last_login  = 8;  // last login timestamp
+    int32      login_count = 9;  // login count
+    string     nickname    = 10; // name
+    fixed64    since       = 11; // register timestamp
     UserStatus status      = 12;
 }
 
@@ -88,28 +88,28 @@ message Location {
 }
 
 //-----------------------------------------------------------------------------
-/// Agent
+// Agent
 
-/// Cryption Key Request
-/// C->S
+// Cryption Key Request
+// C->S
 message C2SGetSeedReq {
-    bytes send_seed = 1; /// public key for server to encrypt sending data
-    bytes recv_seed = 2; /// public key for server to decrypt receive data
+    bytes send_seed = 1; // public key for server to encrypt sending data
+    bytes recv_seed = 2; // public key for server to decrypt receive data
 }
 
-/// Cryption Key Response
-/// S->C
+// Cryption Key Response
+// S->C
 message S2CGetSeedRsp {
     RspHeader header    = 1;
-    bytes     send_seed = 2; /// public key for client to encrypt sending data
-    bytes     recv_seed = 3; /// public key for client to decrypt receive data
+    bytes     send_seed = 2; // public key for client to encrypt sending data
+    bytes     recv_seed = 3; // public key for client to decrypt receive data
 }
 
-/// Socket Login Request
+// Socket Login Request
 message C2SLoginReq {
-    fixed64 timestamp = 1; /// for random
-    fixed64 usn       = 2; /// User Serial Number
-    string  token     = 3; /// User token acquired from HTTP login stage
+    fixed64 timestamp = 1; // for random
+    fixed64 usn       = 2; // User Serial Number
+    string  token     = 3; // User token acquired from HTTP login stage
 }
 
 message S2CLoginRsp {
@@ -118,14 +118,14 @@ message S2CLoginRsp {
 
 enum KickReason {
     KICK_NO_REASON         = 0;
-    KICK_LOGIN_ELSEWHERE   = 1; /// User login from elsewhere
-    KICK_SESSION_EXPIRED   = 2; /// ...
-    KICK_ILLEGAL_OPERATION = 3; ///
-    KICK_BANNED            = 4; /// User gets banned
+    KICK_LOGIN_ELSEWHERE   = 1; // User login from elsewhere
+    KICK_SESSION_EXPIRED   = 2; // ...
+    KICK_ILLEGAL_OPERATION = 3; //
+    KICK_BANNED            = 4; // User gets banned
 }
 
 message S2CKickNotify {
-    fixed64    timestamp = 1; /// Server timestamp
-    KickReason reason    = 2; /// Kick reason
-    string     msg       = 3; /// Kick message
+    fixed64    timestamp = 1; // Server timestamp
+    KickReason reason    = 2; // Kick reason
+    string     msg       = 3; // Kick message
 }
