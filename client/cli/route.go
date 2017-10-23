@@ -3,14 +3,13 @@ package main
 import (
 	"crypto/rc4"
 	"encoding/hex"
-	"fmt"
 	"strings"
 
-	"github.com/gogo/protobuf/proto"
-	"github.com/master-g/omgo/net/packet"
+	log "github.com/Sirupsen/logrus"
+	"github.com/golang/protobuf/proto"
+	"github.com/master-g/omgo/kit/ecdh"
+	"github.com/master-g/omgo/kit/packet"
 	pc "github.com/master-g/omgo/proto/pb/common"
-	"github.com/master-g/omgo/security/ecdh"
-	"github.com/prometheus/common/log"
 )
 
 var Handlers map[int32]func(*Session, *packet.RawPacket) []byte
@@ -56,11 +55,11 @@ func ProcGetSeedRsp(session *Session, packet *packet.RawPacket) []byte {
 	keySend := curve.GenerateSharedSecretBuf(session.privateSend, rsp.GetSendSeed())
 	keyRecv := curve.GenerateSharedSecretBuf(session.privateRecv, rsp.GetRecvSeed())
 
-	session.Encoder, err = rc4.NewCipher([]byte(fmt.Sprintf("%v%v", Salt, keySend)))
+	session.Encoder, err = rc4.NewCipher(keySend)
 	if err != nil {
 		log.Fatalf("error while creating encoder:%v", err)
 	}
-	session.Decoder, err = rc4.NewCipher([]byte(fmt.Sprintf("%v%v", Salt, keyRecv)))
+	session.Decoder, err = rc4.NewCipher(keyRecv)
 	if err != nil {
 		log.Fatalf("error while creating decoder:%v", err)
 	}

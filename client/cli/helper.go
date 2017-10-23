@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/master-g/omgo/net/packet"
+	"github.com/master-g/omgo/kit/packet"
 	pc "github.com/master-g/omgo/proto/pb/common"
 )
 

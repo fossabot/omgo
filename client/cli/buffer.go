@@ -5,8 +5,8 @@ import (
 	"net"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/master-g/omgo/net/packet"
-	"github.com/master-g/omgo/utils"
+	"github.com/master-g/omgo/kit/packet"
+	"github.com/master-g/omgo/kit/utils"
 )
 
 // Buffer controls the packet send to server

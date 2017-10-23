@@ -11,8 +11,8 @@ import (
 
 	"github.com/Pallinder/go-randomdata"
 	log "github.com/Sirupsen/logrus"
+	"github.com/master-g/omgo/kit/utils"
 	pc "github.com/master-g/omgo/proto/pb/common"
-	"github.com/master-g/omgo/utils"
 	"gopkg.in/abiosoft/ishell.v2"
 )
 

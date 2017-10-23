@@ -9,11 +9,11 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/gogo/protobuf/proto"
-	"github.com/master-g/omgo/net/packet"
+	"github.com/golang/protobuf/proto"
+	"github.com/master-g/omgo/kit/ecdh"
+	"github.com/master-g/omgo/kit/packet"
+	"github.com/master-g/omgo/kit/utils"
 	pc "github.com/master-g/omgo/proto/pb/common"
-	"github.com/master-g/omgo/security/ecdh"
-	"github.com/master-g/omgo/utils"
 )
 
 type Session struct {
@@ -29,10 +29,6 @@ type Session struct {
 	privateSend []byte
 	privateRecv []byte
 }
-
-const (
-	Salt = "DH"
-)
 
 const (
 	// FlagConnected  indicates the connection status of the session
