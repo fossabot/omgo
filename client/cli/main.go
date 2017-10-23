@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net"
 	"net/http"
 	"strconv"
@@ -31,17 +30,6 @@ func init() {
 		Timeout: time.Second * 3,
 	}
 	apiHost = "http://localhost:8080"
-}
-
-func getAddressFromLoginRsp(rsp *pc.LoginRsp) string {
-	if rsp != nil && rsp.Config != nil && len(rsp.Config.NetworkCfg) != 0 {
-		ip := rsp.Config.NetworkCfg[0].Ip
-		port := rsp.Config.NetworkCfg[0].Port
-		addr := fmt.Sprintf("%v:%v", ip, port)
-		log.Info(addr)
-		return addr
-	}
-	return ""
 }
 
 func main() {
@@ -79,7 +67,7 @@ func main() {
 					address = c.Args[0]
 				}
 			} else {
-				address = getAddressFromLoginRsp(&loginRsp)
+				address = ":8888"
 			}
 			sess.Connect(address)
 		},
@@ -165,7 +153,7 @@ func main() {
 				log.Errorf("error while login:%v", loginRsp.Header.Msg)
 				return
 			}
-			log.Infof("login success, token:%v", loginRsp.GetToken())
+			log.Infof("login success, token:%v", "asdf")
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
@@ -245,7 +233,7 @@ func main() {
 				log.Errorf("error while login:%v", loginRsp.Header.Msg)
 				return
 			}
-			log.Infof("login success, token:%v", loginRsp.GetToken())
+			log.Infof("login success, token:%v", "asdf")
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
@@ -260,13 +248,9 @@ func main() {
 				log.Error("need to exchange key first")
 				return
 			}
-			if loginRsp.UserInfo != nil {
-				sess.Usn = loginRsp.UserInfo.Usn
-				sess.Token = loginRsp.Token
-				sess.Login()
-			} else {
-				log.Error("error while try to login, user info is nil")
-			}
+			sess.Usn = 1
+			sess.Token = "random token"
+			sess.Login()
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{

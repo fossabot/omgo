@@ -40,10 +40,12 @@ public class LoginHandler extends BaseHandler {
                 User user = authRes.result();
                 routingContext.setUser(user);
 
-                setSessionToken(routingContext, user.principal().getString(ModelConverter.KEY_TOKEN));
+                String token = user.principal().getString(ModelConverter.KEY_TOKEN);
+                setSessionToken(routingContext, token);
 
                 JsonObject rspJson = getResponseJson();
                 rspJson.put(ModelConverter.KEY_USER_INFO, user.principal());
+                rspJson.put(ModelConverter.KEY_TOKEN, token);
                 rspJson.put(ModelConverter.KEY_HOSTS, AgentManager.getInstance().getHostList());
                 response.write(rspJson.encode()).end();
             } else {
