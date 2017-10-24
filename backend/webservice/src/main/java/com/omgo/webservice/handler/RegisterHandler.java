@@ -155,7 +155,6 @@ public class RegisterHandler extends BaseHandler implements Services.Pool.OnChan
 
                     JsonObject rspJson = getResponseJson();
                     rspJson.put(ModelConverter.KEY_USER_INFO, resultJson);
-                    rspJson.put(ModelConverter.KEY_TOKEN, token);
                     rspJson.put(ModelConverter.KEY_HOSTS, AgentManager.getInstance().getHostList());
                     response.write(rspJson.encode()).end();
                 } else {

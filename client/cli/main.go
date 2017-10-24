@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"io/ioutil"
+
 	"github.com/Pallinder/go-randomdata"
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/kit/utils"
@@ -15,13 +17,20 @@ import (
 	"gopkg.in/abiosoft/ishell.v2"
 )
 
+type HttpLoginRsp struct {
+	UserInfo  pc.UserInfo `json:"user_info,omitempty"`
+	Token     string      `json:"token,omitempty"`
+	Timestamp uint64      `json:"timestamp,omitempty"`
+}
+
 var (
-	address    string
-	sess       *Session
-	httpclient *http.Client
-	apiHost    string
-	loginRsp   pc.S2CLoginRsp
-	shell      *ishell.Shell
+	address      string
+	sess         *Session
+	httpclient   *http.Client
+	apiHost      string
+	loginRsp     pc.S2CLoginRsp
+	shell        *ishell.Shell
+	httpLoginRsp HttpLoginRsp
 )
 
 func init() {
@@ -29,7 +38,7 @@ func init() {
 	httpclient = &http.Client{
 		Timeout: time.Second * 3,
 	}
-	apiHost = "http://localhost:8080"
+	apiHost = "http://127.0.0.1:8080/api"
 }
 
 func main() {
@@ -139,21 +148,33 @@ func main() {
 			req, err := http.NewRequest("GET", apiHost+"/login", nil)
 			if err != nil {
 				log.Errorf("error while create http request:%v", err)
+				return
 			}
 			req.Header.Add("email", email)
 			req.Header.Add("password", pass)
+			req.Header.Add("nonce", strconv.FormatUint(utils.Timestamp(), 10))
+			req.Header.Add("Content-Type", "application/json")
+			//req.Header.Add("Accept-Encoding", "application/json")
 			resp, err := httpclient.Do(req)
+			defer resp.Body.Close()
 			if err != nil {
 				log.Errorf("error while sending request:%v", err)
-			}
-
-			json.NewDecoder(resp.Body).Decode(&loginRsp)
-
-			if loginRsp.Header.Status != int32(pc.ResultCode_RESULT_OK) {
-				log.Errorf("error while login:%v", loginRsp.Header.Msg)
 				return
 			}
-			log.Infof("login success, token:%v", "asdf")
+
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				log.Errorf("error while parsing response:%v", err)
+				return
+			}
+
+			err = json.Unmarshal(body, &httpLoginRsp)
+			if err != nil {
+				log.Errorf("error while parsing http login response:%v", err)
+				return
+			}
+
+			log.Infof("login success:%v", httpLoginRsp)
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
@@ -165,6 +186,12 @@ func main() {
 			// email
 			c.Print("Email:")
 			email := c.ReadLine()
+			email = strings.TrimSpace(email)
+			email = strings.ToLower(email)
+			if email == "" {
+				log.Errorf("email invalid")
+				return
+			}
 			// pass
 			c.Print("Password:")
 			pass := strings.TrimSpace(c.ReadPassword())
@@ -216,24 +243,44 @@ func main() {
 			if err != nil {
 				log.Errorf("error while create http request:%v", err)
 			}
-			req.Header.Add("email", email)
-			req.Header.Add("password", pass)
-			req.Header.Add("gender", strconv.FormatInt(int64(gender), 10))
-			req.Header.Add("nickname", nick)
+			req.Header.Add("Content-Type", "application/json")
+			req.Header.Add("nonce", strconv.FormatUint(utils.Timestamp(), 10))
+			req.Header.Add("app_language", "zh-rCN")
+			req.Header.Add("app_version", "0.0.1")
+			req.Header.Add("avatar", "http://gravatar.com/avatar/"+utils.GetStringMD5Hash(email))
+			req.Header.Add("birthday", "531262800000")
 			req.Header.Add("country", country)
+			req.Header.Add("device_type", "1")
+			req.Header.Add("email", email)
+			req.Header.Add("gender", strconv.FormatInt(int64(gender), 10))
+			req.Header.Add("mcc", "460")
+			req.Header.Add("nickname", nick)
+			req.Header.Add("os", "macOS High Sierra v10.13")
+			req.Header.Add("os_locale", "zh-rCN")
+			req.Header.Add("phone", "1234567890")
+			req.Header.Add("secret", pass)
+			req.Header.Add("timezone", "8")
 
 			resp, err := httpclient.Do(req)
+			defer resp.Body.Close()
 			if err != nil {
 				log.Errorf("error while sending request:%v", err)
-			}
-
-			json.NewDecoder(resp.Body).Decode(&loginRsp)
-
-			if loginRsp.Header.Status != int32(pc.ResultCode_RESULT_OK) {
-				log.Errorf("error while login:%v", loginRsp.Header.Msg)
 				return
 			}
-			log.Infof("login success, token:%v", "asdf")
+
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				log.Errorf("error while parsing response:%v", err)
+				return
+			}
+
+			err = json.Unmarshal(body, &httpLoginRsp)
+			if err != nil {
+				log.Errorf("error while parsing http register response:%v", err)
+				return
+			}
+
+			log.Infof("register success:%v", httpLoginRsp)
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{

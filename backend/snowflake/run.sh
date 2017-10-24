@@ -35,8 +35,12 @@ docker run --rm -d ${NETHOST} -p 2379:2379 -p 2380:2380 \
 #ETCD_IP=$(docker inspect etcd | python -c 'import json,sys;obj=json.load(sys.stdin);print obj[0]["NetworkSettings"]["IPAddress"]')
 
 #Snowflake
+if [ "$1" = "rebuild" ]
+then
+    docker build --no-cache --rm=true -t ${SERVICE_NAME} .
+fi
+
 docker rm -f ${SNOWFLAKE_SID}
-docker build --no-cache --rm=true -t ${SERVICE_NAME} .
 docker run --rm -d ${NETHOST} -p ${SERVICE_PORT}:${SERVICE_PORT} \
     --name ${SNOWFLAKE_SID} \
     -e SERVICE_ID=${SNOWFLAKE_SID} \

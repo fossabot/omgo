@@ -19,10 +19,13 @@ case "$(uname -s)" in
 esac
 
 # Database service
-mvn clean package
+if [ "$1" = "rebuild" ]
+then
+    mvn clean package
+    docker build --no-cache --rm=true -t ${SERVICE_NAME} .
+fi
 
 docker rm -f ${SID}
-docker build --no-cache --rm=true -t ${SERVICE_NAME} .
 docker run --rm -d ${NETHOST} -p ${PORT}:${PORT} \
     --name ${SID} \
     ${SERVICE_NAME} \

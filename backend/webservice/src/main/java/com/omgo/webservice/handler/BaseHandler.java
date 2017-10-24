@@ -155,7 +155,7 @@ public class BaseHandler {
     protected JsonObject getHeaderJson(HttpServerRequest request) {
         JsonObject headerJson = new JsonObject();
         for (Map.Entry<String, String> entry : request.headers().entries()) {
-            headerJson.put(entry.getKey(), entry.getValue());
+            headerJson.put(entry.getKey().toLowerCase(), entry.getValue());
         }
         return headerJson;
     }
@@ -226,14 +226,18 @@ public class BaseHandler {
             JsonObject headerJson = getHeaderJson(getRequest(context));
             String requestNonce = headerJson.getString(ModelConverter.KEY_NONCE);
             String sessionNonce = session.get(ModelConverter.KEY_NONCE);
-            if (Utils.isEmptyString(requestNonce) || Utils.isEmptyString(sessionNonce)) {
+            if (Utils.isEmptyString(requestNonce)) {
                 return null;
+            }
+
+            if (Utils.isEmptyString(sessionNonce)) {
+                return requestNonce;
             }
 
             try {
                 long reqNonce = Long.parseLong(requestNonce);
                 long sesNonce = Long.parseLong(sessionNonce);
-                if (reqNonce <= sesNonce) {
+                if (reqNonce > sesNonce) {
                     return requestNonce;
                 } else {
                     return null;

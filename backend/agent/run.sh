@@ -22,8 +22,12 @@ case "$(uname -s)" in
      ;;
 esac
 
+if [ "$1" = "rebuild" ]
+then
+    docker build --no-cache --rm=true -t ${SERVICE_KIND} .
+fi
+
 docker rm -f ${SERVICE_NAME}
-docker build --no-cache --rm=true -t ${SERVICE_KIND} .
 docker run -d \
     --entrypoint /go/bin/${SERVICE_KIND} \
     --name ${SERVICE_NAME} \
