@@ -12,6 +12,9 @@ case "$(uname -s)" in
      ;;
 esac
 
+#nsqlookupd address via etcd
+LOOKUPD_HOST=$(ETCDCTL_API=3 etcdctl get backends/nsq/nsqlookupd | sed -n 2p)
+
 #nsqd
 
 if [ "$1" = "rebuild" ]
@@ -23,6 +26,5 @@ docker rm -f ${NSQD_SID}
 docker run --rm -d ${NETHOST} -p 4150:4150 -p 4151:4151 \
     --name ${NSQD_SID} \
     nsqio/nsq /nsqd \
-    --broadcast-address=<host> \
-    --lookupd-tcp-address=<host>:<port>
-    
+    --broadcast-address=${LOOKUPD_HOST} \
+    --lookupd-tcp-address=${LOOKUPD_HOST}:4160

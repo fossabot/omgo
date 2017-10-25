@@ -4,20 +4,30 @@
 # 3rd party
 ###########################################################
 
+cd ./3rdparty
+
 # DB mysql
-cd ./3rdparty/mongodb
+cd ./mongodb
 sh ./run.sh $1
-cd ../../
+cd ..
 
 # DB redis
-cd ./3rdparty/redis/
+cd ./redis
 sh ./run.sh $1
-cd ../../
+cd ..
 
 # ETCD
-cd ./3rdparty/etcd/
+cd ./etcd
 sh ./run.sh $1
-cd ../../
+cd ..
+
+# nsq
+cd ./nsq
+sh ./nsqlookupd.sh $1
+sh ./nsqd.sh $1
+cd ..
+
+cd ..
 
 ###########################################################
 # services
