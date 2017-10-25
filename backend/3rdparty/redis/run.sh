@@ -12,8 +12,12 @@ case "$(uname -s)" in
      ;;
 esac
 
-docker rm -f ${SID}
+if [ "$1" = "rebuild" ]
+then
+    docker pull redis
+fi
 
+docker rm -f ${SID}
 docker run -d --name ${SID} ${NETHOST} \
   -p 6379:6379 \
   -v ${PWD}/redis.conf:/usr/local/etc/redis/redis.conf \

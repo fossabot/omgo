@@ -10,8 +10,12 @@ case "$(uname -s)" in
      ;;
 esac
 
-docker rm -f ${SID}
+if [ "$1" = "rebuild" ]
+then
+    docker pull mysql
+fi
 
+docker rm -f ${SID}
 docker run -d --name ${SID} ${NETHOST} \
   -p 3306:3306 \
   -v ${PWD}/db:/var/lib/mysql \

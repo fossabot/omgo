@@ -12,8 +12,12 @@ case "$(uname -s)" in
      ;;
 esac
 
-docker rm -f ${SID}
+if [ "$1" = "rebuild" ]
+then
+    docker pull mongo
+fi
 
+docker rm -f ${SID}
 docker run -d --name ${SID} ${NETHOST} \
   -p 27017:27017 \
   -v ${PWD}/mongod.conf:/etc/mongod.conf \
