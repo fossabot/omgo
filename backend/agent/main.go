@@ -2,14 +2,32 @@
 Package agent is designed for:
 1. Manage client connections and sessions.
 2. Passthrough data to game server (via gRPC streaming).
-3. Allow backends to reboot/deploy without breakup the connection.
-4. Isolate core service for security.
+3. Allow backends to reboot/deploy without close the connection.
+4. Isolate core services from exposure.
 
 The basic work flow of agent is:
-1. main.go      Extract arguments from command line via urfave/cli.v2 package
-2. signal.go    start a goroutine for UNIX SIGTERM signal
-3. api.go       connection to dataservice and gameserver
-4. main.go      start tcpServer goroutine for incoming TCP connections
+1. main.go      extract arguments from command line via urfave/cli.v2 package
+2. signal.go    start a goroutine to capture UNIX SIGTERM signal
+3. api.go       connect to data and game gRPC services via ETCD
+4. main.go      start a tcpServer goroutine for handling incoming TCP connections
+5. main.go      for each TPC connection, spawns a handleClient goroutine
+
+        handleClient() {
+            // init client session and other context
+            createSession()
+            // create buffer object and start a goroutine for sending packet
+            go bufferOut()
+            // create agent instance for this client, process 4 types of message:
+            // 1. incoming packages
+            // 2. game stream frames
+            // 3. timer (rpm limit, heartbeat, etc.)
+            // 4. server shutdown
+            go agent()
+            for {
+                // read from TCP and feed to agent via channel
+            }
+        }
+
 */
 package main
 
