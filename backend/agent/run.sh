@@ -28,12 +28,11 @@ then
 fi
 
 docker rm -f ${SERVICE_NAME}
-docker run -d \
-    --entrypoint /go/bin/${SERVICE_KIND} \
+docker run --rm -d ${NETHOST} -p ${SERVICE_PORT}:${SERVICE_PORT} \
     --name ${SERVICE_NAME} \
     -e SERVICE_ID=${SERVICE_NAME} \
-    ${NETHOST} \
-    -p ${SERVICE_PORT}:${SERVICE_PORT} \
+    --entrypoint /go/bin/${SERVICE_KIND} \
+    ${SERVICE_KIND} \
     -P ${SERVICE_KIND} \
     -l ${IPADDR}:${SERVICE_PORT} \
     -k ${SERVICE_KIND} \

@@ -47,3 +47,8 @@ cd ..
 cd ./webservice/
 sh ./run.sh $1
 cd ..
+
+# agent
+cd ./agent/
+sh ./run.sh $1
+cd ..

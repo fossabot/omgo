@@ -1,3 +1,16 @@
+/*
+Package agent is designed for:
+1. Manage client connections and sessions.
+2. Passthrough data to game server (via gRPC streaming).
+3. Allow backends to reboot/deploy without breakup the connection.
+4. Isolate core service for security.
+
+The basic work flow of agent is:
+1. main.go      Extract arguments from command line via urfave/cli.v2 package
+2. signal.go    start a goroutine for UNIX SIGTERM signal
+3. api.go       connection to dataservice and gameserver
+4. main.go
+*/
 package main
 
 import (
@@ -125,7 +138,7 @@ func main() {
 			etcdHosts := c.StringSlice("etcdhosts")
 			etcdRoot := c.String("etcdroot")
 			serviceNames := c.StringSlice("services")
-			rpmLimit = c.Int("rpm")
+			rpmLimit := c.Int("rpm")
 			listenOn := c.String("listen")
 			agentKind := c.String("kind")
 			agentName := c.String("name")
@@ -149,7 +162,7 @@ func main() {
 				sockBufSize:   c.Int("sockbufsize"),
 			}
 
-			// capture UNIX SYSTERM signal
+			// capture UNIX SIGTERM signal
 			go sigHandler()
 			// register agent to ETCD
 			agentFullPath := services.GenPath(etcdRoot, agentKind, agentName)
@@ -164,8 +177,9 @@ func main() {
 			}
 			api.Init(srvConfig)
 
-			// start timer worker
-			initTimer(rpmLimit)
+			// setup session time parameters
+			api.SetReadDeadLine(defaultReadDeadLine)
+			api.SetRPMLimit(rpmLimit)
 
 			// listen to client connections
 			go tcpServer(config)

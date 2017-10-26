@@ -68,7 +68,7 @@ func agent(session *api.Session, in chan []byte, out *Buffer) {
 				session.SetFlagKicked()
 			}
 		case <-minTimer: // minutes timer
-			timerWork(session, out)
+			session.Timework()
 			minTimer = time.After(time.Minute)
 		case <-die: // server is shutting down
 			session.SetFlagKicked()

@@ -1,4 +1,4 @@
-FROM golang:1.9.1
+FROM golang:latest
 WORKDIR /go/src/
 COPY . /go/src/github.com/master-g/omgo/backend/agent
 RUN go install -v github.com/master-g/omgo/backend/agent

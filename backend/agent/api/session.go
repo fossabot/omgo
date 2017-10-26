@@ -5,6 +5,7 @@ import (
 	"net"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	pb "github.com/master-g/omgo/proto/grpc/game"
 )
 
@@ -19,6 +20,11 @@ const (
 	FlagKicked = 0x4
 	// FlagAuth indicates the session has been authorized
 	FlagAuth = 0x8
+)
+
+var (
+	requestPerMinuteLimit = 120
+	readDeadLine          = 3 * time.Minute
 )
 
 // Session holds the context of a client having conversation with agent
@@ -40,6 +46,14 @@ type Session struct {
 	PacketCount       uint32                      // Total packets received
 	PacketCountPerMin int                         // Packets received per minute
 	Mailbox           chan []byte                 // Mailbox for internal communication
+}
+
+func SetRPMLimit(limit int) {
+	requestPerMinuteLimit = limit
+}
+
+func SetReadDeadLine(deadline time.Duration) {
+	readDeadLine = deadline
 }
 
 // SetFlagKeyExchanged sets the key exchanged bit
@@ -108,4 +122,33 @@ func (s *Session) ClearFlagAuth() *Session {
 // IsFlagAuthSet returns true if the auth bit is set
 func (s *Session) IsFlagAuthSet() bool {
 	return s.Flag&FlagAuth != 0
+}
+
+// Timework checks rpm limit and heartbeat intervals
+func (s *Session) Timework() {
+	defer func() {
+		s.PacketCountPerMin = 0
+	}()
+
+	// rpm control
+	if s.PacketCountPerMin > requestPerMinuteLimit {
+		s.SetFlagKicked()
+		log.WithFields(log.Fields{
+			"usn":   s.Usn,
+			"rate":  s.PacketCountPerMin,
+			"total": s.PacketCount,
+		}).Error("RPM")
+		return
+	}
+
+	// heartbeat check
+	elapsed := time.Since(s.LastPacketTime)
+	if readDeadLine < elapsed {
+		s.SetFlagKicked()
+		log.WithFields(log.Fields{
+			"usn":         s.Usn,
+			"lastpkgtime": s.LastPacketTime,
+		}).Error("TIMEOUT")
+		return
+	}
 }

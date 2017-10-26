@@ -2,10 +2,10 @@
 
 IPADDR=localhost
 LOCALHOST=localhost
-SERVICE_NAME=snowflake
+SERVICE_KIND=snowflake
 SERVICE_PORT=40001
 MACHINE_ID=1
-SNOWFLAKE_SID=snowflake-0
+SERVICE_NAME=snowflake-0
 NETHOST=--net=host
 
 case "$(uname -s)" in
@@ -18,17 +18,17 @@ esac
 #Snowflake
 if [ "$1" = "rebuild" ]
 then
-    docker build --no-cache --rm=true -t ${SERVICE_NAME} .
+    docker build --no-cache --rm=true -t ${SERVICE_KIND} .
 fi
 
-docker rm -f ${SNOWFLAKE_SID}
+docker rm -f ${SERVICE_NAME}
 docker run --rm -d ${NETHOST} -p ${SERVICE_PORT}:${SERVICE_PORT} \
-    --name ${SNOWFLAKE_SID} \
-    -e SERVICE_ID=${SNOWFLAKE_SID} \
+    --name ${SERVICE_NAME} \
+    -e SERVICE_ID=${SERVICE_NAME} \
     -e MACHINE_ID=${MACHINE_ID} \
-    --entrypoint /go/bin/${SERVICE_NAME} \
-    ${SERVICE_NAME} \
-    --service-key backends/${SERVICE_NAME}/${SNOWFLAKE_SID} \
+    --entrypoint /go/bin/${SERVICE_KIND} \
+    ${SERVICE_KIND} \
+    --service-key backends/${SERVICE_KIND}/${SERVICE_NAME} \
     --service-host ${IPADDR} \
     -p ${SERVICE_PORT} \
     -e http://${IPADDR}:2379
