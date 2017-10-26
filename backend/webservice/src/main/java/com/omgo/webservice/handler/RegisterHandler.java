@@ -146,8 +146,8 @@ public class RegisterHandler extends BaseHandler implements Services.Pool.OnChan
 
         dbServiceVertxStub.userRegister(userEntryBuilder.build(), res -> {
             if (res.succeeded()) {
-                Db.DB.StatusCode code = res.result().getResult().getStatus();
-                if (code == Db.DB.StatusCode.STATUS_OK) {
+                int code = res.result().getResult().getStatus();
+                if (code == Db.DB.StatusCode.STATUS_OK_VALUE) {
                     JsonObject resultJson = ModelConverter.userEntry2Json(res.result().getUser());
 
                     String token = resultJson.getString(ModelConverter.KEY_TOKEN);

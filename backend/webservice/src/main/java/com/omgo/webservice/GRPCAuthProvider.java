@@ -74,9 +74,9 @@ public class GRPCAuthProvider implements AuthProvider, Services.Pool.OnChangeLis
                 handler.handle(Future.failedFuture(res.cause()));
             } else {
                 Db.DB.UserOpResult loginResult = res.result();
-                Db.DB.StatusCode status = loginResult.getResult().getStatus();
+                int statusCode = loginResult.getResult().getStatus();
                 // RPC invoked, check result
-                if (status != Db.DB.StatusCode.STATUS_OK) {
+                if (statusCode != Db.DB.StatusCode.STATUS_OK_VALUE) {
                     handler.handle(Future.failedFuture(loginResult.getResult().getMsg()));
                     return;
                 }

@@ -271,13 +271,9 @@ public final class Db {
         com.google.protobuf.MessageOrBuilder {
 
       /**
-       * <code>.proto.DB.StatusCode status = 1;</code>
+       * <code>int32 status = 1;</code>
        */
-      int getStatusValue();
-      /**
-       * <code>.proto.DB.StatusCode status = 1;</code>
-       */
-      proto.Db.DB.StatusCode getStatus();
+      int getStatus();
 
       /**
        * <code>string msg = 2;</code>
@@ -331,9 +327,8 @@ public final class Db {
                 break;
               }
               case 8: {
-                int rawValue = input.readEnum();
 
-                status_ = rawValue;
+                status_ = input.readInt32();
                 break;
               }
               case 18: {
@@ -368,17 +363,10 @@ public final class Db {
       public static final int STATUS_FIELD_NUMBER = 1;
       private int status_;
       /**
-       * <code>.proto.DB.StatusCode status = 1;</code>
+       * <code>int32 status = 1;</code>
        */
-      public int getStatusValue() {
+      public int getStatus() {
         return status_;
-      }
-      /**
-       * <code>.proto.DB.StatusCode status = 1;</code>
-       */
-      public proto.Db.DB.StatusCode getStatus() {
-        proto.Db.DB.StatusCode result = proto.Db.DB.StatusCode.valueOf(status_);
-        return result == null ? proto.Db.DB.StatusCode.UNRECOGNIZED : result;
       }
 
       public static final int MSG_FIELD_NUMBER = 2;
@@ -427,8 +415,8 @@ public final class Db {
 
       public void writeTo(com.google.protobuf.CodedOutputStream output)
                           throws java.io.IOException {
-        if (status_ != proto.Db.DB.StatusCode.STATUS_OK.getNumber()) {
-          output.writeEnum(1, status_);
+        if (status_ != 0) {
+          output.writeInt32(1, status_);
         }
         if (!getMsgBytes().isEmpty()) {
           com.google.protobuf.GeneratedMessageV3.writeString(output, 2, msg_);
@@ -440,9 +428,9 @@ public final class Db {
         if (size != -1) return size;
 
         size = 0;
-        if (status_ != proto.Db.DB.StatusCode.STATUS_OK.getNumber()) {
+        if (status_ != 0) {
           size += com.google.protobuf.CodedOutputStream
-            .computeEnumSize(1, status_);
+            .computeInt32Size(1, status_);
         }
         if (!getMsgBytes().isEmpty()) {
           size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, msg_);
@@ -463,7 +451,8 @@ public final class Db {
         proto.Db.DB.Result other = (proto.Db.DB.Result) obj;
 
         boolean result = true;
-        result = result && status_ == other.status_;
+        result = result && (getStatus()
+            == other.getStatus());
         result = result && getMsg()
             .equals(other.getMsg());
         return result;
@@ -477,7 +466,7 @@ public final class Db {
         int hash = 41;
         hash = (19 * hash) + getDescriptor().hashCode();
         hash = (37 * hash) + STATUS_FIELD_NUMBER;
-        hash = (53 * hash) + status_;
+        hash = (53 * hash) + getStatus();
         hash = (37 * hash) + MSG_FIELD_NUMBER;
         hash = (53 * hash) + getMsg().hashCode();
         hash = (29 * hash) + unknownFields.hashCode();
@@ -678,8 +667,8 @@ public final class Db {
 
         public Builder mergeFrom(proto.Db.DB.Result other) {
           if (other == proto.Db.DB.Result.getDefaultInstance()) return this;
-          if (other.status_ != 0) {
-            setStatusValue(other.getStatusValue());
+          if (other.getStatus() != 0) {
+            setStatus(other.getStatus());
           }
           if (!other.getMsg().isEmpty()) {
             msg_ = other.msg_;
@@ -711,42 +700,24 @@ public final class Db {
           return this;
         }
 
-        private int status_ = 0;
+        private int status_ ;
         /**
-         * <code>.proto.DB.StatusCode status = 1;</code>
+         * <code>int32 status = 1;</code>
          */
-        public int getStatusValue() {
+        public int getStatus() {
           return status_;
         }
         /**
-         * <code>.proto.DB.StatusCode status = 1;</code>
+         * <code>int32 status = 1;</code>
          */
-        public Builder setStatusValue(int value) {
+        public Builder setStatus(int value) {
+          
           status_ = value;
           onChanged();
           return this;
         }
         /**
-         * <code>.proto.DB.StatusCode status = 1;</code>
-         */
-        public proto.Db.DB.StatusCode getStatus() {
-          proto.Db.DB.StatusCode result = proto.Db.DB.StatusCode.valueOf(status_);
-          return result == null ? proto.Db.DB.StatusCode.UNRECOGNIZED : result;
-        }
-        /**
-         * <code>.proto.DB.StatusCode status = 1;</code>
-         */
-        public Builder setStatus(proto.Db.DB.StatusCode value) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          
-          status_ = value.getNumber();
-          onChanged();
-          return this;
-        }
-        /**
-         * <code>.proto.DB.StatusCode status = 1;</code>
+         * <code>int32 status = 1;</code>
          */
         public Builder clearStatus() {
           
@@ -6074,44 +6045,44 @@ public final class Db {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\010db.proto\022\005proto\"\331\010\n\002DB\032;\n\006Result\022$\n\006st" +
-      "atus\030\001 \001(\0162\024.proto.DB.StatusCode\022\013\n\003msg\030" +
-      "\002 \001(\t\032\347\004\n\tUserEntry\022\013\n\003usn\030\001 \001(\006\022\013\n\003uid\030" +
-      "\002 \001(\004\022\024\n\014app_language\030\003 \001(\t\022\023\n\013app_versi" +
-      "on\030\004 \001(\t\022\016\n\006avatar\030\005 \001(\t\022\020\n\010birthday\030\006 \001" +
-      "(\004\022\017\n\007country\030\007 \001(\t\022\023\n\013device_type\030\010 \001(\005" +
-      "\022\r\n\005email\030\t \001(\t\022\026\n\016email_verified\030\n \001(\010\022" +
-      "\016\n\006gender\030\013 \001(\005\022\023\n\013is_official\030\014 \001(\010\022\020\n\010" +
-      "is_robot\030\r \001(\010\022\017\n\007last_ip\030\016 \001(\t\022\022\n\nlast_" +
-      "login\030\017 \001(\004\022\023\n\013login_count\030\020 \001(\004\022\013\n\003mcc\030",
-      "\021 \001(\005\022\020\n\010nickname\030\022 \001(\t\022\n\n\002os\030\023 \001(\t\022\021\n\to" +
-      "s_locale\030\024 \001(\t\022\r\n\005phone\030\025 \001(\t\022\026\n\016phone_v" +
-      "erified\030\026 \001(\010\022\023\n\013premium_end\030\027 \001(\004\022\023\n\013pr" +
-      "emium_exp\030\030 \001(\004\022\025\n\rpremium_level\030\031 \001(\005\022\016" +
-      "\n\006secret\030\032 \001(\t\022\r\n\005since\030\033 \001(\004\022\021\n\tsocial_" +
-      "id\030\034 \001(\t\022\023\n\013social_name\030\035 \001(\t\022\027\n\017social_" +
-      "verified\030\036 \001(\010\022\016\n\006status\030\037 \001(\005\022\020\n\010timezo" +
-      "ne\030  \001(\005\022\r\n\005token\030! \001(\t\032/\n\021UserLogoutReq" +
-      "uest\022\013\n\003usn\030\001 \001(\004\022\r\n\005token\030\002 \001(\t\032S\n\014User" +
-      "OpResult\022 \n\006result\030\001 \001(\0132\020.proto.DB.Resu",
-      "lt\022!\n\004user\030\002 \001(\0132\023.proto.DB.UserEntry\"\245\002" +
-      "\n\nStatusCode\022\r\n\tSTATUS_OK\020\000\022\030\n\024STATUS_IN" +
-      "VALID_PARAM\020d\022\026\n\022STATUS_INVALID_USN\020e\022\026\n" +
-      "\022STATUS_INVALID_UID\020f\022\030\n\024STATUS_INVALID_" +
-      "EMAIL\020g\022\031\n\025STATUS_INVALID_SECRET\020h\022\030\n\024ST" +
-      "ATUS_INVALID_TOKEN\020i\022\036\n\031STATUS_USER_ALRE" +
-      "ADY_EXIST\020\311\001\022\032\n\025STATUS_USER_NOT_FOUND\020\312\001" +
-      "\022\032\n\025STATUS_INTERNAL_ERROR\020\364\003\022\027\n\022STATUS_U" +
-      "NAVAILABLE\020\367\0032\365\002\n\tDBService\0228\n\tUserQuery" +
-      "\022\023.proto.DB.UserEntry\032\026.proto.DB.UserOpR",
-      "esult\0227\n\016UserUpdateInfo\022\023.proto.DB.UserE" +
-      "ntry\032\020.proto.DB.Result\022;\n\014UserRegister\022\023" +
-      ".proto.DB.UserEntry\032\026.proto.DB.UserOpRes" +
-      "ult\0228\n\tUserLogin\022\023.proto.DB.UserEntry\032\026." +
-      "proto.DB.UserOpResult\022;\n\nUserLogout\022\033.pr" +
-      "oto.DB.UserLogoutRequest\032\020.proto.DB.Resu" +
-      "lt\022A\n\022UserExtraInfoQuery\022\023.proto.DB.User" +
-      "Entry\032\026.proto.DB.UserOpResultb\006proto3"
+      "\n\010db.proto\022\005proto\"\303\010\n\002DB\032%\n\006Result\022\016\n\006st" +
+      "atus\030\001 \001(\005\022\013\n\003msg\030\002 \001(\t\032\347\004\n\tUserEntry\022\013\n" +
+      "\003usn\030\001 \001(\006\022\013\n\003uid\030\002 \001(\004\022\024\n\014app_language\030" +
+      "\003 \001(\t\022\023\n\013app_version\030\004 \001(\t\022\016\n\006avatar\030\005 \001" +
+      "(\t\022\020\n\010birthday\030\006 \001(\004\022\017\n\007country\030\007 \001(\t\022\023\n" +
+      "\013device_type\030\010 \001(\005\022\r\n\005email\030\t \001(\t\022\026\n\016ema" +
+      "il_verified\030\n \001(\010\022\016\n\006gender\030\013 \001(\005\022\023\n\013is_" +
+      "official\030\014 \001(\010\022\020\n\010is_robot\030\r \001(\010\022\017\n\007last" +
+      "_ip\030\016 \001(\t\022\022\n\nlast_login\030\017 \001(\004\022\023\n\013login_c" +
+      "ount\030\020 \001(\004\022\013\n\003mcc\030\021 \001(\005\022\020\n\010nickname\030\022 \001(",
+      "\t\022\n\n\002os\030\023 \001(\t\022\021\n\tos_locale\030\024 \001(\t\022\r\n\005phon" +
+      "e\030\025 \001(\t\022\026\n\016phone_verified\030\026 \001(\010\022\023\n\013premi" +
+      "um_end\030\027 \001(\004\022\023\n\013premium_exp\030\030 \001(\004\022\025\n\rpre" +
+      "mium_level\030\031 \001(\005\022\016\n\006secret\030\032 \001(\t\022\r\n\005sinc" +
+      "e\030\033 \001(\004\022\021\n\tsocial_id\030\034 \001(\t\022\023\n\013social_nam" +
+      "e\030\035 \001(\t\022\027\n\017social_verified\030\036 \001(\010\022\016\n\006stat" +
+      "us\030\037 \001(\005\022\020\n\010timezone\030  \001(\005\022\r\n\005token\030! \001(" +
+      "\t\032/\n\021UserLogoutRequest\022\013\n\003usn\030\001 \001(\004\022\r\n\005t" +
+      "oken\030\002 \001(\t\032S\n\014UserOpResult\022 \n\006result\030\001 \001" +
+      "(\0132\020.proto.DB.Result\022!\n\004user\030\002 \001(\0132\023.pro",
+      "to.DB.UserEntry\"\245\002\n\nStatusCode\022\r\n\tSTATUS" +
+      "_OK\020\000\022\030\n\024STATUS_INVALID_PARAM\020d\022\026\n\022STATU" +
+      "S_INVALID_USN\020e\022\026\n\022STATUS_INVALID_UID\020f\022" +
+      "\030\n\024STATUS_INVALID_EMAIL\020g\022\031\n\025STATUS_INVA" +
+      "LID_SECRET\020h\022\030\n\024STATUS_INVALID_TOKEN\020i\022\036" +
+      "\n\031STATUS_USER_ALREADY_EXIST\020\311\001\022\032\n\025STATUS" +
+      "_USER_NOT_FOUND\020\312\001\022\032\n\025STATUS_INTERNAL_ER" +
+      "ROR\020\364\003\022\027\n\022STATUS_UNAVAILABLE\020\367\0032\365\002\n\tDBSe" +
+      "rvice\0228\n\tUserQuery\022\023.proto.DB.UserEntry\032" +
+      "\026.proto.DB.UserOpResult\0227\n\016UserUpdateInf",
+      "o\022\023.proto.DB.UserEntry\032\020.proto.DB.Result" +
+      "\022;\n\014UserRegister\022\023.proto.DB.UserEntry\032\026." +
+      "proto.DB.UserOpResult\0228\n\tUserLogin\022\023.pro" +
+      "to.DB.UserEntry\032\026.proto.DB.UserOpResult\022" +
+      ";\n\nUserLogout\022\033.proto.DB.UserLogoutReque" +
+      "st\032\020.proto.DB.Result\022A\n\022UserExtraInfoQue" +
+      "ry\022\023.proto.DB.UserEntry\032\026.proto.DB.UserO" +
+      "pResultb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

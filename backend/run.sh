@@ -33,7 +33,7 @@ cd ..
 # services
 ###########################################################
 
-# UUID generator, and ETCD
+# UUID generator
 cd ./snowflake/
 sh ./run.sh $1
 cd ..

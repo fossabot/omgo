@@ -17,7 +17,7 @@ public class DbProtoUtils {
 
     public static DB.Result makeResult(DB.StatusCode code, String msg) {
         DB.Result.Builder builder = DB.Result.newBuilder();
-        builder.setStatus(code);
+        builder.setStatus(code.getNumber());
         if (Utils.isNotEmptyString(msg)) {
             builder.setMsg(msg);
         }
