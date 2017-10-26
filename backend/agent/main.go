@@ -9,7 +9,7 @@ The basic work flow of agent is:
 1. main.go      Extract arguments from command line via urfave/cli.v2 package
 2. signal.go    start a goroutine for UNIX SIGTERM signal
 3. api.go       connection to dataservice and gameserver
-4. main.go
+4. main.go      start tcpServer goroutine for incoming TCP connections
 */
 package main
 
