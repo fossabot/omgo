@@ -11,6 +11,7 @@ service AgentService {
 message Agent {
     enum StatusCode {
         STATUS_OK = 0;
+        STATUS_NOT_FOUND = 1;
     }
 
     message Result {

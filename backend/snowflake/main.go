@@ -7,13 +7,14 @@ import (
 	"sort"
 
 	"context"
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/coreos/etcd/clientv3"
 	pb "github.com/master-g/omgo/proto/grpc/snowflake"
 	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc"
 	"gopkg.in/urfave/cli.v2"
-	"time"
 )
 
 const (
@@ -29,14 +30,12 @@ func main() {
 	app := &cli.App{
 		Flags: []cli.Flag{
 			&cli.IntFlag{
-				Aliases:     []string{"p"},
 				DefaultText: "random",
 				Name:        "port",
 				Usage:       "local port to listen",
 				Value:       0,
 			},
 			&cli.StringSliceFlag{
-				Aliases: []string{"e"},
 				EnvVars: []string{"ETCD_HOST"},
 				Name:    "etcd",
 				Usage:   "etcd server address, if multiple hosts, -e host1 -e host2 ...",

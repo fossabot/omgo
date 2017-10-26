@@ -30,5 +30,5 @@ docker run --rm -d ${NETHOST} -p ${SERVICE_PORT}:${SERVICE_PORT} \
     ${SERVICE_KIND} \
     --service-key backends/${SERVICE_KIND}/${SERVICE_NAME} \
     --service-host ${IPADDR} \
-    -p ${SERVICE_PORT} \
-    -e http://${IPADDR}:2379
+    --port ${SERVICE_PORT} \
+    --etcd http://${IPADDR}:2379

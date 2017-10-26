@@ -23,7 +23,7 @@ import (
 )
 
 // convert proto message into packet
-func response(cmd pc.Cmd, msg proto.Message) []byte {
+func MakeResponse(cmd pc.Cmd, msg proto.Message) []byte {
 	p := packet.NewRawPacket()
 	p.WriteS32(int32(cmd))
 	rspBytes, err := proto.Marshal(msg)
@@ -68,7 +68,7 @@ func ProcGetSeedReq(session *Session, reader *packet.RawPacket) []byte {
 	if err := proto.Unmarshal(marshalPb, req); err != nil {
 		log.Errorf("invalid protobuf :%v", err)
 		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
-		return response(pc.Cmd_GET_SEED_RSP, rsp)
+		return MakeResponse(pc.Cmd_GET_SEED_RSP, rsp)
 	}
 
 	curve := ecdh.NewCurve25519ECDH()
@@ -81,13 +81,13 @@ func ProcGetSeedReq(session *Session, reader *packet.RawPacket) []byte {
 	if err != nil {
 		log.Error(err)
 		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
-		return response(pc.Cmd_GET_SEED_RSP, rsp)
+		return MakeResponse(pc.Cmd_GET_SEED_RSP, rsp)
 	}
 	decoder, err := rc4.NewCipher(key1)
 	if err != nil {
 		log.Error(err)
 		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
-		return response(pc.Cmd_GET_SEED_RSP, rsp)
+		return MakeResponse(pc.Cmd_GET_SEED_RSP, rsp)
 	}
 	session.Encoder = encoder
 	session.Decoder = decoder
@@ -96,7 +96,7 @@ func ProcGetSeedReq(session *Session, reader *packet.RawPacket) []byte {
 	rsp.SendSeed = e1
 	rsp.RecvSeed = e2
 
-	return response(pc.Cmd_GET_SEED_RSP, rsp)
+	return MakeResponse(pc.Cmd_GET_SEED_RSP, rsp)
 }
 
 // ProcUserLoginReq process user login request
@@ -109,7 +109,7 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 	if !session.IsFlagEncryptedSet() {
 		log.Errorf("session login without encryption:%v", session)
 		session.SetFlagKicked()
-		return response(pc.Cmd_LOGIN_RSP, rsp)
+		return MakeResponse(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	// parse login request
@@ -119,7 +119,7 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 	if err := proto.Unmarshal(marshalPb, req); err != nil {
 		log.Errorf("invalid protobuf:%v", err)
 		session.SetFlagKicked()
-		return response(pc.Cmd_LOGIN_RSP, rsp)
+		return MakeResponse(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	usn := req.GetUsn()
@@ -128,14 +128,14 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 	if usn == 0 || token == "" {
 		log.Errorf("invalid usn:%v or token:%v", usn, token)
 		session.SetFlagKicked()
-		return response(pc.Cmd_LOGIN_RSP, rsp)
+		return MakeResponse(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	// validate user token
 	dbConn := DataServicePool.NextClient()
 	if dbConn == nil {
 		log.Errorf("dataservice not connected yet")
-		return response(pc.Cmd_LOGIN_RSP, rsp)
+		return MakeResponse(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	dbClient := pbdb.NewDBServiceClient(dbConn)
@@ -144,19 +144,19 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 	if err != nil {
 		log.Errorf("error while query user extra info:%v", usn)
 		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
-		return response(pc.Cmd_LOGIN_RSP, rsp)
+		return MakeResponse(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	if dbRsp.Result.Status != pbdb.DB_STATUS_OK || dbRsp.User.Token == "" {
 		log.Errorf("user extra info not found:%v", usn)
 		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
-		return response(pc.Cmd_LOGIN_RSP, rsp)
+		return MakeResponse(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	if strings.Compare(token, dbRsp.User.Token) != 0 {
 		log.Infof("invalid token")
 		session.SetFlagKicked()
-		return response(pc.Cmd_LOGIN_RSP, rsp)
+		return MakeResponse(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
 	// kick previous session if existed
@@ -168,7 +168,7 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 				Reason:    pc.KickReason_KICK_LOGIN_ELSEWHERE,
 				Msg:       session.IP.String(),
 			}
-			prevSession.Mailbox <- response(pc.Cmd_KICK_NOTIFY, kickNotify)
+			prevSession.Mailbox <- MakeResponse(pc.Cmd_KICK_NOTIFY, kickNotify)
 			prevSession.SetFlagKicked()
 		}
 	}
@@ -185,7 +185,7 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 	if conn == nil {
 		log.Error("cannot get game service:", session.GSID)
 		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
-		return response(pc.Cmd_LOGIN_RSP, rsp)
+		return MakeResponse(pc.Cmd_LOGIN_RSP, rsp)
 	}
 	cli := pbgame.NewGameServiceClient(conn)
 
@@ -221,7 +221,7 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 
 	// login success
 	rsp.Header.Status = int32(pc.ResultCode_RESULT_OK)
-	return response(pc.Cmd_LOGIN_RSP, rsp)
+	return MakeResponse(pc.Cmd_LOGIN_RSP, rsp)
 }
 
 func ProcOfflineReq(session *Session, reader *packet.RawPacket) []byte {

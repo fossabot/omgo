@@ -5,7 +5,8 @@ IPADDR=127.0.0.1
 SERVICE_ROOT=backends
 SERVICE_KIND=agent
 SERVICE_NAME=agent-0
-SERVICE_PORT=8888
+SERVICE_PORT=30001
+AGENT_PORT=8888
 SERVICE_DATASERVICE=dataservice
 SERVICE_GAMESERVICE=game
 ETCD_PORT=2379
@@ -28,13 +29,13 @@ then
 fi
 
 docker rm -f ${SERVICE_NAME}
-docker run --rm -d ${NETHOST} -p ${SERVICE_PORT}:${SERVICE_PORT} \
+docker run --rm -d ${NETHOST} -p ${AGENT_PORT}:${AGENT_PORT} \
     --name ${SERVICE_NAME} \
     -e SERVICE_ID=${SERVICE_NAME} \
     --entrypoint /go/bin/${SERVICE_KIND} \
     ${SERVICE_KIND} \
     -P ${SERVICE_KIND} \
-    -l ${IPADDR}:${SERVICE_PORT} \
+    -l ${IPADDR}:${AGENT_PORT} \
     -k ${SERVICE_KIND} \
     -n ${SERVICE_NAME} \
     -e http://${IPADDR}:${ETCD_PORT} \
