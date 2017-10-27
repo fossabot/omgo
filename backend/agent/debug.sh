@@ -24,18 +24,9 @@ case "$(uname -s)" in
      ;;
 esac
 
-if [ "$1" = "rebuild" ]
-then
-    docker build --no-cache --rm=true -t ${SERVICE_KIND} .
-fi
+go build
 
-docker rm -f ${SERVICE_NAME}
-docker run --rm -d ${NETHOST} -p ${AGENT_PORT}:${AGENT_PORT} \
-    --name ${SERVICE_NAME} \
-    -e SERVICE_ID=${SERVICE_NAME} \
-    --entrypoint /go/bin/${SERVICE_KIND} \
-    ${SERVICE_KIND} \
-    -P ${SERVICE_KIND} \
+./agent \
     --listen ${IPADDR}:${AGENT_PORT} \
     --service-kind ${SERVICE_KIND} \
     --service-name ${SERVICE_NAME} \

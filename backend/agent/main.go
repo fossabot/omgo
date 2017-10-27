@@ -9,24 +9,24 @@ The basic work flow of agent is:
 1. main.go      extract arguments from command line via urfave/cli.v2 package
 2. signal.go    start a goroutine to capture UNIX SIGTERM signal
 3. api.go       connect to data and game gRPC services via ETCD
-4. main.go      start a tcpServer goroutine for handling incoming TCP connections
-5. main.go      for each TPC connection, spawns a handleClient goroutine
+4. main.go      start a tcpServer goroutine for handling incoming connections
+5. main.go      for each connection, spawns a handleClient goroutine
 
-        handleClient() {
-            // init client session and other context
-            createSession()
-            // create buffer object and start a goroutine for sending packet
-            go bufferOut()
-            // create agent instance for this client, process 4 types of message:
-            // 1. incoming packages
-            // 2. game stream frames
-            // 3. timer (rpm limit, heartbeat, etc.)
-            // 4. server shutdown
-            go agent()
-            for {
-                // read from TCP and feed to agent via channel
-            }
+    handleClient() {
+        // init client session and other context
+        createSession()
+        // create buffer object and start a goroutine for sending packet
+        go bufferOut()
+        // create agent instance for this client, process 4 types of message:
+        // 1. incoming packages
+        // 2. game stream frames
+        // 3. timer (rpm limit, heartbeat, etc.)
+        // 4. server shutdown
+        go agent()
+        for {
+            // read from TCP and feed to agent via channel
         }
+    }
 
 */
 package main
@@ -59,6 +59,7 @@ const (
 	defaultListen        = ":8888"
 	defaultKind          = "agent"
 	defaultName          = "agent-0"
+	defaultRPCPort       = 30001
 	defaultETCD          = "http://127.0.0.1:2379"
 	defaultRoot          = "backends"
 	defaultGameServerId  = "game-0"
@@ -86,91 +87,90 @@ func main() {
 		Version: "2.0",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Aliases: []string{"l"},
-				Name:    "listen",
-				Usage:   "listening address:port",
-				Value:   defaultListen,
+				Name:  "listen",
+				Usage: "listening address:port",
+				Value: defaultListen,
 			},
 			&cli.StringFlag{
-				Aliases: []string{"k"},
-				Name:    "kind",
-				Usage:   "agent service kind",
-				Value:   defaultKind,
+				Name:  "service-kind",
+				Usage: "agent service kind",
+				Value: defaultKind,
 			},
 			&cli.StringFlag{
-				Aliases: []string{"n"},
-				Name:    "name",
-				Usage:   "agent service name",
-				Value:   defaultName,
+				Name:  "service-name",
+				Usage: "agent service name",
+				Value: defaultName,
+			},
+			&cli.IntFlag{
+				Name:  "service-port",
+				Usage: "agent rpc service port",
+				Value: defaultRPCPort,
 			},
 			&cli.StringSliceFlag{
-				Aliases: []string{"e"},
-				Name:    "etcdhosts",
-				Usage:   "ETCD endpoint addresses",
-				Value:   cli.NewStringSlice(defaultETCD),
+				Name:  "etcd-host",
+				Usage: "ETCD endpoint addresses",
+				Value: cli.NewStringSlice(defaultETCD),
 			},
 			&cli.StringFlag{
-				Aliases: []string{"r"},
-				Name:    "etcdroot",
-				Usage:   "services root path on ETCD",
-				Value:   defaultRoot,
+				Name:  "etcd-root",
+				Usage: "services root path on ETCD",
+				Value: defaultRoot,
 			},
 			&cli.StringSliceFlag{
-				Aliases: []string{"s"},
-				Name:    "services",
-				Usage:   "service with kinds to connect to",
-				Value:   cli.NewStringSlice(defaultServices...),
+				Name:  "add-service",
+				Usage: "service with kinds to connect to",
+				Value: cli.NewStringSlice(defaultServices...),
 			},
 			&cli.StringFlag{
-				Aliases: []string{"g"},
-				Name:    "game",
-				Usage:   "game server name",
-				Value:   defaultGameServerId,
+				Name:  "gameserver-name",
+				Usage: "game server name",
+				Value: defaultGameServerId,
 			},
 			&cli.DurationFlag{
-				Aliases: []string{"d"},
-				Name:    "deadline",
-				Usage:   "read timeout per connection",
-				Value:   defaultReadDeadLine,
+				Name:  "deadline",
+				Usage: "read timeout per connection",
+				Value: defaultReadDeadLine,
 			},
 			&cli.IntFlag{
-				Aliases: []string{"t"},
-				Name:    "txqueuelen",
-				Usage:   "transmission queue length per connection",
-				Value:   defaultTxQueueLength,
+				Name:  "txqueuelen",
+				Usage: "transmission queue length per connection",
+				Value: defaultTxQueueLength,
 			},
 			&cli.IntFlag{
-				Aliases: []string{"o"},
-				Name:    "sockbufsize",
-				Usage:   "TCP socket buffer size per connection",
-				Value:   defaultSockBufSize,
+				Name:  "sockbufsize",
+				Usage: "TCP socket buffer size per connection",
+				Value: defaultSockBufSize,
 			},
 			&cli.IntFlag{
-				Aliases: []string{"p"},
-				Name:    "rpm",
-				Usage:   "Packet limit per minute per connection",
-				Value:   defaultRPMLimit,
+				Name:  "rpm",
+				Usage: "packet limit per minute",
+				Value: defaultRPMLimit,
 			},
 		},
 		Action: func(c *cli.Context) error {
-			etcdHosts := c.StringSlice("etcdhosts")
-			etcdRoot := c.String("etcdroot")
-			serviceNames := c.StringSlice("services")
+			etcdHosts := c.StringSlice("etcd-host")
+			etcdRoot := c.String("etcd-root")
+			serviceNames := c.StringSlice("add-service")
 			rpmLimit := c.Int("rpm")
 			listenOn := c.String("listen")
-			agentKind := c.String("kind")
-			agentName := c.String("name")
+			agentKind := c.String("service-kind")
+			agentName := c.String("service-name")
+			agentRPCPort := c.Int("service-port")
+			gameServerName := c.String("gameserver-name")
 
-			log.Infof("listen:%v", listenOn)
-			log.Infof("kind:%v", agentKind)
-			log.Infof("name:%v", agentName)
-			log.Infof("etcdhosts:%v", etcdHosts)
-			log.Infof("etcdroot:%v", etcdRoot)
+			log.Info("--------------------------------------------------")
+			log.Infof("listen on:%v", listenOn)
+			log.Infof("service-kind:%v", agentKind)
+			log.Infof("service-name:%v", agentName)
+			log.Infof("service-port:%v", agentRPCPort)
+			log.Infof("etcd-hosts:%v", etcdHosts)
+			log.Infof("etcd-root:%v", etcdRoot)
 			log.Infof("services:%v", serviceNames)
 			log.Infof("deadline:%v", c.Duration("deadline"))
 			log.Infof("txqueuelen:%v", c.Int("txqueuelen"))
 			log.Infof("sockbufsize:%v", c.Int("sockbufsize"))
 			log.Infof("rpm:%v", rpmLimit)
+			log.Info("--------------------------------------------------")
 
 			// create configuration
 			config := &Config{
@@ -190,7 +190,7 @@ func main() {
 				Root:            etcdRoot,
 				Hosts:           etcdHosts,
 				GameServerKind:  "game",
-				GameServerName:  "gs-0",
+				GameServerName:  gameServerName,
 				DataServiceKind: "dataservice",
 			}
 			api.Init(srvConfig)
