@@ -92,6 +92,11 @@ func main() {
 				Value: defaultListen,
 			},
 			&cli.StringFlag{
+				Name:  "service-root",
+				Usage: "services root path on ETCD",
+				Value: defaultRoot,
+			},
+			&cli.StringFlag{
 				Name:  "service-kind",
 				Usage: "agent service kind",
 				Value: defaultKind,
@@ -110,11 +115,6 @@ func main() {
 				Name:  "etcd-host",
 				Usage: "ETCD endpoint addresses",
 				Value: cli.NewStringSlice(defaultETCD),
-			},
-			&cli.StringFlag{
-				Name:  "etcd-root",
-				Usage: "services root path on ETCD",
-				Value: defaultRoot,
 			},
 			&cli.StringSliceFlag{
 				Name:  "add-service",
@@ -149,10 +149,10 @@ func main() {
 		},
 		Action: func(c *cli.Context) error {
 			etcdHosts := c.StringSlice("etcd-host")
-			etcdRoot := c.String("etcd-root")
 			serviceNames := c.StringSlice("add-service")
 			rpmLimit := c.Int("rpm")
 			listenOn := c.String("listen")
+			serviceRoot := c.String("service-root")
 			agentKind := c.String("service-kind")
 			agentName := c.String("service-name")
 			agentRPCPort := c.Int("service-port")
@@ -160,11 +160,11 @@ func main() {
 
 			log.Info("--------------------------------------------------")
 			log.Infof("listen on:%v", listenOn)
+			log.Infof("service-root:%v", serviceRoot)
 			log.Infof("service-kind:%v", agentKind)
 			log.Infof("service-name:%v", agentName)
 			log.Infof("service-port:%v", agentRPCPort)
 			log.Infof("etcd-hosts:%v", etcdHosts)
-			log.Infof("etcd-root:%v", etcdRoot)
 			log.Infof("services:%v", serviceNames)
 			log.Infof("deadline:%v", c.Duration("deadline"))
 			log.Infof("txqueuelen:%v", c.Int("txqueuelen"))
@@ -183,11 +183,11 @@ func main() {
 			// capture UNIX SIGTERM signal
 			go sigHandler()
 			// register agent to ETCD
-			agentFullPath := services.GenPath(etcdRoot, agentKind, agentName)
+			agentFullPath := services.GenPath(serviceRoot, agentKind, agentName)
 			services.RegisterService(etcdHosts, agentFullPath, listenOn)
 			// connect to other services
 			srvConfig := api.Config{
-				Root:            etcdRoot,
+				Root:            serviceRoot,
 				Hosts:           etcdHosts,
 				GameServerKind:  "game",
 				GameServerName:  gameServerName,

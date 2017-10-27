@@ -37,10 +37,10 @@ docker run --rm -d ${NETHOST} -p ${AGENT_PORT}:${AGENT_PORT} \
     ${SERVICE_KIND} \
     -P ${SERVICE_KIND} \
     --listen ${IPADDR}:${AGENT_PORT} \
+    --service-root ${SERVICE_ROOT} \
     --service-kind ${SERVICE_KIND} \
     --service-name ${SERVICE_NAME} \
     --etcd-host http://${IPADDR}:${ETCD_PORT} \
-    --etcd-root ${SERVICE_ROOT} \
     --add-service ${SERVICE_DATASERVICE} \
     --add-service ${SERVICE_GAMESERVICE} \
     --gameserver-name ${GAME_SERVER_NAME}

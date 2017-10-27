@@ -19,8 +19,10 @@ import (
 
 const (
 	defaultETCD = "http://127.0.0.1:2379"
-	defaultSID  = "backends/snowflake/snowflake-0"
 	defaultHOST = "127.0.0.1:40001"
+	defaultRoot = "backends"
+	defaultKind = "snowflake"
+	defaultName = "snowflake-0"
 )
 
 func main() {
@@ -37,14 +39,24 @@ func main() {
 			},
 			&cli.StringSliceFlag{
 				EnvVars: []string{"ETCD_HOST"},
-				Name:    "etcd",
-				Usage:   "etcd server address, if multiple hosts, -e host1 -e host2 ...",
+				Name:    "etcd-host",
+				Usage:   "etcd server address, --etcd-host host1 --etcd-host host2 ...",
 				Value:   cli.NewStringSlice(defaultETCD),
 			},
 			&cli.StringFlag{
-				DefaultText: defaultSID,
-				Name:        "service-key",
-				Usage:       "service key",
+				Name:  "service-root",
+				Usage: "services root path on ETCD",
+				Value: defaultRoot,
+			},
+			&cli.StringFlag{
+				DefaultText: defaultKind,
+				Name:        "service-kind",
+				Usage:       "service kind",
+			},
+			&cli.StringFlag{
+				DefaultText: defaultName,
+				Name:        "service-name",
+				Usage:       "service name",
 			},
 			&cli.StringFlag{
 				DefaultText: defaultHOST,
@@ -57,13 +69,21 @@ func main() {
 		Version: "v1.0.0",
 		Action: func(c *cli.Context) error {
 			port := c.Int("port")
-			etcdHosts := c.StringSlice("etcd")
-			key := c.String("service-key")
+			etcdHosts := c.StringSlice("etcd-host")
+			serviceRoot := c.String("service-root")
+			serviceKind := c.String("service-kind")
+			serviceName := c.String("service-name")
 			host := c.String("service-host")
-			log.Infof("start snowflake with etcd hosts:%v", etcdHosts)
-			log.Infof("service key:%v host:%v", key, host)
+			log.Info("--------------------------------------------------")
+			log.Infof("listen on port:%v", port)
+			log.Infof("etcd hosts:%v", etcdHosts)
+			log.Infof("service root:%v", serviceRoot)
+			log.Infof("service kind:%v", serviceKind)
+			log.Infof("service name:%v", serviceName)
+			log.Infof("service host:%v", host)
+			log.Info("--------------------------------------------------")
 
-			setupETCD(etcdHosts, key, host, port)
+			setupETCD(etcdHosts, fmt.Sprintf("%v/%v/%v", serviceRoot, serviceKind, serviceName), fmt.Sprintf("%v:%v", host, port))
 			// start snowflake service
 			startSnowflake(etcdHosts, port)
 			return nil
@@ -74,7 +94,7 @@ func main() {
 	app.Run(os.Args)
 }
 
-func setupETCD(endpoints []string, key, host string, port int) {
+func setupETCD(endpoints []string, key, value string) {
 	// connect to etcd
 	log.Infof("connecting to ETCD: %v", endpoints)
 	etcdCli, err := clientv3.New(clientv3.Config{
@@ -87,9 +107,9 @@ func setupETCD(endpoints []string, key, host string, port int) {
 	defer etcdCli.Close()
 
 	// register snowflake to etcd
-	log.Infof("register self to ETCD : %v @ %v:%v", key, host, port)
+	log.Infof("register self to ETCD : %v @ %v", key, value)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	_, err = etcdCli.Put(ctx, key, fmt.Sprintf("%s:%d", host, port))
+	_, err = etcdCli.Put(ctx, key, value)
 	cancel()
 	if err != nil {
 		log.Error(err)

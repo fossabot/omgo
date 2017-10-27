@@ -2,11 +2,13 @@
 
 IPADDR=localhost
 LOCALHOST=localhost
+SERVICE_ROOT=backends
 SERVICE_KIND=snowflake
+SERVICE_NAME=snowflake-0
 SERVICE_PORT=40001
 MACHINE_ID=1
-SERVICE_NAME=snowflake-0
 NETHOST=--net=host
+ETCD_PORT=2379
 
 case "$(uname -s)" in
    Darwin)
@@ -28,7 +30,9 @@ docker run --rm -d ${NETHOST} -p ${SERVICE_PORT}:${SERVICE_PORT} \
     -e MACHINE_ID=${MACHINE_ID} \
     --entrypoint /go/bin/${SERVICE_KIND} \
     ${SERVICE_KIND} \
-    --service-key backends/${SERVICE_KIND}/${SERVICE_NAME} \
-    --service-host ${IPADDR} \
     --port ${SERVICE_PORT} \
-    --etcd http://${IPADDR}:2379
+    --etcd-host http://${IPADDR}:${ETCD_PORT} \
+    --service-root ${SERVICE_ROOT} \
+    --service-kind ${SERVICE_KIND} \
+    --service-name ${SERVICE_NAME} \
+    --service-host ${IPADDR}
