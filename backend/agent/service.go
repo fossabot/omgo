@@ -26,6 +26,6 @@ func (s *server) KickUser(ctx context.Context, userEntry *pb.Agent_UserEntry) (*
 		}
 		return &pb.Agent_Result{Status: pb.Agent_STATUS_OK}, nil
 	} else {
-		return &pb.Agent_Result{Status: pb.Agent_STATUS_NOT_FOUND, Msg: "not found"}, nil
+		return &pb.Agent_Result{Status: pb.Agent_, Msg: "not found"}, nil
 	}
 }
