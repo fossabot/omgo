@@ -147,7 +147,7 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 		return MakeResponse(pc.Cmd_LOGIN_RSP, rsp)
 	}
 
-	if dbRsp.Result.Status != pbdb.DB_STATUS_OK || dbRsp.User.Token == "" {
+	if dbRsp.Result.Status != int32(pbdb.DB_STATUS_OK) || dbRsp.User.Token == "" {
 		log.Errorf("user extra info not found:%v", usn)
 		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		return MakeResponse(pc.Cmd_LOGIN_RSP, rsp)
