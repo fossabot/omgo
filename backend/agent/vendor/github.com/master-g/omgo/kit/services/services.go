@@ -6,11 +6,12 @@ import (
 	"sync"
 	"time"
 
+	"sync/atomic"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/coreos/etcd/clientv3"
-	"sync/atomic"
-	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/connectivity"
 )
 
 // Service modification event
@@ -73,6 +74,30 @@ func RegisterService(etcdHosts []string, fullPath, address string) {
 		return
 	}
 	log.Infof("put key %v, value %v", fullPath, address)
+}
+
+// UnregisterService removes a key-value pair from ETCD service
+func UnregisterService(etcdHosts []string, fullPath string) {
+	cfg := clientv3.Config{
+		Endpoints:   etcdHosts,
+		DialTimeout: defaultTimeout,
+	}
+
+	cli, err := clientv3.New(cfg)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	defer cli.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
+	_, err = cli.Delete(ctx, fullPath)
+	cancel()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	log.Infof("del key %v", fullPath)
 }
 
 // GenPath concat arguments with '/'

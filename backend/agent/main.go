@@ -190,8 +190,6 @@ func main() {
 				sockBufSize:   c.Int("sockbufsize"),
 			}
 
-			// capture UNIX SIGTERM signal
-			go sigHandler()
 			// register agent to ETCD
 			agentFullPath := services.GenPath(serviceRoot, agentKind, agentName)
 			agentFullHost := fmt.Sprintf("%v:%v", agentHost, agentRPCPort)
@@ -205,6 +203,14 @@ func main() {
 				DataServiceKind: "dataservice",
 			}
 			api.Init(srvConfig)
+
+			// server exit callback
+			exitCallback := func() {
+				services.UnregisterService(etcdHosts, agentFullPath)
+			}
+
+			// capture UNIX SIGTERM signal
+			go sigHandler(exitCallback)
 
 			// setup session time parameters
 			api.SetReadDeadLine(defaultReadDeadLine)

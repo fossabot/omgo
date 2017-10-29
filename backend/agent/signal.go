@@ -20,7 +20,7 @@ var (
 
 // sigHandler handles unix signals
 // this should be run in a goroutine
-func sigHandler() {
+func sigHandler(callback func()) {
 	defer utils.PrintPanicStack()
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, syscall.SIGTERM)
@@ -34,6 +34,9 @@ func sigHandler() {
 			log.Info("sigterm received")
 			log.Info("waiting for agents to close, please wait...")
 			wg.Wait() // wait for all agent goroutine to finish
+			if callback != nil {
+				callback()
+			}
 			log.Info("agents shutdown")
 			os.Exit(0)
 		}
