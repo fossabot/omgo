@@ -312,6 +312,8 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
 
     @Override
     public void userExtraInfoQuery(DB.UserEntry request, Future<DB.UserOpResult> response) {
+        LOGGER.info("userExtra query:" + request);
+
         long usn = request.getUsn();
         long uid = request.getUid();
         String email = request.getEmail();
@@ -322,24 +324,12 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         }
 
         Future<JsonObject> redisQueryFuture = dbOperator.queryUserInfoRedis(usn);
-        if (usn != 0) {
-            redisQueryFuture.fail("invalid usn");
-        }
 
         redisQueryFuture.setHandler(redisQueryRes -> {
             if (redisQueryRes.succeeded()) {
                 response.complete(DbProtoUtils.makeUserOpOkResult(redisQueryRes.result()));
             } else {
-                Future<JsonObject> dbFuture = dbOperator.queryUserInfoDB(ModelConverter.userEntry2Json(request));
-                dbFuture.setHandler(dbRes -> {
-                    if (dbRes.succeeded()) {
-                        JsonObject dbJson = dbRes.result();
-                        dbJson.put(ModelConverter.KEY_TOKEN, redisQueryRes.result().getString(ModelConverter.KEY_TOKEN));
-                        response.complete(DbProtoUtils.makeUserOpOkResult(dbJson));
-                    } else {
-                        response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_USER_NOT_FOUND));
-                    }
-                });
+                response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_USER_NOT_FOUND));
             }
         });
     }
