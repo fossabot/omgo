@@ -66,7 +66,7 @@ public class ModelConverter {
             .setOs(jsonObject.getString(KEY_OS, ""))
             .setOsLocale(jsonObject.getString(KEY_OS_LOCALE, ""))
             .setPhone(jsonObject.getString(KEY_PHONE, ""))
-            .setPhoneVerified (jsonObject.getBoolean(KEY_PHONE_VERIFIED, false))
+            .setPhoneVerified(jsonObject.getBoolean(KEY_PHONE_VERIFIED, false))
             .setPremiumEnd(jsonObject.getLong(KEY_PREMIUM_END, 0L))
             .setPremiumExp(jsonObject.getLong(KEY_PREMIUM_EXP, 0L))
             .setPremiumLevel(jsonObject.getInteger(KEY_PREMIUM_LEVEL, 0))
@@ -116,6 +116,43 @@ public class ModelConverter {
             .put(KEY_STATUS, userEntry.getStatus())
             .put(KEY_TIMEZONE, userEntry.getTimezone())
             .put(KEY_TOKEN, userEntry.getToken());
+    }
+
+    public static JsonObject correctRedisJson(JsonObject jsonObject) {
+        jsonObject.getMap().forEach((key, value) -> {
+            if (value instanceof String) {
+                String strValue = (String) value;
+                switch (key) {
+                    case KEY_EMAIL_VERIFIED:
+                    case KEY_IS_OFFICIAL:
+                    case KEY_IS_ROBOT:
+                    case KEY_PHONE_VERIFIED:
+                    case KEY_SOCIAL_VERIFIED:
+                        jsonObject.put(key, Boolean.valueOf(strValue));
+                        break;
+                    case KEY_DEVICE_TYPE:
+                    case KEY_GENDER:
+                    case KEY_MCC:
+                    case KEY_PREMIUM_LEVEL:
+                    case KEY_STATUS:
+                    case KEY_TIMEZONE:
+                        jsonObject.put(key, Integer.valueOf(strValue));
+                        break;
+                    case KEY_USN:
+                    case KEY_BIRTHDAY:
+                    case KEY_LAST_LOGIN:
+                    case KEY_LOGIN_COUNT:
+                    case KEY_PREMIUM_END:
+                    case KEY_PREMIUM_EXP:
+                    case KEY_SINCE:
+                    case KEY_UID:
+                        jsonObject.put(key, Long.valueOf(strValue));
+                        break;
+                }
+            }
+        });
+
+        return jsonObject;
     }
 
     private static Set<String> getUserMapKeySet() {

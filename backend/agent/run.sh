@@ -30,16 +30,16 @@ then
 fi
 
 docker rm -f ${SERVICE_NAME}
-docker run --rm -d ${NETHOST} -p ${AGENT_PORT}:${AGENT_PORT} \
+docker run --rm -d ${NETHOST} -p ${AGENT_PORT}:${AGENT_PORT} -p ${SERVICE_PORT}:${SERVICE_PORT} \
     --name ${SERVICE_NAME} \
     -e SERVICE_ID=${SERVICE_NAME} \
     --entrypoint /go/bin/${SERVICE_KIND} \
     ${SERVICE_KIND} \
-    -P ${SERVICE_KIND} \
-    --listen ${IPADDR}:${AGENT_PORT} \
+    --listen ${AGENT_PORT} \
     --service-root ${SERVICE_ROOT} \
     --service-kind ${SERVICE_KIND} \
     --service-name ${SERVICE_NAME} \
+    --service-host ${IPADDR} \
     --etcd-host http://${IPADDR}:${ETCD_PORT} \
     --add-service ${SERVICE_DATASERVICE} \
     --add-service ${SERVICE_GAMESERVICE} \

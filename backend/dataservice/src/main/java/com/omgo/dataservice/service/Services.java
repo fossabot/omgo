@@ -3,6 +3,7 @@ package com.omgo.dataservice.service;
 import com.coreos.jetcd.KV;
 import com.coreos.jetcd.data.ByteSequence;
 import com.coreos.jetcd.data.KeyValue;
+import com.coreos.jetcd.kv.DeleteResponse;
 import com.coreos.jetcd.kv.GetResponse;
 import com.coreos.jetcd.kv.PutResponse;
 import com.coreos.jetcd.options.GetOption;
@@ -208,10 +209,36 @@ public class Services {
             LOGGER.info(String.format("service %s @ %s registered", fullPath, address));
         } catch (InterruptedException e) {
             e.printStackTrace();
-            LOGGER.error("error while setRoute service for interrupt");
+            LOGGER.error("error while register service for interrupt");
         } catch (ExecutionException e) {
             e.printStackTrace();
-            LOGGER.error("error while setRoute service for exception");
+            LOGGER.error("error while register service for exception");
+        }
+        kvClient.close();
+    }
+
+    /**
+     * unregister service from ETCD
+     *
+     * @param fullPath full path of the service
+     */
+    public void unregisterService(String fullPath) {
+        KV kvClient = getInstance().getKVClient();
+        if (kvClient == null) {
+            return;
+        }
+
+        ByteSequence key = ByteSequence.fromString(fullPath);
+        CompletableFuture<DeleteResponse> delFuture = kvClient.delete(key);
+        try {
+            DeleteResponse deleteResponse = delFuture.get();
+            LOGGER.info(String.format("service %s removed", fullPath));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            LOGGER.error("error while remove service for interrupt");
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            LOGGER.error("error while remove service for exception");
         }
         kvClient.close();
     }

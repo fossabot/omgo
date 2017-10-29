@@ -39,6 +39,8 @@ import (
 	"os"
 	"time"
 
+	"fmt"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/backend/agent/api"
 	"github.com/master-g/omgo/kit/services"
@@ -48,7 +50,7 @@ import (
 
 // Config holds configuration for agent
 type Config struct {
-	listen        string        // address to listen
+	port          int           // port to listen
 	readDeadline  time.Duration // read timeout
 	sockBufSize   int           // socket buffer size
 	txQueueLength int           // transmission queue length
@@ -56,9 +58,10 @@ type Config struct {
 
 const (
 	profileAddress       = "0.0.0.0:6666"
-	defaultListen        = ":8888"
+	defaultPort          = 8888
 	defaultKind          = "agent"
 	defaultName          = "agent-0"
+	defaultHost          = "localhost"
 	defaultRPCPort       = 30001
 	defaultETCD          = "http://127.0.0.1:2379"
 	defaultRoot          = "backends"
@@ -86,10 +89,10 @@ func main() {
 		Usage:   "a gateway service for game server",
 		Version: "2.0",
 		Flags: []cli.Flag{
-			&cli.StringFlag{
+			&cli.IntFlag{
 				Name:  "listen",
-				Usage: "listening address:port",
-				Value: defaultListen,
+				Usage: "listening port",
+				Value: defaultPort,
 			},
 			&cli.StringFlag{
 				Name:  "service-root",
@@ -105,6 +108,11 @@ func main() {
 				Name:  "service-name",
 				Usage: "agent service name",
 				Value: defaultName,
+			},
+			&cli.StringFlag{
+				Name:  "service-host",
+				Usage: "agent service host",
+				Value: defaultHost,
 			},
 			&cli.IntFlag{
 				Name:  "service-port",
@@ -151,18 +159,20 @@ func main() {
 			etcdHosts := c.StringSlice("etcd-host")
 			serviceNames := c.StringSlice("add-service")
 			rpmLimit := c.Int("rpm")
-			listenOn := c.String("listen")
+			listenPort := c.String("port")
 			serviceRoot := c.String("service-root")
 			agentKind := c.String("service-kind")
 			agentName := c.String("service-name")
 			agentRPCPort := c.Int("service-port")
+			agentHost := c.String("service-host")
 			gameServerName := c.String("gameserver-name")
 
 			log.Info("--------------------------------------------------")
-			log.Infof("listen on:%v", listenOn)
+			log.Infof("listen on:%v", listenPort)
 			log.Infof("service-root:%v", serviceRoot)
 			log.Infof("service-kind:%v", agentKind)
 			log.Infof("service-name:%v", agentName)
+			log.Infof("service-host:%v", agentHost)
 			log.Infof("service-port:%v", agentRPCPort)
 			log.Infof("etcd-hosts:%v", etcdHosts)
 			log.Infof("services:%v", serviceNames)
@@ -174,7 +184,7 @@ func main() {
 
 			// create configuration
 			config := &Config{
-				listen:        c.String("listen"),
+				port:          c.Int("listen"),
 				readDeadline:  c.Duration("deadline"),
 				txQueueLength: c.Int("txqueuelen"),
 				sockBufSize:   c.Int("sockbufsize"),
@@ -184,7 +194,8 @@ func main() {
 			go sigHandler()
 			// register agent to ETCD
 			agentFullPath := services.GenPath(serviceRoot, agentKind, agentName)
-			services.RegisterService(etcdHosts, agentFullPath, listenOn)
+			agentFullHost := fmt.Sprintf("%v:%v", agentHost, agentRPCPort)
+			services.RegisterService(etcdHosts, agentFullPath, agentFullHost)
 			// connect to other services
 			srvConfig := api.Config{
 				Root:            serviceRoot,
@@ -212,7 +223,7 @@ func main() {
 
 func tcpServer(config *Config) {
 	// resolve address & start listening
-	tcpAddr, err := net.ResolveTCPAddr("tcp4", config.listen)
+	tcpAddr, err := net.ResolveTCPAddr("tcp4", fmt.Sprintf(":%v", config.port))
 	checkError(err)
 
 	listener, err := net.ListenTCP("tcp", tcpAddr)

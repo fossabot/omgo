@@ -73,32 +73,22 @@ timezone:	8
 }
  */
 
-public class RegisterHandler extends BaseHandler implements Services.Pool.OnChangeListener {
-
-    private DBServiceGrpc.DBServiceVertxStub dbServiceVertxStub;
-    private Services.Pool dataServicePool;
-    private ManagedChannel channel;
+public class RegisterHandler extends BaseGrpcHandler {
 
     public RegisterHandler(Vertx vertx, Services.Pool servicePool) {
-        super(vertx);
+        super(vertx, servicePool);
         notRequireValidNonce();
         notRequireValidSession();
         notRequireValidEncryption();
-
-        this.dataServicePool = servicePool;
-        init();
-    }
-
-    private void init() {
-        channel = dataServicePool.getClient();
-        if (channel != null) {
-            dbServiceVertxStub = DBServiceGrpc.newVertxStub(channel);
-        }
-        dataServicePool.addOnChangeListener(this);
     }
 
     @Override
     protected void handle(RoutingContext routingContext, HttpServerResponse response) {
+        super.handle(routingContext, response);
+        if (dbServiceVertxStub == null) {
+            return;
+        }
+
         HttpServerRequest request = super.getRequest(routingContext);
 
         JsonObject registerJson = super.getHeaderJson(request);
@@ -166,23 +156,5 @@ public class RegisterHandler extends BaseHandler implements Services.Pool.OnChan
                 routingContext.fail(HttpStatus.INTERNAL_SERVER_ERROR.code);
             }
         });
-    }
-
-    @Override
-    public void onServiceAdded(Services.Pool pool) {
-        if (channel == null) {
-            LOGGER.info("dataservice online, init...");
-            init();
-        }
-    }
-
-    @Override
-    public void onServiceRemoved(Services.Pool pool) {
-        if (channel != null && channel.isShutdown()) {
-            LOGGER.info("dataservice offline, try re-init");
-            channel = null;
-            dbServiceVertxStub = null;
-            init();
-        }
     }
 }

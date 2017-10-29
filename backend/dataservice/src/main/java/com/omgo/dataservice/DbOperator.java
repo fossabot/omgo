@@ -66,8 +66,10 @@ public class DbOperator {
         } else {
             redisClient.hgetall(AccountUtils.getRedisKey(usn), res -> {
                 if (res.succeeded()) {
-                    if (!res.result().isEmpty()) {
-                        future.complete(res.result());
+                    JsonObject result = res.result();
+                    if (!result.isEmpty()) {
+                        // convert string to numeric value in json returned by redis
+                        future.complete(ModelConverter.correctRedisJson(result));
                     } else {
                         future.fail(String.format("user %d not found in redis", usn));
                     }

@@ -26,11 +26,13 @@ esac
 
 go build
 
-./agent \
-    --listen ${IPADDR}:${AGENT_PORT} \
+#./agent \
+  echo \
+    --listen ${AGENT_PORT} \
     --service-root ${SERVICE_ROOT} \
     --service-kind ${SERVICE_KIND} \
     --service-name ${SERVICE_NAME} \
+    --service-host ${IPADDR} \
     --etcd-host http://${IPADDR}:${ETCD_PORT} \
     --add-service ${SERVICE_DATASERVICE} \
     --add-service ${SERVICE_GAMESERVICE} \

@@ -3,6 +3,7 @@ package com.omgo.webservice.service;
 import com.coreos.jetcd.KV;
 import com.coreos.jetcd.data.ByteSequence;
 import com.coreos.jetcd.data.KeyValue;
+import com.coreos.jetcd.kv.DeleteResponse;
 import com.coreos.jetcd.kv.GetResponse;
 import com.coreos.jetcd.kv.PutResponse;
 import com.coreos.jetcd.options.GetOption;
@@ -43,13 +44,13 @@ public class Services {
     private Services() {
     }
 
-    // etcd client
+    // service client
     private com.coreos.jetcd.Client client;
 
     /**
-     * init etcd client with single endpoint
+     * init service client with single endpoint
      *
-     * @param endpoint etcd endpoint
+     * @param endpoint service endpoint
      */
     public void init(String endpoint) {
         if (client != null) {
@@ -59,9 +60,9 @@ public class Services {
     }
 
     /**
-     * init etcd client with one or more endpoints
+     * init service client with one or more endpoints
      *
-     * @param endpoints etcd endpoint list
+     * @param endpoints service endpoint list
      */
     public void init(List<String> endpoints) {
         if (client != null) {
@@ -71,7 +72,7 @@ public class Services {
     }
 
     /**
-     * generate a range key for etcd get/put operation
+     * generate a range key for service get/put operation
      *
      * @param key origin key
      * @return ranged key
@@ -122,7 +123,7 @@ public class Services {
     }
 
     /**
-     * get etcd key-value client
+     * get service key-value client
      *
      * @return KV client instance
      */
@@ -208,10 +209,36 @@ public class Services {
             LOGGER.info(String.format("service %s @ %s registered", fullPath, address));
         } catch (InterruptedException e) {
             e.printStackTrace();
-            LOGGER.error("error while setRoute service for interrupt");
+            LOGGER.error("error while register service for interrupt");
         } catch (ExecutionException e) {
             e.printStackTrace();
-            LOGGER.error("error while setRoute service for exception");
+            LOGGER.error("error while register service for exception");
+        }
+        kvClient.close();
+    }
+
+    /**
+     * unregister service from ETCD
+     *
+     * @param fullPath full path of the service
+     */
+    public void unregisterService(String fullPath) {
+        KV kvClient = getInstance().getKVClient();
+        if (kvClient == null) {
+            return;
+        }
+
+        ByteSequence key = ByteSequence.fromString(fullPath);
+        CompletableFuture<DeleteResponse> delFuture = kvClient.delete(key);
+        try {
+            DeleteResponse deleteResponse = delFuture.get();
+            LOGGER.info(String.format("service %s removed", fullPath));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            LOGGER.error("error while remove service for interrupt");
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            LOGGER.error("error while remove service for exception");
         }
         kvClient.close();
     }

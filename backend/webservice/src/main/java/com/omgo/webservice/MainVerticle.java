@@ -1,9 +1,6 @@
 package com.omgo.webservice;
 
-import com.omgo.webservice.handler.HandshakeHandler;
-import com.omgo.webservice.handler.LoginHandler;
-import com.omgo.webservice.handler.RegisterHandler;
-import com.omgo.webservice.handler.TestHandler;
+import com.omgo.webservice.handler.*;
 import com.omgo.webservice.service.Services;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
@@ -60,6 +57,10 @@ public class MainVerticle extends AbstractVerticle {
         // handshake
         HandshakeHandler handshakeHandler = new HandshakeHandler(vertx);
         handshakeHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_HANDSHAKE));
+
+        // user profile
+        UserProfileHandler userProfileHandler = new UserProfileHandler(vertx, dataCenters);
+        userProfileHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_USERPROFILE));
 
         // test
         TestHandler testHandler = new TestHandler(vertx);

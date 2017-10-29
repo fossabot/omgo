@@ -21,11 +21,11 @@ cd ./etcd
 sh ./run.sh $1
 cd ..
 
-# nsq
-cd ./nsq
-sh ./nsqlookupd.sh $1
-sh ./nsqd.sh $1
-cd ..
+# nsq (we don't need this yet)
+#cd ./nsq
+#sh ./nsqlookupd.sh $1
+#sh ./nsqd.sh $1
+#cd ..
 
 cd ..
 

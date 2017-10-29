@@ -22,6 +22,12 @@ public class MainVerticle extends AbstractVerticle {
     private String serviceHost;
     private int servicePort;
 
+    private String root;
+    private String selfKind;
+    private String selfName;
+
+    private String selfFullPath;
+
     @Override
     public void start() {
         LOGGER.info("config version: " + config().getString("info.version"));
@@ -29,6 +35,13 @@ public class MainVerticle extends AbstractVerticle {
 
         serviceHost = config().getString("service.host", "localhost");
         servicePort = config().getInteger("service.port", 60001);
+        root = config().getString("service.root", "backends");
+        selfKind = config().getString("service.kind", "dataservice");
+        selfName = config().getString("service.self", "ds-0");
+
+        selfFullPath = Services.generatePath(root, selfKind, selfName);
+
+        LOGGER.info("service full path:" + selfFullPath);
 
         VertxServer rpcServer = VertxServerBuilder
             .forPort(vertx, servicePort)
@@ -43,6 +56,17 @@ public class MainVerticle extends AbstractVerticle {
         }
 
         setupServices();
+    }
+
+    @Override
+    public void stop() {
+        try {
+            super.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Services.getInstance().unregisterService(selfFullPath);
     }
 
     /**
@@ -93,14 +117,8 @@ public class MainVerticle extends AbstractVerticle {
         LOGGER.info("etcd host:" + endpoints);
         Services.getInstance().init(endpoints);
 
-        String root = config().getString("service.root", "backends");
-        String selfKind = config().getString("service.kind", "dataservice");
-        String selfName = config().getString("service.self", "ds-0");
-
-        LOGGER.info("service root:" + root);
-
         // register self to service as service
-        Services.getInstance().registerService(Services.generatePath(root, selfKind, selfName), String.format("%s:%d", serviceHost, servicePort));
+        Services.getInstance().registerService(selfFullPath, String.format("%s:%d", serviceHost, servicePort));
         LOGGER.info("service registered");
     }
 }

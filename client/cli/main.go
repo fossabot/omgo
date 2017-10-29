@@ -17,9 +17,24 @@ import (
 	"gopkg.in/abiosoft/ishell.v2"
 )
 
+type UserInfoExt struct {
+	Usn        uint64        `json:"usn,omitempty"`
+	Uid        uint64        `json:"uid"`
+	Avatar     string        `json:"avatar,omitempty"`
+	Birthday   uint64        `json:"birthday,omitempty"`
+	Country    string        `json:"country,omitempty"`
+	Email      string        `json:"email,omitempty"`
+	Gender     pc.Gender     `json:"gender"`
+	LastLogin  uint64        `json:"last_login,omitempty"`
+	LoginCount int32         `json:"login_count"`
+	Nickname   string        `json:"nickname,omitempty"`
+	Since      uint64        `json:"since,omitempty"`
+	Status     pc.UserStatus `json:"status"`
+	Token      string        `json:"token"`
+}
+
 type HttpLoginRsp struct {
-	UserInfo  pc.UserInfo `json:"user_info,omitempty"`
-	Token     string      `json:"token,omitempty"`
+	UserInfo  UserInfoExt `json:"user_info,omitempty"`
 	Timestamp uint64      `json:"timestamp,omitempty"`
 }
 
@@ -137,12 +152,14 @@ func main() {
 			// email
 			c.Print("Email:")
 			email := c.ReadLine()
+			if email == "" {
+				email = "tester@acme.com"
+			}
 			// pass
 			c.Print("Password:")
 			pass := strings.TrimSpace(c.ReadPassword())
 			if pass == "" {
-				log.Error("password invalid")
-				return
+				pass = "123456"
 			}
 			// send request
 			req, err := http.NewRequest("GET", apiHost+"/login", nil)
@@ -295,8 +312,8 @@ func main() {
 				log.Error("need to exchange key first")
 				return
 			}
-			sess.Usn = 1
-			sess.Token = "random token"
+			sess.Usn = httpLoginRsp.UserInfo.Usn
+			sess.Token = httpLoginRsp.UserInfo.Token
 			sess.Login()
 		},
 	})
