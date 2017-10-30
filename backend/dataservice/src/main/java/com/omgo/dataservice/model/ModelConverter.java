@@ -43,6 +43,15 @@ public class ModelConverter {
     public static final String KEY_TIMEZONE = "timezone";
     public static final String KEY_TOKEN = "token";
 
+    public static final String KEY_PARAM = "param";
+    public static final String KEY_NONCE = "nonce";
+    public static final String KEY_SEED = "seed";
+    public static final String KEY_SIGNATURE = "signature";
+    public static final String KEY_TIMESTAMP = "timestamp";
+    public static final String KEY_USER_INFO = "user_info";
+
+    public static final String KEY_HOSTS = "hosts";
+
     public static Db.DB.UserEntry json2UserEntry(JsonObject jsonObject) {
         return Db.DB.UserEntry.newBuilder()
             .setUsn(jsonObject.getLong(KEY_USN, 0L))

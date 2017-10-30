@@ -31,10 +31,11 @@ docker run -d --name ${SID} ${NETHOST} \
 # *** CREATE ADMIN DB AND ADMIN USER ***
 # use admin
 # db.createUser({ user:'admin', pwd:'admin', roles:['userAdminAnyDatabase', 'dbAdminAnyDatabase', 'readWriteAnyDatabase']})
+# db.auth('admin', 'admin')
 
 # *** CREATE DB AND USER FOR DB CLIENT ***
 # use master
-# db.createUser({user:'dbclient', pwd:'12345678', roles:['dbOwner']})
+# db.createUser({user:'driver', pwd:'mongodb', roles:['dbOwner']})
 
 # *** INITIALIZE DB ***
 # mongo master -u driver -p 'mongodb' --eval "db.status.update({_id:'user'},{_id:'user', usn:12345678, uid:100000001},{upsert:true})"
