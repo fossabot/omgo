@@ -21,7 +21,7 @@ esac
 # Database service
 if [ "$1" = "rebuild" ]
 then
-    mvn clean package
+    mvn -U clean package
     docker build --no-cache --rm=true -t ${SERVICE_NAME} .
 fi
 
