@@ -2,11 +2,11 @@ package com.omgo.webservice;
 
 import com.omgo.webservice.service.Services;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AgentManager {
     private static final long WATCH_INTERVAL = 30 * 1000; // 30 seconds
@@ -26,8 +26,6 @@ public class AgentManager {
         }
         return instance;
     }
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
 
     private long timerId = 0;
     private Map<String, String> agentServices = new HashMap<>();

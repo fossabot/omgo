@@ -64,14 +64,14 @@ public class DbOperator {
         if (usn == 0L) {
             future.fail("invalid usn");
         } else {
-            redisClient.hgetall(AccountUtils.getRedisKey(usn), res -> {
+            redisClient.get(AccountUtils.getRedisKey(usn), res -> {
                 if (res.succeeded()) {
-                    JsonObject result = res.result();
-                    if (!result.isEmpty()) {
-                        // convert string to numeric value in json returned by redis
-                        future.complete(ModelConverter.correctRedisJson(result));
+                    String strJson = res.result();
+                    JsonObject result = Utils.safeParseJson(strJson);
+                    if (result != null) {
+                        future.complete(result);
                     } else {
-                        future.fail(String.format("user %d not found in redis", usn));
+                        future.fail(String.format("invalid value in redis (usn:%d) value:%s", usn, strJson));
                     }
                 } else {
                     future.fail(res.cause());
@@ -173,8 +173,9 @@ public class DbOperator {
             String key = AccountUtils.getRedisKey(usn);
             RedisTransaction transaction = redisClient.transaction();
             transaction.multi(event -> {
-                transaction.hmset(key, userInfoJson, hmsetEvent -> {
-                    if (isRedisTransactionSucceed(hmsetEvent)) {
+                transaction.set(key, userInfoJson.encode(), setEvent -> {
+//                transaction.hmset(key, userInfoJson, setEvent -> {
+                    if (isRedisTransactionSucceed(setEvent)) {
                         transaction.expire(key, REDIS_USER_EXPIRE_DURATION, expireEvent -> {
                             if (isRedisTransactionSucceed(expireEvent)) {
                                 transaction.exec(execEvent -> {
@@ -192,7 +193,7 @@ public class DbOperator {
                         });
                     } else {
                         transaction.discard(discard -> {
-                            future.fail(hmsetEvent.cause());
+                            future.fail(setEvent.cause());
                         });
                     }
                 });
