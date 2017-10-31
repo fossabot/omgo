@@ -2,8 +2,8 @@
 
 LOCALHOST=127.0.0.1
 IPADDR=127.0.0.1
-SERVICE_NAME=webservice
-SID=web-0
+SERVICE_KIND=webservice
+SERVICE_NAME=web-0
 PORT=8080
 NETHOST=--net=host
 
@@ -22,10 +22,10 @@ esac
 if [ "$1" = "rebuild" ]
 then
     mvn -U clean package
-    docker build --no-cache --rm=true -t ${SERVICE_NAME} .
+    docker build --no-cache --rm=true -t ${SERVICE_KIND} .
 fi
 
-docker rm -f ${SID}
+docker rm -f ${SERVICE_NAME}
 docker run --rm -d ${NETHOST} -p ${PORT}:${PORT} \
-    --name ${SID} \
-    ${SERVICE_NAME} \
+    --name ${SERVICE_NAME} \
+    ${SERVICE_KIND} \

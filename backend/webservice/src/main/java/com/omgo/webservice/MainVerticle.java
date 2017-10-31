@@ -1,8 +1,15 @@
 package com.omgo.webservice;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 import com.omgo.webservice.handler.*;
 import com.omgo.webservice.service.Services;
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.dropwizard.DropwizardExports;
+import io.prometheus.client.hotspot.DefaultExports;
+import io.prometheus.client.vertx.MetricsHandler;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.logging.Logger;
@@ -20,6 +27,11 @@ import java.util.List;
 public class MainVerticle extends AbstractVerticle {
     private static final Logger LOGGER = LoggerFactory.getLogger(MainVerticle.class);
     private Services.Pool dataCenters;
+
+    public static void main(String[] args) {
+        Vertx vertx = Vertx.vertx();
+        vertx.deployVerticle(new MainVerticle());
+    }
 
     @Override
     public void start() {
@@ -65,6 +77,11 @@ public class MainVerticle extends AbstractVerticle {
         // test
         TestHandler testHandler = new TestHandler(vertx);
         testHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_TEST));
+
+        // metrics
+        DefaultExports.initialize();
+        new DropwizardExports(SharedMetricRegistries.getOrCreate("vertx.http.servers.localhost:8080")).register();
+        router.get("/metrics").handler(new MetricsHandler());
 
         // start service
         HttpServer server = vertx.createHttpServer();
