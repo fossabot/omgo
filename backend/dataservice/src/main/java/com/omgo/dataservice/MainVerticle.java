@@ -2,9 +2,17 @@ package com.omgo.dataservice;
 
 import com.omgo.dataservice.service.Services;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
+import io.vertx.ext.dropwizard.Match;
+import io.vertx.ext.dropwizard.MatchType;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.grpc.VertxServer;
 import io.vertx.grpc.VertxServerBuilder;
@@ -27,6 +35,36 @@ public class MainVerticle extends AbstractVerticle {
     private String selfName;
 
     private String selfFullPath;
+
+    public static void main(String[] args) {
+
+        String cfgPath = "";
+        for (int i = 0; i < args.length - 1; i++) {
+            if (args[i].equals("-conf")) {
+                cfgPath = args[i + 1];
+                break;
+            }
+        }
+
+        Vertx vertx = Vertx.vertx(new VertxOptions().setMetricsOptions(
+            new DropwizardMetricsOptions()
+                .setEnabled(true)
+                .addMonitoredHttpServerUri(
+                    new Match().setValue("/"))
+                .addMonitoredHttpServerUri(
+                    new Match().setValue("/api/*").setType(MatchType.REGEX))
+        ));
+
+        JsonObject configObject;
+        if (!cfgPath.isEmpty()) {
+            Buffer fileBuf = vertx.fileSystem().readFileBlocking(cfgPath);
+            configObject = new JsonObject(fileBuf);
+        } else {
+            configObject = new JsonObject();
+        }
+
+        vertx.deployVerticle(new MainVerticle(), new DeploymentOptions().setConfig(configObject));
+    }
 
     @Override
     public void start() {

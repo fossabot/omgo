@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 mvn package dependency:copy-dependencies
-java -jar target/omgo-webservice-1.0-SNAPSHOT-fat.jar \
-    -conf src/main/resources/config.json \
-    -Dvertx.metrics.options.enabled=true
+java -jar -Dvertx.metrics.options.enabled=true \
+    target/omgo-webservice-1.0-SNAPSHOT-fat.jar \
+    -conf src/main/resources/config.json
 
 #export LAUNCHER="io.vertx.core.Launcher"
 #export VERTICLE="com.omgo.webservice.MainVerticle"

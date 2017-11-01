@@ -9,11 +9,18 @@ import io.prometheus.client.dropwizard.DropwizardExports;
 import io.prometheus.client.hotspot.DefaultExports;
 import io.prometheus.client.vertx.MetricsHandler;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
+import io.vertx.ext.dropwizard.Match;
+import io.vertx.ext.dropwizard.MatchType;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CookieHandler;
@@ -29,8 +36,33 @@ public class MainVerticle extends AbstractVerticle {
     private Services.Pool dataCenters;
 
     public static void main(String[] args) {
-        Vertx vertx = Vertx.vertx();
-        vertx.deployVerticle(new MainVerticle());
+
+        String cfgPath = "";
+        for (int i = 0; i < args.length - 1; i++) {
+            if (args[i].equals("-conf")) {
+                cfgPath = args[i + 1];
+                break;
+            }
+        }
+
+        Vertx vertx = Vertx.vertx(new VertxOptions().setMetricsOptions(
+            new DropwizardMetricsOptions()
+                .setEnabled(true)
+                .addMonitoredHttpServerUri(
+                    new Match().setValue("/"))
+                .addMonitoredHttpServerUri(
+                    new Match().setValue("/api/*").setType(MatchType.REGEX))
+        ));
+
+        JsonObject configObject;
+        if (!cfgPath.isEmpty()) {
+            Buffer fileBuf = vertx.fileSystem().readFileBlocking(cfgPath);
+            configObject = new JsonObject(fileBuf);
+        } else {
+            configObject = new JsonObject();
+        }
+
+        vertx.deployVerticle(new MainVerticle(), new DeploymentOptions().setConfig(configObject));
     }
 
     @Override
@@ -80,7 +112,8 @@ public class MainVerticle extends AbstractVerticle {
 
         // metrics
         DefaultExports.initialize();
-        new DropwizardExports(SharedMetricRegistries.getOrCreate("vertx.http.servers.localhost:8080")).register();
+        MetricRegistry metricRegistry = SharedMetricRegistries.getOrCreate("vertx");
+        CollectorRegistry.defaultRegistry.register(new DropwizardExports(metricRegistry));
         router.get("/metrics").handler(new MetricsHandler());
 
         // start service

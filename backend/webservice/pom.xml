@@ -12,6 +12,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vertx.version>3.5.0</vertx.version>
         <main.verticle>com.omgo.webservice.MainVerticle</main.verticle>
+        <exec.mainClass>com.omgo.webservice.MainVerticle</exec.mainClass>
     </properties>
 
     <dependencies>
@@ -165,8 +166,7 @@
                                 <transformer
                                     implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Main-Class>io.vertx.core.Launcher</Main-Class>
-                                        <Main-Verticle>${main.verticle}</Main-Verticle>
+                                        <Main-Class>${exec.mainClass}</Main-Class>
                                     </manifestEntries>
                                 </transformer>
                                 <transformer
@@ -216,19 +216,18 @@
                 </executions>
             </plugin>
 
-
             <!-- vert.x launcher -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.5.0</version>
+                <version>1.6.0</version>
                 <configuration>
-                    <mainClass>io.vertx.core.Launcher</mainClass>
+                    <executable>java</executable>
                     <arguments>
-                        <argument>run</argument>
-                        <argument>${main.verticle}</argument>
+                        <argument>-jar</argument>
+                        <argument>target/${project.artifactId}-${project.version}-fat.jar</argument>
                         <argument>-conf</argument>
-                        <argument>${project.build.outputDirectory}/config.json</argument>
+                        <argument>src/main/resources/config.json</argument>
                     </arguments>
                 </configuration>
             </plugin>
