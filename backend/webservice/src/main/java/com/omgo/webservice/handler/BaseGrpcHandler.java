@@ -1,5 +1,6 @@
 package com.omgo.webservice.handler;
 
+import com.omgo.webservice.Utils;
 import com.omgo.webservice.model.HttpStatus;
 import com.omgo.webservice.service.Services;
 import io.grpc.ManagedChannel;
@@ -21,6 +22,11 @@ public class BaseGrpcHandler extends BaseHandler implements Services.Pool.OnChan
     }
 
     protected void initServicePool() {
+        if (Utils.STANDALONE && !singular) {
+            LOGGER.info("ignore " + getClass().getSimpleName() + " cannot run in standalone mode");
+            return;
+        }
+
         channel = dataServicePool.getClient();
         if (channel != null) {
             dbServiceVertxStub = DBServiceGrpc.newVertxStub(channel);

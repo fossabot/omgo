@@ -37,14 +37,6 @@ public class MainVerticle extends AbstractVerticle {
 
     public static void main(String[] args) {
 
-        String cfgPath = "";
-        for (int i = 0; i < args.length - 1; i++) {
-            if (args[i].equals("-conf")) {
-                cfgPath = args[i + 1];
-                break;
-            }
-        }
-
         Vertx vertx = Vertx.vertx(new VertxOptions().setMetricsOptions(
             new DropwizardMetricsOptions()
                 .setEnabled(true)
@@ -54,23 +46,17 @@ public class MainVerticle extends AbstractVerticle {
                     new Match().setValue("/api/*").setType(MatchType.REGEX))
         ));
 
-        JsonObject configObject;
-        if (!cfgPath.isEmpty()) {
-            Buffer fileBuf = vertx.fileSystem().readFileBlocking(cfgPath);
-            configObject = new JsonObject(fileBuf);
-        } else {
-            configObject = new JsonObject();
-        }
-
+        String cfgPath = ConfigUtils.extractConfigPath(args);
+        JsonObject configObject = ConfigUtils.loadConfigFromPath(vertx, cfgPath, new JsonObject());
         vertx.deployVerticle(new MainVerticle(), new DeploymentOptions().setConfig(configObject));
     }
 
     @Override
     public void start() {
-        LOGGER.info("config version: " + config().getString("info.version"));
+        LOGGER.info("config version: " + config().getString(ConfigUtils.INFO_VERSION));
 
-        Utils.DEBUG = config().getBoolean("debug", false);
-        Utils.STANDALONE = config().getBoolean("standalone", true);
+        Utils.DEBUG = config().getBoolean(ConfigUtils.DEBUG, false);
+        Utils.STANDALONE = config().getBoolean(ConfigUtils.STANDALONE, true);
 
         setupServices();
         startApiService();
@@ -84,19 +70,17 @@ public class MainVerticle extends AbstractVerticle {
         router.route().handler(BodyHandler.create());
         SessionStore store = LocalSessionStore.create(
             vertx,
-            config().getString("session.map"),
-            config().getLong("session.expire", 24 * 60 * 60 * 1000L));
+            config().getString(ConfigUtils.SESSION_MAP),
+            config().getLong(ConfigUtils.SESSION_EXPIRE, 24 * 60 * 60 * 1000L));
         router.route().handler(SessionHandler.create(store));
 
-        if (!Utils.STANDALONE) {
-            // login
-            LoginHandler loginHandler = new LoginHandler(vertx, dataCenters);
-            loginHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_LOGIN));
+        // login
+        LoginHandler loginHandler = new LoginHandler(vertx, dataCenters);
+        loginHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_LOGIN));
 
-            // register
-            RegisterHandler registerHandler = new RegisterHandler(vertx, dataCenters);
-            registerHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_REGISTER));
-        }
+        // register
+        RegisterHandler registerHandler = new RegisterHandler(vertx, dataCenters);
+        registerHandler.setRoute(router, ApiConstant.getApiPath(ApiConstant.API_REGISTER));
 
         // handshake
         HandshakeHandler handshakeHandler = new HandshakeHandler(vertx);
@@ -114,7 +98,7 @@ public class MainVerticle extends AbstractVerticle {
         DefaultExports.initialize();
         MetricRegistry metricRegistry = SharedMetricRegistries.getOrCreate("vertx");
         CollectorRegistry.defaultRegistry.register(new DropwizardExports(metricRegistry));
-        router.get("/metrics").handler(new MetricsHandler());
+        router.get(config().getString(ConfigUtils.METRICS_PATH, "/metrics")).handler(new MetricsHandler());
 
         // start service
         HttpServer server = vertx.createHttpServer();
@@ -131,7 +115,7 @@ public class MainVerticle extends AbstractVerticle {
 
         // init etcd
         List<String> endpoints = new ArrayList<>();
-        JsonArray endpointsJA = config().getJsonArray("etcd.host", new JsonArray().add("http://localhost:2379"));
+        JsonArray endpointsJA = config().getJsonArray(ConfigUtils.ETCD_HOST, new JsonArray().add("http://localhost:2379"));
         for (int i = 0; i < endpointsJA.size(); i++) {
             String endpoint = endpointsJA.getString(i);
             endpoints.add(endpoint);
@@ -140,12 +124,12 @@ public class MainVerticle extends AbstractVerticle {
         LOGGER.info("etcd host:" + endpoints);
         Services.getInstance().init(endpoints);
 
-        String root = config().getString("service.root", "backends");
+        String root = config().getString(ConfigUtils.SERVICE_ROOT, "backends");
 
         LOGGER.info("service root:" + root);
 
         List<String> serviceTypes = new ArrayList<>();
-        JsonArray typesArray = config().getJsonArray("service.types", new JsonArray().add("dataservice"));
+        JsonArray typesArray = config().getJsonArray(ConfigUtils.SERVICE_TYPES, new JsonArray().add("dataservice"));
         for (int i = 0; i < typesArray.size(); i++) {
             String name = typesArray.getString(i);
             serviceTypes.add(name);

@@ -12,6 +12,7 @@ import io.vertx.ext.web.RoutingContext;
 public class TestHandler extends BaseHandler {
     public TestHandler(Vertx vertx) {
         super(vertx);
+        supportStandaloneMode();
     }
 
     @Override

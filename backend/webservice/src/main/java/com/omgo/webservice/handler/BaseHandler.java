@@ -31,6 +31,9 @@ public class BaseHandler {
 
     protected String path;
 
+    // can this handler run in standalone mode
+    protected boolean singular;
+
     // security
     protected boolean requireValidSession;
     protected boolean requireValidNonce;
@@ -44,6 +47,8 @@ public class BaseHandler {
         this.requireValidEncryption = true;
         LOGGER = LoggerFactory.getLogger(this.getClass());
     }
+
+    public void supportStandaloneMode() { singular = true; }
 
     public void notRequireValidSession() {
         requireValidSession = false;
@@ -64,6 +69,11 @@ public class BaseHandler {
      * @param path
      */
     public void setRoute(Router router, String path) {
+        if (Utils.STANDALONE && !singular) {
+            LOGGER.info("ignore handler for : " + path + " cannot run in standalone mode");
+            return;
+        }
+
         LOGGER.info("setRoute handler for : " + path);
         this.path = path;
 

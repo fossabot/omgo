@@ -3,6 +3,8 @@
     "debug": true,
     "standalone": false,
 
+    "metrics.path": "/metrics",
+
     "service.root": "backends",
     "service.types": ["dataservice"],
 

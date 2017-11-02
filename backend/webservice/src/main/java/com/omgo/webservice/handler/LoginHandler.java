@@ -2,6 +2,7 @@ package com.omgo.webservice.handler;
 
 import com.omgo.webservice.AgentManager;
 import com.omgo.webservice.GRPCAuthProvider;
+import com.omgo.webservice.Utils;
 import com.omgo.webservice.model.HttpStatus;
 import com.omgo.webservice.model.ModelConverter;
 import com.omgo.webservice.service.Services;
@@ -21,6 +22,9 @@ public class LoginHandler extends BaseHandler {
         notRequireValidNonce();
         notRequireValidSession();
         notRequireValidEncryption();
+        if (Utils.STANDALONE && !singular) {
+            return;
+        }
         this.authProvider = new GRPCAuthProvider(vertx, servicePool);
     }
 
