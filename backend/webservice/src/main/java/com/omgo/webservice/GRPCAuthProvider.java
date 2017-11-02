@@ -1,7 +1,8 @@
 package com.omgo.webservice;
 
-import com.omgo.webservice.model.ModelConverter;
-import com.omgo.webservice.service.Services;
+import com.omgo.utils.ModelKeys;
+import com.omgo.utils.Services;
+import com.omgo.utils.Utils;
 import io.grpc.ManagedChannel;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -44,7 +45,7 @@ public class GRPCAuthProvider implements AuthProvider, Services.Pool.OnChangeLis
         String token = jsonObject.getString("token", "");
         String strUsn = jsonObject.getString("usn");
         long usn = Utils.isEmptyString(strUsn) ? 0L : Long.parseLong(strUsn);
-        String clientIpAddress = jsonObject.getString(ModelConverter.KEY_LAST_IP, "");
+        String clientIpAddress = jsonObject.getString(ModelKeys.LAST_IP, "");
 
         if (Utils.isEmptyString(email) || !EmailValidator.getInstance().isValid(email)) {
             handler.handle(Future.failedFuture("auth info invalid email:" + email));

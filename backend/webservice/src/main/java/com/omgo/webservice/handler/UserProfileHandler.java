@@ -1,8 +1,9 @@
 package com.omgo.webservice.handler;
 
-import com.omgo.webservice.model.HttpStatus;
+import com.omgo.utils.HttpStatus;
+import com.omgo.utils.ModelKeys;
+import com.omgo.utils.Services;
 import com.omgo.webservice.model.ModelConverter;
-import com.omgo.webservice.service.Services;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
@@ -25,7 +26,7 @@ public class UserProfileHandler extends BaseGrpcHandler {
             return;
         }
 
-        long usn = paramJson.getLong(ModelConverter.KEY_USN);
+        long usn = paramJson.getLong(ModelKeys.USN);
 
         Db.DB.UserEntry.Builder builder = Db.DB.UserEntry.newBuilder();
         builder.setUsn(usn);
@@ -37,27 +38,27 @@ public class UserProfileHandler extends BaseGrpcHandler {
 
                     // filter key-values
                     Set<String> keySet = new HashSet<>();
-                    keySet.add(ModelConverter.KEY_USN);
-                    keySet.add(ModelConverter.KEY_UID);
-                    keySet.add(ModelConverter.KEY_AVATAR);
-                    keySet.add(ModelConverter.KEY_BIRTHDAY);
-                    keySet.add(ModelConverter.KEY_COUNTRY);
-                    keySet.add(ModelConverter.KEY_EMAIL_VERIFIED);
-                    keySet.add(ModelConverter.KEY_GENDER);
-                    keySet.add(ModelConverter.KEY_IS_OFFICIAL);
-                    keySet.add(ModelConverter.KEY_IS_ROBOT);
-                    keySet.add(ModelConverter.KEY_LAST_IP);
-                    keySet.add(ModelConverter.KEY_LAST_LOGIN);
-                    keySet.add(ModelConverter.KEY_MCC);
-                    keySet.add(ModelConverter.KEY_NICKNAME);
-                    keySet.add(ModelConverter.KEY_PHONE_VERIFIED);
-                    keySet.add(ModelConverter.KEY_PREMIUM_END);
-                    keySet.add(ModelConverter.KEY_PREMIUM_EXP);
-                    keySet.add(ModelConverter.KEY_PREMIUM_LEVEL);
-                    keySet.add(ModelConverter.KEY_SINCE);
-                    keySet.add(ModelConverter.KEY_SOCIAL_VERIFIED);
-                    keySet.add(ModelConverter.KEY_STATUS);
-                    keySet.add(ModelConverter.KEY_TIMEZONE);
+                    keySet.add(ModelKeys.USN);
+                    keySet.add(ModelKeys.UID);
+                    keySet.add(ModelKeys.AVATAR);
+                    keySet.add(ModelKeys.BIRTHDAY);
+                    keySet.add(ModelKeys.COUNTRY);
+                    keySet.add(ModelKeys.EMAIL_VERIFIED);
+                    keySet.add(ModelKeys.GENDER);
+                    keySet.add(ModelKeys.IS_OFFICIAL);
+                    keySet.add(ModelKeys.IS_ROBOT);
+                    keySet.add(ModelKeys.LAST_IP);
+                    keySet.add(ModelKeys.LAST_LOGIN);
+                    keySet.add(ModelKeys.MCC);
+                    keySet.add(ModelKeys.NICKNAME);
+                    keySet.add(ModelKeys.PHONE_VERIFIED);
+                    keySet.add(ModelKeys.PREMIUM_END);
+                    keySet.add(ModelKeys.PREMIUM_EXP);
+                    keySet.add(ModelKeys.PREMIUM_LEVEL);
+                    keySet.add(ModelKeys.SINCE);
+                    keySet.add(ModelKeys.SOCIAL_VERIFIED);
+                    keySet.add(ModelKeys.STATUS);
+                    keySet.add(ModelKeys.TIMEZONE);
 
                     JsonObject filteredResult = new JsonObject();
                     resultJson.getMap().forEach((k, v) -> {
@@ -67,7 +68,7 @@ public class UserProfileHandler extends BaseGrpcHandler {
                     });
 
                     JsonObject rspJson = getResponseJson();
-                    rspJson.put(ModelConverter.KEY_USER_INFO, filteredResult);
+                    rspJson.put(ModelKeys.USER_INFO, filteredResult);
                     response.write(rspJson.encode()).end();
                 } else {
                     LOGGER.info(res.result().getResult());

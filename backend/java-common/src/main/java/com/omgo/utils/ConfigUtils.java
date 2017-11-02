@@ -1,4 +1,4 @@
-package com.omgo.webservice;
+package com.omgo.utils;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -13,12 +13,24 @@ public class ConfigUtils {
     public static final String METRICS_PATH = "metrics.path";
 
     public static final String SERVICE_ROOT = "service.root";
+    public static final String SERVICE_KIND = "service.kind";
+    public static final String SERVICE_SELF = "service.self";
+    public static final String SERVICE_HOST = "service.host";
+    public static final String SERVICE_PORT = "service.port";
     public static final String SERVICE_TYPES = "service.types";
 
     public static final String SESSION_MAP = "session.map";
     public static final String SESSION_EXPIRE = "session.expire";
 
     public static final String ETCD_HOST = "etcd.host";
+
+    public static final String REDIS_HOST = "redis.host";
+    public static final String REDIS_PORT = "redis.port";
+    public static final String REDIS_ENCODING = "redis.encoding";
+    public static final String REDIS_TCP_KEEPALIVE = "redis.tcpKeepAlive";
+    public static final String REDIS_TCP_NODELAY = "redis.tcpNoDelay";
+
+    public static final String MONGODB_CONFIG = "mongodb.config";
 
 
     /**

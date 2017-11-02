@@ -1,4 +1,4 @@
-package com.omgo.dataservice.service;
+package com.omgo.utils;
 
 import com.coreos.jetcd.KV;
 import com.coreos.jetcd.data.ByteSequence;
@@ -7,7 +7,6 @@ import com.coreos.jetcd.kv.DeleteResponse;
 import com.coreos.jetcd.kv.GetResponse;
 import com.coreos.jetcd.kv.PutResponse;
 import com.coreos.jetcd.options.GetOption;
-import com.omgo.dataservice.model.Utils;
 import io.grpc.ManagedChannel;
 import io.vertx.core.Vertx;
 import io.vertx.core.logging.Logger;
@@ -299,9 +298,9 @@ public class Services {
                 client.name = getName(fullPath);
 
                 client.channel = VertxChannelBuilder
-                    .forAddress(vertx, host, port)
-                    .usePlaintext(true)
-                    .build();
+                        .forAddress(vertx, host, port)
+                        .usePlaintext(true)
+                        .build();
 
                 return client;
             } catch (Exception e) {

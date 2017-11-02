@@ -1,8 +1,7 @@
 package com.omgo.webservice.handler;
 
+import com.omgo.utils.ModelKeys;
 import com.omgo.webservice.AgentManager;
-import com.omgo.webservice.Utils;
-import com.omgo.webservice.model.ModelConverter;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
@@ -21,7 +20,7 @@ public class TestHandler extends BaseHandler {
 
         JsonObject rsp = getResponseJson();
         rsp.put("foo", "bar");
-        rsp.put(ModelConverter.KEY_HOSTS, AgentManager.getInstance().getHostList());
+        rsp.put(ModelKeys.HOSTS, AgentManager.getInstance().getHostList());
 
         LOGGER.info(paramJson);
 

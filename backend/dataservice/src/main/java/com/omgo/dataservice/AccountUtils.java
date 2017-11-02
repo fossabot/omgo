@@ -1,13 +1,11 @@
 package com.omgo.dataservice;
 
 
-import com.omgo.dataservice.model.ModelConverter;
-import com.omgo.dataservice.model.Utils;
-import org.apache.commons.validator.routines.EmailValidator;
+import com.omgo.utils.ModelKeys;
+import com.omgo.utils.Utils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.Random;
 
 public final class AccountUtils {
@@ -16,7 +14,7 @@ public final class AccountUtils {
     private static Random random = new Random(System.currentTimeMillis());
 
     public static String getRedisKey(long usn) {
-        return String.format("%s:%d", ModelConverter.KEY_USER, usn);
+        return String.format("%s:%d", ModelKeys.USER, usn);
     }
 
     public static byte[] getToken() {
@@ -32,30 +30,18 @@ public final class AccountUtils {
         return null;
     }
 
-    public static String encodeBase64(byte[] raw) {
-        return Base64.getEncoder().encodeToString(raw);
-    }
-
-    public static byte[] decodeBase64(String encoded) {
-        return Base64.getDecoder().decode(encoded);
-    }
-
     public static String saltedSecret(String secret, long salt) {
         try {
             String salted = secret + String.valueOf(salt);
             MessageDigest digestSHA1 = MessageDigest.getInstance("SHA-1");
             digestSHA1.reset();
             byte[] saltedRaw = digestSHA1.digest(salted.getBytes("UTF-8"));
-            return encodeBase64(saltedRaw);
+            return Utils.encodeBase64(saltedRaw);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
-    }
-
-    public static boolean isValidEmailAddress(String s) {
-        return EmailValidator.getInstance().isValid(s);
     }
 
     public static boolean isValidSecret(String s) {

@@ -1,8 +1,8 @@
 package com.omgo.webservice.handler;
 
-import com.omgo.webservice.Utils;
-import com.omgo.webservice.model.HttpStatus;
-import com.omgo.webservice.service.Services;
+import com.omgo.utils.HttpStatus;
+import com.omgo.utils.Services;
+import com.omgo.utils.Utils;
 import io.grpc.ManagedChannel;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;

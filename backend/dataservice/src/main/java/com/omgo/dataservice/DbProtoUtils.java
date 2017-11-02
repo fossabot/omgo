@@ -1,7 +1,7 @@
 package com.omgo.dataservice;
 
 import com.omgo.dataservice.model.ModelConverter;
-import com.omgo.dataservice.model.Utils;
+import com.omgo.utils.Utils;
 import io.vertx.core.json.JsonObject;
 import proto.Db.DB;
 

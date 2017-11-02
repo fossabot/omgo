@@ -1,7 +1,6 @@
 package com.omgo.webservice;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.util.JsonFormat;
 import com.omgo.webservice.model.ModelConverter;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;

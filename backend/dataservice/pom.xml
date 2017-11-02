@@ -16,6 +16,13 @@
     </properties>
 
     <dependencies>
+        <!-- utils -->
+        <dependency>
+            <groupId>com.omgo</groupId>
+            <artifactId>utils</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+
         <!-- vert.x core -->
         <dependency>
             <groupId>io.vertx</groupId>
@@ -65,20 +72,6 @@
             <version>2.0.3.Final</version>
         </dependency>
 
-        <!-- jETCD -->
-        <dependency>
-            <groupId>com.coreos</groupId>
-            <artifactId>jetcd-core</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-
-        <!-- commons-validator -->
-        <dependency>
-            <groupId>commons-validator</groupId>
-            <artifactId>commons-validator</artifactId>
-            <version>1.6</version>
-        </dependency>
-
         <!-- prometheus metrics -->
         <dependency>
             <groupId>io.prometheus</groupId>
@@ -99,15 +92,6 @@
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient_hotspot</artifactId>
             <version>0.0.23</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-        <!-- jETCD use lower version of guava which will cause runtime error -->
-        <!-- add this dependency to fix it -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>23.0</version>
         </dependency>
 
     </dependencies>

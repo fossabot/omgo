@@ -1,7 +1,8 @@
 package com.omgo.dataservice;
 
 import com.omgo.dataservice.model.ModelConverter;
-import com.omgo.dataservice.model.Utils;
+import com.omgo.utils.ModelKeys;
+import com.omgo.utils.Utils;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -50,7 +51,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
             if (queryRedis.succeeded()) {
                 // found in redis
                 JsonObject result = queryRedis.result();
-                LOGGER.info(String.format("redis hit for user:%d", result.getLong(ModelConverter.KEY_USN)));
+                LOGGER.info(String.format("redis hit for user:%d", result.getLong(ModelKeys.USN)));
                 responseFuture.complete(result);
             } else {
                 // query in mongodb
@@ -92,7 +93,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         LOGGER.info("userRegister: " + request);
 
         String email = request.getEmail();
-        if (!AccountUtils.isValidEmailAddress(email)) {
+        if (!Utils.isValidEmailAddress(email)) {
             response.complete(DbProtoUtils.makeUserOpResult(DB.StatusCode.STATUS_INVALID_EMAIL));
             LOGGER.error("invalid email address");
             return;
@@ -128,7 +129,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
         });
 
         // check if user with email already exist
-        Future<JsonObject> dbFuture = dbOperator.queryUserInfoDB(new JsonObject().put(ModelConverter.KEY_EMAIL, email));
+        Future<JsonObject> dbFuture = dbOperator.queryUserInfoDB(new JsonObject().put(ModelKeys.EMAIL, email));
 
         dbFuture.setHandler(dbRes -> {
             // email already exist
@@ -140,19 +141,19 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                 Future<JsonObject> usnFuture = dbOperator.mongodbGenerateUsn();
                 usnFuture.compose(usnRes -> {
                     long now = System.currentTimeMillis();
-                    long usn = usnRes.getLong(ModelConverter.KEY_USN);
-                    long uid = usnRes.getLong(ModelConverter.KEY_UID);
+                    long usn = usnRes.getLong(ModelKeys.USN);
+                    long uid = usnRes.getLong(ModelKeys.UID);
                     byte[] tokenRaw = AccountUtils.getToken();
-                    String token = AccountUtils.encodeBase64(tokenRaw);
+                    String token = Utils.encodeBase64(tokenRaw);
                     String saltedSecret = AccountUtils.saltedSecret(secret, now);
                     JsonObject jsonObject = ModelConverter.userEntry2Json(request);
-                    jsonObject.put(ModelConverter.KEY_USN, usn);
-                    jsonObject.put(ModelConverter.KEY_UID, uid);
-                    jsonObject.put(ModelConverter.KEY_TOKEN, token);
-                    jsonObject.put(ModelConverter.KEY_SECRET, saltedSecret);
-                    jsonObject.put(ModelConverter.KEY_SINCE, now);
-                    jsonObject.put(ModelConverter.KEY_LAST_LOGIN, now);
-                    jsonObject.put(ModelConverter.KEY_LOGIN_COUNT, 1);
+                    jsonObject.put(ModelKeys.USN, usn);
+                    jsonObject.put(ModelKeys.UID, uid);
+                    jsonObject.put(ModelKeys.TOKEN, token);
+                    jsonObject.put(ModelKeys.SECRET, saltedSecret);
+                    jsonObject.put(ModelKeys.SINCE, now);
+                    jsonObject.put(ModelKeys.LAST_LOGIN, now);
+                    jsonObject.put(ModelKeys.LOGIN_COUNT, 1);
 
                     return dbOperator.insertUserInfoDB(jsonObject);
                 }).compose(insertRes -> {
@@ -213,7 +214,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                 }
             })
             .compose(v -> {
-                String token = v.getString(ModelConverter.KEY_TOKEN);
+                String token = v.getString(ModelKeys.TOKEN);
                 if (Utils.isNotEmptyString(queryToken) && queryToken.equals(token)) {
                     // login with token success
                     Future<JsonObject> tokenLoginFuture = Future.future();
@@ -233,29 +234,29 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                 // query in mongodb and update
                 Future<JsonObject> queryFuture = dbOperator.queryUserInfoDB(ModelConverter.userEntry2Json(request));
                 return queryFuture.compose(queryRes -> {
-                    long salt = queryRes.getLong(ModelConverter.KEY_SINCE);
+                    long salt = queryRes.getLong(ModelKeys.SINCE);
 
-                    boolean authed = v.containsKey(ModelConverter.KEY_TOKEN);
+                    boolean authed = v.containsKey(ModelKeys.TOKEN);
                     if (!authed) {
                         String saltedQuerySecret = AccountUtils.saltedSecret(querySecret, salt);
-                        String secret = queryRes.getString(ModelConverter.KEY_SECRET);
+                        String secret = queryRes.getString(ModelKeys.SECRET);
                         authed = Utils.isNotEmptyString(saltedQuerySecret) && saltedQuerySecret.equals(secret);
                     }
                     if (authed) {
                         byte[] tokenRaw = AccountUtils.getToken();
-                        int loginCount = queryRes.getInteger(ModelConverter.KEY_LOGIN_COUNT);
-                        String token = AccountUtils.encodeBase64(tokenRaw);
-                        queryRes.put(ModelConverter.KEY_TOKEN, token);
-                        queryRes.put(ModelConverter.KEY_LAST_LOGIN, System.currentTimeMillis());
-                        queryRes.put(ModelConverter.KEY_LOGIN_COUNT, loginCount + 1);
-                        queryRes.put(ModelConverter.KEY_LAST_IP, request.getLastIp());
-                        queryRes.put(ModelConverter.KEY_APP_LANGUAGE, request.getAppLanguage());
-                        queryRes.put(ModelConverter.KEY_APP_VERSION, request.getAppVersion());
-                        queryRes.put(ModelConverter.KEY_DEVICE_TYPE, request.getDeviceType());
-                        queryRes.put(ModelConverter.KEY_MCC, request.getMcc());
-                        queryRes.put(ModelConverter.KEY_OS, request.getOs());
-                        queryRes.put(ModelConverter.KEY_OS_LOCALE, request.getOsLocale());
-                        queryRes.put(ModelConverter.KEY_TIMEZONE, request.getTimezone());
+                        int loginCount = queryRes.getInteger(ModelKeys.LOGIN_COUNT);
+                        String token = Utils.encodeBase64(tokenRaw);
+                        queryRes.put(ModelKeys.TOKEN, token);
+                        queryRes.put(ModelKeys.LAST_LOGIN, System.currentTimeMillis());
+                        queryRes.put(ModelKeys.LOGIN_COUNT, loginCount + 1);
+                        queryRes.put(ModelKeys.LAST_IP, request.getLastIp());
+                        queryRes.put(ModelKeys.APP_LANGUAGE, request.getAppLanguage());
+                        queryRes.put(ModelKeys.APP_VERSION, request.getAppVersion());
+                        queryRes.put(ModelKeys.DEVICE_TYPE, request.getDeviceType());
+                        queryRes.put(ModelKeys.MCC, request.getMcc());
+                        queryRes.put(ModelKeys.OS, request.getOs());
+                        queryRes.put(ModelKeys.OS_LOCALE, request.getOsLocale());
+                        queryRes.put(ModelKeys.TIMEZONE, request.getTimezone());
 
                         return dbOperator.updateUserInfoDB(queryRes);
                     } else {
@@ -294,7 +295,7 @@ public class DBServiceGrpcImpl extends DBServiceGrpc.DBServiceVertxImplBase {
                 response.complete(DbProtoUtils.makeResult(DB.StatusCode.STATUS_USER_NOT_FOUND));
             } else {
                 JsonObject jsonObject = res.result();
-                if (!token.equals(jsonObject.getString(ModelConverter.KEY_TOKEN))) {
+                if (!token.equals(jsonObject.getString(ModelKeys.TOKEN))) {
                     response.complete(DbProtoUtils.makeResult(DB.StatusCode.STATUS_INVALID_TOKEN));
                 } else {
                     Future<JsonObject> delFuture = dbOperator.removeUserInfoRedis(usn);

@@ -1,8 +1,8 @@
 package com.omgo.webservice.handler;
 
-import com.omgo.webservice.Utils;
-import com.omgo.webservice.model.HttpStatus;
-import com.omgo.webservice.model.ModelConverter;
+import com.omgo.utils.HttpStatus;
+import com.omgo.utils.ModelKeys;
+import com.omgo.utils.Utils;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
@@ -24,7 +24,7 @@ public class HandshakeHandler extends BaseHandler {
         HttpServerRequest request = super.getRequest(routingContext);
         JsonObject headerJson = getHeaderJson(request);
 
-        String clientSeed = headerJson.getString(ModelConverter.KEY_SEED);
+        String clientSeed = headerJson.getString(ModelKeys.SEED);
 
         if (Utils.isEmptyString(clientSeed)) {
             routingContext.fail(HttpStatus.FORBIDDEN.code);
@@ -46,10 +46,10 @@ public class HandshakeHandler extends BaseHandler {
 
         byte[] sharedSecret = cipher.calculateAgreement(clientSeedBytes, keyPair.getPrivateKey());
         Session session = routingContext.session();
-        session.put(ModelConverter.KEY_SEED, sharedSecret);
+        session.put(ModelKeys.SEED, sharedSecret);
 
         JsonObject rspJson = getResponseJson();
-        rspJson.put(ModelConverter.KEY_SEED, Utils.encodeBase64(keyPair.getPublicKey()));
+        rspJson.put(ModelKeys.SEED, Utils.encodeBase64(keyPair.getPublicKey()));
         response.write(rspJson.encode()).end();
     }
 }

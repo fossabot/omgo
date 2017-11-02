@@ -1,7 +1,8 @@
 package com.omgo.dataservice;
 
 import com.omgo.dataservice.model.ModelConverter;
-import com.omgo.dataservice.model.Utils;
+import com.omgo.utils.ModelKeys;
+import com.omgo.utils.Utils;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
@@ -83,7 +84,7 @@ public class DbOperator {
     }
 
     private void mongodbFindUser(JsonObject queryObject, Future<JsonObject> future) {
-        mongoClient.find(ModelConverter.KEY_USER, queryObject, res -> {
+        mongoClient.find(ModelKeys.USER, queryObject, res -> {
             if (res.succeeded()) {
                 List<JsonObject> results = res.result();
                 if (results != null && results.size() > 0) {
@@ -99,11 +100,11 @@ public class DbOperator {
 
     public Future<JsonObject> mongodbGenerateUsn() {
         JsonObject queryObject = new JsonObject();
-        queryObject.put("_id", ModelConverter.KEY_USER);
+        queryObject.put("_id", ModelKeys.USER);
 
         JsonObject updateObject = new JsonObject();
-        updateObject.put(ModelConverter.KEY_USN, AccountUtils.nextUsnIncrement());
-        updateObject.put(ModelConverter.KEY_UID, AccountUtils.nextUidIncrement());
+        updateObject.put(ModelKeys.USN, AccountUtils.nextUsnIncrement());
+        updateObject.put(ModelKeys.UID, AccountUtils.nextUidIncrement());
         JsonObject incObject = new JsonObject();
         incObject.put("$inc", updateObject);
 
@@ -146,11 +147,11 @@ public class DbOperator {
             String query = "";
             JsonObject queryObject = new JsonObject();
             if (usn != 0L) {
-                queryObject.put(ModelConverter.KEY_USN, usn);
+                queryObject.put(ModelKeys.USN, usn);
             } else if (uid != 0L) {
-                queryObject.put(ModelConverter.KEY_UID, uid);
+                queryObject.put(ModelKeys.UID, uid);
             } else if (Utils.isNotEmptyString(email)) {
-                queryObject.put(ModelConverter.KEY_EMAIL, email);
+                queryObject.put(ModelKeys.EMAIL, email);
             }
             mongodbFindUser(queryObject, future);
         }
@@ -169,7 +170,7 @@ public class DbOperator {
         if (userInfoJson == null) {
             future.fail("invalid userinfo(null)");
         } else {
-            long usn = userInfoJson.getLong(ModelConverter.KEY_USN);
+            long usn = userInfoJson.getLong(ModelKeys.USN);
             String key = AccountUtils.getRedisKey(usn);
             RedisTransaction transaction = redisClient.transaction();
             transaction.multi(event -> {
@@ -212,7 +213,7 @@ public class DbOperator {
     public Future<JsonObject> updateUserInfoDB(JsonObject userJson) {
         Future<JsonObject> future = Future.future();
 
-        long usn = userJson.getLong(ModelConverter.KEY_USN);
+        long usn = userJson.getLong(ModelKeys.USN);
         if (usn == 0L) {
             future.fail("invalid usn");
             return future;
@@ -236,13 +237,13 @@ public class DbOperator {
         }
 
         JsonObject queryObject = new JsonObject();
-        queryObject.put(ModelConverter.KEY_USN, usn);
+        queryObject.put(ModelKeys.USN, usn);
 
         JsonObject updateObject = new JsonObject();
         updateObject.put("$set", userObject);
 
         // update
-        mongoClient.findOneAndUpdateWithOptions(ModelConverter.KEY_USER, queryObject, updateObject, new FindOptions(), new UpdateOptions(true), res -> {
+        mongoClient.findOneAndUpdateWithOptions(ModelKeys.USER, queryObject, updateObject, new FindOptions(), new UpdateOptions(true), res -> {
             if (res.succeeded()) {
                 mongodbFindUser(queryObject, future);
             } else {
@@ -263,8 +264,8 @@ public class DbOperator {
         Future<JsonObject> future = Future.future();
 
         JsonObject insertObject = userJson.copy();
-        insertObject.put("_id", userJson.getLong(ModelConverter.KEY_USN));
-        mongoClient.insert(ModelConverter.KEY_USER, insertObject, res -> {
+        insertObject.put("_id", userJson.getLong(ModelKeys.USN));
+        mongoClient.insert(ModelKeys.USER, insertObject, res -> {
             if (res.succeeded()) {
                 future.complete(userJson);
             } else {

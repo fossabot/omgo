@@ -1,17 +1,16 @@
 package com.omgo.webservice.handler;
 
+import com.omgo.utils.HttpStatus;
+import com.omgo.utils.ModelKeys;
+import com.omgo.utils.Services;
+import com.omgo.utils.Utils;
 import com.omgo.webservice.AgentManager;
-import com.omgo.webservice.Utils;
-import com.omgo.webservice.model.HttpStatus;
 import com.omgo.webservice.model.ModelConverter;
-import com.omgo.webservice.service.Services;
-import io.grpc.ManagedChannel;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
-import proto.DBServiceGrpc;
 import proto.Db;
 
 // request
@@ -92,21 +91,21 @@ public class RegisterHandler extends BaseGrpcHandler {
         HttpServerRequest request = super.getRequest(routingContext);
 
         JsonObject registerJson = super.getHeaderJson(request);
-        String app_language = registerJson.getString(ModelConverter.KEY_APP_LANGUAGE, "");
-        String app_version = registerJson.getString(ModelConverter.KEY_APP_VERSION, "");
-        String avatar = registerJson.getString(ModelConverter.KEY_AVATAR, "");
-        String birthday = registerJson.getString(ModelConverter.KEY_BIRTHDAY, "");
-        String country = registerJson.getString(ModelConverter.KEY_COUNTRY, "");
-        String device_type = registerJson.getString(ModelConverter.KEY_DEVICE_TYPE, "");
-        String email = registerJson.getString(ModelConverter.KEY_EMAIL, "");
-        String gender = registerJson.getString(ModelConverter.KEY_GENDER, "");
-        String mcc = registerJson.getString(ModelConverter.KEY_MCC, "");
-        String nickname = registerJson.getString(ModelConverter.KEY_NICKNAME, "");
-        String os = registerJson.getString(ModelConverter.KEY_OS, "");
-        String os_locale = registerJson.getString(ModelConverter.KEY_OS_LOCALE, "");
-        String phone = registerJson.getString(ModelConverter.KEY_PHONE, "");
-        String secret = registerJson.getString(ModelConverter.KEY_SECRET, "");
-        String timezone = registerJson.getString(ModelConverter.KEY_TIMEZONE, "");
+        String app_language = registerJson.getString(ModelKeys.APP_LANGUAGE, "");
+        String app_version = registerJson.getString(ModelKeys.APP_VERSION, "");
+        String avatar = registerJson.getString(ModelKeys.AVATAR, "");
+        String birthday = registerJson.getString(ModelKeys.BIRTHDAY, "");
+        String country = registerJson.getString(ModelKeys.COUNTRY, "");
+        String device_type = registerJson.getString(ModelKeys.DEVICE_TYPE, "");
+        String email = registerJson.getString(ModelKeys.EMAIL, "");
+        String gender = registerJson.getString(ModelKeys.GENDER, "");
+        String mcc = registerJson.getString(ModelKeys.MCC, "");
+        String nickname = registerJson.getString(ModelKeys.NICKNAME, "");
+        String os = registerJson.getString(ModelKeys.OS, "");
+        String os_locale = registerJson.getString(ModelKeys.OS_LOCALE, "");
+        String phone = registerJson.getString(ModelKeys.PHONE, "");
+        String secret = registerJson.getString(ModelKeys.SECRET, "");
+        String timezone = registerJson.getString(ModelKeys.TIMEZONE, "");
 
         long birthdayLong = Utils.isEmptyString(birthday) ? 0L : Long.parseLong(birthday);
         int genderInt = Utils.isEmptyString(gender) ? 0 : Integer.parseInt(gender);
@@ -140,12 +139,12 @@ public class RegisterHandler extends BaseGrpcHandler {
                 if (code == Db.DB.StatusCode.STATUS_OK_VALUE) {
                     JsonObject resultJson = ModelConverter.userEntry2Json(res.result().getUser());
 
-                    String token = resultJson.getString(ModelConverter.KEY_TOKEN);
-                    setSessionToken(routingContext, resultJson.getString(ModelConverter.KEY_TOKEN));
+                    String token = resultJson.getString(ModelKeys.TOKEN);
+                    setSessionToken(routingContext, resultJson.getString(ModelKeys.TOKEN));
 
                     JsonObject rspJson = getResponseJson();
-                    rspJson.put(ModelConverter.KEY_USER_INFO, resultJson);
-                    rspJson.put(ModelConverter.KEY_HOSTS, AgentManager.getInstance().getHostList());
+                    rspJson.put(ModelKeys.USER_INFO, resultJson);
+                    rspJson.put(ModelKeys.HOSTS, AgentManager.getInstance().getHostList());
                     response.write(rspJson.encode()).end();
                 } else {
                     LOGGER.info(res.result().getResult());

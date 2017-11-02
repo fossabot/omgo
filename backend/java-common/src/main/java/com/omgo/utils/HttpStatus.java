@@ -1,4 +1,4 @@
-package com.omgo.webservice.model;
+package com.omgo.utils;
 
 public enum HttpStatus {
     /**

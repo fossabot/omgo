@@ -1,6 +1,6 @@
 package com.omgo.webservice;
 
-import com.omgo.webservice.service.Services;
+import com.omgo.utils.Services;
 import io.vertx.core.Vertx;
 
 import java.util.ArrayList;

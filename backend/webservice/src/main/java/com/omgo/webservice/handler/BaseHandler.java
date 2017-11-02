@@ -1,8 +1,8 @@
 package com.omgo.webservice.handler;
 
-import com.omgo.webservice.Utils;
-import com.omgo.webservice.model.HttpStatus;
-import com.omgo.webservice.model.ModelConverter;
+import com.omgo.utils.HttpStatus;
+import com.omgo.utils.ModelKeys;
+import com.omgo.utils.Utils;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;
@@ -172,7 +172,7 @@ public class BaseHandler {
 
     protected JsonObject getResponseJson() {
         JsonObject rspJson = new JsonObject();
-        rspJson.put(ModelConverter.KEY_TIMESTAMP, System.currentTimeMillis());
+        rspJson.put(ModelKeys.TIMESTAMP, System.currentTimeMillis());
 
         return rspJson;
     }
@@ -188,7 +188,7 @@ public class BaseHandler {
         Session session = routingContext.session();
         if (session != null) {
             session.regenerateId();
-            session.put(ModelConverter.KEY_TOKEN, token);
+            session.put(ModelKeys.TOKEN, token);
         }
         return session;
     }
@@ -203,7 +203,7 @@ public class BaseHandler {
     protected Session setSessionNonce(RoutingContext routingContext, String nonce) {
         Session session = routingContext.session();
         if (session != null) {
-            session.put(ModelConverter.KEY_NONCE, nonce);
+            session.put(ModelKeys.NONCE, nonce);
         }
         return session;
     }
@@ -221,8 +221,8 @@ public class BaseHandler {
                 return true;
             }
             JsonObject headerJson = getHeaderJson(getRequest(context));
-            String clientToken = headerJson.getString(ModelConverter.KEY_TOKEN);
-            String sessionToken = session.get(ModelConverter.KEY_TOKEN);
+            String clientToken = headerJson.getString(ModelKeys.TOKEN);
+            String sessionToken = session.get(ModelKeys.TOKEN);
             if (!Utils.isEmptyString(clientToken) && !Utils.isEmptyString(sessionToken)) {
                 return sessionToken.equals(clientToken);
             }
@@ -234,8 +234,8 @@ public class BaseHandler {
         Session session = context.session();
         if (session != null) {
             JsonObject headerJson = getHeaderJson(getRequest(context));
-            String requestNonce = headerJson.getString(ModelConverter.KEY_NONCE);
-            String sessionNonce = session.get(ModelConverter.KEY_NONCE);
+            String requestNonce = headerJson.getString(ModelKeys.NONCE);
+            String sessionNonce = session.get(ModelKeys.NONCE);
             if (Utils.isEmptyString(requestNonce)) {
                 return null;
             }
@@ -262,13 +262,13 @@ public class BaseHandler {
     protected JsonObject getRequestParam(RoutingContext context) {
         Session session = context.session();
         HttpServerRequest request = context.request();
-        String paramStr = request.headers().get(ModelConverter.KEY_PARAM);
-        String paramSignature = request.headers().get(ModelConverter.KEY_SIGNATURE);
+        String paramStr = request.headers().get(ModelKeys.PARAM);
+        String paramSignature = request.headers().get(ModelKeys.SIGNATURE);
 
         if (Utils.DEBUG) {
             return safeParseJsonString(paramStr);
         } else if (session != null) {
-            byte[] key = session.get(ModelConverter.KEY_SEED);
+            byte[] key = session.get(ModelKeys.SEED);
             if (key != null) {
                 // decrypt
                 String decryptString = cryptionXOR(paramStr, key);

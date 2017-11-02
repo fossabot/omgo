@@ -1,6 +1,6 @@
 package com.omgo.dataservice;
 
-import com.omgo.dataservice.service.Services;
+import com.omgo.utils.Services;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -109,6 +109,7 @@ public class MainVerticle extends AbstractVerticle {
 
     /**
      * create a mongodb client
+     *
      * @return
      */
     private MongoClient createMongoClient() {
