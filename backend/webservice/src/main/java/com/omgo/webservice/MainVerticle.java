@@ -8,6 +8,7 @@ import com.omgo.utils.Utils;
 import com.omgo.webservice.handler.*;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.dropwizard.DropwizardExports;
+import io.prometheus.client.exporter.common.TextFormat;
 import io.prometheus.client.hotspot.DefaultExports;
 import io.prometheus.client.vertx.MetricsHandler;
 import io.vertx.core.AbstractVerticle;
@@ -22,6 +23,7 @@ import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 import io.vertx.ext.dropwizard.Match;
 import io.vertx.ext.dropwizard.MatchType;
+import io.vertx.ext.dropwizard.MetricsService;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CookieHandler;
@@ -41,8 +43,8 @@ public class MainVerticle extends AbstractVerticle {
         Vertx vertx = Vertx.vertx(new VertxOptions().setMetricsOptions(
             new DropwizardMetricsOptions()
                 .setEnabled(true)
-                .addMonitoredHttpServerUri(
-                    new Match().setValue("/"))
+//                .addMonitoredHttpServerUri(
+//                    new Match().setValue("/"))
                 .addMonitoredHttpServerUri(
                     new Match().setValue("/api/*").setType(MatchType.REGEX))
         ));
@@ -65,6 +67,9 @@ public class MainVerticle extends AbstractVerticle {
 
     private void startApiService() {
         Router router = Router.router(vertx);
+
+        // create http server
+        HttpServer server = vertx.createHttpServer();
 
         // Cookies, sessions and request bodies
         router.route().handler(CookieHandler.create());
@@ -97,12 +102,24 @@ public class MainVerticle extends AbstractVerticle {
 
         // metrics
         DefaultExports.initialize();
-        MetricRegistry metricRegistry = SharedMetricRegistries.getOrCreate("vertx");
+        MetricRegistry metricRegistry = SharedMetricRegistries.getOrCreate("webservice.metrics");
         CollectorRegistry.defaultRegistry.register(new DropwizardExports(metricRegistry));
         router.get(config().getString(ConfigUtils.METRICS_PATH, "/metrics")).handler(new MetricsHandler());
 
-        // start service
-        HttpServer server = vertx.createHttpServer();
+
+        MetricsService metricsService = MetricsService.create(vertx);
+        router.get("/go").handler(res -> {
+            // set up server
+            JsonObject metrics = metricsService.getMetricsSnapshot(server);
+
+
+            res.response()
+                .setStatusCode(200)
+                .putHeader("Content-Type", TextFormat.CONTENT_TYPE_004)
+                .end(metrics.encode());
+        });
+
+        // start http server
         server.requestHandler(router::accept).listen(8080);
     }
 

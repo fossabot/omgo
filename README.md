@@ -6,5 +6,7 @@ dataservice -> webservice -> agent -> game
 ### TODO
 
 - [ ] add vertx.metrics to java project
-- [ ] rewrite agent
+- [ ] hall server
+- [ ] game server
+- [x] rewrite agent
 - [x] service online/offline handling via ETCD
