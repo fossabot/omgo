@@ -1,9 +1,13 @@
 package packet
 
-const (
-	// MaximumPacketSize 64KB
-	MaximumPacketSize = 64*1024 - 1
-)
+type Header struct {
+	PkgSize uint16
+	HdrSize uint8
+	Version uint8
+	Cmd     uint32
+	Seq     uint32
+	Usn     uint64
+}
 
 // Reader is the interface implemented by an object that can read data from a packet
 type Reader interface {

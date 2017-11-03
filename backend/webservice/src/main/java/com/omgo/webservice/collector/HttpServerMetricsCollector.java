@@ -1,8 +1,6 @@
 package com.omgo.webservice.collector;
 
 import io.prometheus.client.Collector;
-import io.prometheus.client.CounterMetricFamily;
-import io.prometheus.client.GaugeMetricFamily;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
@@ -22,11 +20,7 @@ public class HttpServerMetricsCollector extends Collector {
         this.server = server;
     }
 
-    void addHttpServerMetrics(List<MetricFamilySamples> sampleFamilies) {
-//        sampleFamilies.add(new GaugeMetricFamily(
-//            "jvm_classes_loaded",
-//            "The number of classes that are currently loaded in the JVM",
-//            clBean.getLoadedClassCount()));
+    private void addHttpServerMetrics(List<MetricFamilySamples> sampleFamilies) {
         JsonObject metrics = metricsService.getMetricsSnapshot(server);
         if (metrics.containsKey("get-requests")) {
             JsonObject dataJson = metrics.getJsonObject("get-requests");
@@ -44,7 +38,8 @@ public class HttpServerMetricsCollector extends Collector {
 
     private MetricFamilySamples createHistogramMFS(String name, String help, JsonObject data) {
         List<MetricFamilySamples.Sample> samples = new ArrayList<>();
-        MetricFamilySamples.Sample sample = new MetricFamilySamples.Sample("count", )
+
+        MetricFamilySamples.Sample sample = new MetricFamilySamples.Sample("count", null, null, data.getLong("count"));
         data.getLong("count");
         return new MetricFamilySamples(name, Type.HISTOGRAM, help, samples);
     }

@@ -106,7 +106,7 @@ public class MainVerticle extends AbstractVerticle {
         CollectorRegistry.defaultRegistry.register(new DropwizardExports(metricRegistry));
         router.get(config().getString(ConfigUtils.METRICS_PATH, "/metrics")).handler(new MetricsHandler());
 
-
+        // this is just an example about how to get dropwizard metrics
         MetricsService metricsService = MetricsService.create(vertx);
         router.get("/go").handler(res -> {
             // set up server
