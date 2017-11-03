@@ -36,6 +36,14 @@ enum Cmd {
     EXIT_ROOM_RSP = 0x10008; // S->C exit room response
 }
 
+message PacketHeader {
+    byte   version   = 1; // protocol version
+    uint32 cmd       = 2; // command
+    uint32 seq       = 3; // packet sequence
+    uint32 nonce     = 4; // nonce (timestamp)
+    uint32 body_size = 5; // payload size in bytes
+}
+
 enum ResultCode {
     RESULT_OK             = 0; // request proceed with no error
     RESULT_TIMEOUT        = 1; // request timeout
