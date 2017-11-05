@@ -17,7 +17,7 @@ const (
 )
 
 // all the packets from handleClient() will be handled here
-func agent(session *api.Session, in chan []byte, out *Buffer) {
+func agent(session *api.Session, in chan api.IncomingPacket, out *Buffer) {
 	defer wg.Done() // will decrease WaitGroup by one, useful for manual server shutdown
 	defer utils.PrintPanicStack()
 

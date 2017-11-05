@@ -13,10 +13,10 @@ var (
 )
 
 // forward messages to game server
-func forward(session *api.Session, p []byte) error {
+func forward(session *api.Session, inPacket *api.IncomingPacket) error {
 	frame := &pb.Game_Frame{
 		Type:    pb.Game_Message,
-		Message: p,
+		Message: inPacket,
 	}
 
 	// check stream

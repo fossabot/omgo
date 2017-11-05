@@ -15,37 +15,30 @@ func getPacketBody(reader *packet.RawPacket) []byte {
 }
 
 // route client protocol
-func route(session *api.Session, p []byte) []byte {
+func route(session *api.Session, inPacket *api.IncomingPacket) []byte {
 	start := time.Now()
-	defer utils.PrintPanicStack(session, p)
+	defer utils.PrintPanicStack(session, inPacket)
 	// decrypt
 	if session.IsFlagEncryptedSet() {
-		session.Decoder.XORKeyStream(p, p)
+		session.Decoder.XORKeyStream(inPacket.Payload, inPacket.Payload)
 	}
-	// packet reader
-	reader := packet.NewRawPacketReader(p)
 
 	// read cmd
-	cmdValue, err := reader.ReadS32()
-	if err != nil {
-		log.Errorf("read packet cmd failed:%v", err)
-		session.SetFlagKicked()
-		return nil
-	}
+	cmdValue := inPacket.Header.Cmd
 	cmd := proto_common.Cmd(cmdValue)
 
 	// route message to different service by command code
 	var ret []byte
 	if cmd > proto_common.Cmd_CMD_COMMON_END {
 		// messages forward to game server
-		if err := forward(session, getPacketBody(reader)); err != nil {
+		if err := forward(session, inPacket); err != nil {
 			log.Errorf("service id:%v execute failed, error:%v", cmd, err)
 			session.SetFlagKicked()
 			return nil
 		}
 	} else { // messages handle by agent service
 		if h := api.Handlers[cmdValue]; h != nil {
-			ret = h(session, reader)
+			ret = h(session, inPacket)
 		} else {
 			log.Errorf("no handler for cmd:%v", cmd)
 			session.SetFlagKicked()

@@ -46,7 +46,7 @@ func genRspHeader() *pc.RspHeader {
 
 // ProcHeartBeatReq process client heartbeat packet
 // TODO: reset client timeout timer
-func ProcHeartBeatReq(session *Session, reader *packet.RawPacket) []byte {
+func ProcHeartBeatReq(session *Session, inPacket *IncomingPacket) []byte {
 	if !session.IsFlagAuthSet() {
 		log.Errorf("heartbeat from unauth session:%v", session)
 		session.SetFlagKicked()

@@ -41,6 +41,7 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/backend/agent/api"
 	"github.com/master-g/omgo/kit/services"
 	"github.com/master-g/omgo/kit/utils"
@@ -263,7 +264,7 @@ func handleClient(conn net.Conn, config *Config) {
 	// header size
 	headerSize := make([]byte, 2)
 	// agent's input channel
-	in := make(chan []byte)
+	in := make(chan api.IncomingPacket)
 	defer func() {
 		close(in) // session will be closed
 	}()
@@ -314,20 +315,34 @@ func handleClient(conn net.Conn, config *Config) {
 			return
 		}
 
-		headerMsg := pc.
-			proto.Unmarshal(headerData)
+		headerMsg := &pc.Header{}
+		err = proto.Unmarshal(headerData, headerMsg)
+		if err != nil {
+			log.Warningf("%v invalid header: %v", session.IP, err)
+			return
+		}
 
-		// data
-		payload := make([]byte, size)
+		payloadSize := headerMsg.BodySize
+		if payloadSize == 0 || payloadSize > 32*1024 {
+			log.Warningf("%v payload size error %v", session.IP, payloadSize)
+		}
+
+		// payload
+		payload := make([]byte, payloadSize)
 		n, err = io.ReadFull(conn, payload)
 		if err != nil {
 			log.Warningf("%v read payload failed: %v expect: %v actual read: %v", session.IP, err, size, n)
 			return
 		}
 
+		inPacket := api.IncomingPacket{
+			Header:  headerMsg,
+			Payload: payload,
+		}
+
 		// deliver the payload to the input queue of agent
 		select {
-		case in <- payload:
+		case in <- inPacket:
 		case <-session.Die:
 			log.Warningf("%v connection closed by logic, flag: %v", session.IP, session.Flag)
 			return

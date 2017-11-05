@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package proto;
+import "common.proto";
 
 message Game {
     enum FrameType {
@@ -9,8 +10,9 @@ message Game {
         Ping    = 2;
     }
     message Frame {
-        FrameType Type    = 1;
-        bytes     Message = 2;
+        FrameType Type = 1;
+        common.Header  = 2;
+        bytes Message  = 3;
     }
 }
 

@@ -3,10 +3,15 @@ package api
 import (
 	"sync"
 
-	"github.com/master-g/omgo/kit/packet"
 	"github.com/master-g/omgo/kit/services"
 	pc "github.com/master-g/omgo/proto/pb/common"
 )
+
+// IncomingPacket contains Header and payload bytes
+type IncomingPacket struct {
+	Header  *pc.Header
+	Payload []byte
+}
 
 // Config of ETCD and services
 type Config struct {
@@ -19,7 +24,7 @@ type Config struct {
 
 var (
 	// client request handlers
-	Handlers map[int32]func(*Session, *packet.RawPacket) []byte
+	Handlers map[uint32]func(*Session, *IncomingPacket) []byte
 	// client session registry
 	Registry sync.Map
 	// game server pool
@@ -31,11 +36,11 @@ var (
 )
 
 func init() {
-	Handlers = map[int32]func(*Session, *packet.RawPacket) []byte{
-		int32(pc.Cmd_HEART_BEAT_REQ): ProcHeartBeatReq,
-		int32(pc.Cmd_LOGIN_REQ):      ProcUserLoginReq,
-		int32(pc.Cmd_GET_SEED_REQ):   ProcGetSeedReq,
-		int32(pc.Cmd_OFFLINE_REQ):    ProcOfflineReq,
+	Handlers = map[uint32]func(*Session, *IncomingPacket) []byte{
+		uint32(pc.Cmd_HEART_BEAT_REQ): ProcHeartBeatReq,
+		uint32(pc.Cmd_LOGIN_REQ):      ProcUserLoginReq,
+		uint32(pc.Cmd_GET_SEED_REQ):   ProcGetSeedReq,
+		uint32(pc.Cmd_OFFLINE_REQ):    ProcOfflineReq,
 	}
 }
 
