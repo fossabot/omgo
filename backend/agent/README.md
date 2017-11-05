@@ -3,13 +3,8 @@
 #### Packet Structure
 
 ```
-|   2 bytes    | 4 bytes | varient  |
-| payload size |   cmd   | protobuf |
-```
-
-```
 2 bytes | header size (these 2 bytes excluded)
-n byte  | header protobuf
+n bytes | header protobuf
 ```
 
 #### Pipeline  

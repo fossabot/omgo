@@ -33,18 +33,18 @@ package main
 
 import (
 	"encoding/binary"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
 	"os"
 	"time"
 
-	"fmt"
-
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/backend/agent/api"
 	"github.com/master-g/omgo/kit/services"
 	"github.com/master-g/omgo/kit/utils"
+	pc "github.com/master-g/omgo/proto/pb/common"
 	"gopkg.in/urfave/cli.v2"
 )
 
@@ -260,8 +260,8 @@ func tcpServer(config *Config) {
 func handleClient(conn net.Conn, config *Config) {
 	defer utils.PrintPanicStack()
 	defer conn.Close()
-	// header
-	header := make([]byte, 2)
+	// header size
+	headerSize := make([]byte, 2)
 	// agent's input channel
 	in := make(chan []byte)
 	defer func() {
@@ -298,13 +298,24 @@ func handleClient(conn net.Conn, config *Config) {
 		// will cause the read to block FOREVER, so a timeout will save the day.
 		conn.SetReadDeadline(time.Now().Add(config.readDeadline))
 
-		// read size header
-		n, err := io.ReadFull(conn, header)
+		// read header size
+		n, err := io.ReadFull(conn, headerSize)
 		if err != nil {
-			log.Warningf("%v read header failed: %v %v bytes read", session.IP, err, n)
+			log.Warningf("%v read header size failed: %v %v bytes read", session.IP, err, n)
 			return
 		}
-		size := binary.BigEndian.Uint16(header)
+		size := binary.BigEndian.Uint16(headerSize)
+
+		// header message
+		headerData := make([]byte, size)
+		n, err = io.ReadFull(conn, headerData)
+		if err != nil {
+			log.Warningf("%v read header message failed: %v expect: %v actual read: %v", session.IP, err, size, n)
+			return
+		}
+
+		headerMsg := pc.
+			proto.Unmarshal(headerData)
 
 		// data
 		payload := make([]byte, size)
