@@ -8,7 +8,6 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/backend/agent/api"
-	"github.com/master-g/omgo/kit/packet"
 	"github.com/master-g/omgo/kit/utils"
 )
 
@@ -80,6 +79,6 @@ func (buf *Buffer) rawSend(data []byte) bool {
 func newBuffer(conn net.Conn, ctrl chan struct{}, txQueueLen int) *Buffer {
 	buf := Buffer{conn: conn, ctrl: ctrl}
 	buf.pending = make(chan []byte, txQueueLen)
-	buf.cache = make([]byte, packet.MaximumPacketSize)
+	buf.cache = make([]byte, 32*1024)
 	return &buf
 }

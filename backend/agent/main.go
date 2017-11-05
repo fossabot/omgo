@@ -264,7 +264,7 @@ func handleClient(conn net.Conn, config *Config) {
 	// header size
 	headerSize := make([]byte, 2)
 	// agent's input channel
-	in := make(chan api.IncomingPacket)
+	in := make(chan *api.IncomingPacket)
 	defer func() {
 		close(in) // session will be closed
 	}()
@@ -323,7 +323,7 @@ func handleClient(conn net.Conn, config *Config) {
 		}
 
 		payloadSize := headerMsg.BodySize
-		if payloadSize == 0 || payloadSize > 32*1024 {
+		if payloadSize == 0 || payloadSize > defaultSockBufSize {
 			log.Warningf("%v payload size error %v", session.IP, payloadSize)
 		}
 
@@ -335,7 +335,7 @@ func handleClient(conn net.Conn, config *Config) {
 			return
 		}
 
-		inPacket := api.IncomingPacket{
+		inPacket := &api.IncomingPacket{
 			Header:  headerMsg,
 			Payload: payload,
 		}

@@ -45,7 +45,6 @@ func genRspHeader() *pc.RspHeader {
 }
 
 // ProcHeartBeatReq process client heartbeat packet
-// TODO: reset client timeout timer
 func ProcHeartBeatReq(session *Session, inPacket *IncomingPacket) []byte {
 	if !session.IsFlagAuthSet() {
 		log.Errorf("heartbeat from unauth session:%v", session)
@@ -60,12 +59,11 @@ func ProcHeartBeatReq(session *Session, inPacket *IncomingPacket) []byte {
 
 // ProcGetSeedReq exchange secret with client via ECDH algorithm
 // TODO: optimize performance
-func ProcGetSeedReq(session *Session, reader *packet.RawPacket) []byte {
+func ProcGetSeedReq(session *Session, inPacket *IncomingPacket) []byte {
 	rsp := &pc.S2CGetSeedRsp{Header: genRspHeader()}
 	req := &pc.C2SGetSeedReq{}
-	marshalPb, _ := reader.ReadBytes()
 
-	if err := proto.Unmarshal(marshalPb, req); err != nil {
+	if err := proto.Unmarshal(inPacket.Payload, req); err != nil {
 		log.Errorf("invalid protobuf :%v", err)
 		rsp.Header.Status = int32(pc.ResultCode_RESULT_INTERNAL_ERROR)
 		return MakeResponse(pc.Cmd_GET_SEED_RSP, rsp)
@@ -100,7 +98,7 @@ func ProcGetSeedReq(session *Session, reader *packet.RawPacket) []byte {
 }
 
 // ProcUserLoginReq process user login request
-func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
+func ProcUserLoginReq(session *Session, inPacket *IncomingPacket) []byte {
 	rsp := &pc.S2CLoginRsp{Header: genRspHeader()}
 	rsp.Header.Timestamp = utils.Timestamp()
 	rsp.Header.Status = int32(pc.ResultCode_RESULT_INVALID)
@@ -114,9 +112,7 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 
 	// parse login request
 	req := &pc.C2SLoginReq{}
-	marshalPb, _ := reader.ReadBytes()
-
-	if err := proto.Unmarshal(marshalPb, req); err != nil {
+	if err := proto.Unmarshal(inPacket.Payload, req); err != nil {
 		log.Errorf("invalid protobuf:%v", err)
 		session.SetFlagKicked()
 		return MakeResponse(pc.Cmd_LOGIN_RSP, rsp)
@@ -224,7 +220,7 @@ func ProcUserLoginReq(session *Session, reader *packet.RawPacket) []byte {
 	return MakeResponse(pc.Cmd_LOGIN_RSP, rsp)
 }
 
-func ProcOfflineReq(session *Session, reader *packet.RawPacket) []byte {
+func ProcOfflineReq(session *Session, inPacket *IncomingPacket) []byte {
 	session.SetFlagKicked()
 	return nil
 }

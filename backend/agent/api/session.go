@@ -124,8 +124,8 @@ func (s *Session) IsFlagAuthSet() bool {
 	return s.Flag&FlagAuth != 0
 }
 
-// Timework checks rpm limit and heartbeat intervals
-func (s *Session) Timework() {
+// TimeWork checks rpm limit and heartbeat intervals
+func (s *Session) TimeWork() {
 	defer func() {
 		s.PacketCountPerMin = 0
 	}()

@@ -12,43 +12,43 @@
 			"checksumSHA1": "7BC2/27NId9xaPDB5w3nWN2mn9A=",
 			"origin": "github.com/master-g/omgo/kit/services/vendor/github.com/coreos/etcd/auth/authpb",
 			"path": "github.com/coreos/etcd/auth/authpb",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "hrLkLwaWwfKr/UHqSZRNx7vso8c=",
 			"origin": "github.com/master-g/omgo/kit/services/vendor/github.com/coreos/etcd/clientv3",
 			"path": "github.com/coreos/etcd/clientv3",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "IhfdapvN/pqvnHV81gLbiDbP9Gg=",
 			"origin": "github.com/master-g/omgo/kit/services/vendor/github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes",
 			"path": "github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "c0ltvGUOnk8qaEshFwc0PDH5nbc=",
 			"origin": "github.com/master-g/omgo/kit/services/vendor/github.com/coreos/etcd/etcdserver/etcdserverpb",
 			"path": "github.com/coreos/etcd/etcdserver/etcdserverpb",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "JAkX9DfIBrSe0vUa07xl5cikxVQ=",
 			"origin": "github.com/master-g/omgo/kit/services/vendor/github.com/coreos/etcd/mvcc/mvccpb",
 			"path": "github.com/coreos/etcd/mvcc/mvccpb",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "mrz/kicZiUaHxkyfvC/DyQcr8Do=",
 			"origin": "github.com/master-g/omgo/kit/utils/vendor/github.com/davecgh/go-spew/spew",
 			"path": "github.com/davecgh/go-spew/spew",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "yqF125xVSkmfLpIVGrLlfE05IUk=",
@@ -84,63 +84,63 @@
 			"checksumSHA1": "eD75lfMK5JT8ADdyFpdE0Mt9SBM=",
 			"origin": "github.com/master-g/omgo/kit/utils/vendor/github.com/maruel/panicparse/stack",
 			"path": "github.com/maruel/panicparse/stack",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "V+YnFRoAijnQxFYjg+IMdHpTQco=",
 			"path": "github.com/master-g/omgo/kit/ecdh",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "dBAgxrWFd5k0Ao2SkHvCtV8c7Ms=",
 			"path": "github.com/master-g/omgo/kit/packet",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "4pKqPw2BbCnjxIyERRpxP11wl34=",
 			"path": "github.com/master-g/omgo/kit/services",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "uY+qJKHttSzhclRlbGNX3fkPi6E=",
 			"path": "github.com/master-g/omgo/kit/utils",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "RoH2EemD5wEz/GkAxkS9gNT0KQ8=",
 			"path": "github.com/master-g/omgo/proto/grpc/agent",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "oq5SgccxK8cUrovtvtEVdDU4gfw=",
 			"path": "github.com/master-g/omgo/proto/grpc/db",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
-			"checksumSHA1": "jW99lATYElE32+vye3zvIxHJRs8=",
+			"checksumSHA1": "lQaQ9Z8JhQ2ZCbuLoBQuIVrNV4E=",
 			"path": "github.com/master-g/omgo/proto/grpc/game",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "3Wn4+J/5YI2IFcOak7BcTFFik5w=",
 			"path": "github.com/master-g/omgo/proto/pb/common",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "IQkUIOnvlf0tYloFx9mLaXSvXWQ=",
 			"origin": "github.com/master-g/omgo/kit/ecdh/vendor/golang.org/x/crypto/curve25519",
 			"path": "golang.org/x/crypto/curve25519",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "nqWNlnMmVpt628zzvyo6Yv2CX5Q=",
@@ -284,8 +284,8 @@
 			"checksumSHA1": "6vY7tYjV84pnr3sDctzx53Bs8b0=",
 			"origin": "github.com/master-g/omgo/kit/services/vendor/google.golang.org/grpc/health/grpc_health_v1",
 			"path": "google.golang.org/grpc/health/grpc_health_v1",
-			"revision": "95d68c4b1e171cb4e3ce1103a3f0d17b7224b894",
-			"revisionTime": "2017-11-05T16:28:51Z"
+			"revision": "3c3d4a7d96cae720985e2f0c993068f23dbcb0a4",
+			"revisionTime": "2017-11-05T16:31:20Z"
 		},
 		{
 			"checksumSHA1": "U9vDe05/tQrvFBojOQX8Xk12W9I=",
