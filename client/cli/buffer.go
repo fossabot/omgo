@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/binary"
 	"net"
 
 	log "github.com/Sirupsen/logrus"
@@ -59,12 +58,8 @@ func (buf *Buffer) start() {
 }
 
 func (buf *Buffer) rawSend(data []byte) bool {
-	size := len(data)
-	binary.BigEndian.PutUint16(buf.cache, uint16(size))
-	copy(buf.cache[2:], data)
-
 	// write data
-	n, err := buf.conn.Write(buf.cache[:size+2])
+	n, err := buf.conn.Write(data)
 	if err != nil {
 		log.Warningf("Error while sending reply data, bytes:%v reason:%v", n, err)
 		return false

@@ -301,10 +301,11 @@ func (s *Session) Handshake() {
 	pkg := packet.NewRawPacket()
 	header := &pc.Header{
 		Version: 1,
-		Cmd:     uint32(pc.Cmd_HANDSHAKE_REQ),
+		Cmd:     int32(pc.Cmd_HANDSHAKE_REQ),
 		Seq:     0,
 		ClientInfo: &pc.ClientInfo{
-			Usn: s.Usn,
+			Usn:       s.Usn,
+			Timestamp: utils.Timestamp(),
 		},
 	}
 
@@ -326,12 +327,14 @@ func (s *Session) Handshake() {
 		log.Errorf("error while create request:%v", err)
 		return
 	}
-	header.BodySize = uint32(len(reqBuf))
+	header.BodySize = int32(len(reqBuf))
 	headerBuf, err := proto.Marshal(header)
 	if err != nil {
 		log.Errorf("error while create request:%v", err)
 		return
 	}
+	log.Infof("header size:%v", len(headerBuf))
+	log.Infof("data:%v", headerBuf)
 	pkg.WriteU16(uint16(len(headerBuf)))
 	pkg.WriteRawBytes(headerBuf)
 	pkg.WriteRawBytes(reqBuf)

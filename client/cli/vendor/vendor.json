@@ -18,8 +18,8 @@
 			"checksumSHA1": "mrz/kicZiUaHxkyfvC/DyQcr8Do=",
 			"origin": "github.com/master-g/omgo/kit/utils/vendor/github.com/davecgh/go-spew/spew",
 			"path": "github.com/davecgh/go-spew/spew",
-			"revision": "23fb8e4fb3d663cef5cb297d8facf60dbcb2aa54",
-			"revisionTime": "2017-11-06T11:53:48Z"
+			"revision": "cc77a1be06c64ceae8084505d15947ef8951e43f",
+			"revisionTime": "2017-11-06T12:18:11Z"
 		},
 		{
 			"checksumSHA1": "yLQg8NdQKYqqytcvKA/0EBkOIkw=",
@@ -37,39 +37,39 @@
 			"checksumSHA1": "eD75lfMK5JT8ADdyFpdE0Mt9SBM=",
 			"origin": "github.com/master-g/omgo/kit/utils/vendor/github.com/maruel/panicparse/stack",
 			"path": "github.com/maruel/panicparse/stack",
-			"revision": "23fb8e4fb3d663cef5cb297d8facf60dbcb2aa54",
-			"revisionTime": "2017-11-06T11:53:48Z"
+			"revision": "cc77a1be06c64ceae8084505d15947ef8951e43f",
+			"revisionTime": "2017-11-06T12:18:11Z"
 		},
 		{
 			"checksumSHA1": "V+YnFRoAijnQxFYjg+IMdHpTQco=",
 			"path": "github.com/master-g/omgo/kit/ecdh",
-			"revision": "23fb8e4fb3d663cef5cb297d8facf60dbcb2aa54",
-			"revisionTime": "2017-11-06T11:53:48Z"
+			"revision": "cc77a1be06c64ceae8084505d15947ef8951e43f",
+			"revisionTime": "2017-11-06T12:18:11Z"
 		},
 		{
 			"checksumSHA1": "dBAgxrWFd5k0Ao2SkHvCtV8c7Ms=",
 			"path": "github.com/master-g/omgo/kit/packet",
-			"revision": "23fb8e4fb3d663cef5cb297d8facf60dbcb2aa54",
-			"revisionTime": "2017-11-06T11:53:48Z"
+			"revision": "cc77a1be06c64ceae8084505d15947ef8951e43f",
+			"revisionTime": "2017-11-06T12:18:11Z"
 		},
 		{
 			"checksumSHA1": "uY+qJKHttSzhclRlbGNX3fkPi6E=",
 			"path": "github.com/master-g/omgo/kit/utils",
-			"revision": "23fb8e4fb3d663cef5cb297d8facf60dbcb2aa54",
-			"revisionTime": "2017-11-06T11:53:48Z"
+			"revision": "cc77a1be06c64ceae8084505d15947ef8951e43f",
+			"revisionTime": "2017-11-06T12:18:11Z"
 		},
 		{
-			"checksumSHA1": "3zan1ziu7QU3p6Bij06wA2uSStc=",
+			"checksumSHA1": "C+RmhIHIo7Q57fBMvGBd4TCdnq8=",
 			"path": "github.com/master-g/omgo/proto/pb/common",
-			"revision": "23fb8e4fb3d663cef5cb297d8facf60dbcb2aa54",
-			"revisionTime": "2017-11-06T11:53:48Z"
+			"revision": "cc77a1be06c64ceae8084505d15947ef8951e43f",
+			"revisionTime": "2017-11-06T12:18:11Z"
 		},
 		{
 			"checksumSHA1": "IQkUIOnvlf0tYloFx9mLaXSvXWQ=",
 			"origin": "github.com/master-g/omgo/kit/ecdh/vendor/golang.org/x/crypto/curve25519",
 			"path": "golang.org/x/crypto/curve25519",
-			"revision": "23fb8e4fb3d663cef5cb297d8facf60dbcb2aa54",
-			"revisionTime": "2017-11-06T11:53:48Z"
+			"revision": "cc77a1be06c64ceae8084505d15947ef8951e43f",
+			"revisionTime": "2017-11-06T12:18:11Z"
 		},
 		{
 			"checksumSHA1": "nqWNlnMmVpt628zzvyo6Yv2CX5Q=",
