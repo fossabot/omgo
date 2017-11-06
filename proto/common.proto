@@ -11,12 +11,10 @@ enum Cmd {
     HEART_BEAT_REQ = 0x1;    // C->S heartbeat request
     HEART_BEAT_RSP = 0x2;    // S->C heartbeat response
     KICK_NOTIFY    = 0x4;    // S->C kick notification
-    GET_SEED_REQ   = 0x11;   // C->S cryption key reqeust
-    GET_SEED_RSP   = 0x12;   // S->C cryption key response
-    LOGIN_REQ      = 0x21;   // C->S login request
-    LOGIN_RSP      = 0x22;   // S->C login reponse
-    LOGOUT_REQ     = 0x33;   // C->S logout request
-    LOGOUT_RSP     = 0x34;   // S->C logout response
+    HANDSHAKE_REQ = 0x11; // C->S handshake request
+    HANDSHAKE_RSP = 0x12; // S->C handshake response
+    LOGOUT_REQ     = 0x23;   // C->S logout request
+    LOGOUT_RSP     = 0x24;   // S->C logout response
     OFFLINE_REQ    = 0x87;   // C->S offline request
     PING_REQ       = 0x1001; // C->S ping request
     PING_RSP       = 0x1002; // S->C ping response
@@ -105,30 +103,20 @@ message Location {
 //-----------------------------------------------------------------------------
 // Agent
 
-// Cryption Key Request
+// Handshake request
 // C->S
-message C2SGetSeedReq {
+message C2SHandshakeReq {
     bytes send_seed = 1; // public key for server to encrypt sending data
     bytes recv_seed = 2; // public key for server to decrypt receive data
+    string token = 3; // token retrieved during HTTP login phase
 }
 
-// Cryption Key Response
+// Handshake response
 // S->C
-message S2CGetSeedRsp {
+message S2CHandshakeRsp {
     RspHeader header    = 1;
     bytes     send_seed = 2; // public key for client to encrypt sending data
     bytes     recv_seed = 3; // public key for client to decrypt receive data
-}
-
-// Socket Login Request
-message C2SLoginReq {
-    fixed64 timestamp = 1; // for random
-    fixed64 usn       = 2; // User Serial Number
-    string  token     = 3; // User token acquired from HTTP login stage
-}
-
-message S2CLoginRsp {
-    RspHeader header = 1;
 }
 
 enum KickReason {

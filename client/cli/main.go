@@ -2,13 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
-
-	"io/ioutil"
 
 	"github.com/Pallinder/go-randomdata"
 	log "github.com/Sirupsen/logrus"
