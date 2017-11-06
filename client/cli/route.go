@@ -46,6 +46,11 @@ func ProcHandshakeRsp(session *Session, packet *packet.RawPacket) []byte {
 		return nil
 	}
 
+	if rsp.Header.Status != int32(pc.ResultCode_RESULT_OK) {
+		log.Errorf("error on %v", rsp)
+		return nil
+	}
+
 	curve := ecdh.NewCurve25519ECDH()
 	keySend := curve.GenerateSharedSecretBuf(session.privateSend, rsp.GetSendSeed())
 	keyRecv := curve.GenerateSharedSecretBuf(session.privateRecv, rsp.GetRecvSeed())
@@ -64,7 +69,6 @@ func ProcHandshakeRsp(session *Session, packet *packet.RawPacket) []byte {
 
 	session.SetFlagEncrypted()
 
-	return nil
 	return nil
 }
 

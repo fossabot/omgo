@@ -28,6 +28,7 @@ type Session struct {
 	Out         *Buffer
 	privateSend []byte
 	privateRecv []byte
+	Seq         uint32
 }
 
 const (
@@ -256,6 +257,50 @@ func (s *Session) TimeWork() {
 // Interface
 //------------------------------------------------------------------------------
 
+func (s *Session) makeHeader(cmd pc.Cmd) *pc.Header {
+	s.Seq++
+	header := &pc.Header{
+		Version: 1,
+		Cmd:     int32(cmd),
+		Seq:     s.Seq,
+		ClientInfo: &pc.ClientInfo{
+			Usn:       s.Usn,
+			Timestamp: utils.Timestamp(),
+		},
+	}
+
+	return header
+}
+
+func (s *Session) send(header *pc.Header, msg proto.Message) {
+	var msgBuf []byte
+	var err error
+	if msg != nil {
+		msgBuf, err = proto.Marshal(msg)
+		if err != nil {
+			log.Errorf("error while marshal %v error:%v", msg, err)
+			return
+		}
+	}
+
+	header.BodySize = int32(len(msgBuf))
+	headerBuf, err := proto.Marshal(header)
+	if err != nil {
+		log.Errorf("error while marshal header, error:%v", err)
+		return
+	}
+
+	headerSize := len(headerBuf)
+	buf := make([]byte, headerSize+int(header.BodySize)+2)
+	binary.BigEndian.PutUint16(buf, uint16(headerSize))
+	copy(buf[2:], headerBuf)
+	if msg != nil {
+		copy(buf[2+headerSize:], msgBuf)
+	}
+	log.Infof("sending %v %v", header, msg)
+	s.Out.send(s, buf)
+}
+
 // Connect to agent server
 func (s *Session) Connect(address string) (sess *Session) {
 	if s.IsFlagConnectedSet() {
@@ -292,22 +337,13 @@ func (s *Session) Close() *Session {
 
 func (s *Session) Heartbeat() {
 	log.Info("sending heartbeat")
-	reqPacket := makePacket(pc.Cmd_HEART_BEAT_REQ)
-	s.Out.send(s, reqPacket.Data())
+	header := s.makeHeader(pc.Cmd_HEART_BEAT_REQ)
+	s.send(header, nil)
 }
 
 func (s *Session) Handshake() {
 	log.Info("about to login")
-	pkg := packet.NewRawPacket()
-	header := &pc.Header{
-		Version: 1,
-		Cmd:     int32(pc.Cmd_HANDSHAKE_REQ),
-		Seq:     0,
-		ClientInfo: &pc.ClientInfo{
-			Usn:       s.Usn,
-			Timestamp: utils.Timestamp(),
-		},
-	}
+	header := s.makeHeader(pc.Cmd_HANDSHAKE_REQ)
 
 	curve := ecdh.NewCurve25519ECDH()
 	x1, e1 := curve.GenerateECKeyBuf(rand.Reader)
@@ -322,28 +358,12 @@ func (s *Session) Handshake() {
 		Token:    s.Token,
 	}
 
-	reqBuf, err := proto.Marshal(req)
-	if err != nil {
-		log.Errorf("error while create request:%v", err)
-		return
-	}
-	header.BodySize = int32(len(reqBuf))
-	headerBuf, err := proto.Marshal(header)
-	if err != nil {
-		log.Errorf("error while create request:%v", err)
-		return
-	}
-	log.Infof("header size:%v", len(headerBuf))
-	log.Infof("data:%v", headerBuf)
-	pkg.WriteU16(uint16(len(headerBuf)))
-	pkg.WriteRawBytes(headerBuf)
-	pkg.WriteRawBytes(reqBuf)
-	s.Out.send(s, pkg.Data())
+	s.send(header, req)
 }
 
 func (s *Session) Bye() {
 	log.Info("sending bye")
-	reqPacket := makePacket(pc.Cmd_OFFLINE_REQ)
-	s.Out.send(s, reqPacket.Data())
+	header := s.makeHeader(pc.Cmd_OFFLINE_REQ)
+	s.send(header, nil)
 	s.Close()
 }

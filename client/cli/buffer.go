@@ -12,7 +12,6 @@ type Buffer struct {
 	ctrl    chan struct{}
 	pending chan []byte
 	conn    net.Conn
-	cache   []byte
 }
 
 // packet sending procedure
@@ -37,7 +36,7 @@ func (buf *Buffer) send(session *Session, data []byte) {
 	select {
 	case buf.pending <- data:
 	default:
-		// pakcet will be dropped if it exceeds txQueueLength
+		// packet will be dropped if it exceeds txQueueLength
 		log.Warning("pending full")
 	}
 	return
@@ -70,6 +69,5 @@ func (buf *Buffer) rawSend(data []byte) bool {
 func newBuffer(conn net.Conn, ctrl chan struct{}, txqueuelen int) *Buffer {
 	buf := Buffer{conn: conn, ctrl: ctrl}
 	buf.pending = make(chan []byte, txqueuelen)
-	buf.cache = make([]byte, 32*1024-1)
 	return &buf
 }
