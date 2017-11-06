@@ -30,7 +30,7 @@ func route(session *api.Session, inPacket *api.IncomingPacket) []byte {
 	// route message to different service by command code
 	var ret []byte
 	if cmd > proto_common.Cmd_CMD_COMMON_END {
-		// messages forward to game server
+		// messages forward to other servers
 		if err := forward(session, inPacket); err != nil {
 			log.Errorf("service id:%v execute failed, error:%v", cmd, err)
 			session.SetFlagKicked()

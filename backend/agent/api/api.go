@@ -3,6 +3,8 @@ package api
 import (
 	"sync"
 
+	"github.com/golang/protobuf/proto"
+	"github.com/master-g/omgo/kit/packet"
 	"github.com/master-g/omgo/kit/services"
 	pc "github.com/master-g/omgo/proto/pb/common"
 )
@@ -38,14 +40,26 @@ var (
 func init() {
 	Handlers = map[uint32]func(*Session, *IncomingPacket) []byte{
 		uint32(pc.Cmd_HEART_BEAT_REQ): ProcHeartBeatReq,
-		uint32(pc.Cmd_LOGIN_REQ):      ProcUserLoginReq,
-		uint32(pc.Cmd_GET_SEED_REQ):   ProcGetSeedReq,
+		uint32(pc.Cmd_HANDSHAKE_REQ):  ProcHandshakeReq,
 		uint32(pc.Cmd_OFFLINE_REQ):    ProcOfflineReq,
 	}
 }
 
+// Init services needed by agent
 func Init(cfg Config) {
 	config = cfg
 	GameServerPool = services.New(cfg.Root, cfg.GameServerKind, cfg.Hosts)
 	DataServicePool = services.New(cfg.Root, cfg.DataServiceKind, cfg.Hosts)
+}
+
+// MakeResponse convert proto message into packet
+func MakeResponse(cmd pc.Cmd, msg proto.Message) []byte {
+	p := packet.NewRawPacket()
+	p.WriteS32(int32(cmd))
+	rspBytes, err := proto.Marshal(msg)
+	if err != nil {
+		return nil
+	}
+	p.WriteBytes(rspBytes)
+	return p.Data()
 }

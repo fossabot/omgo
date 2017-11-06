@@ -1,0 +1,6 @@
+package api
+
+func ProcOfflineReq(session *Session, inPacket *IncomingPacket) []byte {
+	session.SetFlagKicked()
+	return nil
+}
