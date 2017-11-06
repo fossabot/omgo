@@ -296,46 +296,46 @@ func (s *Session) Heartbeat() {
 	s.Out.send(s, reqPacket.Data())
 }
 
-func (s *Session) ExchangeKey() {
-	log.Info("about to exchange key")
-	reqPacket := makePacket(pc.Cmd_GET_SEED_REQ)
-	req := &pc.C2SGetSeedReq{}
+func (s *Session) Handshake() {
+	log.Info("about to login")
+	pkg := packet.NewRawPacket()
+	header := &pc.Header{
+		Version: 1,
+		Cmd:     uint32(pc.Cmd_HANDSHAKE_REQ),
+		Seq:     0,
+		ClientInfo: &pc.ClientInfo{
+			Usn: s.Usn,
+		},
+	}
 
 	curve := ecdh.NewCurve25519ECDH()
 	x1, e1 := curve.GenerateECKeyBuf(rand.Reader)
 	x2, e2 := curve.GenerateECKeyBuf(rand.Reader)
 
-	req.SendSeed = e1
-	req.RecvSeed = e2
-
 	s.privateSend = x1
 	s.privateRecv = x2
 
-	data, err := proto.Marshal(req)
+	req := &pc.C2SHandshakeReq{
+		SendSeed: e1,
+		RecvSeed: e2,
+		Token:    s.Token,
+	}
+
+	reqBuf, err := proto.Marshal(req)
 	if err != nil {
 		log.Errorf("error while create request:%v", err)
 		return
 	}
-
-	reqPacket.WriteBytes(data)
-	s.Out.send(s, reqPacket.Data())
-}
-
-func (s *Session) Login() {
-	log.Info("about to login")
-	reqPacket := makePacket(pc.Cmd_LOGIN_REQ)
-	req := &pc.C2SLoginReq{
-		Timestamp: utils.Timestamp(),
-		Usn:       s.Usn,
-		Token:     s.Token,
-	}
-	data, err := proto.Marshal(req)
+	header.BodySize = uint32(len(reqBuf))
+	headerBuf, err := proto.Marshal(header)
 	if err != nil {
 		log.Errorf("error while create request:%v", err)
 		return
 	}
-	reqPacket.WriteBytes(data)
-	s.Out.send(s, reqPacket.Data())
+	pkg.WriteU16(uint16(len(headerBuf)))
+	pkg.WriteRawBytes(headerBuf)
+	pkg.WriteRawBytes(reqBuf)
+	s.Out.send(s, pkg.Data())
 }
 
 func (s *Session) Bye() {

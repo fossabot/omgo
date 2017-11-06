@@ -5,7 +5,6 @@ import (
 	"net"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/master-g/omgo/kit/packet"
 	"github.com/master-g/omgo/kit/utils"
 )
 
@@ -76,6 +75,6 @@ func (buf *Buffer) rawSend(data []byte) bool {
 func newBuffer(conn net.Conn, ctrl chan struct{}, txqueuelen int) *Buffer {
 	buf := Buffer{conn: conn, ctrl: ctrl}
 	buf.pending = make(chan []byte, txqueuelen)
-	buf.cache = make([]byte, packet.MaximumPacketSize)
+	buf.cache = make([]byte, 32*1024-1)
 	return &buf
 }

@@ -42,7 +42,6 @@ var (
 	sess         *Session
 	httpclient   *http.Client
 	apiHost      string
-	loginRsp     pc.S2CLoginRsp
 	shell        *ishell.Shell
 	httpLoginRsp HttpLoginRsp
 )
@@ -128,18 +127,7 @@ func main() {
 			}
 			sess.Connect(address)
 			sess.Heartbeat()
-			sess.ExchangeKey()
-		},
-	})
-	shell.AddCmd(&ishell.Cmd{
-		Name: "exchangekey",
-		Help: "exchange public key with server",
-		Func: func(c *ishell.Context) {
-			if !sess.IsFlagConnectedSet() {
-				log.Error("no connection")
-				return
-			}
-			sess.ExchangeKey()
+			sess.Handshake()
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
@@ -300,20 +288,20 @@ func main() {
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{
-		Name: "login",
-		Help: "login to agent server",
+		Name: "handshake",
+		Help: "handshake to agent server",
 		Func: func(c *ishell.Context) {
 			if !sess.IsFlagConnectedSet() {
 				log.Error("no connection")
 				return
 			}
-			if !sess.IsFlagEncryptedSet() {
-				log.Error("need to exchange key first")
+			if httpLoginRsp.UserInfo.Usn == 0 {
+				log.Error("do http login first")
 				return
 			}
 			sess.Usn = httpLoginRsp.UserInfo.Usn
 			sess.Token = httpLoginRsp.UserInfo.Token
-			sess.Login()
+			sess.Handshake()
 		},
 	})
 	shell.AddCmd(&ishell.Cmd{

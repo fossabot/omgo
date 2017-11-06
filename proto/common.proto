@@ -36,16 +36,16 @@ enum Cmd {
 // client request header
 message Header {
     int32      version     = 1; // protocol version
-    uint32     cmd         = 2; // command
+    int32      cmd         = 2; // command
     uint32     seq         = 3; // packet sequence
-    uint32     body_size   = 4; // payload size in bytes
+    int32      body_size   = 4; // payload size in bytes
     ClientInfo client_info = 5; // client info
 }
 
 // client info
 message ClientInfo {
     fixed64 usn       = 1; // user serial number
-    uint64  timestamp = 2;
+    fixed64 timestamp = 2;
 }
 
 enum ResultCode {

@@ -17,8 +17,7 @@ var Handlers map[int32]func(*Session, *packet.RawPacket) []byte
 func init() {
 	Handlers = map[int32]func(*Session, *packet.RawPacket) []byte{
 		int32(pc.Cmd_HEART_BEAT_RSP): ProcHeartBeatRsp,
-		int32(pc.Cmd_LOGIN_RSP):      ProcLoginRsp,
-		int32(pc.Cmd_GET_SEED_RSP):   ProcGetSeedRsp,
+		int32(pc.Cmd_HANDSHAKE_RSP):  ProcHandshakeRsp,
 		int32(pc.Cmd_KICK_NOTIFY):    ProcKickNotify,
 	}
 }
@@ -38,13 +37,9 @@ func ProcHeartBeatRsp(session *Session, packet *packet.RawPacket) []byte {
 	return nil
 }
 
-func ProcLoginRsp(session *Session, packet *packet.RawPacket) []byte {
-	return nil
-}
-
-func ProcGetSeedRsp(session *Session, packet *packet.RawPacket) []byte {
+func ProcHandshakeRsp(session *Session, packet *packet.RawPacket) []byte {
 	rspBody := readPacketBody(packet)
-	rsp := &pc.S2CGetSeedRsp{}
+	rsp := &pc.S2CHandshakeRsp{}
 	err := proto.Unmarshal(rspBody, rsp)
 	if err != nil {
 		log.Errorf("error while parsing proto:%v", err)
@@ -69,6 +64,7 @@ func ProcGetSeedRsp(session *Session, packet *packet.RawPacket) []byte {
 
 	session.SetFlagEncrypted()
 
+	return nil
 	return nil
 }
 
