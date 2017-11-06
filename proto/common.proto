@@ -11,23 +11,22 @@ enum Cmd {
     HEART_BEAT_REQ = 0x1;    // C->S heartbeat request
     HEART_BEAT_RSP = 0x2;    // S->C heartbeat response
     KICK_NOTIFY    = 0x4;    // S->C kick notification
-    HANDSHAKE_REQ = 0x11; // C->S handshake request
-    HANDSHAKE_RSP = 0x12; // S->C handshake response
+    HANDSHAKE_REQ  = 0x11;   // C->S handshake request
+    HANDSHAKE_RSP  = 0x12;   // S->C handshake response
     LOGOUT_REQ     = 0x23;   // C->S logout request
     LOGOUT_RSP     = 0x24;   // S->C logout response
     OFFLINE_REQ    = 0x87;   // C->S offline request
     PING_REQ       = 0x1001; // C->S ping request
     PING_RSP       = 0x1002; // S->C ping response
+    CMD_COMMON_END = 0x5000; // Reserved
 
-    // Hall Commands, handle by agent
-    ROOM_CONFIG_REQ = 0x2001; // C->S get room config request
-    ROOM_CONFIG_RSP = 0x2002; // S->C get room config response
-    CREATE_ROOM_REQ = 0x2003; // C->S create room request
-    CREATE_ROOM_RSP = 0x2004; // S->C create room response
-    ENTER_ROOM_REQ  = 0x2005; // C->S enter room request
-    ENTER_ROOM_RSP  = 0x2006; // S->C enter room response
-
-    CMD_COMMON_END = 0x10000;
+    // Hall Commands, handle by hall server
+    ROOM_CONFIG_REQ = 0x5001; // C->S get room config request
+    ROOM_CONFIG_RSP = 0x5002; // S->C get room config response
+    CREATE_ROOM_REQ = 0x5003; // C->S create room request
+    CREATE_ROOM_RSP = 0x5004; // S->C create room response
+    ENTER_ROOM_REQ  = 0x5005; // C->S enter room request
+    ENTER_ROOM_RSP  = 0x5006; // S->C enter room response
 
     // Room Commands, handle by game
     EXIT_ROOM_REQ = 0x10007; // C->S exit room request
@@ -106,9 +105,9 @@ message Location {
 // Handshake request
 // C->S
 message C2SHandshakeReq {
-    bytes send_seed = 1; // public key for server to encrypt sending data
-    bytes recv_seed = 2; // public key for server to decrypt receive data
-    string token = 3; // token retrieved during HTTP login phase
+    bytes  send_seed = 1; // public key for server to encrypt sending data
+    bytes  recv_seed = 2; // public key for server to decrypt receive data
+    string token     = 3; // token retrieved during HTTP login phase
 }
 
 // Handshake response
