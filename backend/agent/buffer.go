@@ -53,6 +53,7 @@ func (buf *Buffer) start() {
 	for {
 		select {
 		case data := <-buf.pending:
+			// dequeue data to send
 			buf.rawSend(data)
 		case <-buf.ctrl:
 			// session control signal received

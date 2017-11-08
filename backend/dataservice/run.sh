@@ -18,6 +18,8 @@ case "$(uname -s)" in
      ;;
 esac
 
+docker cp config.json ${SID}:/usr/verticles
+
 # Database service
 if [ "$1" = "rebuild" ]
 then
