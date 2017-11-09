@@ -31,6 +31,7 @@ func agent(session *api.Session, in chan *api.IncomingPacket, out *Buffer) {
 
 	// cleanup
 	defer func() {
+		// notify handleClient in main.go
 		close(session.Die)
 		if session.Stream != nil {
 			session.Stream.CloseSend()
@@ -77,6 +78,7 @@ func agent(session *api.Session, in chan *api.IncomingPacket, out *Buffer) {
 		// see if user should be kicked out
 		if session.IsFlagKickedSet() {
 			log.Infof("session kicked:%v:%v", session.IP.String(), session.Port)
+			// REMOVE SESSION HERE ONLY
 			api.Registry.Delete(session.Usn)
 			return
 		}

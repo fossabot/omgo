@@ -340,10 +340,6 @@ func handleClient(conn net.Conn, config *Config) {
 			return
 		}
 	}
-	if session.Usn != 0 {
-		api.Registry.Delete(session.Usn)
-		log.Infof("remove %v usn:%v from registry", session.IP, session.Usn)
-	}
 }
 
 func checkError(err error) {
