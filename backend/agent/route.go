@@ -5,14 +5,9 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/master-g/omgo/backend/agent/api"
-	"github.com/master-g/omgo/kit/packet"
 	"github.com/master-g/omgo/kit/utils"
 	proto_common "github.com/master-g/omgo/proto/pb/common"
 )
-
-func getPacketBody(reader *packet.RawPacket) []byte {
-	return reader.Data()[reader.Pos():]
-}
 
 // route client protocol
 func route(session *api.Session, inPacket *api.IncomingPacket) []byte {
