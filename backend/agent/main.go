@@ -63,7 +63,6 @@ const (
 	defaultKind          = "agent"
 	defaultName          = "agent-0"
 	defaultHost          = "localhost"
-	defaultRPCPort       = 30001
 	defaultETCD          = "http://127.0.0.1:2379"
 	defaultRoot          = "backends"
 	defaultGameServerId  = "game-0"
@@ -115,11 +114,6 @@ func main() {
 				Usage: "agent service host",
 				Value: defaultHost,
 			},
-			&cli.IntFlag{
-				Name:  "service-port",
-				Usage: "agent rpc service port",
-				Value: defaultRPCPort,
-			},
 			&cli.StringSliceFlag{
 				Name:  "etcd-host",
 				Usage: "ETCD endpoint addresses",
@@ -164,7 +158,6 @@ func main() {
 			serviceRoot := c.String("service-root")
 			agentKind := c.String("service-kind")
 			agentName := c.String("service-name")
-			agentRPCPort := c.Int("service-port")
 			agentHost := c.String("service-host")
 			gameServerName := c.String("gameserver-name")
 
@@ -174,7 +167,6 @@ func main() {
 			log.Infof("service-kind:%v", agentKind)
 			log.Infof("service-name:%v", agentName)
 			log.Infof("service-host:%v", agentHost)
-			log.Infof("service-port:%v", agentRPCPort)
 			log.Infof("etcd-hosts:%v", etcdHosts)
 			log.Infof("services:%v", serviceNames)
 			log.Infof("deadline:%v", c.Duration("deadline"))
@@ -193,7 +185,7 @@ func main() {
 
 			// register agent to ETCD
 			agentFullPath := services.GenPath(serviceRoot, agentKind, agentName)
-			agentFullHost := fmt.Sprintf("%v:%v", agentHost, agentRPCPort)
+			agentFullHost := fmt.Sprintf("%v:%v", agentHost, listenPort)
 			services.RegisterService(etcdHosts, agentFullPath, agentFullHost)
 			// connect to other services
 			srvConfig := api.Config{
