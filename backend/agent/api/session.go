@@ -38,7 +38,7 @@ type Session struct {
 	MQ                chan pb.Game_Frame          // Channel of async messages send back to client
 	Encoder           *rc4.Cipher                 // Encrypt
 	Decoder           *rc4.Cipher                 // Decrypt
-	GSID              string                      // Game server ID
+	GameServerId      string                      // Game server ID
 	Stream            pb.GameService_StreamClient // Data stream send to game server
 	ConnectTime       time.Time                   // Timestamp of TCP connection established
 	PacketTime        time.Time                   // Timestamp of current packet arrived

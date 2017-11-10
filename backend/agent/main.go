@@ -40,6 +40,8 @@ import (
 	"os"
 	"time"
 
+	_ "net/http/pprof"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/backend/agent/api"
@@ -58,7 +60,7 @@ type Config struct {
 }
 
 const (
-	profileAddress       = "0.0.0.0:6666"
+	profileAddress       = "localhost:6060"
 	defaultPort          = 8888
 	defaultKind          = "agent"
 	defaultName          = "agent-0"
@@ -154,7 +156,7 @@ func main() {
 			etcdHosts := c.StringSlice("etcd-host")
 			serviceNames := c.StringSlice("add-service")
 			rpmLimit := c.Int("rpm")
-			listenPort := c.String("port")
+			listenPort := c.String("listen")
 			serviceRoot := c.String("service-root")
 			agentKind := c.String("service-kind")
 			agentName := c.String("service-name")

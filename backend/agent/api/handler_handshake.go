@@ -123,12 +123,12 @@ func ProcHandshakeReq(session *Session, inPacket *IncomingPacket) []byte {
 	// connect to other services
 	session.Usn = usn
 	session.Token = token
-	session.GSID = config.GameServerName
+	session.GameServerId = config.GameServerName
 	session.SetFlagAuth()
 
 	conn := GameServerPool.GetClient(config.GameServerName)
 	if conn == nil {
-		msg = fmt.Sprintf("cannot get game service:%v", session.GSID)
+		msg = fmt.Sprintf("cannot get game service:%v", session.GameServerId)
 		log.Error(msg)
 		return makeErrorResponse(msg, pc.ResultCode_RESULT_INTERNAL_ERROR, session)
 	}
