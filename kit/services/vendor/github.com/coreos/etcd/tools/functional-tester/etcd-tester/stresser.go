@@ -16,7 +16,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -25,7 +24,7 @@ import (
 	"google.golang.org/grpc/grpclog"
 )
 
-func init() { grpclog.SetLoggerV2(grpclog.NewLoggerV2(os.Stderr, os.Stderr, os.Stderr)) }
+func init() { grpclog.SetLogger(plog) }
 
 type Stresser interface {
 	// Stress starts to stress the etcd cluster

@@ -15,15 +15,13 @@
 package clientv3_test
 
 import (
-	"context"
 	"log"
-	"os"
 	"time"
 
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/pkg/transport"
-
-	"google.golang.org/grpc/grpclog"
+	"github.com/coreos/pkg/capnslog"
+	"golang.org/x/net/context"
 )
 
 var (
@@ -33,7 +31,8 @@ var (
 )
 
 func Example() {
-	clientv3.SetLogger(grpclog.NewLoggerV2(os.Stderr, os.Stderr, os.Stderr))
+	var plog = capnslog.NewPackageLogger("github.com/coreos/etcd", "clientv3")
+	clientv3.SetLogger(plog)
 
 	cli, err := clientv3.New(clientv3.Config{
 		Endpoints:   endpoints,

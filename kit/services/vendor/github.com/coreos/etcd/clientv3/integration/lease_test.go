@@ -15,7 +15,6 @@
 package integration
 
 import (
-	"context"
 	"reflect"
 	"sort"
 	"sync"
@@ -27,7 +26,7 @@ import (
 	"github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes"
 	"github.com/coreos/etcd/integration"
 	"github.com/coreos/etcd/pkg/testutil"
-
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
 
@@ -234,7 +233,7 @@ type leaseCh struct {
 	ch  <-chan *clientv3.LeaseKeepAliveResponse
 }
 
-// TestLeaseKeepAliveNotFound ensures a revoked lease won't halt other leases.
+// TestLeaseKeepAliveNotFound ensures a revoked lease won't stop other keep alives
 func TestLeaseKeepAliveNotFound(t *testing.T) {
 	defer testutil.AfterTest(t)
 
@@ -287,10 +286,8 @@ func TestLeaseGrantErrConnClosed(t *testing.T) {
 	go func() {
 		defer close(donec)
 		_, err := cli.Grant(context.TODO(), 5)
-		if err != nil && err != grpc.ErrClientConnClosing && err != context.Canceled {
-			// grpc.ErrClientConnClosing if grpc-go balancer calls 'Get' after client.Close.
-			// context.Canceled if grpc-go balancer calls 'Get' with an inflight client.Close.
-			t.Fatalf("expected %v or %v, got %v", grpc.ErrClientConnClosing, context.Canceled, err)
+		if err != nil && err != grpc.ErrClientConnClosing {
+			t.Fatalf("expected %v, got %v", grpc.ErrClientConnClosing, err)
 		}
 	}()
 
@@ -319,8 +316,8 @@ func TestLeaseGrantNewAfterClose(t *testing.T) {
 
 	donec := make(chan struct{})
 	go func() {
-		if _, err := cli.Grant(context.TODO(), 5); err != context.Canceled && err != grpc.ErrClientConnClosing {
-			t.Fatalf("expected %v or %v, got %v", err != context.Canceled, grpc.ErrClientConnClosing, err)
+		if _, err := cli.Grant(context.TODO(), 5); err != grpc.ErrClientConnClosing {
+			t.Fatalf("expected %v, got %v", grpc.ErrClientConnClosing, err)
 		}
 		close(donec)
 	}()
@@ -351,8 +348,8 @@ func TestLeaseRevokeNewAfterClose(t *testing.T) {
 
 	donec := make(chan struct{})
 	go func() {
-		if _, err := cli.Revoke(context.TODO(), leaseID); err != context.Canceled && err != grpc.ErrClientConnClosing {
-			t.Fatalf("expected %v or %v, got %v", err != context.Canceled, grpc.ErrClientConnClosing, err)
+		if _, err := cli.Revoke(context.TODO(), leaseID); err != grpc.ErrClientConnClosing {
+			t.Fatalf("expected %v, got %v", grpc.ErrClientConnClosing, err)
 		}
 		close(donec)
 	}()
@@ -363,7 +360,7 @@ func TestLeaseRevokeNewAfterClose(t *testing.T) {
 	}
 }
 
-// TestLeaseKeepAliveCloseAfterDisconnectRevoke ensures the keep alive channel is closed
+// TestLeaseKeepAliveCloseAfterDisconnectExpire ensures the keep alive channel is closed
 // following a disconnection, lease revoke, then reconnect.
 func TestLeaseKeepAliveCloseAfterDisconnectRevoke(t *testing.T) {
 	defer testutil.AfterTest(t)
@@ -398,7 +395,7 @@ func TestLeaseKeepAliveCloseAfterDisconnectRevoke(t *testing.T) {
 
 	clus.Members[0].Restart(t)
 
-	// some responses may still be buffered; drain until close
+	// some keep-alives may still be buffered; drain until close
 	timer := time.After(time.Duration(kresp.TTL) * time.Second)
 	for kresp != nil {
 		select {
@@ -485,8 +482,7 @@ func TestLeaseTimeToLive(t *testing.T) {
 	clus := integration.NewClusterV3(t, &integration.ClusterConfig{Size: 3})
 	defer clus.Terminate(t)
 
-	c := clus.RandClient()
-	lapi := c
+	lapi := clus.RandClient()
 
 	resp, err := lapi.Grant(context.Background(), 10)
 	if err != nil {
@@ -499,11 +495,6 @@ func TestLeaseTimeToLive(t *testing.T) {
 		if _, err = kv.Put(context.TODO(), keys[i], "bar", clientv3.WithLease(resp.ID)); err != nil {
 			t.Fatal(err)
 		}
-	}
-
-	// linearized read to ensure Puts propagated to server backing lapi
-	if _, err := c.Get(context.TODO(), "abc"); err != nil {
-		t.Fatal(err)
 	}
 
 	lresp, lerr := lapi.TimeToLive(context.Background(), resp.ID, clientv3.WithAttachedKeys())
@@ -554,7 +545,8 @@ func TestLeaseTimeToLiveLeaseNotFound(t *testing.T) {
 	}
 
 	lresp, err := cli.TimeToLive(context.Background(), resp.ID)
-	// TimeToLive() should return a response with TTL=-1.
+	// TimeToLive() doesn't return LeaseNotFound error
+	// but return a response with TTL to be -1
 	if err != nil {
 		t.Fatalf("expected err to be nil")
 	}
@@ -569,37 +561,6 @@ func TestLeaseTimeToLiveLeaseNotFound(t *testing.T) {
 	}
 	if lresp.TTL != -1 {
 		t.Fatalf("expected TTL %v, but got %v", lresp.TTL, lresp.TTL)
-	}
-}
-
-func TestLeaseLeases(t *testing.T) {
-	defer testutil.AfterTest(t)
-
-	clus := integration.NewClusterV3(t, &integration.ClusterConfig{Size: 1})
-	defer clus.Terminate(t)
-
-	cli := clus.RandClient()
-
-	ids := []clientv3.LeaseID{}
-	for i := 0; i < 5; i++ {
-		resp, err := cli.Grant(context.Background(), 10)
-		if err != nil {
-			t.Errorf("failed to create lease %v", err)
-		}
-		ids = append(ids, resp.ID)
-	}
-
-	resp, err := cli.Leases(context.Background())
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(resp.Leases) != 5 {
-		t.Fatalf("len(resp.Leases) expected 5, got %d", len(resp.Leases))
-	}
-	for i := range resp.Leases {
-		if ids[i] != resp.Leases[i].ID {
-			t.Fatalf("#%d: lease ID expected %d, got %d", i, ids[i], resp.Leases[i].ID)
-		}
 	}
 }
 
@@ -675,8 +636,8 @@ func TestLeaseKeepAliveLoopExit(t *testing.T) {
 	}
 }
 
-// TestV3LeaseFailureOverlap issues Grant and KeepAlive requests to a cluster
-// before, during, and after quorum loss to confirm Grant/KeepAlive tolerates
+// TestV3LeaseFailureOverlap issues Grant and Keepalive requests to a cluster
+// before, during, and after quorum loss to confirm Grant/Keepalive tolerates
 // transient cluster failure.
 func TestV3LeaseFailureOverlap(t *testing.T) {
 	clus := integration.NewClusterV3(t, &integration.ClusterConfig{Size: 2})

@@ -15,7 +15,6 @@
 package clientv3
 
 import (
-	"context"
 	"fmt"
 	"net"
 	"testing"
@@ -23,6 +22,8 @@ import (
 
 	"github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes"
 	"github.com/coreos/etcd/pkg/testutil"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 )
 
 func TestDialCancel(t *testing.T) {
@@ -44,7 +45,7 @@ func TestDialCancel(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// connect to ipv4 black hole so dial blocks
+	// connect to ipv4 blackhole so dial blocks
 	c.SetEndpoints("http://254.0.0.1:12345")
 
 	// issue Get to force redial attempts
@@ -96,7 +97,7 @@ func TestDialTimeout(t *testing.T) {
 	for i, cfg := range testCfgs {
 		donec := make(chan error)
 		go func() {
-			// without timeout, dial continues forever on ipv4 black hole
+			// without timeout, dial continues forever on ipv4 blackhole
 			c, err := New(cfg)
 			if c != nil || err == nil {
 				t.Errorf("#%d: new client should fail", i)
@@ -116,8 +117,8 @@ func TestDialTimeout(t *testing.T) {
 		case <-time.After(5 * time.Second):
 			t.Errorf("#%d: failed to timeout dial on time", i)
 		case err := <-donec:
-			if err != context.DeadlineExceeded {
-				t.Errorf("#%d: unexpected error %v, want %v", i, err, context.DeadlineExceeded)
+			if err != grpc.ErrClientConnTimeout {
+				t.Errorf("#%d: unexpected error %v, want %v", i, err, grpc.ErrClientConnTimeout)
 			}
 		}
 	}

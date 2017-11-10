@@ -16,7 +16,8 @@ package namespace
 
 import (
 	"bytes"
-	"context"
+
+	"golang.org/x/net/context"
 
 	"github.com/coreos/etcd/clientv3"
 )

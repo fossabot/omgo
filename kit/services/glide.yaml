@@ -1,9 +1,0 @@
-package: github.com/master-g/omgo/kit/services
-import:
-- package: github.com/Sirupsen/logrus
-- package: github.com/coreos/etcd
-  subpackages:
-  - clientv3
-- package: google.golang.org/grpc
-  subpackages:
-  - connectivity

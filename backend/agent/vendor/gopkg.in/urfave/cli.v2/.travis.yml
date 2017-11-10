@@ -13,15 +13,16 @@ cache:
   - node_modules
 
 before_script:
-- go get github.com/urfave/gfmrun/... || true
-- go get golang.org/x/tools/cmd/goimports
-- if [ ! -f node_modules/.bin/markdown-toc ] ; then
-    npm install markdown-toc ;
+- if [[ $(uname) == Darwin ]]; then
+    sudo pip install flake8;
+  else
+    pip install --user flake8;
   fi
+- mkdir -p ${GOPATH%%:*}/src/gopkg.in/urfave
+- rm -rvf ${GOPATH%%:*}/src/gopkg.in/urfave/cli.v2
+- rm -rvf ${GOPATH%%:*}/pkg/*/gopkg.in/urfave/cli.v2.a
+- ln -sv ${TRAVIS_BUILD_DIR} ${GOPATH%%:*}/src/gopkg.in/urfave/cli.v2
 
 script:
-- ./runtests gen
-- ./runtests vet
-- ./runtests test
-- ./runtests gfmrun
-- ./runtests toc
+- flake8 runtests cli-v1-to-v2 generate-flag-types
+- make all

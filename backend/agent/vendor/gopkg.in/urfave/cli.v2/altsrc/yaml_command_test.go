@@ -11,11 +11,11 @@ import (
 	"os"
 	"testing"
 
-	"gopkg.in/urfave/cli.v1"
+	"gopkg.in/urfave/cli.v2"
 )
 
 func TestCommandYamlFileTest(t *testing.T) {
-	app := cli.NewApp()
+	app := &cli.App{}
 	set := flag.NewFlagSet("test", 0)
 	ioutil.WriteFile("current.yaml", []byte("test: 15"), 0666)
 	defer os.Remove("current.yaml")
@@ -35,8 +35,8 @@ func TestCommandYamlFileTest(t *testing.T) {
 			return nil
 		},
 		Flags: []cli.Flag{
-			NewIntFlag(cli.IntFlag{Name: "test"}),
-			cli.StringFlag{Name: "load"}},
+			NewIntFlag(&cli.IntFlag{Name: "test"}),
+			&cli.StringFlag{Name: "load"}},
 	}
 	command.Before = InitInputSourceWithContext(command.Flags, NewYamlSourceFromFlagFunc("load"))
 	err := command.Run(c)
@@ -45,7 +45,7 @@ func TestCommandYamlFileTest(t *testing.T) {
 }
 
 func TestCommandYamlFileTestGlobalEnvVarWins(t *testing.T) {
-	app := cli.NewApp()
+	app := &cli.App{}
 	set := flag.NewFlagSet("test", 0)
 	ioutil.WriteFile("current.yaml", []byte("test: 15"), 0666)
 	defer os.Remove("current.yaml")
@@ -68,8 +68,8 @@ func TestCommandYamlFileTestGlobalEnvVarWins(t *testing.T) {
 			return nil
 		},
 		Flags: []cli.Flag{
-			NewIntFlag(cli.IntFlag{Name: "test", EnvVar: "THE_TEST"}),
-			cli.StringFlag{Name: "load"}},
+			NewIntFlag(&cli.IntFlag{Name: "test", EnvVars: []string{"THE_TEST"}}),
+			&cli.StringFlag{Name: "load"}},
 	}
 	command.Before = InitInputSourceWithContext(command.Flags, NewYamlSourceFromFlagFunc("load"))
 
@@ -79,7 +79,7 @@ func TestCommandYamlFileTestGlobalEnvVarWins(t *testing.T) {
 }
 
 func TestCommandYamlFileTestGlobalEnvVarWinsNested(t *testing.T) {
-	app := cli.NewApp()
+	app := &cli.App{}
 	set := flag.NewFlagSet("test", 0)
 	ioutil.WriteFile("current.yaml", []byte(`top:
   test: 15`), 0666)
@@ -103,8 +103,8 @@ func TestCommandYamlFileTestGlobalEnvVarWinsNested(t *testing.T) {
 			return nil
 		},
 		Flags: []cli.Flag{
-			NewIntFlag(cli.IntFlag{Name: "top.test", EnvVar: "THE_TEST"}),
-			cli.StringFlag{Name: "load"}},
+			NewIntFlag(&cli.IntFlag{Name: "top.test", EnvVars: []string{"THE_TEST"}}),
+			&cli.StringFlag{Name: "load"}},
 	}
 	command.Before = InitInputSourceWithContext(command.Flags, NewYamlSourceFromFlagFunc("load"))
 
@@ -114,7 +114,7 @@ func TestCommandYamlFileTestGlobalEnvVarWinsNested(t *testing.T) {
 }
 
 func TestCommandYamlFileTestSpecifiedFlagWins(t *testing.T) {
-	app := cli.NewApp()
+	app := &cli.App{}
 	set := flag.NewFlagSet("test", 0)
 	ioutil.WriteFile("current.yaml", []byte("test: 15"), 0666)
 	defer os.Remove("current.yaml")
@@ -135,8 +135,8 @@ func TestCommandYamlFileTestSpecifiedFlagWins(t *testing.T) {
 			return nil
 		},
 		Flags: []cli.Flag{
-			NewIntFlag(cli.IntFlag{Name: "test"}),
-			cli.StringFlag{Name: "load"}},
+			NewIntFlag(&cli.IntFlag{Name: "test"}),
+			&cli.StringFlag{Name: "load"}},
 	}
 	command.Before = InitInputSourceWithContext(command.Flags, NewYamlSourceFromFlagFunc("load"))
 
@@ -146,7 +146,7 @@ func TestCommandYamlFileTestSpecifiedFlagWins(t *testing.T) {
 }
 
 func TestCommandYamlFileTestSpecifiedFlagWinsNested(t *testing.T) {
-	app := cli.NewApp()
+	app := &cli.App{}
 	set := flag.NewFlagSet("test", 0)
 	ioutil.WriteFile("current.yaml", []byte(`top:
   test: 15`), 0666)
@@ -168,8 +168,8 @@ func TestCommandYamlFileTestSpecifiedFlagWinsNested(t *testing.T) {
 			return nil
 		},
 		Flags: []cli.Flag{
-			NewIntFlag(cli.IntFlag{Name: "top.test"}),
-			cli.StringFlag{Name: "load"}},
+			NewIntFlag(&cli.IntFlag{Name: "top.test"}),
+			&cli.StringFlag{Name: "load"}},
 	}
 	command.Before = InitInputSourceWithContext(command.Flags, NewYamlSourceFromFlagFunc("load"))
 
@@ -179,7 +179,7 @@ func TestCommandYamlFileTestSpecifiedFlagWinsNested(t *testing.T) {
 }
 
 func TestCommandYamlFileTestDefaultValueFileWins(t *testing.T) {
-	app := cli.NewApp()
+	app := &cli.App{}
 	set := flag.NewFlagSet("test", 0)
 	ioutil.WriteFile("current.yaml", []byte("test: 15"), 0666)
 	defer os.Remove("current.yaml")
@@ -200,8 +200,8 @@ func TestCommandYamlFileTestDefaultValueFileWins(t *testing.T) {
 			return nil
 		},
 		Flags: []cli.Flag{
-			NewIntFlag(cli.IntFlag{Name: "test", Value: 7}),
-			cli.StringFlag{Name: "load"}},
+			NewIntFlag(&cli.IntFlag{Name: "test", Value: 7}),
+			&cli.StringFlag{Name: "load"}},
 	}
 	command.Before = InitInputSourceWithContext(command.Flags, NewYamlSourceFromFlagFunc("load"))
 
@@ -211,7 +211,7 @@ func TestCommandYamlFileTestDefaultValueFileWins(t *testing.T) {
 }
 
 func TestCommandYamlFileTestDefaultValueFileWinsNested(t *testing.T) {
-	app := cli.NewApp()
+	app := &cli.App{}
 	set := flag.NewFlagSet("test", 0)
 	ioutil.WriteFile("current.yaml", []byte(`top:
   test: 15`), 0666)
@@ -233,8 +233,8 @@ func TestCommandYamlFileTestDefaultValueFileWinsNested(t *testing.T) {
 			return nil
 		},
 		Flags: []cli.Flag{
-			NewIntFlag(cli.IntFlag{Name: "top.test", Value: 7}),
-			cli.StringFlag{Name: "load"}},
+			NewIntFlag(&cli.IntFlag{Name: "top.test", Value: 7}),
+			&cli.StringFlag{Name: "load"}},
 	}
 	command.Before = InitInputSourceWithContext(command.Flags, NewYamlSourceFromFlagFunc("load"))
 
@@ -244,7 +244,7 @@ func TestCommandYamlFileTestDefaultValueFileWinsNested(t *testing.T) {
 }
 
 func TestCommandYamlFileFlagHasDefaultGlobalEnvYamlSetGlobalEnvWins(t *testing.T) {
-	app := cli.NewApp()
+	app := &cli.App{}
 	set := flag.NewFlagSet("test", 0)
 	ioutil.WriteFile("current.yaml", []byte("test: 15"), 0666)
 	defer os.Remove("current.yaml")
@@ -268,8 +268,8 @@ func TestCommandYamlFileFlagHasDefaultGlobalEnvYamlSetGlobalEnvWins(t *testing.T
 			return nil
 		},
 		Flags: []cli.Flag{
-			NewIntFlag(cli.IntFlag{Name: "test", Value: 7, EnvVar: "THE_TEST"}),
-			cli.StringFlag{Name: "load"}},
+			NewIntFlag(&cli.IntFlag{Name: "test", Value: 7, EnvVars: []string{"THE_TEST"}}),
+			&cli.StringFlag{Name: "load"}},
 	}
 	command.Before = InitInputSourceWithContext(command.Flags, NewYamlSourceFromFlagFunc("load"))
 	err := command.Run(c)
@@ -278,7 +278,7 @@ func TestCommandYamlFileFlagHasDefaultGlobalEnvYamlSetGlobalEnvWins(t *testing.T
 }
 
 func TestCommandYamlFileFlagHasDefaultGlobalEnvYamlSetGlobalEnvWinsNested(t *testing.T) {
-	app := cli.NewApp()
+	app := &cli.App{}
 	set := flag.NewFlagSet("test", 0)
 	ioutil.WriteFile("current.yaml", []byte(`top:
   test: 15`), 0666)
@@ -303,8 +303,8 @@ func TestCommandYamlFileFlagHasDefaultGlobalEnvYamlSetGlobalEnvWinsNested(t *tes
 			return nil
 		},
 		Flags: []cli.Flag{
-			NewIntFlag(cli.IntFlag{Name: "top.test", Value: 7, EnvVar: "THE_TEST"}),
-			cli.StringFlag{Name: "load"}},
+			NewIntFlag(&cli.IntFlag{Name: "top.test", Value: 7, EnvVars: []string{"THE_TEST"}}),
+			&cli.StringFlag{Name: "load"}},
 	}
 	command.Before = InitInputSourceWithContext(command.Flags, NewYamlSourceFromFlagFunc("load"))
 	err := command.Run(c)

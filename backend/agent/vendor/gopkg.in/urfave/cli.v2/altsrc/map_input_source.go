@@ -6,12 +6,13 @@ import (
 	"strings"
 	"time"
 
-	"gopkg.in/urfave/cli.v1"
+	"gopkg.in/urfave/cli.v2"
 )
 
 // MapInputSource implements InputSourceContext to return
 // data from the map that is loaded.
 type MapInputSource struct {
+	file     string
 	valueMap map[interface{}]interface{}
 }
 
@@ -37,6 +38,11 @@ func nestedVal(name string, tree map[interface{}]interface{}) (interface{}, bool
 		}
 	}
 	return nil, false
+}
+
+// Source returns the path of the source file
+func (fsm *MapInputSource) Source() string {
+	return fsm.file
 }
 
 // Int returns an int from the map if it exists otherwise returns 0
@@ -227,28 +233,6 @@ func (fsm *MapInputSource) Bool(name string) (bool, error) {
 	}
 
 	return false, nil
-}
-
-// BoolT returns an bool from the map otherwise returns true
-func (fsm *MapInputSource) BoolT(name string) (bool, error) {
-	otherGenericValue, exists := fsm.valueMap[name]
-	if exists {
-		otherValue, isType := otherGenericValue.(bool)
-		if !isType {
-			return true, incorrectTypeForFlagError(name, "bool", otherGenericValue)
-		}
-		return otherValue, nil
-	}
-	nestedGenericValue, exists := nestedVal(name, fsm.valueMap)
-	if exists {
-		otherValue, isType := nestedGenericValue.(bool)
-		if !isType {
-			return true, incorrectTypeForFlagError(name, "bool", nestedGenericValue)
-		}
-		return otherValue, nil
-	}
-
-	return true, nil
 }
 
 func incorrectTypeForFlagError(name, expectedTypeName string, value interface{}) error {

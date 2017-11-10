@@ -15,7 +15,7 @@
 package embed
 
 import (
-	"context"
+	"crypto/tls"
 	"io/ioutil"
 	defaultLog "log"
 	"net"
@@ -33,11 +33,10 @@ import (
 	"github.com/coreos/etcd/etcdserver/api/v3rpc"
 	etcdservergw "github.com/coreos/etcd/etcdserver/etcdserverpb/gw"
 	"github.com/coreos/etcd/pkg/debugutil"
-	"github.com/coreos/etcd/pkg/transport"
 
+	"github.com/cockroachdb/cmux"
 	gw "github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/soheilhy/cmux"
-	"github.com/tmc/grpc-websocket-proxy/wsproxy"
+	"golang.org/x/net/context"
 	"golang.org/x/net/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -67,12 +66,7 @@ func newServeCtx() *serveCtx {
 // serve accepts incoming connections on the listener l,
 // creating a new service goroutine for each. The service goroutines
 // read requests and then call handler to reply to them.
-func (sctx *serveCtx) serve(
-	s *etcdserver.EtcdServer,
-	tlsinfo *transport.TLSInfo,
-	handler http.Handler,
-	errHandler func(error),
-	gopts ...grpc.ServerOption) error {
+func (sctx *serveCtx) serve(s *etcdserver.EtcdServer, tlscfg *tls.Config, handler http.Handler, errHandler func(error)) error {
 	logger := defaultLog.New(ioutil.Discard, "etcdhttp", 0)
 	<-s.ReadyNotify()
 	plog.Info("ready to serve client requests")
@@ -83,7 +77,7 @@ func (sctx *serveCtx) serve(
 	servLock := v3lock.NewLockServer(v3c)
 
 	if sctx.insecure {
-		gs := v3rpc.Server(s, nil, gopts...)
+		gs := v3rpc.Server(s, nil)
 		sctx.grpcServerC <- gs
 		v3electionpb.RegisterElectionServer(gs, servElection)
 		v3lockpb.RegisterLockServer(gs, servLock)
@@ -113,11 +107,7 @@ func (sctx *serveCtx) serve(
 	}
 
 	if sctx.secure {
-		tlscfg, tlsErr := tlsinfo.ServerConfig()
-		if tlsErr != nil {
-			return tlsErr
-		}
-		gs := v3rpc.Server(s, tlscfg, gopts...)
+		gs := v3rpc.Server(s, tlscfg)
 		sctx.grpcServerC <- gs
 		v3electionpb.RegisterElectionServer(gs, servElection)
 		v3lockpb.RegisterLockServer(gs, servLock)
@@ -136,10 +126,7 @@ func (sctx *serveCtx) serve(
 			return err
 		}
 
-		tlsl, lerr := transport.NewTLSListener(m.Match(cmux.Any()), tlsinfo)
-		if lerr != nil {
-			return lerr
-		}
+		tlsl := tls.NewListener(m.Match(cmux.Any()), tlscfg)
 		// TODO: add debug flag; enable logging when debug flag is set
 		httpmux := sctx.createMux(gwmux, handler)
 
@@ -158,7 +145,7 @@ func (sctx *serveCtx) serve(
 }
 
 // grpcHandlerFunc returns an http.Handler that delegates to grpcServer on incoming gRPC
-// connections or otherHandler otherwise. Given in gRPC docs.
+// connections or otherHandler otherwise. Copied from cockroachdb.
 func grpcHandlerFunc(grpcServer *grpc.Server, otherHandler http.Handler) http.Handler {
 	if otherHandler == nil {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -215,19 +202,7 @@ func (sctx *serveCtx) createMux(gwmux *gw.ServeMux, handler http.Handler) *http.
 		httpmux.Handle(path, h)
 	}
 
-	httpmux.Handle(
-		"/v3alpha/",
-		wsproxy.WebsocketProxy(
-			gwmux,
-			wsproxy.WithRequestMutator(
-				// Default to the POST method for streams
-				func(incoming *http.Request, outgoing *http.Request) *http.Request {
-					outgoing.Method = "POST"
-					return outgoing
-				},
-			),
-		),
-	)
+	httpmux.Handle("/v3alpha/", gwmux)
 	if handler != nil {
 		httpmux.Handle("/", handler)
 	}

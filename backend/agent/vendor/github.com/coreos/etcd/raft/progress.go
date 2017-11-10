@@ -243,8 +243,7 @@ func (in *inflights) freeTo(to uint64) {
 		return
 	}
 
-	idx := in.start
-	var i int
+	i, idx := 0, in.start
 	for i = 0; i < in.count; i++ {
 		if to < in.buffer[idx] { // found the first large inflight
 			break

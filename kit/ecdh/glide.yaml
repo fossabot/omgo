@@ -1,5 +1,0 @@
-package: github.com/master-g/omgo/kit/ecdh
-import:
-- package: golang.org/x/crypto
-  subpackages:
-  - curve25519
