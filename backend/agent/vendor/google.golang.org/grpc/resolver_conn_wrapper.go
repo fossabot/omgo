@@ -19,7 +19,6 @@
 package grpc
 
 import (
-	"fmt"
 	"strings"
 
 	"google.golang.org/grpc/grpclog"
@@ -57,13 +56,19 @@ func parseTarget(target string) (ret resolver.Target) {
 // newCCResolverWrapper parses cc.target for scheme and gets the resolver
 // builder for this scheme. It then builds the resolver and starts the
 // monitoring goroutine for it.
+//
+// This function could return nil, nil, in tests for old behaviors.
+// TODO(bar) never return nil, nil when DNS becomes the default resolver.
 func newCCResolverWrapper(cc *ClientConn) (*ccResolverWrapper, error) {
 	target := parseTarget(cc.target)
 	grpclog.Infof("dialing to target with scheme: %q", target.Scheme)
 
 	rb := resolver.Get(target.Scheme)
 	if rb == nil {
-		return nil, fmt.Errorf("could not get resolver for scheme: %q", target.Scheme)
+		// TODO(bar) return error when DNS becomes the default (implemented and
+		// registered by DNS package).
+		grpclog.Infof("could not get resolver for scheme: %q", target.Scheme)
+		return nil, nil
 	}
 
 	ccr := &ccResolverWrapper{
@@ -95,21 +100,14 @@ func (ccr *ccResolverWrapper) watcher() {
 
 		select {
 		case addrs := <-ccr.addrCh:
-			select {
-			case <-ccr.done:
-				return
-			default:
+			grpclog.Infof("ccResolverWrapper: sending new addresses to balancer wrapper: %v", addrs)
+			// TODO(bar switching) this should never be nil. Pickfirst should be default.
+			if ccr.cc.balancerWrapper != nil {
+				// TODO(bar switching) create balancer if it's nil?
+				ccr.cc.balancerWrapper.handleResolvedAddrs(addrs, nil)
 			}
-			grpclog.Infof("ccResolverWrapper: sending new addresses to cc: %v", addrs)
-			ccr.cc.handleResolvedAddrs(addrs, nil)
 		case sc := <-ccr.scCh:
-			select {
-			case <-ccr.done:
-				return
-			default:
-			}
 			grpclog.Infof("ccResolverWrapper: got new service config: %v", sc)
-			ccr.cc.handleServiceConfig(sc)
 		case <-ccr.done:
 			return
 		}

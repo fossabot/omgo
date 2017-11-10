@@ -1,0 +1,9 @@
+package: github.com/master-g/omgo/kit/utils
+import:
+- package: github.com/Sirupsen/logrus
+- package: github.com/davecgh/go-spew
+  subpackages:
+  - spew
+- package: github.com/maruel/panicparse
+  subpackages:
+  - stack

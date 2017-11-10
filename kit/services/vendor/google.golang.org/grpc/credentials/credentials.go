@@ -34,8 +34,10 @@ import (
 	"golang.org/x/net/context"
 )
 
-// alpnProtoStr are the specified application level protocols for gRPC.
-var alpnProtoStr = []string{"h2"}
+var (
+	// alpnProtoStr are the specified application level protocols for gRPC.
+	alpnProtoStr = []string{"h2"}
+)
 
 // PerRPCCredentials defines the common interface for the credentials which need to
 // attach security information to every RPC (e.g., oauth2).
@@ -72,9 +74,11 @@ type AuthInfo interface {
 	AuthType() string
 }
 
-// ErrConnDispatched indicates that rawConn has been dispatched out of gRPC
-// and the caller should not close rawConn.
-var ErrConnDispatched = errors.New("credentials: rawConn is dispatched out of gRPC")
+var (
+	// ErrConnDispatched indicates that rawConn has been dispatched out of gRPC
+	// and the caller should not close rawConn.
+	ErrConnDispatched = errors.New("credentials: rawConn is dispatched out of gRPC")
+)
 
 // TransportCredentials defines the common interface for all the live gRPC wire
 // protocols and supported transport security protocols (e.g., TLS, SSL).

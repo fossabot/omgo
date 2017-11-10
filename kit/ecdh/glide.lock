@@ -1,0 +1,8 @@
+hash: 6d0d8ca664147eb8b487a2ba3882b8c117da91e255d94d9f6c03836e8800acd8
+updated: 2017-11-10T17:15:02.081441+08:00
+imports:
+- name: golang.org/x/crypto
+  version: 6a293f2d4b14b8e6d3f0539e383f6d0d30fce3fd
+  subpackages:
+  - curve25519
+testImports: []
