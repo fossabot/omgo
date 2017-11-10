@@ -67,7 +67,7 @@ const (
 	defaultHost          = "localhost"
 	defaultETCD          = "http://127.0.0.1:2379"
 	defaultRoot          = "backends"
-	defaultGameServerId  = "game-0"
+	defaultGameServerID  = "game-0"
 	defaultReadDeadLine  = 3 * time.Minute
 	defaultSockBufSize   = 32*1024 - 1
 	defaultTxQueueLength = 128
@@ -129,7 +129,7 @@ func main() {
 			&cli.StringFlag{
 				Name:  "gameserver-name",
 				Usage: "game server name",
-				Value: defaultGameServerId,
+				Value: defaultGameServerID,
 			},
 			&cli.DurationFlag{
 				Name:  "deadline",

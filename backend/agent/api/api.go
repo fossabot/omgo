@@ -25,13 +25,13 @@ type Config struct {
 }
 
 var (
-	// client request handlers
+	// Handlers stores request handlers
 	Handlers map[int32]func(*Session, *IncomingPacket) []byte
-	// client session registry
+	// Registry stores client session registry
 	Registry sync.Map
-	// game server pool
+	// GameServerPool game service pool
 	GameServerPool *services.Pool
-	// data service pool
+	// DataServicePool data service pool
 	DataServicePool *services.Pool
 	// config
 	config Config

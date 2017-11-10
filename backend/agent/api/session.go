@@ -9,6 +9,7 @@ import (
 	pb "github.com/master-g/omgo/proto/grpc/game"
 )
 
+// Flag holds session status flag bits
 type Flag int32
 
 const (
@@ -38,7 +39,7 @@ type Session struct {
 	MQ                chan pb.Game_Frame          // Channel of async messages send back to client
 	Encoder           *rc4.Cipher                 // Encrypt
 	Decoder           *rc4.Cipher                 // Decrypt
-	GameServerId      string                      // Game server ID
+	GameServerID      string                      // Game server ID
 	Stream            pb.GameService_StreamClient // Data stream send to game server
 	ConnectTime       time.Time                   // Timestamp of TCP connection established
 	PacketTime        time.Time                   // Timestamp of current packet arrived
@@ -48,10 +49,12 @@ type Session struct {
 	Mailbox           chan []byte                 // Mailbox for internal communication
 }
 
+// SetRPMLimit setup requests per minute limitation
 func SetRPMLimit(limit int) {
 	requestPerMinuteLimit = limit
 }
 
+// SetReadDeadLine setup TCP read timeout
 func SetReadDeadLine(deadline time.Duration) {
 	readDeadLine = deadline
 }

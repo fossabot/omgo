@@ -28,6 +28,11 @@ func makeErrorResponse(msg string, statusCode pc.ResultCode, session *Session) [
 	return MakeResponse(pc.Cmd_HANDSHAKE_RSP, rsp)
 }
 
+// ProcHandshakeReq handles client handshake request
+// 1. verify token via database service
+// 2. kick previous client if exists
+// 3. exchange cryption seed
+// 4. connect to game server with gRPC stream
 func ProcHandshakeReq(session *Session, inPacket *IncomingPacket) []byte {
 	rsp := &pc.S2CHandshakeRsp{Header: genRspHeader()}
 	req := &pc.C2SHandshakeReq{}
@@ -123,12 +128,12 @@ func ProcHandshakeReq(session *Session, inPacket *IncomingPacket) []byte {
 	// connect to other services
 	session.Usn = usn
 	session.Token = token
-	session.GameServerId = config.GameServerName
+	session.GameServerID = config.GameServerName
 	session.SetFlagAuth()
 
 	conn := GameServerPool.GetClient(config.GameServerName)
 	if conn == nil {
-		msg = fmt.Sprintf("cannot get game service:%v", session.GameServerId)
+		msg = fmt.Sprintf("cannot get game service:%v", session.GameServerID)
 		log.Error(msg)
 		return makeErrorResponse(msg, pc.ResultCode_RESULT_INTERNAL_ERROR, session)
 	}

@@ -9,6 +9,7 @@ import (
 )
 
 var (
+	// ErrorStreamNotOpen indicates error while opening gRPC stream
 	ErrorStreamNotOpen = errors.New("stream not opened yet")
 )
 
