@@ -20,6 +20,10 @@
 #  name = "github.com/x/y"
 #  version = "2.4.0"
 
+ignored = [
+  "github.com/master-g/omgo/backend", 
+  "github.com/master-g/omgo/client"
+]
 
 [[constraint]]
   name = "github.com/Sirupsen/logrus"
