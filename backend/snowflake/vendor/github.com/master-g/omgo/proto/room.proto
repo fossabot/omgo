@@ -1,0 +1,22 @@
+syntax = "proto3";
+package proto.room;
+import "common.proto";
+option go_package = "github.com/master-g/omgo/proto/pb/room";
+
+enum ExitRoomOption {
+    EXIT_ROOM_DEFAULT = 0;
+    EXIT_ROOM_DISMISS = 1; // Only available for room owner
+}
+
+enum ExitRoomResult {
+    EXIT_ROOM_OK      = 0;
+    EXIT_ROOM_INVALID = 1;
+}
+
+message C2SExitRoomReq {
+    ExitRoomOption option = 1;
+}
+
+message S2CExitRoomRsp {
+    common.RspHeader header = 1; // Status code see ExitRoomResult
+}

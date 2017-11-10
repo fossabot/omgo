@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/master-g/omgo/kit/utils"
 	pb "github.com/master-g/omgo/proto/grpc/snowflake"
-	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc"
 )
 

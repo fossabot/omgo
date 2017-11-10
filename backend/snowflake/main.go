@@ -11,8 +11,8 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/coreos/etcd/clientv3"
+	"github.com/master-g/omgo/kit/utils"
 	pb "github.com/master-g/omgo/proto/grpc/snowflake"
-	"github.com/master-g/omgo/utils"
 	"google.golang.org/grpc"
 	"gopkg.in/urfave/cli.v2"
 )

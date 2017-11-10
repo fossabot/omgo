@@ -1,13 +1,16 @@
 #!/bin/bash
 
 cd ./snowflake/
-govendor update +v
+dep ensure -update
+dep prune
 cd ..
 
 cd ./agent/
-govendor update +v
+dep ensure -update
+dep prune
 cd ..
 
 cd ./game/
-govendor update +v
+dep ensure -update
+dep prune
 cd ..

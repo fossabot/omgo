@@ -15,17 +15,16 @@
 package clientv3
 
 import (
-	"context"
 	"sync"
 
 	pb "github.com/coreos/etcd/etcdserver/etcdserverpb"
-
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
 
 // Txn is the interface that wraps mini-transactions.
 //
-//	 Txn(context.TODO()).If(
+//	 Tx.If(
 //	  Compare(Value(k1), ">", v1),
 //	  Compare(Version(k1), "=", 2)
 //	 ).Then(
