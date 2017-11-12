@@ -33,13 +33,13 @@ enum Cmd {
     EXIT_ROOM_RSP = 0x10008; // S->C exit room response
 }
 
-// client request header
+// client request packet
 message Header {
     int32      version     = 1; // protocol version
     int32      cmd         = 2; // command
     uint32     seq         = 3; // packet sequence
-    int32      body_size   = 4; // payload size in bytes
     ClientInfo client_info = 5; // client info
+    bytes      body        = 6; // request protobuf marshaled
 }
 
 // client info
@@ -64,7 +64,7 @@ message RspHeader {
     int32   status    = 3; // see ResultCode and other status definitions
     fixed64 timestamp = 4; // server timestamp
     string  msg       = 5; // extra message returned by server
-    int32   body_size = 6; // payload size in bytes
+    bytes   body      = 6; // response protobuf marshaled
 }
 
 enum Gender {
