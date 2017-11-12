@@ -4,22 +4,31 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/backend/agent/api"
 	"github.com/master-g/omgo/kit/utils"
 	proto_common "github.com/master-g/omgo/proto/pb/common"
 )
 
 // route client protocol
-func route(session *api.Session, inPacket *api.IncomingPacket) *api.OutgoingPacket {
+func route(session *api.Session, inPacket []byte) *api.OutgoingPacket {
 	start := time.Now()
 	defer utils.PrintPanicStack(session, inPacket)
 	// decrypt
 	if session.IsFlagEncryptedSet() {
-		session.Decoder.XORKeyStream(inPacket.Body, inPacket.Body)
+		session.Decoder.XORKeyStream(inPacket, inPacket)
+	}
+
+	header := &proto_common.Header{}
+	err := proto.Unmarshal(inPacket, header)
+	if err != nil {
+		log.Errorf("invalid header error:%v", err)
+		session.SetFlagKicked()
+		return nil
 	}
 
 	// read cmd
-	cmdValue := inPacket.Header.Cmd
+	cmdValue := header.Cmd
 	cmd := proto_common.Cmd(cmdValue)
 
 	// route message to different service by command code

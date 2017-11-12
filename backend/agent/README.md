@@ -6,16 +6,14 @@ client -> server
 
 ```
 2 bytes | header size (these 2 bytes excluded)
-n bytes | header protobuf (unencrypted)
-n bytes | payload protobuf (might be encrypted)
+n bytes | header protobuf (body includes)
 ```
 
 server -> client
 
 ```
 2 bytes | header size (these 2 bytes excluded)
-n bytes | response header protobuf
-n bytes | payload
+n bytes | response header protobuf (body includes)
 ```
 
 #### Pipeline  

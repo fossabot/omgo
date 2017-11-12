@@ -8,17 +8,6 @@ import (
 	pc "github.com/master-g/omgo/proto/pb/common"
 )
 
-// IncomingPacket contains Header and payload bytes
-type IncomingPacket struct {
-	Header *pc.Header
-	Body   []byte
-}
-
-type OutgoingPacket struct {
-	Header *pc.RspHeader
-	Body   []byte
-}
-
 // Config of ETCD and services
 type Config struct {
 	Root            string   // service root
@@ -30,7 +19,7 @@ type Config struct {
 
 var (
 	// Handlers stores request handlers
-	Handlers map[int32]func(*Session, *IncomingPacket) *OutgoingPacket
+	Handlers map[int32]func(*Session, []byte) *OutgoingPacket
 	// Registry stores client session registry
 	Registry sync.Map
 	// GameServerPool game service pool
@@ -42,7 +31,7 @@ var (
 )
 
 func init() {
-	Handlers = map[int32]func(*Session, *IncomingPacket) *OutgoingPacket{
+	Handlers = map[int32]func(*Session, []byte) *OutgoingPacket{
 		int32(pc.Cmd_HEART_BEAT_REQ): ProcHeartBeatReq,
 		int32(pc.Cmd_HANDSHAKE_REQ):  ProcHandshakeReq,
 		int32(pc.Cmd_OFFLINE_REQ):    ProcOfflineReq,

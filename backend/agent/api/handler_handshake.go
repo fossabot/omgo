@@ -33,7 +33,7 @@ func makeErrorResponse(msg string, statusCode pc.ResultCode, session *Session) *
 // 2. kick previous client if exists
 // 3. exchange cryption seed
 // 4. connect to game server with gRPC stream
-func ProcHandshakeReq(session *Session, inPacket *IncomingPacket) *OutgoingPacket {
+func ProcHandshakeReq(session *Session, inPacket []byte) *OutgoingPacket {
 	rsp := &pc.S2CHandshakeRsp{}
 	req := &pc.C2SHandshakeReq{}
 

@@ -43,11 +43,9 @@ import (
 	_ "net/http/pprof"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/backend/agent/api"
 	"github.com/master-g/omgo/kit/services"
 	"github.com/master-g/omgo/kit/utils"
-	pc "github.com/master-g/omgo/proto/pb/common"
 	"gopkg.in/urfave/cli.v2"
 )
 
@@ -255,10 +253,10 @@ func tcpServer(config *Config) {
 func handleClient(conn net.Conn, config *Config) {
 	defer utils.PrintPanicStack()
 	defer conn.Close()
-	// header size
-	headerSize := make([]byte, 2)
+	// packet size
+	packetSize := make([]byte, 2)
 	// agent's input channel
-	in := make(chan *api.IncomingPacket)
+	in := make(chan []byte)
 	defer func() {
 		close(in) // session will be closed
 	}()
@@ -293,50 +291,25 @@ func handleClient(conn net.Conn, config *Config) {
 		// will cause the read to block FOREVER, so a timeout will save the day.
 		conn.SetReadDeadline(time.Now().Add(config.readDeadline))
 
-		// read header size
-		n, err := io.ReadFull(conn, headerSize)
+		// read packet size
+		n, err := io.ReadFull(conn, packetSize)
 		if err != nil {
-			log.Warningf("%v read header size failed: %v %v bytes read", session.IP, err, n)
+			log.Warningf("%v read packet size failed: %v %v bytes read", session.IP, err, n)
 			return
 		}
-		size := binary.BigEndian.Uint16(headerSize)
+		size := binary.BigEndian.Uint16(packetSize)
 
-		// header message
-		headerData := make([]byte, size)
-		n, err = io.ReadFull(conn, headerData)
+		// read packet
+		packetData := make([]byte, size)
+		n, err = io.ReadFull(conn, packetData)
 		if err != nil {
-			log.Warningf("%v read header message failed: %v expect: %v actual read: %v", session.IP, err, size, n)
+			log.Warningf("%v read packet failed: %v expect: %v actual read: %v", session.IP, err, size, n)
 			return
-		}
-
-		headerMsg := &pc.Header{}
-		err = proto.Unmarshal(headerData, headerMsg)
-		if err != nil {
-			log.Warningf("%v invalid header: %v", session.IP, err)
-			return
-		}
-
-		payloadSize := headerMsg.BodySize
-		if payloadSize == 0 || payloadSize > defaultSockBufSize {
-			log.Warningf("%v payload size error %v", session.IP, payloadSize)
-		}
-
-		// payload
-		payload := make([]byte, payloadSize)
-		n, err = io.ReadFull(conn, payload)
-		if err != nil {
-			log.Warningf("%v read payload failed: %v expect: %v actual read: %v", session.IP, err, size, n)
-			return
-		}
-
-		inPacket := &api.IncomingPacket{
-			Header: headerMsg,
-			Body:   payload,
 		}
 
 		// deliver the payload to the input queue of agent
 		select {
-		case in <- inPacket:
+		case in <- packetData:
 		case <-session.Die:
 			log.Warningf("%v connection closed by logic, flag: %v", session.IP, session.Flag)
 			return
