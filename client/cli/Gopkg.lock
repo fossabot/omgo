@@ -40,8 +40,8 @@
 [[projects]]
   branch = "master"
   name = "github.com/master-g/omgo"
-  packages = ["kit/ecdh","kit/packet","kit/utils","proto/pb/common"]
-  revision = "52b5adc9487fddabbbbc1462b0c434c1e94639f4"
+  packages = ["kit/ecdh","kit/utils","proto/pb/common"]
+  revision = "3bfb2808ffaedaf55bfea86875c42a276cf2a524"
 
 [[projects]]
   branch = "master"
@@ -70,6 +70,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "390f8105ecf89504f616c2ed1848887410e02a46177bb122bc88838a4aa1bb96"
+  inputs-digest = "bae400e9b32d9fcb9fbecb7eb3b0cc9da758dd2708997980deeabb7eca2eb30b"
   solver-name = "gps-cdcl"
   solver-version = 1
