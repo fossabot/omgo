@@ -12,7 +12,6 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/kit/ecdh"
-	"github.com/master-g/omgo/kit/utils"
 	pbdb "github.com/master-g/omgo/proto/grpc/db"
 	pbgame "github.com/master-g/omgo/proto/grpc/game"
 	pc "github.com/master-g/omgo/proto/pb/common"
@@ -20,12 +19,13 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func makeErrorResponse(msg string, statusCode pc.ResultCode, session *Session) []byte {
-	rsp := &pc.S2CHandshakeRsp{Header: genRspHeader()}
-	rsp.Header.Msg = msg
-	rsp.Header.Status = int32(statusCode)
+func makeErrorResponse(msg string, statusCode pc.ResultCode, session *Session) *OutgoingPacket {
+	rsp := &pc.S2CHandshakeRsp{}
+	hdr := genRspHeader(pc.Cmd_HANDSHAKE_RSP)
+	hdr.Msg = msg
+	hdr.Status = int32(statusCode)
 	session.SetFlagKicked()
-	return MakeResponse(pc.Cmd_HANDSHAKE_RSP, rsp)
+	return MakeResponse(hdr, rsp)
 }
 
 // ProcHandshakeReq handles client handshake request
@@ -33,12 +33,12 @@ func makeErrorResponse(msg string, statusCode pc.ResultCode, session *Session) [
 // 2. kick previous client if exists
 // 3. exchange cryption seed
 // 4. connect to game server with gRPC stream
-func ProcHandshakeReq(session *Session, inPacket *IncomingPacket) []byte {
-	rsp := &pc.S2CHandshakeRsp{Header: genRspHeader()}
+func ProcHandshakeReq(session *Session, inPacket *IncomingPacket) *OutgoingPacket {
+	rsp := &pc.S2CHandshakeRsp{}
 	req := &pc.C2SHandshakeReq{}
 
 	msg := ""
-	if err := proto.Unmarshal(inPacket.Payload, req); err != nil {
+	if err := proto.Unmarshal(inPacket.Body, req); err != nil {
 		msg = fmt.Sprintf("invalid protobuf: %v", err)
 	} else if inPacket.Header.ClientInfo == nil {
 		msg = "invalid header, client_info missing"
@@ -90,11 +90,11 @@ func ProcHandshakeReq(session *Session, inPacket *IncomingPacket) []byte {
 	if ok {
 		if prevSession, ok := p.(*Session); ok {
 			kickNotify := &pc.S2CKickNotify{
-				Timestamp: utils.Timestamp(),
-				Reason:    pc.KickReason_KICK_LOGIN_ELSEWHERE,
-				Msg:       session.IP.String(),
+				Reason: pc.KickReason_KICK_LOGIN_ELSEWHERE,
+				Msg:    session.IP.String(),
 			}
-			prevSession.Mailbox <- MakeResponse(pc.Cmd_KICK_NOTIFY, kickNotify)
+			kickHdr := genRspHeader(pc.Cmd_KICK_NOTIFY)
+			prevSession.Mailbox <- MakeResponse(kickHdr, kickNotify)
 			prevSession.SetFlagKicked()
 		}
 	}
@@ -170,6 +170,6 @@ func ProcHandshakeReq(session *Session, inPacket *IncomingPacket) []byte {
 	go fetcherTask(session)
 
 	// all ok
-	rsp.Header.Status = int32(pc.ResultCode_RESULT_OK)
-	return MakeResponse(pc.Cmd_HANDSHAKE_RSP, rsp)
+	rspHeader := genRspHeader(pc.Cmd_HANDSHAKE_RSP)
+	return MakeResponse(rspHeader, rsp)
 }

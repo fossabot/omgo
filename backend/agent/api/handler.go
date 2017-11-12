@@ -7,8 +7,9 @@ import (
 )
 
 // generate a common.RspHeader
-func genRspHeader() *pc.RspHeader {
+func genRspHeader(cmd pc.Cmd) *pc.RspHeader {
 	header := &pc.RspHeader{
+		Cmd:       int32(cmd),
 		Status:    int32(pc.ResultCode_RESULT_OK),
 		Timestamp: uint64(time.Now().Unix()),
 	}

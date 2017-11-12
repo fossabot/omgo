@@ -4,15 +4,19 @@ import (
 	"sync"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/master-g/omgo/kit/packet"
 	"github.com/master-g/omgo/kit/services"
 	pc "github.com/master-g/omgo/proto/pb/common"
 )
 
 // IncomingPacket contains Header and payload bytes
 type IncomingPacket struct {
-	Header  *pc.Header
-	Payload []byte
+	Header *pc.Header
+	Body   []byte
+}
+
+type OutgoingPacket struct {
+	Header *pc.RspHeader
+	Body   []byte
 }
 
 // Config of ETCD and services
@@ -53,13 +57,14 @@ func Init(cfg Config) {
 }
 
 // MakeResponse convert proto message into packet
-func MakeResponse(cmd pc.Cmd, msg proto.Message) []byte {
-	p := packet.NewRawPacket()
-	p.WriteS32(int32(cmd))
+func MakeResponse(hdr *pc.RspHeader, msg proto.Message) *OutgoingPacket {
+	p := &OutgoingPacket{
+		Header: hdr,
+	}
 	rspBytes, err := proto.Marshal(msg)
 	if err != nil {
 		return nil
 	}
-	p.WriteBytes(rspBytes)
-	return p.Data()
+	p.Body = rspBytes
+	return p
 }

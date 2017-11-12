@@ -64,6 +64,7 @@ message RspHeader {
     int32   status    = 3; // see ResultCode and other status definitions
     fixed64 timestamp = 4; // server timestamp
     string  msg       = 5; // extra message returned by server
+    int32   body_size = 6; // payload size in bytes
 }
 
 enum Gender {

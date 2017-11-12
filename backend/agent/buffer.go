@@ -20,11 +20,13 @@ type Buffer struct {
 }
 
 // send data into buffer's channel
-func (buf *Buffer) send(session *api.Session, data []byte) {
+func (buf *Buffer) send(session *api.Session, pkg *api.OutgoingPacket) {
 	// in case of empty packet
-	if data == nil {
+	if pkg == nil {
 		return
 	}
+
+	pkg.Header.
 
 	// encryption
 	// (NOT_ENCRYPTED) -> KEYEXCG -> ENCRYPTED
