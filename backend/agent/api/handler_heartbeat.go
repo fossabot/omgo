@@ -6,7 +6,7 @@ import (
 )
 
 // ProcHeartBeatReq process client heartbeat packet
-func ProcHeartBeatReq(session *Session, inPacket *IncomingPacket) *OutgoingPacket {
+func ProcHeartBeatReq(session *Session, inPacket []byte) []byte {
 	if !session.IsFlagAuthSet() {
 		log.Errorf("heartbeat from unauthenticated session:%v", session)
 		session.SetFlagKicked()
@@ -14,7 +14,5 @@ func ProcHeartBeatReq(session *Session, inPacket *IncomingPacket) *OutgoingPacke
 	}
 
 	hdr := genRspHeader(pc.Cmd_HEART_BEAT_RSP)
-	return &OutgoingPacket{
-		Header: hdr,
-	}
+	return makeResponse(session, hdr, nil)
 }

@@ -37,7 +37,7 @@ func unpackPacket(pkg []byte, message proto.Message) (*pc.Header, error) {
 	return header, nil
 }
 
-func makeResponse(sess *Session, header *pc.Header, msg proto.Message) []byte {
+func makeResponse(sess *Session, header *pc.RspHeader, msg proto.Message) []byte {
 	sess.serverSeq++
 	header.Seq = sess.serverSeq
 	if msg != nil {
@@ -50,4 +50,11 @@ func makeResponse(sess *Session, header *pc.Header, msg proto.Message) []byte {
 		header.Body = body
 	}
 
+	ret, err := proto.Marshal(header)
+	if err != nil {
+		logrus.Errorf("error while marshaling message error:%v", err)
+		return nil
+	}
+
+	return ret
 }

@@ -18,13 +18,13 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func makeErrorResponse(msg string, statusCode pc.ResultCode, session *Session) []byte {
+func makeErrorResponse(sess *Session, msg string, statusCode pc.ResultCode, session *Session) []byte {
 	rsp := &pc.S2CHandshakeRsp{}
 	hdr := genRspHeader(pc.Cmd_HANDSHAKE_RSP)
 	hdr.Msg = msg
 	hdr.Status = int32(statusCode)
 	session.SetFlagKicked()
-	return MakeResponse(hdr, rsp)
+	return makeResponse(sess, hdr, rsp)
 }
 
 // ProcHandshakeReq handles client handshake request
@@ -52,7 +52,7 @@ func ProcHandshakeReq(session *Session, inPacket []byte) []byte {
 
 	if msg != "" {
 		log.Warningf("Handshake proc error :%v", msg)
-		return makeErrorResponse(msg, pc.ResultCode_RESULT_INVALID, session)
+		return makeErrorResponse(session, msg, pc.ResultCode_RESULT_INVALID, session)
 	}
 
 	// validate user token
@@ -60,7 +60,7 @@ func ProcHandshakeReq(session *Session, inPacket []byte) []byte {
 	if dbConn == nil {
 		msg = "dataservice not connected yet"
 		log.Error(msg)
-		return makeErrorResponse(msg, pc.ResultCode_RESULT_INTERNAL_ERROR, session)
+		return makeErrorResponse(session, msg, pc.ResultCode_RESULT_INTERNAL_ERROR, session)
 	}
 
 	usn := header.ClientInfo.Usn
@@ -71,18 +71,18 @@ func ProcHandshakeReq(session *Session, inPacket []byte) []byte {
 	dbRsp, err := dbClient.UserExtraInfoQuery(context.Background(), userKey)
 	if err != nil {
 		log.Errorf("error while query user extra info:%v", usn)
-		return makeErrorResponse("", pc.ResultCode_RESULT_INTERNAL_ERROR, session)
+		return makeErrorResponse(session, "", pc.ResultCode_RESULT_INTERNAL_ERROR, session)
 	}
 
 	if dbRsp.Result.Status != int32(pbdb.DB_STATUS_OK) || dbRsp.User.Token == "" {
 		log.Warningf("user extra info not found:%v", usn)
-		return makeErrorResponse("", pc.ResultCode_RESULT_INTERNAL_ERROR, session)
+		return makeErrorResponse(session, "", pc.ResultCode_RESULT_INTERNAL_ERROR, session)
 	}
 
 	if strings.Compare(token, dbRsp.User.Token) != 0 {
 		msg = "invalid token"
 		log.Info(msg)
-		return makeErrorResponse(msg, pc.ResultCode_RESULT_INVALID, session)
+		return makeErrorResponse(session, msg, pc.ResultCode_RESULT_INVALID, session)
 	}
 
 	// kick previous session if existed
@@ -94,7 +94,7 @@ func ProcHandshakeReq(session *Session, inPacket []byte) []byte {
 				Msg:    session.IP.String(),
 			}
 			kickHdr := genRspHeader(pc.Cmd_KICK_NOTIFY)
-			prevSession.Mailbox <- MakeResponse(kickHdr, kickNotify)
+			prevSession.Mailbox <- makeResponse(session, kickHdr, kickNotify)
 			prevSession.SetFlagKicked()
 		}
 	}
@@ -111,12 +111,12 @@ func ProcHandshakeReq(session *Session, inPacket []byte) []byte {
 	encoder, err := rc4.NewCipher(key2)
 	if err != nil {
 		log.Error(err)
-		return makeErrorResponse(err.Error(), pc.ResultCode_RESULT_INTERNAL_ERROR, session)
+		return makeErrorResponse(session, err.Error(), pc.ResultCode_RESULT_INTERNAL_ERROR, session)
 	}
 	decoder, err := rc4.NewCipher(key1)
 	if err != nil {
 		log.Error(err)
-		return makeErrorResponse(err.Error(), pc.ResultCode_RESULT_INTERNAL_ERROR, session)
+		return makeErrorResponse(session, err.Error(), pc.ResultCode_RESULT_INTERNAL_ERROR, session)
 	}
 	session.Encoder = encoder
 	session.Decoder = decoder
@@ -135,7 +135,7 @@ func ProcHandshakeReq(session *Session, inPacket []byte) []byte {
 	if conn == nil {
 		msg = fmt.Sprintf("cannot get game service:%v", session.GameServerID)
 		log.Error(msg)
-		return makeErrorResponse(msg, pc.ResultCode_RESULT_INTERNAL_ERROR, session)
+		return makeErrorResponse(session, msg, pc.ResultCode_RESULT_INTERNAL_ERROR, session)
 	}
 	cli := pbgame.NewGameServiceClient(conn)
 
@@ -171,5 +171,5 @@ func ProcHandshakeReq(session *Session, inPacket []byte) []byte {
 
 	// all ok
 	rspHeader := genRspHeader(pc.Cmd_HANDSHAKE_RSP)
-	return MakeResponse(rspHeader, rsp)
+	return makeResponse(session, rspHeader, rsp)
 }
