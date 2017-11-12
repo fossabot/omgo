@@ -23,7 +23,7 @@ func agent(session *api.Session, in chan []byte, out *Buffer) {
 
 	// init session
 	session.MQ = make(chan pb.Game_Frame, defaultMQSize)
-	session.Mailbox = make(chan *api.OutgoingPacket, defaultMailboxSize)
+	session.Mailbox = make(chan []byte, defaultMailboxSize)
 	session.ConnectTime = time.Now()
 	session.LastPacketTime = time.Now()
 	// minute timer

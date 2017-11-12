@@ -10,7 +10,6 @@ import (
 	"io"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/kit/ecdh"
 	pbdb "github.com/master-g/omgo/proto/grpc/db"
 	pbgame "github.com/master-g/omgo/proto/grpc/game"
@@ -19,7 +18,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func makeErrorResponse(msg string, statusCode pc.ResultCode, session *Session) *OutgoingPacket {
+func makeErrorResponse(msg string, statusCode pc.ResultCode, session *Session) []byte {
 	rsp := &pc.S2CHandshakeRsp{}
 	hdr := genRspHeader(pc.Cmd_HANDSHAKE_RSP)
 	hdr.Msg = msg
@@ -33,16 +32,17 @@ func makeErrorResponse(msg string, statusCode pc.ResultCode, session *Session) *
 // 2. kick previous client if exists
 // 3. exchange cryption seed
 // 4. connect to game server with gRPC stream
-func ProcHandshakeReq(session *Session, inPacket []byte) *OutgoingPacket {
+func ProcHandshakeReq(session *Session, inPacket []byte) []byte {
 	rsp := &pc.S2CHandshakeRsp{}
 	req := &pc.C2SHandshakeReq{}
 
 	msg := ""
-	if err := proto.Unmarshal(inPacket.Body, req); err != nil {
+	header, err := unpackPacket(inPacket, req)
+	if err != nil {
 		msg = fmt.Sprintf("invalid protobuf: %v", err)
-	} else if inPacket.Header.ClientInfo == nil {
+	} else if header.ClientInfo == nil {
 		msg = "invalid header, client_info missing"
-	} else if inPacket.Header.ClientInfo.Usn == 0 {
+	} else if header.ClientInfo.Usn == 0 {
 		msg = "invalid header, invalid usn"
 	} else if req.Token == "" {
 		msg = "invalid token"
@@ -63,7 +63,7 @@ func ProcHandshakeReq(session *Session, inPacket []byte) *OutgoingPacket {
 		return makeErrorResponse(msg, pc.ResultCode_RESULT_INTERNAL_ERROR, session)
 	}
 
-	usn := inPacket.Header.ClientInfo.Usn
+	usn := header.ClientInfo.Usn
 	token := req.Token
 
 	dbClient := pbdb.NewDBServiceClient(dbConn)

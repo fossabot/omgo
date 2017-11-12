@@ -3,6 +3,8 @@ package api
 import (
 	"time"
 
+	"github.com/Sirupsen/logrus"
+	"github.com/golang/protobuf/proto"
 	pc "github.com/master-g/omgo/proto/pb/common"
 )
 
@@ -15,4 +17,37 @@ func genRspHeader(cmd pc.Cmd) *pc.RspHeader {
 	}
 
 	return header
+}
+
+// unpack incoming protobuf packet
+func unpackPacket(pkg []byte, message proto.Message) (*pc.Header, error) {
+	header := &pc.Header{}
+	err := proto.Unmarshal(pkg, header)
+	if err != nil {
+		return nil, err
+	}
+
+	if message != nil {
+		err = proto.Unmarshal(header.Body, message)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return header, nil
+}
+
+func makeResponse(sess *Session, header *pc.Header, msg proto.Message) []byte {
+	sess.serverSeq++
+	header.Seq = sess.serverSeq
+	if msg != nil {
+		body, err := proto.Marshal(msg)
+		if err != nil {
+			logrus.Errorf("error while marshaling message error:%v", err)
+			return nil
+		}
+
+		header.Body = body
+	}
+
 }

@@ -3,7 +3,6 @@ package api
 import (
 	"sync"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/kit/services"
 	pc "github.com/master-g/omgo/proto/pb/common"
 )
@@ -19,7 +18,7 @@ type Config struct {
 
 var (
 	// Handlers stores request handlers
-	Handlers map[int32]func(*Session, []byte) *OutgoingPacket
+	Handlers map[int32]func(*Session, []byte) []byte
 	// Registry stores client session registry
 	Registry sync.Map
 	// GameServerPool game service pool
@@ -31,7 +30,7 @@ var (
 )
 
 func init() {
-	Handlers = map[int32]func(*Session, []byte) *OutgoingPacket{
+	Handlers = map[int32]func(*Session, []byte) []byte{
 		int32(pc.Cmd_HEART_BEAT_REQ): ProcHeartBeatReq,
 		int32(pc.Cmd_HANDSHAKE_REQ):  ProcHandshakeReq,
 		int32(pc.Cmd_OFFLINE_REQ):    ProcOfflineReq,
@@ -43,17 +42,4 @@ func Init(cfg Config) {
 	config = cfg
 	GameServerPool = services.New(cfg.Root, cfg.GameServerKind, cfg.Hosts)
 	DataServicePool = services.New(cfg.Root, cfg.DataServiceKind, cfg.Hosts)
-}
-
-// MakeResponse convert proto message into packet
-func MakeResponse(hdr *pc.RspHeader, msg proto.Message) *OutgoingPacket {
-	p := &OutgoingPacket{
-		Header: hdr,
-	}
-	rspBytes, err := proto.Marshal(msg)
-	if err != nil {
-		return nil
-	}
-	p.Body = rspBytes
-	return p
 }

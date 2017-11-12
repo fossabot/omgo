@@ -48,7 +48,7 @@ type Session struct {
 	LastPacketTime    time.Time                   // Timestamp of previous packet arrived
 	PacketCount       uint32                      // Total packets received
 	PacketCountPerMin int                         // Packets received per minute
-	Mailbox           chan *OutgoingPacket        // Mailbox for internal communication
+	Mailbox           chan []byte                 // Mailbox for internal communication
 }
 
 // SetRPMLimit setup requests per minute limitation

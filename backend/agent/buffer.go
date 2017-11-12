@@ -7,49 +7,30 @@ import (
 	"net"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/backend/agent/api"
 	"github.com/master-g/omgo/kit/utils"
 )
 
-// PackedPacket holds header + body
-type PackedPacket struct {
-	HeaderSize uint16
-	Buf        []byte
-}
-
 // Buffer manages sending packets to client
 type Buffer struct {
-	ctrl    chan struct{}      // receive exit signal
-	pending chan *PackedPacket // pending packets
-	conn    net.Conn           // connection
-	cache   []byte             // for combined syscall write
+	ctrl    chan struct{} // receive exit signal
+	pending chan []byte   // pending packets
+	conn    net.Conn      // connection
+	cache   []byte        // for combined syscall write
 }
 
 // send data into buffer's channel
-func (buf *Buffer) send(session *api.Session, pkg *api.OutgoingPacket) {
+func (buf *Buffer) send(session *api.Session, pkg []byte) {
 	// in case of empty packet
 	if pkg == nil {
 		return
-	}
-
-	pkg.Header.BodySize = int32(len(pkg.Body))
-	hdrBuf, err := proto.Marshal(pkg.Header)
-	if err != nil {
-		log.Warningf("error while marshal header:%v", err)
-		return
-	}
-
-	packed := &PackedPacket{
-		HeaderSize: uint16(len(hdrBuf)),
-		Buf:        make([]byte, len(hdrBuf)+len(pkg.Body)),
 	}
 
 	// encryption
 	// (NOT_ENCRYPTED) -> KEYEXCG -> ENCRYPTED
 	if session.IsFlagEncryptedSet() {
 		// encryption is enabled
-		session.Encoder.XORKeyStream(packed.Buf, packed.Buf)
+		session.Encoder.XORKeyStream(pkg, pkg)
 	} else if session.IsFlagKeyExchangedSet() {
 		// key is exchanged, encryption is not yet establish
 		session.ClearFlagKeyExchanged()
@@ -58,7 +39,7 @@ func (buf *Buffer) send(session *api.Session, pkg *api.OutgoingPacket) {
 
 	// queue the data for sending
 	select {
-	case buf.pending <- packed:
+	case buf.pending <- pkg:
 	default:
 		// packet will be dropped if it exceeds txQueueLength
 		log.WithFields(log.Fields{"usn": session.Usn, "ip": session.IP}).Warning("pending full")
@@ -81,12 +62,13 @@ func (buf *Buffer) start() {
 	}
 }
 
-func (buf *Buffer) rawSend(data *PackedPacket) bool {
-	binary.BigEndian.PutUint16(buf.cache, data.HeaderSize)
-	copy(buf.cache[2:], data.Buf)
+func (buf *Buffer) rawSend(data []byte) bool {
+	size := len(data)
+	binary.BigEndian.PutUint16(buf.cache, uint16(size))
+	copy(buf.cache[2:], data)
 
 	// write data
-	n, err := buf.conn.Write(buf.cache[:len(data.Buf)+2])
+	n, err := buf.conn.Write(buf.cache[:size+2])
 	if err != nil {
 		log.Warningf("Error send reply data, bytes:%v reason:%v", n, err)
 		return false
@@ -97,7 +79,7 @@ func (buf *Buffer) rawSend(data *PackedPacket) bool {
 
 func newBuffer(conn net.Conn, ctrl chan struct{}, txQueueLen int) *Buffer {
 	buf := Buffer{conn: conn, ctrl: ctrl}
-	buf.pending = make(chan *PackedPacket, txQueueLen)
+	buf.pending = make(chan []byte, txQueueLen)
 	buf.cache = make([]byte, 32*1024)
 	return &buf
 }

@@ -11,7 +11,7 @@ import (
 )
 
 // route client protocol
-func route(session *api.Session, inPacket []byte) *api.OutgoingPacket {
+func route(session *api.Session, inPacket []byte) []byte {
 	start := time.Now()
 	defer utils.PrintPanicStack(session, inPacket)
 	// decrypt
@@ -32,7 +32,7 @@ func route(session *api.Session, inPacket []byte) *api.OutgoingPacket {
 	cmd := proto_common.Cmd(cmdValue)
 
 	// route message to different service by command code
-	var ret *api.OutgoingPacket
+	var ret []byte
 	if cmd > proto_common.Cmd_CMD_COMMON_END {
 		// messages forward to other servers
 		if err := forward(session, inPacket); err != nil {
