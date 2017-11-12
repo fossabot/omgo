@@ -8,46 +8,29 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/kit/ecdh"
-	"github.com/master-g/omgo/kit/packet"
 	pc "github.com/master-g/omgo/proto/pb/common"
 )
 
-var Handlers map[int32]func(*Session, *packet.RawPacket) []byte
+var Handlers map[int32]func(*Session, *pc.RspHeader) []byte
 
 func init() {
-	Handlers = map[int32]func(*Session, *packet.RawPacket) []byte{
+	Handlers = map[int32]func(*Session, *pc.RspHeader) []byte{
 		int32(pc.Cmd_HEART_BEAT_RSP): ProcHeartBeatRsp,
 		int32(pc.Cmd_HANDSHAKE_RSP):  ProcHandshakeRsp,
 		int32(pc.Cmd_KICK_NOTIFY):    ProcKickNotify,
 	}
 }
 
-func readPacketBody(packet *packet.RawPacket) []byte {
-	body, err := packet.ReadBytes()
-	if err != nil {
-		log.Fatalf("error while reading buffer from packet:%v", err)
-		return nil
-	}
-
-	return body
-}
-
-func ProcHeartBeatRsp(session *Session, packet *packet.RawPacket) []byte {
+func ProcHeartBeatRsp(session *Session, header *pc.RspHeader) []byte {
 	log.Info("receive server heartbeat response")
 	return nil
 }
 
-func ProcHandshakeRsp(session *Session, packet *packet.RawPacket) []byte {
-	rspBody := readPacketBody(packet)
+func ProcHandshakeRsp(session *Session, header *pc.RspHeader) []byte {
 	rsp := &pc.S2CHandshakeRsp{}
-	err := proto.Unmarshal(rspBody, rsp)
+	err := proto.Unmarshal(header.Body, rsp)
 	if err != nil {
 		log.Errorf("error while parsing proto:%v", err)
-		return nil
-	}
-
-	if rsp.Header.Status != int32(pc.ResultCode_RESULT_OK) {
-		log.Errorf("error on %v", rsp)
 		return nil
 	}
 
@@ -72,10 +55,9 @@ func ProcHandshakeRsp(session *Session, packet *packet.RawPacket) []byte {
 	return nil
 }
 
-func ProcKickNotify(session *Session, packet *packet.RawPacket) []byte {
-	rspBody := readPacketBody(packet)
+func ProcKickNotify(session *Session, header *pc.RspHeader) []byte {
 	rsp := &pc.S2CKickNotify{}
-	err := proto.Unmarshal(rspBody, rsp)
+	err := proto.Unmarshal(header.Body, rsp)
 	if err != nil {
 		log.Errorf("error while parsing proto:%v", err)
 		return nil

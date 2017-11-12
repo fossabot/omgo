@@ -11,7 +11,6 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/master-g/omgo/kit/ecdh"
-	"github.com/master-g/omgo/kit/packet"
 	"github.com/master-g/omgo/kit/utils"
 	pc "github.com/master-g/omgo/proto/pb/common"
 )
@@ -28,7 +27,7 @@ type Session struct {
 	Out         *Buffer
 	privateSend []byte
 	privateRecv []byte
-	Seq         uint32
+	Seq         uint64
 }
 
 const (
@@ -216,18 +215,22 @@ func (s *Session) Route(msg []byte) []byte {
 	if s.IsFlagEncryptedSet() {
 		s.Decoder.XORKeyStream(msg, msg)
 	}
-	// packet reader
-	reader := packet.NewRawPacketReader(msg)
 
-	// read cmd
-	cmdValue, err := reader.ReadS32()
+	rspHeader := &pc.RspHeader{}
+	err := proto.Unmarshal(msg, rspHeader)
 	if err != nil {
-		log.Errorf("read packet cmd failed:%v", err)
+		log.Errorf("unable to unmarshal header error:%v", err)
 		s.SetFlagKicked()
 		return nil
 	}
-	cmd := pc.Cmd(cmdValue)
 
+	if rspHeader.Status != int32(pc.ResultCode_RESULT_OK) {
+		log.Errorf("status code not OK: %v", rspHeader)
+		s.SetFlagKicked()
+		return nil
+	}
+
+	cmd := pc.Cmd(rspHeader.Cmd)
 	// route message
 	var ret []byte
 	if cmd > pc.Cmd_CMD_COMMON_END {
@@ -236,8 +239,8 @@ func (s *Session) Route(msg []byte) []byte {
 	} else {
 		shell.ShowPrompt(false)
 		shell.Println("")
-		if h := Handlers[cmdValue]; h != nil {
-			ret = h(s, reader)
+		if h := Handlers[rspHeader.Cmd]; h != nil {
+			ret = h(s, rspHeader)
 		} else {
 			log.Errorf("no handler for cmd:%v", cmd)
 			return nil
@@ -283,20 +286,17 @@ func (s *Session) send(header *pc.Header, msg proto.Message) {
 		}
 	}
 
-	header.BodySize = int32(len(msgBuf))
+	header.Body = msgBuf
 	headerBuf, err := proto.Marshal(header)
 	if err != nil {
 		log.Errorf("error while marshal header, error:%v", err)
 		return
 	}
 
-	headerSize := len(headerBuf)
-	buf := make([]byte, headerSize+int(header.BodySize)+2)
-	binary.BigEndian.PutUint16(buf, uint16(headerSize))
+	pkgSize := len(headerBuf)
+	buf := make([]byte, pkgSize+2)
+	binary.BigEndian.PutUint16(buf, uint16(pkgSize))
 	copy(buf[2:], headerBuf)
-	if msg != nil {
-		copy(buf[2+headerSize:], msgBuf)
-	}
 	log.Infof("sending %v %v", header, msg)
 	s.Out.send(s, buf)
 }
