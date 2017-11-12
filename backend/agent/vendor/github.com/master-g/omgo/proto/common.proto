@@ -37,7 +37,7 @@ enum Cmd {
 message Header {
     int32      version     = 1; // protocol version
     int32      cmd         = 2; // command
-    uint32     seq         = 3; // packet sequence
+    uint64     seq         = 3; // packet sequence
     ClientInfo client_info = 5; // client info
     bytes      body        = 6; // request protobuf marshaled
 }
@@ -60,7 +60,7 @@ enum ResultCode {
 // Common Response Header
 message RspHeader {
     int32   cmd       = 1; // command
-    uint32  seq       = 2; // server packet sequence
+    uint64  seq       = 2; // server packet sequence
     int32   status    = 3; // see ResultCode and other status definitions
     fixed64 timestamp = 4; // server timestamp
     string  msg       = 5; // extra message returned by server

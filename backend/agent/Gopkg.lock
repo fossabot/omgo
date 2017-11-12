@@ -35,7 +35,7 @@
   branch = "master"
   name = "github.com/master-g/omgo"
   packages = ["kit/ecdh","kit/services","kit/utils","proto/grpc/db","proto/grpc/game","proto/pb/common"]
-  revision = "616bf2ddf7f95e1ff4dd4f508ae0894eca1fc017"
+  revision = "660bf15a5c6eb5d7b5b9f5646f8a0dfe57eddc79"
 
 [[projects]]
   branch = "master"
