@@ -18,7 +18,7 @@ func forward(session *api.Session, inPacket *api.IncomingPacket) error {
 	frame := &pb.Game_Frame{
 		Type:    pb.Game_Message,
 		Header:  inPacket.Header,
-		Message: inPacket.Payload,
+		Message: inPacket.Body,
 	}
 
 	// check stream

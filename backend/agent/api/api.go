@@ -30,7 +30,7 @@ type Config struct {
 
 var (
 	// Handlers stores request handlers
-	Handlers map[int32]func(*Session, *IncomingPacket) []byte
+	Handlers map[int32]func(*Session, *IncomingPacket) *OutgoingPacket
 	// Registry stores client session registry
 	Registry sync.Map
 	// GameServerPool game service pool
@@ -42,7 +42,7 @@ var (
 )
 
 func init() {
-	Handlers = map[int32]func(*Session, *IncomingPacket) []byte{
+	Handlers = map[int32]func(*Session, *IncomingPacket) *OutgoingPacket{
 		int32(pc.Cmd_HEART_BEAT_REQ): ProcHeartBeatReq,
 		int32(pc.Cmd_HANDSHAKE_REQ):  ProcHandshakeReq,
 		int32(pc.Cmd_OFFLINE_REQ):    ProcOfflineReq,

@@ -6,15 +6,15 @@ client -> server
 
 ```
 2 bytes | header size (these 2 bytes excluded)
-n bytes | header protobuf
-n bytes | payload protobuf
+n bytes | header protobuf (unencrypted)
+n bytes | payload protobuf (might be encrypted)
 ```
 
 server -> client
 
 ```
 2 bytes | header size (these 2 bytes excluded)
-4 bytes | cmd
+n bytes | response header protobuf
 n bytes | payload
 ```
 

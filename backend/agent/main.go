@@ -330,8 +330,8 @@ func handleClient(conn net.Conn, config *Config) {
 		}
 
 		inPacket := &api.IncomingPacket{
-			Header:  headerMsg,
-			Payload: payload,
+			Header: headerMsg,
+			Body:   payload,
 		}
 
 		// deliver the payload to the input queue of agent
