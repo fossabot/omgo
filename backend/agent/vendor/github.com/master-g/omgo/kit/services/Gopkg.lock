@@ -14,33 +14,15 @@
   version = "v3.2.9"
 
 [[projects]]
-  name = "github.com/davecgh/go-spew"
-  packages = ["spew"]
-  revision = "346938d642f2ec3594ed81d874461961cd0faa76"
-  version = "v1.1.0"
-
-[[projects]]
   branch = "master"
   name = "github.com/golang/protobuf"
   packages = ["proto","ptypes","ptypes/any","ptypes/duration","ptypes/timestamp"]
   revision = "1643683e1b54a9e88ad26d98f81400c8c9d9f4f9"
 
 [[projects]]
-  name = "github.com/maruel/panicparse"
-  packages = ["stack"]
-  revision = "f6ee1e454807f72b84277a84fc06437081340a1b"
-  version = "v1.0.1"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/master-g/omgo"
-  packages = ["kit/ecdh","kit/packet","kit/services","kit/utils","proto/grpc/db","proto/grpc/game","proto/pb/common"]
-  revision = "9d524767a186f7abfb7714253e4113e133e77ef4"
-
-[[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["curve25519","ssh/terminal"]
+  packages = ["ssh/terminal"]
   revision = "6a293f2d4b14b8e6d3f0539e383f6d0d30fce3fd"
 
 [[projects]]
@@ -73,15 +55,9 @@
   revision = "5ffe3083946d5603a0578721101dc8165b1d5b5f"
   version = "v1.7.2"
 
-[[projects]]
-  branch = "v2"
-  name = "gopkg.in/urfave/cli.v2"
-  packages = ["."]
-  revision = "b2bf3c5abeb90da407891aecd1df2c5a1f6170c1"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b7083a17b3e740c83f023303cd15041a88a32c7debfe165cc4bf648821f129e0"
+  inputs-digest = "f3a59b489093271343cb8d3ef708a451b74ce4d079c5568e1a0b17bfaf84add9"
   solver-name = "gps-cdcl"
   solver-version = 1

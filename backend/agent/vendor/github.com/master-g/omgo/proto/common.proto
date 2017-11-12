@@ -59,9 +59,11 @@ enum ResultCode {
 
 // Common Response Header
 message RspHeader {
-    int32   status    = 1; // see ResultCode and other status definitions
-    fixed64 timestamp = 2; // server timestamp
-    string  msg       = 3; // extra message returned by server
+    int32   cmd       = 1; // command
+    uint32  seq       = 2; // server packet sequence
+    int32   status    = 3; // see ResultCode and other status definitions
+    fixed64 timestamp = 4; // server timestamp
+    string  msg       = 5; // extra message returned by server
 }
 
 enum Gender {
@@ -113,9 +115,8 @@ message C2SHandshakeReq {
 // Handshake response
 // S->C
 message S2CHandshakeRsp {
-    RspHeader header    = 1;
-    bytes     send_seed = 2; // public key for client to encrypt sending data
-    bytes     recv_seed = 3; // public key for client to decrypt receive data
+    bytes send_seed = 2; // public key for client to encrypt sending data
+    bytes recv_seed = 3; // public key for client to decrypt receive data
 }
 
 enum KickReason {
@@ -127,7 +128,6 @@ enum KickReason {
 }
 
 message S2CKickNotify {
-    fixed64    timestamp = 1; // Server timestamp
-    KickReason reason    = 2; // Kick reason
-    string     msg       = 3; // Kick message
+    KickReason reason = 2; // Kick reason
+    string     msg    = 3; // Kick message
 }
