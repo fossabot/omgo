@@ -1,0 +1,23 @@
+---
+# We'll use defaults from the LLVM style, but with 4 columns indentation.
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+BasedOnStyle: LLVM
+---
+Language: Proto
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignOperands: true
+AlignTrailingComments: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: false
+BreakBeforeBraces: Attach
+ColumnLimit: 120
+DerivePointerAlignment: false
+IndentCaseLabels: false
+IndentWidth: 4
+KeepEmptyLinesAtTheStartOfBlocks: true
+PointerAlignment: Left
+SpaceBeforeAssignmentOperators: true
+SpacesBeforeTrailingComments: 1
